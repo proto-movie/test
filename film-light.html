@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>MUBI — No Other Choice (Light)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,100..1000;1,100..1000&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+@font-face{font-family:'Riforma';font-display:swap;src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2')}
+@font-face{font-family:'Riforma';font-weight:500;font-display:swap;src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2')}
+
+:root{
+  --bg:#F5F4F0; --bg-2:#FFFFFF; --bg-3:#EDEDEA; --bg-4:#E2E1DD;
+  --text:#111111; --text-2:#555555; --text-3:#999999;
+  --red:#001489; --btn:#001489; --btn-hover:#001AAF;
+  --green:#17843B; --gold:#F5A623;
+  --border:rgba(0,0,0,0.07); --border-2:rgba(0,0,0,0.14);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:390px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1;-webkit-font-smoothing:antialiased}
+.screen{width:390px;height:844px;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+
+/* ── STATUS BAR — always white over hero ── */
+.status-bar{position:absolute;top:0;left:0;right:0;height:44px;padding:14px 24px 0;display:flex;align-items:center;justify-content:space-between;z-index:10}
+.status-time{font-size:15px;font-weight:600;letter-spacing:-0.3px;color:#fff}
+.status-icons{display:flex;align-items:center;gap:6px;color:#fff}
+
+/* ── HERO — cinematic, fades to light bg at bottom ── */
+.hero{width:390px;height:380px;position:relative;flex-shrink:0}
+.hero-img{position:absolute;inset:0;background-size:cover;background-position:center 15%}
+/* gradient goes dark for readability in the title zone, then fades to light bg */
+.hero-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.45) 0%,transparent 30%,rgba(0,0,0,0.1) 50%,rgba(0,0,0,0.72) 68%,rgba(245,244,240,1) 100%)}
+
+/* back + action buttons */
+.hero-overlay-btns{position:absolute;top:0;left:0;right:0;padding:52px 20px 0;display:flex;align-items:center;justify-content:space-between;z-index:5}
+.back-btn{width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid rgba(255,255,255,0.15)}
+.hero-overlay-right{display:flex;gap:10px}
+.hero-icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid rgba(255,255,255,0.15)}
+
+/* title/meta overlay — sits in the dark band above where it fades to light */
+.hero-info{position:absolute;bottom:54px;left:0;right:0;padding:0 20px;z-index:5}
+.hero-badges{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.now-badge{background:var(--red);color:#fff;font-size:8px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;padding:3px 8px;border-radius:2px}
+.days-badge{background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);color:rgba(255,255,255,0.75);font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.15)}
+.hero-film-tt{max-height:58px;max-width:270px;object-fit:contain;object-position:left center;display:block;margin-bottom:10px}
+.hero-film-sub{font-size:11px;color:rgba(255,255,255,0.6);font-weight:400;line-height:1.5}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;background:var(--bg)}
+.content::-webkit-scrollbar{display:none}
+
+.rating-section{padding:18px 20px 0}
+.rating-row{display:flex;align-items:center;gap:6px;margin-bottom:20px}
+.stars{display:flex;gap:2px}
+.star{color:var(--gold)}
+.star.half{opacity:0.5}
+.rating-score{font-size:14px;font-weight:700;color:var(--gold)}
+.rating-count{font-size:11px;color:var(--text-3)}
+
+.cta-section{padding:0 20px 20px}
+.btn-primary{width:100%;background:var(--btn);color:#fff;border:none;border-radius:6px;padding:14px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-bottom:10px}
+.btn-secondary{width:100%;background:transparent;color:var(--text-2);border:1px solid var(--border-2);border-radius:6px;padding:13px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+
+.divider{height:1px;background:var(--border);margin:0 20px}
+
+.synopsis-section{padding:20px}
+.synopsis-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
+.synopsis-text{font-size:13px;line-height:1.75;color:var(--text-2);font-weight:400}
+
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 20px 20px}
+.detail-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);margin-bottom:5px}
+.detail-value{font-size:13px;color:var(--text-2);font-weight:400;line-height:1.4}
+
+/* ── RELATED ROW ── */
+.rel-section{padding:4px 0 0}
+.rel-header{padding:0 20px 12px;display:flex;align-items:center;justify-content:space-between}
+.rel-title{font-family:'Riforma',sans-serif;font-size:14px;font-weight:500;color:var(--text);text-transform:uppercase;letter-spacing:-0.2px}
+.rel-see-all{font-size:11px;color:var(--text-3)}
+.rel-row{display:flex;gap:10px;overflow-x:auto;padding:0 20px 20px;scrollbar-width:none}
+.rel-row::-webkit-scrollbar{display:none}
+.rel-card{flex-shrink:0;width:140px;cursor:pointer}
+.rel-thumb{width:140px;height:79px;border-radius:6px;overflow:hidden;margin-bottom:7px;background:var(--bg-3);border:1px solid var(--border)}
+.rel-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.rel-title-text{font-family:'Riforma',sans-serif;font-size:11px;font-weight:500;color:var(--text);text-transform:uppercase;letter-spacing:-0.2px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rel-meta{font-size:10px;color:var(--text-3)}
+
+/* ── TAB BAR ── */
+.tab-bar{height:83px;background:var(--bg-2);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding-top:10px;flex-shrink:0}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--text-3);cursor:pointer}
+.tab.active{color:var(--text)}
+.tab-label{font-size:9px;font-weight:500;letter-spacing:0.2px}
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <!-- STATUS BAR (absolute, over hero) -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="12" fill="currentColor" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="0.5" opacity="0.3"/><rect x="4.5" y="2" width="3" height="10" rx="0.5" opacity="0.5"/><rect x="9" y="1" width="3" height="11" rx="0.5" opacity="0.7"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+      <svg width="16" height="12" fill="currentColor" viewBox="0 0 16 12"><path d="M8 2.4C5.2 2.4 2.7 3.5 0.8 5.3L0 4.5C2.1 2.5 4.9 1.2 8 1.2s5.9 1.3 8 3.3l-.8.8C13.3 3.5 10.8 2.4 8 2.4z" opacity="0.4"/><path d="M8 4.8c-2 0-3.8.8-5.1 2l-.8-.8C3.6 4.5 5.7 3.6 8 3.6s4.4.9 5.9 2.4l-.8.8C11.8 5.6 10 4.8 8 4.8z" opacity="0.7"/><path d="M8 7.2c-1.2 0-2.2.5-3 1.2L4.2 7.6C5.2 6.6 6.5 6 8 6s2.8.6 3.8 1.6l-.8.8C10.2 7.7 9.2 7.2 8 7.2z"/><circle cx="8" cy="10.4" r="1.2"/></svg>
+      <svg width="25" height="12" fill="none" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="currentColor" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="currentColor"/><path d="M23 4v4a2 2 0 000-4z" fill="currentColor" opacity="0.4"/></svg>
+    </div>
+  </div>
+
+  <!-- HERO — cinematic, fades to light bg -->
+  <div class="hero">
+    <div class="hero-img" style="background-image:url('https://assets.mubicdn.net/images/film/255497/image-w856.jpg?1753801050')"></div>
+    <div class="hero-grad"></div>
+
+    <!-- Back + action buttons -->
+    <div class="hero-overlay-btns">
+      <a class="back-btn" href="home-light.html">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <div class="hero-overlay-right">
+        <div class="hero-icon-btn">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="hero-icon-btn">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Title + details overlaid in dark zone of hero -->
+    <div class="hero-info">
+      <div class="hero-badges">
+        <span class="now-badge">Now on MUBI</span>
+        <span class="days-badge">29 days left</span>
+      </div>
+      <img class="hero-film-tt" src="https://images.mubicdn.net/images/artworks/947983/cache-947983-1773255621/images-original.png" alt="No Other Choice">
+      <div class="hero-film-sub">Park Chan-wook &nbsp;·&nbsp; 2025 &nbsp;·&nbsp; South Korea &nbsp;·&nbsp; 139 min</div>
+    </div>
+  </div>
+
+  <!-- SCROLLABLE CONTENT -->
+  <div class="content">
+
+    <!-- Rating -->
+    <div class="rating-section">
+      <div class="rating-row">
+        <div class="stars">
+          <svg class="star" width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="star" width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="star" width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="star" width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="star half" width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <span class="rating-score">4.3</span>
+        <span class="rating-count">5,878 ratings</span>
+      </div>
+    </div>
+
+    <!-- CTA Buttons -->
+    <div class="cta-section">
+      <button class="btn-primary">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        Watch Now
+      </button>
+      <button class="btn-secondary">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        Add to Watchlist
+      </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Synopsis -->
+    <div class="synopsis-section">
+      <div class="synopsis-label">Synopsis</div>
+      <p class="synopsis-text">Looking for a job? When a happy family man is dismissed after twenty-five years of loyal service at a paper company, he finds the perfect solution to land his next role: truly eliminate the competition. A darkly comic thriller from the master of genre reinvention.</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Detail Grid -->
+    <div class="detail-grid">
+      <div class="detail-item">
+        <div class="detail-label">Director</div>
+        <div class="detail-value">Park Chan-wook</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Year</div>
+        <div class="detail-value">2025</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Country</div>
+        <div class="detail-value">South Korea</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Duration</div>
+        <div class="detail-value">139 minutes</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Language</div>
+        <div class="detail-value">Korean</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Genres</div>
+        <div class="detail-value">Comedy, Crime, Drama</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- More from Park Chan-wook -->
+    <div class="rel-section">
+      <div class="rel-header">
+        <div class="rel-title">More from Park Chan-wook</div>
+        <span class="rel-see-all">See all</span>
+      </div>
+      <div class="rel-row">
+        <div class="rel-card">
+          <div class="rel-thumb"><img src="https://assets.mubicdn.net/images/film/281688/image-w448.jpg?1745499781" alt="Decision to Leave" loading="lazy"></div>
+          <div class="rel-title-text">Decision to Leave</div>
+          <div class="rel-meta">2022 · South Korea</div>
+        </div>
+        <div class="rel-card">
+          <div class="rel-thumb"><img src="https://assets.mubicdn.net/images/film/340287/image-w448.jpg?1745499810" alt="Aftersun" loading="lazy"></div>
+          <div class="rel-title-text">Aftersun</div>
+          <div class="rel-meta">2022 · United Kingdom</div>
+        </div>
+        <div class="rel-card">
+          <div class="rel-thumb"><img src="https://assets.mubicdn.net/images/film/400360/image-w448.jpg?1757575671" alt="Sentimental Value" loading="lazy"></div>
+          <div class="rel-title-text">Sentimental Value</div>
+          <div class="rel-meta">2025 · Norway</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- You Might Also Like -->
+    <div class="rel-section">
+      <div class="rel-header">
+        <div class="rel-title">You Might Also Like</div>
+        <span class="rel-see-all">See all</span>
+      </div>
+      <div class="rel-row">
+        <div class="rel-card">
+          <div class="rel-thumb"><img src="https://assets.mubicdn.net/images/film/170/image-w448.jpg?1745490955" alt="Fargo" loading="lazy"></div>
+          <div class="rel-title-text">Fargo</div>
+          <div class="rel-meta">1996 · Joel Coen</div>
+        </div>
+        <div class="rel-card">
+          <div class="rel-thumb"><img src="https://assets.mubicdn.net/images/film/376078/image-w448.jpg?1745501368" alt="The Delinquents" loading="lazy"></div>
+          <div class="rel-title-text">The Delinquents</div>
+          <div class="rel-meta">2023 · Rodrigo Moreno</div>
+        </div>
+        <div class="rel-card">
+          <div class="rel-thumb"><img src="https://assets.mubicdn.net/images/film/151966/image-w448.jpg?1745492717" alt="Good Time" loading="lazy"></div>
+          <div class="rel-title-text">Good Time</div>
+          <div class="rel-meta">2017 · Josh Safdie</div>
+        </div>
+        <div class="rel-card">
+          <div class="rel-thumb"><img src="https://assets.mubicdn.net/images/film/339426/image-w448.jpg?1745499783" alt="Holy Spider" loading="lazy"></div>
+          <div class="rel-title-text">Holy Spider</div>
+          <div class="rel-meta">2022 · Ali Abbasi</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- TAB BAR -->
+  <nav class="tab-bar">
+    <a class="tab active" href="home-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" fill="rgba(0,0,0,0.08)"/><path d="M9 21V12h6v9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="tab-label">Home</span>
+    </a>
+    <a class="tab" href="browse-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M9 8l6 4-6 4V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="tab-label">Films</span>
+    </a>
+    <a class="tab" href="watchlist-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M5 3h14a1 1 0 011 1v17l-7-3.5L6 21V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="tab-label">Watchlist</span>
+    </a>
+    <a class="tab" href="#">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="10" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M8 10a4 4 0 018 0" stroke="currentColor" stroke-width="1.8"/><path d="M12 21v-5M9 18l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="tab-label">GO</span>
+    </a>
+    <a class="tab" href="profile-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span class="tab-label">Profile</span>
+    </a>
+  </nav>
+
+</div>
+</body>
+</html>

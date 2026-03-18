@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>MUBI — Profile (Light)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,100..1000;1,100..1000&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+@font-face{font-family:'Riforma';font-display:swap;src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2')}
+@font-face{font-family:'Riforma';font-weight:500;font-display:swap;src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2')}
+
+:root{
+  --bg:#F5F4F0; --bg-2:#FFFFFF; --bg-3:#EDEDEA; --bg-4:#E2E1DD;
+  --text:#111111; --text-2:#555555; --text-3:#999999;
+  --red:#001489; --btn:#001489;
+  --green:#17843B;
+  --gold:#F5A623;
+  --border:rgba(0,0,0,0.07); --border-2:rgba(0,0,0,0.14);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:390px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1;-webkit-font-smoothing:antialiased}
+.screen{width:390px;height:844px;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+
+.status-bar{height:44px;padding:14px 24px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.status-time{font-size:15px;font-weight:600;letter-spacing:-0.3px}
+.status-icons{display:flex;align-items:center;gap:6px}
+
+.top-nav{height:52px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid var(--border)}
+.nav-title{font-family:'Riforma',sans-serif;font-size:20px;font-weight:500;color:var(--text);text-transform:uppercase;letter-spacing:-0.3px}
+.nav-settings{color:var(--text-2);cursor:pointer}
+
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.content::-webkit-scrollbar{display:none}
+
+/* PROFILE HEADER */
+.profile-header{padding:24px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;border-bottom:1px solid var(--border)}
+.avatar-wrap{position:relative;width:76px;height:76px}
+.avatar{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#001489 0%,#0a2bb8 50%,#2040cc 100%);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid var(--border-2)}
+.avatar-initials{font-family:'Riforma',sans-serif;font-size:28px;font-weight:500;color:#fff;text-transform:uppercase;letter-spacing:-0.5px}
+.avatar-edit{position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--bg-2);border:1.5px solid var(--border-2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
+
+.profile-name{font-family:'Riforma',sans-serif;font-size:20px;font-weight:500;color:var(--text);letter-spacing:-0.4px;text-align:center}
+.profile-since{font-size:11px;color:var(--text-3);text-align:center;font-weight:400;letter-spacing:0.1px}
+
+/* STATS ROW */
+.stats-row{display:flex;gap:0;width:100%;padding:0 12px}
+.p-stat{flex:1;text-align:center;padding:8px 0}
+.p-stat-num{font-family:'Riforma',sans-serif;font-size:20px;font-weight:500;color:var(--text);letter-spacing:-0.3px;margin-bottom:3px}
+.p-stat-label{font-size:9px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.5px}
+.p-stat-divider{width:1px;background:var(--border-2);align-self:stretch;margin:8px 0;flex-shrink:0}
+
+/* SUBSCRIPTION CARD */
+.section-block{padding:16px 20px 0}
+.sub-card{background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.sub-icon{width:40px;height:40px;background:var(--btn);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sub-info{flex:1;min-width:0}
+.sub-title{font-size:13px;font-weight:700;color:var(--text);letter-spacing:-0.1px;margin-bottom:3px}
+.sub-detail{font-size:11px;color:var(--text-3);font-weight:400}
+.sub-badge{font-size:9px;font-weight:700;color:var(--gold);background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.2);padding:3px 8px;border-radius:4px;letter-spacing:0.4px;text-transform:uppercase;white-space:nowrap}
+
+/* SETTINGS LIST */
+.settings-group{margin-top:6px}
+.settings-label{font-size:9px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.8px;padding:0 20px 8px}
+.settings-list{background:var(--bg-2);border-radius:10px;overflow:hidden;border:1px solid var(--border);margin:0 20px}
+.settings-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer}
+.settings-item:last-child{border-bottom:none}
+.settings-item:active{background:var(--bg-3)}
+.si-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.si-text{flex:1;min-width:0}
+.si-title{font-size:13px;font-weight:500;color:var(--text);letter-spacing:-0.1px}
+.si-sub{font-size:10px;color:var(--text-3);font-weight:400;margin-top:2px}
+.si-chevron{color:var(--text-3);flex-shrink:0}
+.si-title.danger{color:#E35548}
+
+/* TAB BAR */
+.tab-bar{height:83px;background:var(--bg-2);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding-top:10px;flex-shrink:0}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--text-3);cursor:pointer}
+.tab.active{color:var(--text)}
+.tab-label{font-size:9px;font-weight:500;letter-spacing:0.2px}
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="12" fill="currentColor" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="0.5" opacity="0.3"/><rect x="4.5" y="2" width="3" height="10" rx="0.5" opacity="0.5"/><rect x="9" y="1" width="3" height="11" rx="0.5" opacity="0.7"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+      <svg width="16" height="12" fill="currentColor" viewBox="0 0 16 12"><path d="M8 2.4C5.2 2.4 2.7 3.5 0.8 5.3L0 4.5C2.1 2.5 4.9 1.2 8 1.2s5.9 1.3 8 3.3l-.8.8C13.3 3.5 10.8 2.4 8 2.4z" opacity="0.4"/><path d="M8 4.8c-2 0-3.8.8-5.1 2l-.8-.8C3.6 4.5 5.7 3.6 8 3.6s4.4.9 5.9 2.4l-.8.8C11.8 5.6 10 4.8 8 4.8z" opacity="0.7"/><path d="M8 7.2c-1.2 0-2.2.5-3 1.2L4.2 7.6C5.2 6.6 6.5 6 8 6s2.8.6 3.8 1.6l-.8.8C10.2 7.7 9.2 7.2 8 7.2z"/><circle cx="8" cy="10.4" r="1.2"/></svg>
+      <svg width="25" height="12" fill="none" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="currentColor" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="currentColor"/><path d="M23 4v4a2 2 0 000-4z" fill="currentColor" opacity="0.4"/></svg>
+    </div>
+  </div>
+
+  <nav class="top-nav">
+    <span class="nav-title">Profile</span>
+    <span class="nav-settings">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </span>
+  </nav>
+
+  <div class="content">
+
+    <!-- Profile header -->
+    <div class="profile-header">
+      <div class="avatar-wrap">
+        <div class="avatar">
+          <span class="avatar-initials">JO</span>
+        </div>
+        <div class="avatar-edit">
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div>
+        <div class="profile-name">Jaco Otto</div>
+        <div class="profile-since">Member since 2019 · @jacootto</div>
+      </div>
+      <div class="stats-row">
+        <div class="p-stat">
+          <div class="p-stat-num">312</div>
+          <div class="p-stat-label">Watched</div>
+        </div>
+        <div class="p-stat-divider"></div>
+        <div class="p-stat">
+          <div class="p-stat-num">148</div>
+          <div class="p-stat-label">Ratings</div>
+        </div>
+        <div class="p-stat-divider"></div>
+        <div class="p-stat">
+          <div class="p-stat-num">7</div>
+          <div class="p-stat-label">Lists</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscription card -->
+    <div class="section-block">
+      <div class="sub-card">
+        <div class="sub-icon">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="rgba(255,255,255,0.9)" stroke="none"/></svg>
+        </div>
+        <div class="sub-info">
+          <div class="sub-title">MUBI Unlimited</div>
+          <div class="sub-detail">Renews 18 Apr 2026 · £10.99/month</div>
+        </div>
+        <div class="sub-badge">Active</div>
+      </div>
+    </div>
+
+    <!-- Activity & Library -->
+    <div class="section-block" style="margin-top:20px">
+      <div class="settings-label">My MUBI</div>
+      <div class="settings-list">
+        <div class="settings-item">
+          <div class="si-icon" style="background:rgba(0,20,137,0.08)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="#001489" stroke-width="1.8"/><path d="M12 6v6l4 2" stroke="#001489" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-title">Viewing History</div>
+            <div class="si-sub">312 films watched</div>
+          </div>
+          <svg class="si-chevron" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="settings-item">
+          <div class="si-icon" style="background:rgba(245,166,35,0.1)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#F5A623" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-title">Ratings &amp; Reviews</div>
+            <div class="si-sub">148 films rated</div>
+          </div>
+          <svg class="si-chevron" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="settings-item">
+          <div class="si-icon" style="background:rgba(23,132,59,0.08)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 3h14a1 1 0 011 1v17l-7-3.5L6 21V4a1 1 0 011-1z" stroke="#17843B" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-title">My Lists</div>
+            <div class="si-sub">7 curated lists</div>
+          </div>
+          <svg class="si-chevron" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="settings-item">
+          <div class="si-icon" style="background:rgba(0,0,0,0.04)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="var(--text-3)" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-title">Followed Films</div>
+            <div class="si-sub">Get notified when they're on MUBI</div>
+          </div>
+          <svg class="si-chevron" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account settings -->
+    <div class="section-block" style="margin-top:20px">
+      <div class="settings-label">Account</div>
+      <div class="settings-list">
+        <div class="settings-item">
+          <div class="si-icon" style="background:rgba(0,0,0,0.04)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="var(--text-3)" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="var(--text-3)" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-title">Account Settings</div>
+          </div>
+          <svg class="si-chevron" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="settings-item">
+          <div class="si-icon" style="background:rgba(0,0,0,0.04)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="var(--text-3)" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="var(--text-3)" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-title">Help &amp; Support</div>
+          </div>
+          <svg class="si-chevron" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="settings-item">
+          <div class="si-icon" style="background:rgba(227,85,72,0.08)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="#E35548" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-title danger">Sign Out</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Version footer -->
+    <div style="padding:20px;text-align:center">
+      <div style="font-size:10px;color:var(--text-3);font-weight:400">MUBI for iOS · Version 7.4.2</div>
+    </div>
+
+  </div>
+
+  <nav class="tab-bar">
+    <a class="tab" href="home-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="tab-label">Home</span>
+    </a>
+    <a class="tab" href="browse-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M9 8l6 4-6 4V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="tab-label">Films</span>
+    </a>
+    <a class="tab" href="watchlist-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M5 3h14a1 1 0 011 1v17l-7-3.5L6 21V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="tab-label">Watchlist</span>
+    </a>
+    <a class="tab" href="#">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="10" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M8 10a4 4 0 018 0" stroke="currentColor" stroke-width="1.8"/><path d="M12 21v-5M9 18l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="tab-label">GO</span>
+    </a>
+    <a class="tab active" href="profile-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8" fill="rgba(0,0,0,0.07)"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span class="tab-label">Profile</span>
+    </a>
+  </nav>
+
+</div>
+</body>
+</html>

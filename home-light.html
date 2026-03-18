@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>MUBI — Home (Light)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,100..1000;1,100..1000&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+@font-face{font-family:'Riforma';font-display:swap;src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2')}
+@font-face{font-family:'Riforma';font-weight:500;font-display:swap;src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2')}
+@font-face{font-family:'Riforma';font-weight:bold;font-display:swap;src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2')}
+@font-face{font-family:'Riforma';font-style:italic;font-display:swap;src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2')}
+
+:root{
+  --bg:#F5F4F0; --bg-2:#FFFFFF; --bg-3:#EDEDEA; --bg-4:#E2E1DD;
+  --text:#111111; --text-2:#555555; --text-3:#999999;
+  --red:#001489; --btn:#001489; --btn-hover:#001AAF;
+  --green:#17843B;
+  --border:rgba(0,0,0,0.07); --border-2:rgba(0,0,0,0.14);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:390px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1;-webkit-font-smoothing:antialiased}
+.screen{width:390px;height:844px;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+
+/* ── STATUS BAR ── */
+.status-bar{height:44px;padding:14px 24px 0;display:flex;align-items:center;justify-content:space-between;position:absolute;top:0;left:0;right:0;z-index:10}
+.status-time{font-size:15px;font-weight:600;letter-spacing:-0.3px;color:#fff}
+.status-icons{display:flex;align-items:center;gap:6px;color:#fff}
+
+/* ── TOP NAV ── */
+.top-nav{height:48px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;position:absolute;top:44px;left:0;right:0;z-index:10;color:#fff}
+.nav-right{display:flex;align-items:center;gap:18px;color:#fff}
+
+/* ── SCROLLABLE CONTENT ── */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.content::-webkit-scrollbar{display:none}
+
+/* ── HERO (Film of the Day) — stays cinematic/dark ── */
+.hero{width:390px;height:344px;position:relative;overflow:hidden;flex-shrink:0}
+.hero-img{position:absolute;inset:0;background-size:cover;background-position:center 20%}
+.hero-grain{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");background-size:200px 200px;opacity:0.04;pointer-events:none;z-index:2}
+.hero-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.68) 0%,transparent 32%),linear-gradient(to right,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.4) 55%,rgba(0,0,0,0.05) 100%),linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 50%);z-index:3}
+.hero-content{position:absolute;bottom:20px;left:20px;z-index:4;max-width:280px}
+.hero-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.now-badge{background:var(--red);color:#fff;font-size:8px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;padding:3px 8px;border-radius:2px}
+.days-left{font-size:11px;font-weight:500;color:rgba(255,255,255,0.55)}
+.hero-title{font-family:'Riforma',sans-serif;font-size:22px;font-weight:500;color:#fff;text-transform:uppercase;letter-spacing:-0.3px;line-height:1.1;margin-bottom:6px}
+.hero-tt{max-height:52px;max-width:220px;object-fit:contain;object-position:left center;display:block;margin-bottom:8px}
+.hero-meta{font-size:11px;color:rgba(255,255,255,0.55);margin-bottom:14px;font-weight:400}
+.hero-btns{display:flex;gap:8px;align-items:center}
+.btn-watch{background:var(--btn);color:#fff;border:none;border-radius:5px;padding:9px 18px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;cursor:pointer}
+.btn-list{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:5px;padding:9px 14px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;font-family:'DM Sans',sans-serif;cursor:pointer}
+
+/* ── SECTIONS ── */
+.section{padding:22px 0 0}
+.section-header{padding:0 20px 14px;display:flex;align-items:flex-end;justify-content:space-between}
+.section-eyebrow{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.section-eyebrow::before{content:'';display:block;width:16px;height:1.5px;background:var(--red)}
+.section-title{font-family:'Riforma',sans-serif;font-size:16px;font-weight:500;color:var(--text);text-transform:uppercase;letter-spacing:-0.3px}
+.see-all{font-size:11px;font-weight:500;color:var(--text-3);text-decoration:none;padding-bottom:2px}
+
+/* ── FILM ROW (landscape) ── */
+.film-row{display:flex;gap:10px;overflow-x:auto;padding:0 20px 2px;scrollbar-width:none}
+.film-row::-webkit-scrollbar{display:none}
+.film-card{flex-shrink:0;width:155px;cursor:pointer}
+.film-thumb{width:155px;height:87px;border-radius:6px;overflow:hidden;position:relative;margin-bottom:8px;background:var(--bg-3);border:1px solid var(--border)}
+.film-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.card-days{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.65);padding:4px 7px;display:flex;justify-content:space-between;align-items:center}
+.card-days-label{font-size:8px;font-weight:700;color:rgba(255,255,255,0.85);letter-spacing:0.3px;text-transform:uppercase}
+.card-days-count{font-size:8px;font-weight:500;color:rgba(255,255,255,0.45)}
+.card-new-badge{position:absolute;top:5px;left:5px;background:rgba(23,132,59,0.15);border:1px solid rgba(23,132,59,0.3);color:var(--green);font-size:7px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:2px 5px;border-radius:2px}
+.card-mubi-badge{position:absolute;top:5px;left:5px;background:var(--red);color:#fff;font-size:7px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:2px 5px;border-radius:2px}
+.film-card-title{font-family:'Riforma',sans-serif;font-size:12px;font-weight:500;color:var(--text);text-transform:uppercase;letter-spacing:-0.2px;line-height:1.3;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.film-card-meta{font-size:10px;color:var(--text-3);font-weight:400}
+.card-tt{max-height:22px;max-width:130px;object-fit:contain;object-position:left center;display:block;margin-bottom:4px;filter:invert(1)}
+
+/* ── TRENDING — numbered row ── */
+.trending-row{display:flex;gap:10px;overflow-x:auto;padding:0 20px 2px;scrollbar-width:none}
+.trending-row::-webkit-scrollbar{display:none}
+.trend-card{flex-shrink:0;width:120px;cursor:pointer;position:relative}
+.trend-num{position:absolute;left:-4px;bottom:-8px;font-family:'Riforma',sans-serif;font-size:52px;font-weight:bold;color:var(--bg-4);line-height:1;z-index:0;-webkit-text-stroke:1px var(--border-2)}
+.trend-thumb{width:120px;height:68px;border-radius:6px;overflow:hidden;position:relative;margin-bottom:8px;background:var(--bg-3);border:1px solid var(--border);z-index:1}
+.trend-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.trend-title{font-family:'Riforma',sans-serif;font-size:11px;font-weight:500;color:var(--text);text-transform:uppercase;letter-spacing:-0.2px;line-height:1.3;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:1}
+.trend-meta{font-size:10px;color:var(--text-3);position:relative;z-index:1}
+
+/* ── COLLECTION BANNER — stays dark/cinematic ── */
+.collection-banner{margin:22px 20px 0;border-radius:10px;overflow:hidden;height:130px;position:relative;cursor:pointer}
+.cb-bg{position:absolute;inset:0;background-size:cover;background-position:center}
+.cb-grad{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.3) 100%)}
+.cb-content{position:absolute;inset:0;padding:18px 20px;display:flex;flex-direction:column;justify-content:center}
+.cb-eyebrow{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7DD8E0;margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.cb-eyebrow::before{content:'';display:block;width:14px;height:1.5px;background:#7DD8E0}
+.cb-title{font-family:'Riforma',sans-serif;font-size:17px;font-weight:500;color:#fff;text-transform:uppercase;letter-spacing:-0.3px;line-height:1.15;margin-bottom:8px}
+.cb-meta{font-size:11px;color:rgba(255,255,255,0.55)}
+
+/* ── TAB BAR ── */
+.tab-bar{height:83px;background:var(--bg-2);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding-top:10px;flex-shrink:0}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--text-3);cursor:pointer}
+.tab.active{color:var(--text)}
+.tab-label{font-size:9px;font-weight:500;letter-spacing:0.2px}
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <!-- SCROLLABLE CONTENT -->
+  <div class="content">
+
+    <!-- ── FILM OF THE DAY HERO ── -->
+    <div class="hero">
+      <div class="hero-img" style="background-image:url('https://assets.mubicdn.net/images/film/255497/image-w856.jpg?1753801050')"></div>
+      <div class="hero-grain"></div>
+      <div class="hero-grad"></div>
+
+      <!-- STATUS BAR overlaid on hero -->
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="12" fill="currentColor" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="0.5" opacity="0.3"/><rect x="4.5" y="2" width="3" height="10" rx="0.5" opacity="0.5"/><rect x="9" y="1" width="3" height="11" rx="0.5" opacity="0.7"/><rect x="13.5" y="0" width="3" height="12" rx="0.5"/></svg>
+          <svg width="16" height="12" fill="currentColor" viewBox="0 0 16 12"><path d="M8 2.4C5.2 2.4 2.7 3.5 0.8 5.3L0 4.5C2.1 2.5 4.9 1.2 8 1.2s5.9 1.3 8 3.3l-.8.8C13.3 3.5 10.8 2.4 8 2.4z" opacity="0.4"/><path d="M8 4.8c-2 0-3.8.8-5.1 2l-.8-.8C3.6 4.5 5.7 3.6 8 3.6s4.4.9 5.9 2.4l-.8.8C11.8 5.6 10 4.8 8 4.8z" opacity="0.7"/><path d="M8 7.2c-1.2 0-2.2.5-3 1.2L4.2 7.6C5.2 6.6 6.5 6 8 6s2.8.6 3.8 1.6l-.8.8C10.2 7.7 9.2 7.2 8 7.2z"/><circle cx="8" cy="10.4" r="1.2"/></svg>
+          <svg width="25" height="12" fill="none" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="currentColor" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="currentColor"/><path d="M23 4v4a2 2 0 000-4z" fill="currentColor" opacity="0.4"/></svg>
+        </div>
+      </div>
+
+      <!-- TOP NAV overlaid on hero -->
+      <nav class="top-nav">
+        <svg height="18" viewBox="0 0 263 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="MUBI"><path d="M67.04 61.1345C67.0396 62.9044 67.3073 64.4769 67.8438 65.8513C68.3802 67.2256 69.138 68.3905 70.1152 69.3455C71.0908 70.3003 72.266 71.0336 73.6406 71.5457C75.0154 72.0578 76.5411 72.3142 78.2178 72.3142C79.8964 72.3142 81.4222 72.0578 82.7949 71.5457C84.1675 71.0336 85.3427 70.3003 86.3203 69.3455C87.2979 68.3872 88.0548 67.2222 88.5908 65.8513C89.1269 64.4802 89.3955 62.9077 89.3955 61.1345V30.0447H98.4824V61.1335C98.4824 63.7429 98.0163 66.2006 97.084 68.5056C96.1813 70.7679 94.8128 72.8155 93.0674 74.5144C91.4297 76.1099 89.4539 77.3877 87.1406 78.3474L86.6729 78.533C84.1567 79.511 81.3385 79.9998 78.2188 79.9998C75.0536 80.003 72.2247 79.5147 69.7324 78.5349C67.2402 77.5552 65.1207 76.2149 63.374 74.5144C61.6272 72.816 60.2571 70.7692 59.3535 68.5066C58.422 66.2011 57.9561 63.7435 57.9561 61.1345V30.0447H67.04V61.1345ZM19.6357 48.6296C20.291 49.8873 20.8852 51.0521 21.418 52.1238C21.9507 53.1954 22.4623 54.2431 22.9521 55.2673C23.4453 56.292 23.9233 57.3408 24.3867 58.4128C24.8502 59.4849 25.339 60.6259 25.8516 61.8357C26.3632 60.626 26.852 59.4848 27.3184 58.4128C27.7847 57.3408 28.2624 56.292 28.751 55.2673C29.2408 54.2428 29.7533 53.1949 30.2881 52.1238C30.8229 51.0525 31.4171 49.8877 32.0703 48.6296L41.5723 30.0447H51.7021V78.9539H42.6182V58.3416C42.6182 57.037 42.6298 55.8141 42.6533 54.6736C42.6768 53.5333 42.7116 52.4271 42.7578 51.3552C42.8048 50.2827 42.874 49.176 42.9668 48.0359C43.0596 46.8957 43.1533 45.673 43.2461 44.3679H42.9668C42.4535 45.5792 41.9767 46.7323 41.5352 47.8269C41.0935 48.9217 40.6394 49.9929 40.1738 51.0398C39.7087 52.0868 39.22 53.1469 38.707 54.2195C38.1941 55.292 37.6116 56.4331 36.9609 57.6433L25.8516 78.9539L14.7412 57.6433C14.091 56.4315 13.5089 55.2903 12.9951 54.2195C12.4813 53.1486 11.9926 52.0884 11.5283 51.0398C11.0628 49.9925 10.5972 48.9212 10.1309 47.8269C9.66453 46.7326 9.19849 45.5797 8.7334 44.3679H8.4541C8.54647 45.6726 8.63979 46.8953 8.7334 48.0359C8.827 49.1764 8.8962 50.2831 8.94238 51.3552C8.98897 52.4263 9.02435 53.5324 9.04785 54.6736C9.07135 55.8149 9.08301 57.0378 9.08301 58.3416V78.9539H0V30.0447H10.1309L19.6357 48.6296ZM128.84 30.0447C131.028 30.0435 133.042 30.3584 134.883 30.988C136.724 31.6177 138.307 32.5144 139.634 33.6785C140.957 34.8378 142.017 36.2671 142.743 37.8699C143.489 39.5018 143.861 41.3181 143.861 43.3191C143.861 45.6031 143.384 47.5372 142.429 49.1199C141.467 50.7104 140.167 52.0699 138.621 53.1023C140.716 54.313 142.405 55.8965 143.688 57.8523V57.8552C144.968 59.8122 145.607 62.1878 145.607 64.9822C145.605 67.0793 145.233 68.9894 144.491 70.7117C143.777 72.3909 142.703 73.8931 141.346 75.113C139.994 76.3212 138.376 77.2634 136.489 77.9392C134.603 78.615 132.519 78.9538 130.236 78.9539H104.735V30.0447H128.84ZM160.558 78.9539H151.475V30.0447H160.558V78.9539ZM113.818 71.2673H129.538C132.005 71.2698 133.787 70.6527 134.883 69.4158C135.978 68.1816 136.525 66.5864 136.525 64.6306C136.526 62.7197 135.966 61.0774 134.848 59.7039C133.729 58.3304 131.959 57.6433 129.538 57.6433H113.818V71.2673ZM113.818 49.9578H128.141C130.238 49.9582 131.869 49.3992 133.032 48.281C134.196 47.1627 134.778 45.6255 134.778 43.6697C134.78 41.7131 134.198 40.2344 133.032 39.2332C131.867 38.232 130.236 37.7312 128.141 37.7312H113.818V49.9578Z" fill="currentColor"/><path d="M194 57C200.075 57 205 61.9249 205 68C205 70.9174 203.841 73.7154 201.778 75.7783C199.715 77.8412 196.917 79 194 79C187.925 79 183 74.0751 183 68C183 61.9249 187.925 57 194 57ZM222.812 57C228.887 57 233.812 61.9249 233.812 68C233.812 70.9174 232.653 73.7154 230.59 75.7783C228.527 77.8411 225.729 79 222.812 79C216.737 78.9999 211.812 74.0751 211.812 68C211.812 61.9249 216.737 57.0001 222.812 57ZM194 29C200.075 29 205 33.9249 205 40C205 46.0751 200.075 51 194 51C187.925 51 183 46.0751 183 40C183 33.9249 187.925 29 194 29ZM222.812 29C228.887 29 233.812 33.9249 233.812 40C233.812 42.9174 232.653 45.7154 230.59 47.7783C228.527 49.8411 225.729 51 222.812 51C216.737 50.9999 211.812 46.0751 211.812 40C211.812 33.9249 216.737 29.0001 222.812 29ZM251.624 29C257.699 29.0002 262.624 33.925 262.624 40C262.624 42.9174 261.464 45.7154 259.401 47.7783C257.339 49.8409 254.541 50.9999 251.624 51C245.549 51 240.624 46.0751 240.624 40C240.624 33.9249 245.549 29 251.624 29ZM194 0C200.075 3.16534e-08 205 4.92487 205 11C205 17.0751 200.075 22 194 22C187.925 22 183 17.0751 183 11C183 4.92487 187.925 0 194 0ZM222.812 0C228.887 0 233.812 4.92487 233.812 11C233.812 13.9174 232.653 16.7154 230.59 18.7783C228.527 20.8411 225.729 22 222.812 22C216.737 21.9999 211.812 17.0751 211.812 11C211.812 4.92495 216.737 0.000131913 222.812 0Z" fill="currentColor"/></svg>
+        <div class="nav-right">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </nav>
+
+      <div class="hero-content">
+        <div class="hero-top">
+          <span class="now-badge">Now on MUBI</span>
+          <span class="days-left">29 days left</span>
+        </div>
+        <img class="hero-tt" src="https://images.mubicdn.net/images/artworks/947983/cache-947983-1773255621/images-original.png" alt="No Other Choice">
+        <div class="hero-meta">Park Chan-wook &nbsp;·&nbsp; 2025 &nbsp;·&nbsp; South Korea</div>
+        <div class="hero-btns">
+          <button class="btn-watch">
+            <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            Watch Now
+          </button>
+          <button class="btn-list">+ Watchlist</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NOW ON MUBI ── -->
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">Curated Daily</div>
+          <div class="section-title">Now on MUBI</div>
+        </div>
+        <a class="see-all" href="browse-light.html">See all</a>
+      </div>
+      <div class="film-row">
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/441162/image-w448.jpg?1747995632" alt="It Was Just an Accident" loading="lazy">
+            <div class="card-days"><span class="card-days-label">Showing</span><span class="card-days-count">27 days</span></div>
+          </div>
+          <img class="card-tt" src="https://images.mubicdn.net/images/artworks/941331/cache-941331-1772793963/images-original.png" alt="It Was Just an Accident">
+          <div class="film-card-meta">Jafar Panahi · 2025</div>
+        </div>
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/400360/image-w448.jpg?1757575671" alt="Sentimental Value" loading="lazy">
+            <div class="card-days"><span class="card-days-label">Showing</span><span class="card-days-count">21 days</span></div>
+          </div>
+          <img class="card-tt" src="https://images.mubicdn.net/images/artworks/920723/cache-920723-1770742695/images-original.png" alt="Sentimental Value">
+          <div class="film-card-meta">Joachim Trier · 2025</div>
+        </div>
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/360569/image-w448.jpg?1761916729" alt="Die My Love" loading="lazy">
+            <div class="card-days"><span class="card-days-label">Showing</span><span class="card-days-count">19 days</span></div>
+          </div>
+          <img class="card-tt" src="https://images.mubicdn.net/images/artworks/886805/cache-886805-1767128125/images-original.png" alt="Die My Love">
+          <div class="film-card-meta">Lynne Ramsay · 2025</div>
+        </div>
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/422583/image-w448.jpg?1765544027" alt="The Mastermind" loading="lazy">
+            <div class="card-days"><span class="card-days-label">Showing</span><span class="card-days-count">15 days</span></div>
+          </div>
+          <img class="card-tt" src="https://images.mubicdn.net/images/artworks/886806/cache-886806-1765797028/images-original.png" alt="The Mastermind">
+          <div class="film-card-meta">Kelly Reichardt · 2025</div>
+        </div>
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/332978/image-w448.jpg?1746718753" alt="Hot Milk" loading="lazy">
+            <div class="card-days"><span class="card-days-label">Showing</span><span class="card-days-count">12 days</span></div>
+          </div>
+          <img class="card-tt" src="https://images.mubicdn.net/images/artworks/849389/cache-849389-1754999024/images-original.png" alt="Hot Milk">
+          <div class="film-card-meta">Rebecca Lenkiewicz · 2025</div>
+        </div>
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/400471/image-w448.jpg?1745502898" alt="Harvest" loading="lazy">
+            <div class="card-days"><span class="card-days-label">Showing</span><span class="card-days-count">8 days</span></div>
+          </div>
+          <img class="card-tt" src="https://images.mubicdn.net/images/artworks/845510/cache-845510-1753120342/images-original.png" alt="Harvest">
+          <div class="film-card-meta">Athina Rachel Tsangari · 2024</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── NEW RELEASES ── -->
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">Just Added</div>
+          <div class="section-title">New Releases</div>
+        </div>
+        <a class="see-all" href="browse-light.html">See all</a>
+      </div>
+      <div class="film-row">
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/418722/image-w448.jpg?1745503382" alt="Magic Farm" loading="lazy">
+            <div class="card-new-badge">New</div>
+          </div>
+          <div class="film-card-title">Magic Farm</div>
+          <div class="film-card-meta">Amalia Ulman · 2025</div>
+        </div>
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/400395/image-w448.jpg?1745502227" alt="Grand Tour" loading="lazy">
+            <div class="card-new-badge">New</div>
+          </div>
+          <div class="film-card-title">Grand Tour</div>
+          <div class="film-card-meta">Miguel Gomes · 2024</div>
+        </div>
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/401676/image-w448.jpg?1745502278" alt="Dahomey" loading="lazy">
+            <div class="card-new-badge">New</div>
+          </div>
+          <div class="film-card-title">Dahomey</div>
+          <div class="film-card-meta">Mati Diop · 2024</div>
+        </div>
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/332868/image-w448.jpg?1745502662" alt="The Substance" loading="lazy">
+            <div class="card-mubi-badge">MUBI</div>
+          </div>
+          <img class="card-tt" src="https://images.mubicdn.net/images/artworks/708915/cache-708915-1727450498/images-original.png" alt="The Substance">
+          <div class="film-card-meta">Coralie Fargeat · 2024</div>
+        </div>
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/374529/image-w448.jpg?1745502259" alt="Crossing" loading="lazy">
+            <div class="card-new-badge">New</div>
+          </div>
+          <div class="film-card-title">Crossing</div>
+          <div class="film-card-meta">Levan Akin · 2024</div>
+        </div>
+
+        <div class="film-card">
+          <div class="film-thumb">
+            <img src="https://assets.mubicdn.net/images/film/409204/image-w448.jpg?1745502559" alt="September Says" loading="lazy">
+          </div>
+          <div class="film-card-title">September Says</div>
+          <div class="film-card-meta">Ariane Labed · 2024</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── COLLECTION BANNER: Women Misbehaving ── -->
+    <div class="collection-banner">
+      <div class="cb-bg" style="background-image:url('https://assets.mubicdn.net/images/film/12073/image-w448.jpg?1745490968')"></div>
+      <div class="cb-grad"></div>
+      <div class="cb-content">
+        <div class="cb-eyebrow">Curated Collection</div>
+        <div class="cb-title">Women<br>Misbehaving</div>
+        <div class="cb-meta">17 films · Updated weekly</div>
+      </div>
+    </div>
+
+    <!-- ── TRENDING ── -->
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">Most Watched</div>
+          <div class="section-title">Trending Now</div>
+        </div>
+        <a class="see-all" href="browse-light.html">See all</a>
+      </div>
+      <div class="trending-row">
+
+        <div class="trend-card">
+          <span class="trend-num">1</span>
+          <div class="trend-thumb"><img src="https://assets.mubicdn.net/images/film/340287/image-w448.jpg?1745499810" alt="Aftersun" loading="lazy"></div>
+          <div class="trend-title">Aftersun</div>
+          <div class="trend-meta">Charlotte Wells</div>
+        </div>
+
+        <div class="trend-card">
+          <span class="trend-num">2</span>
+          <div class="trend-thumb"><img src="https://assets.mubicdn.net/images/film/92/image-w448.jpg?1766101038" alt="Eternal Sunshine" loading="lazy"></div>
+          <div class="trend-title">Eternal Sunshine...</div>
+          <div class="trend-meta">Michel Gondry</div>
+        </div>
+
+        <div class="trend-card">
+          <span class="trend-num">3</span>
+          <div class="trend-thumb"><img src="https://assets.mubicdn.net/images/film/170/image-w448.jpg?1745490955" alt="Fargo" loading="lazy"></div>
+          <div class="trend-title">Fargo</div>
+          <div class="trend-meta">Joel Coen</div>
+        </div>
+
+        <div class="trend-card">
+          <span class="trend-num">4</span>
+          <div class="trend-thumb"><img src="https://assets.mubicdn.net/images/film/1309/image-w448.jpg?1753726625" alt="Blue Velvet" loading="lazy"></div>
+          <div class="trend-title">Blue Velvet</div>
+          <div class="trend-meta">David Lynch</div>
+        </div>
+
+        <div class="trend-card">
+          <span class="trend-num">5</span>
+          <div class="trend-thumb"><img src="https://assets.mubicdn.net/images/film/346537/image-w448.jpg?1745501249" alt="Fallen Leaves" loading="lazy"></div>
+          <div class="trend-title">Fallen Leaves</div>
+          <div class="trend-meta">Aki Kaurismäki</div>
+        </div>
+
+        <div class="trend-card">
+          <span class="trend-num">6</span>
+          <div class="trend-thumb"><img src="https://assets.mubicdn.net/images/film/354432/image-w448.jpg?1745501476" alt="Priscilla" loading="lazy"></div>
+          <div class="trend-title">Priscilla</div>
+          <div class="trend-meta">Sofia Coppola</div>
+        </div>
+
+        <div class="trend-card">
+          <span class="trend-num">7</span>
+          <div class="trend-thumb"><img src="https://assets.mubicdn.net/images/film/151966/image-w448.jpg?1745492717" alt="Good Time" loading="lazy"></div>
+          <div class="trend-title">Good Time</div>
+          <div class="trend-meta">Josh Safdie</div>
+        </div>
+
+        <div class="trend-card">
+          <span class="trend-num">8</span>
+          <div class="trend-thumb"><img src="https://assets.mubicdn.net/images/film/300894/image-w448.jpg?1745500947" alt="Bottoms" loading="lazy"></div>
+          <div class="trend-title">Bottoms</div>
+          <div class="trend-meta">Emma Seligman</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── JAFAR PANAHI SPOTLIGHT BANNER ── -->
+    <div class="collection-banner" style="margin-bottom:24px">
+      <div class="cb-bg" style="background-image:url('https://assets.mubicdn.net/images/film/441162/image-w448.jpg?1747995632')"></div>
+      <div class="cb-grad"></div>
+      <div class="cb-content">
+        <div class="cb-eyebrow">Director Spotlight</div>
+        <div class="cb-title">Jafar Panahi</div>
+        <div class="cb-meta">9 films · From Crimson Gold to It Was Just an Accident</div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ── TAB BAR ── -->
+  <nav class="tab-bar">
+    <a class="tab active" href="home-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" fill="rgba(0,0,0,0.08)"/><path d="M9 21V12h6v9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="tab-label">Home</span>
+    </a>
+    <a class="tab" href="browse-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M9 8l6 4-6 4V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="tab-label">Films</span>
+    </a>
+    <a class="tab" href="watchlist-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M5 3h14a1 1 0 011 1v17l-7-3.5L6 21V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span class="tab-label">Watchlist</span>
+    </a>
+    <a class="tab" href="#">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="10" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M8 10a4 4 0 018 0" stroke="currentColor" stroke-width="1.8"/><path d="M12 21v-5M9 18l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="tab-label">GO</span>
+    </a>
+    <a class="tab" href="profile-light.html">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span class="tab-label">Profile</span>
+    </a>
+  </nav>
+
+</div>
+</body>
+</html>
