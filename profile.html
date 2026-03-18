@@ -77,6 +77,20 @@ html,body{width:390px;background:var(--bg);color:var(--text);font-family:'DM San
 /* DESTRUCTIVE */
 .si-title.danger{color:#E35548}
 
+/* NEUTRAL ICON (theme-aware) */
+.si-icon-neutral{background:rgba(255,255,255,0.06)}
+
+/* THEME TOGGLE */
+.theme-toggle{background:none;border:none;cursor:pointer;color:var(--text-2);padding:4px;display:flex;align-items:center;justify-content:center;line-height:0}
+.icon-sun{display:none}
+
+/* ── LIGHT THEME ── */
+body.light{--bg:#F5F4F0;--bg-2:#FFFFFF;--bg-3:#EDEDEA;--bg-4:#E2E1DD;--text:#111111;--text-2:#555555;--text-3:#999999;--green:#17843B;--gold:#B8860B;--border:rgba(0,0,0,0.07);--border-2:rgba(0,0,0,0.14)}
+body.light .screen{background:var(--bg)}
+body.light .si-icon-neutral{background:rgba(0,0,0,0.05)}
+body.light .icon-moon{display:none}
+body.light .icon-sun{display:flex}
+
 /* TAB BAR */
 .tab-bar{height:83px;background:var(--bg-2);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding-top:10px;flex-shrink:0}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--text-3);cursor:pointer}
@@ -98,9 +112,10 @@ html,body{width:390px;background:var(--bg);color:var(--text);font-family:'DM San
 
   <nav class="top-nav">
     <span class="nav-title">Profile</span>
-    <span class="nav-settings">
-      <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    </span>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <svg class="icon-moon" width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg class="icon-sun" width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
   </nav>
 
   <div class="content">
@@ -186,7 +201,7 @@ html,body{width:390px;background:var(--bg);color:var(--text);font-family:'DM San
           <svg class="si-chevron" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </div>
         <div class="settings-item">
-          <div class="si-icon" style="background:rgba(255,255,255,0.06)">
+          <div class="si-icon si-icon-neutral">
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="var(--text-2)" stroke-width="1.8" stroke-linejoin="round"/></svg>
           </div>
           <div class="si-text">
@@ -203,7 +218,7 @@ html,body{width:390px;background:var(--bg);color:var(--text);font-family:'DM San
       <div class="settings-label">Account</div>
       <div class="settings-list">
         <div class="settings-item">
-          <div class="si-icon" style="background:rgba(255,255,255,0.06)">
+          <div class="si-icon si-icon-neutral">
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="var(--text-2)" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="var(--text-2)" stroke-width="1.8" stroke-linecap="round"/></svg>
           </div>
           <div class="si-text">
@@ -212,7 +227,7 @@ html,body{width:390px;background:var(--bg);color:var(--text);font-family:'DM San
           <svg class="si-chevron" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </div>
         <div class="settings-item">
-          <div class="si-icon" style="background:rgba(255,255,255,0.06)">
+          <div class="si-icon si-icon-neutral">
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="var(--text-2)" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="var(--text-2)" stroke-width="1.8" stroke-linecap="round"/></svg>
           </div>
           <div class="si-text">
@@ -262,5 +277,34 @@ html,body{width:390px;background:var(--bg);color:var(--text);font-family:'DM San
   </nav>
 
 </div>
+
+<script>
+const LIGHT_PAGES = {
+  'home.html':'home-light.html','browse.html':'browse-light.html',
+  'watchlist.html':'watchlist-light.html','profile.html':'profile.html'
+};
+const DARK_PAGES = Object.fromEntries(Object.entries(LIGHT_PAGES).map(([k,v])=>[v,k]));
+
+function updateTabLinks(isLight) {
+  document.querySelectorAll('.tab[href]').forEach(tab => {
+    const href = tab.getAttribute('href');
+    if (href === '#') return;
+    const map = isLight ? LIGHT_PAGES : DARK_PAGES;
+    if (map[href]) tab.setAttribute('href', map[href]);
+  });
+}
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  localStorage.setItem('mubi-theme', isLight ? 'light' : 'dark');
+  updateTabLinks(isLight);
+}
+
+// Restore on load
+if (localStorage.getItem('mubi-theme') === 'light') {
+  document.body.classList.add('light');
+  updateTabLinks(true);
+}
+</script>
 </body>
 </html>
