@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>MUBI Academy — In the Mood for Filmmaking by Wong Kar-wai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..1000&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2');
+  font-weight: bold;
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2');
+  font-style: italic;
+}
+
+:root {
+  --bg: #111111;
+  --bg-2: #181818;
+  --bg-3: #202020;
+  --bg-4: #282828;
+  --text: #FFFFFF;
+  --text-2: #ABABAB;
+  --text-3: #666666;
+  --red: #001489;
+  --red-dark: #001070;
+  --btn: #001489;
+  --btn-hover: #001AAF;
+  --gold: #F5A623;
+  --green: #2DC75E;
+  --border: rgba(255,255,255,0.07);
+  --border-2: rgba(255,255,255,0.14);
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.6;
+  width: 1440px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+/* ══════════════════════════
+   NAVIGATION
+══════════════════════════ */
+.nav {
+  width: 1440px;
+  height: 64px;
+  background: rgba(17,17,17,0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  position: relative;
+  z-index: 50;
+}
+
+.nav-left { display: flex; align-items: center; gap: 44px; }
+
+.nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer; }
+.nav-logo-mubi-img { height: 22px; width: auto; display: block; }
+.nav-logo-divider {
+  width: 1px; height: 16px; background: var(--border-2); align-self: center;
+}
+.nav-logo-academy {
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5);
+  letter-spacing: 3.5px; text-transform: uppercase;
+}
+
+.nav-links { display: flex; gap: 28px; align-items: center; }
+.nav-link {
+  font-family: 'Riforma', sans-serif; font-size: 14px; font-weight: 400;
+  color: rgba(255,255,255,0.35); text-decoration: none;
+  letter-spacing: 0.1px; text-transform: uppercase;
+}
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--text); }
+
+.nav-right { display: flex; align-items: center; gap: 20px; }
+.nav-gift { font-size: 13px; color: var(--text-3); cursor: pointer; }
+.nav-signin {
+  font-size: 14px; font-weight: 500; color: var(--text-2); cursor: pointer; padding: 6px 0;
+}
+.nav-cta-btn {
+  background: var(--btn); color: #fff; border: none; border-radius: 4px;
+  padding: 9px 22px; font-size: 14px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.2px; white-space: nowrap; text-transform: uppercase;
+}
+.nav-cta-btn:hover { background: var(--btn-hover); }
+
+/* ══════════════════════════
+   HERO
+══════════════════════════ */
+.hero {
+  width: 1440px;
+  height: 580px;
+  position: relative;
+  overflow: hidden;
+  background: #080C12;
+}
+
+/* Hero image background */
+.hero-bg {
+  position: absolute; inset: 0;
+  background-image: url('brand_assets/hero_image.jpeg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Film grain texture overlay */
+.hero-grain {
+  position: absolute; inset: 0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.035;
+}
+
+/* Subtle light streak */
+.hero-light {
+  position: absolute;
+  top: -100px; left: 30%;
+  width: 2px; height: 800px;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.04) 40%, transparent);
+  transform: rotate(-15deg);
+}
+
+/* Letterbox bars */
+.hero-bar { position: absolute; left: 0; right: 0; background: #000; z-index: 4; }
+.hero-bar-top { top: 0; height: 56px; }
+.hero-bar-bottom { bottom: 0; height: 56px; }
+
+/* Film strip */
+.filmstrip {
+  position: absolute; top: 0; bottom: 0; width: 22px; z-index: 5;
+  background: #000;
+  display: flex; flex-direction: column; justify-content: space-around; padding: 60px 0;
+}
+.filmstrip-left { left: 0; }
+.filmstrip-right { right: 0; }
+.sprocket { width: 10px; height: 8px; background: #111; border-radius: 2px; margin: 0 auto; }
+
+/* Gradient overlays */
+.hero-overlay {
+  position: absolute; inset: 0; z-index: 3;
+  background:
+    linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.1) 75%, transparent 100%),
+    linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 45%);
+}
+
+/* Academy badge */
+.hero-badge {
+  position: absolute; top: 70px; left: 52px; z-index: 8;
+  display: flex; align-items: center; gap: 10px;
+}
+.badge-red {
+  background: var(--red); color: #fff;
+  font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+  padding: 5px 11px; border-radius: 2px;
+}
+.badge-original {
+  font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.55);
+  letter-spacing: 2.5px; text-transform: uppercase;
+}
+
+/* Play button */
+.hero-play {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 8; width: 76px; height: 76px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.65);
+  background: rgba(0,0,0,0.35); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.play-tri {
+  width: 0; height: 0; border-style: solid;
+  border-width: 13px 0 13px 23px;
+  border-color: transparent transparent transparent rgba(255,255,255,0.88);
+  margin-left: 5px;
+}
+
+/* Hero content */
+.hero-content {
+  position: absolute; bottom: 66px; left: 52px; right: 480px; z-index: 8;
+}
+.hero-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--red); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before {
+  content: ''; display: block; width: 22px; height: 1.5px; background: var(--red);
+}
+.hero-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 54px; line-height: 1.04; font-weight: 500; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 10px; color: #fff;
+}
+.hero-subtitle-text {
+  font-family: 'Riforma', sans-serif;
+  font-size: 20px; font-style: italic; font-weight: 400;
+  color: rgba(255,255,255,0.65); margin-bottom: 22px;
+}
+.hero-meta {
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.hero-instructor-chip {
+  display: flex; align-items: center; gap: 9px;
+}
+.instructor-avatar-sm {
+  width: 34px; height: 34px; border-radius: 50%; overflow: hidden;
+  background-image: url('brand_assets/WongKarWai.webp');
+  background-size: cover; background-position: center top;
+  border: 1.5px solid rgba(255,255,255,0.25);
+}
+.instructor-name-sm { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.88); }
+.hero-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.25); }
+.hero-stat-sm {
+  font-size: 13px; color: rgba(255,255,255,0.55);
+  display: flex; align-items: center; gap: 5px;
+}
+
+/* Progress bar at bottom */
+.hero-progress {
+  position: absolute; bottom: 56px; left: 0; right: 0; height: 2px;
+  background: rgba(255,255,255,0.1); z-index: 8;
+}
+
+/* ══════════════════════════
+   CONTENT GRID
+══════════════════════════ */
+.page-wrap {
+  max-width: 1344px; margin: 0 auto; padding: 0 48px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 372px;
+  gap: 64px;
+  align-items: start;
+  padding-top: 52px;
+  padding-bottom: 80px;
+}
+
+/* ══════════════════════════
+   MAIN COLUMN
+══════════════════════════ */
+.main-col {}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-3); margin-bottom: 28px;
+}
+.bc-link { color: var(--text-3); text-decoration: none; }
+.bc-link:hover { color: var(--text-2); }
+.bc-sep { opacity: 0.4; font-size: 10px; }
+.bc-current { color: var(--text-2); }
+
+/* Course tag */
+.course-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(0,20,137,0.1); border: 1px solid rgba(0,20,137,0.22);
+  color: var(--red); font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 3px; margin-bottom: 16px;
+}
+
+/* Course title */
+.course-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 40px; line-height: 1.1; font-weight: 500; letter-spacing: 0.5px;
+  text-transform: uppercase; margin-bottom: 10px; max-width: 660px;
+}
+.course-subtitle {
+  font-family: 'Riforma', sans-serif;
+  font-size: 18px; font-style: italic; color: var(--text-2);
+  margin-bottom: 24px; max-width: 560px;
+}
+
+/* Instructor row */
+.instructor-row {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 22px;
+}
+.instructor-photo {
+  width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0; overflow: hidden;
+  background-image: url('brand_assets/WongKarWai.webp');
+  background-size: cover; background-position: center top;
+}
+.instr-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 2px;
+}
+.instr-name {
+  font-size: 15px; font-weight: 600; color: var(--text);
+}
+.instr-sub { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+
+/* Stats row */
+.stats-row {
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  padding: 16px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  margin-bottom: 36px;
+}
+.stars-group { display: flex; align-items: center; gap: 6px; }
+.stars { color: var(--gold); letter-spacing: 1px; font-size: 13px; }
+.rating-num { font-size: 14px; font-weight: 700; color: var(--text); }
+.rating-ct { font-size: 12px; color: var(--text-3); }
+.stat-div { width: 1px; height: 16px; background: var(--border-2); }
+.stat-chip {
+  display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-2);
+}
+.stat-chip-icon { font-size: 14px; }
+.enrolled-chip {
+  margin-left: auto;
+  background: rgba(45,199,94,0.1); border: 1px solid rgba(45,199,94,0.25);
+  color: var(--green); font-size: 11px; font-weight: 700;
+  padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px;
+}
+
+/* Sections */
+.s-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 22px; font-weight: 400; margin-bottom: 16px;
+  text-transform: uppercase; letter-spacing: 2px;
+}
+
+.description {
+  font-size: 15px; color: var(--text-2); line-height: 1.78; max-width: 620px;
+  margin-bottom: 32px;
+}
+.description p + p { margin-top: 14px; }
+
+/* Learn grid */
+.learn-box {
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 24px 28px; margin-bottom: 44px;
+}
+.learn-box-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 16px;
+}
+.learn-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px 40px;
+}
+.learn-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13.5px; color: var(--text-2); line-height: 1.5;
+}
+.learn-check { color: var(--red); font-size: 12px; margin-top: 2px; flex-shrink: 0; }
+
+/* ── EPISODES ── */
+.episodes-section { margin-bottom: 52px; }
+.episodes-header {
+  display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px;
+}
+.episodes-meta {
+  font-size: 12px; color: var(--text-3); margin-bottom: 20px;
+}
+
+.ep-item {
+  display: flex; align-items: center;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+  cursor: pointer; gap: 0;
+}
+.ep-item:first-child { border-top: 1px solid var(--border); }
+.ep-item:hover .ep-title { color: rgba(255,255,255,0.9); }
+
+.ep-num {
+  width: 32px; font-size: 12px; font-weight: 600; color: var(--text-3); flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.ep-thumb {
+  width: 114px; height: 64px; border-radius: 4px; flex-shrink: 0; margin-right: 16px;
+  position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+}
+.ep-thumb-1 { background: linear-gradient(135deg, #0D1825, #2A1040); }
+.ep-thumb-2 { background: linear-gradient(135deg, #1A0D25, #0D2540); }
+.ep-thumb-3 { background: linear-gradient(135deg, #0D251A, #251A0D); }
+.ep-thumb-4 { background: linear-gradient(135deg, #250D0D, #0D1825); }
+.ep-thumb-5 { background: linear-gradient(135deg, #1A250D, #0D1A25); }
+.ep-thumb-6 { background: linear-gradient(135deg, #25100D, #0D2510); }
+.ep-thumb-7 { background: linear-gradient(135deg, #10250D, #251025); }
+.ep-thumb-8 { background: linear-gradient(135deg, #0D2025, #20100D); }
+
+.ep-thumb-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%);
+}
+.ep-play-btn {
+  position: absolute; width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.55);
+  display: flex; align-items: center; justify-content: center;
+}
+.ep-play-tri {
+  width: 0; height: 0; border-style: solid;
+  border-width: 5px 0 5px 8px;
+  border-color: transparent transparent transparent rgba(255,255,255,0.8);
+  margin-left: 2px;
+}
+.ep-lock-icon { font-size: 14px; opacity: 0.45; }
+
+.ep-info { flex: 1; min-width: 0; }
+.ep-title { font-size: 14.5px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.ep-desc { font-size: 12.5px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px; }
+
+.ep-right {
+  display: flex; align-items: center; gap: 12px; margin-left: 16px; flex-shrink: 0;
+}
+.ep-duration { font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.ep-free {
+  background: rgba(45,199,94,0.1); border: 1px solid rgba(45,199,94,0.28);
+  color: var(--green); font-size: 9px; font-weight: 800;
+  letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 9px; border-radius: 3px;
+}
+.ep-locked-icon { font-size: 13px; color: var(--text-3); opacity: 0.7; }
+
+/* ── INSTRUCTOR SECTION ── */
+.instr-section {
+  border-top: 1px solid var(--border); padding: 44px 0; margin-bottom: 0;
+  display: flex; gap: 32px; align-items: flex-start;
+}
+.instr-big-photo {
+  width: 108px; height: 108px; border-radius: 50%; flex-shrink: 0; overflow: hidden;
+  background-image: url('brand_assets/WongKarWai.webp');
+  background-size: cover; background-position: center top;
+}
+.instr-bio-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--red); margin-bottom: 6px;
+}
+.instr-bio-name {
+  font-family: 'Riforma', sans-serif;
+  font-size: 26px; font-weight: 400; margin-bottom: 12px;
+  text-transform: uppercase; letter-spacing: 2px;
+}
+.instr-bio-text {
+  font-size: 14px; color: var(--text-2); line-height: 1.75; max-width: 500px;
+}
+.instr-awards {
+  display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap;
+}
+.award-chip {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text-3);
+}
+.award-icon { font-size: 14px; color: var(--gold); }
+
+/* ══════════════════════════
+   PRICING SIDEBAR
+══════════════════════════ */
+.pricing-sidebar { position: sticky; top: 80px; }
+
+.pricing-card {
+  background: var(--bg-2); border: 1px solid var(--border-2); border-radius: 12px; overflow: hidden;
+}
+
+/* Preview thumbnail */
+.pricing-thumb {
+  height: 196px; position: relative; overflow: hidden;
+  background: linear-gradient(160deg, #06101E 0%, #0F0618 50%, #080810 100%);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.pricing-thumb-glow {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(10,40,80,0.6) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 40%, rgba(60,15,45,0.5) 0%, transparent 55%);
+}
+.thumb-play-wrap {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.thumb-play-ring {
+  width: 52px; height: 52px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.65);
+  background: rgba(0,0,0,0.3); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+}
+.thumb-play-tri {
+  width: 0; height: 0; border-style: solid;
+  border-width: 9px 0 9px 16px;
+  border-color: transparent transparent transparent rgba(255,255,255,0.85);
+  margin-left: 3px;
+}
+.thumb-preview-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+.thumb-ep-badge {
+  position: absolute; bottom: 12px; right: 12px;
+  background: rgba(0,0,0,0.7); color: rgba(255,255,255,0.7);
+  font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 4px;
+}
+
+/* Pricing body */
+.pricing-body { padding: 24px; }
+
+.pricing-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 14px;
+}
+
+/* Option */
+.p-option {
+  background: var(--bg-3); border: 1px solid var(--border-2); border-radius: 8px;
+  padding: 16px 16px 16px 44px; margin-bottom: 10px; cursor: pointer;
+  position: relative; transition: border-color 0.15s, background 0.15s;
+}
+.p-option.active {
+  border-color: var(--red); background: rgba(0,20,137,0.06);
+}
+.p-option-radio {
+  position: absolute; top: 18px; left: 16px;
+  width: 17px; height: 17px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  display: flex; align-items: center; justify-content: center;
+}
+.p-option.active .p-option-radio { border-color: var(--red); }
+.p-radio-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
+
+.p-popular {
+  position: absolute; top: -1px; right: 14px;
+  background: var(--red); color: #fff;
+  font-size: 8px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 0 0 6px 6px;
+}
+
+.p-option-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.p-option-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.p-option-desc { font-size: 12px; color: var(--text-3); line-height: 1.4; }
+.p-price { text-align: right; flex-shrink: 0; }
+.p-price-amount { font-size: 24px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; line-height: 1; }
+.p-price-period { font-size: 11px; color: var(--text-3); display: block; margin-top: 2px; }
+
+/* CTA buttons */
+.cta-primary {
+  width: 100%; background: var(--btn); color: #fff; border: none; border-radius: 6px;
+  padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer;
+  margin-top: 16px; margin-bottom: 10px; letter-spacing: 0.2px; text-align: center;
+  display: block; text-transform: uppercase;
+}
+.cta-primary:hover { background: var(--btn-hover); }
+.cta-secondary-btn {
+  width: 100%; background: transparent; color: var(--text-2);
+  border: 1px solid var(--border-2); border-radius: 6px;
+  padding: 13px; font-size: 14px; font-weight: 600; cursor: pointer;
+  margin-bottom: 20px; text-align: center; display: block; text-transform: uppercase;
+}
+
+/* Trust signals */
+.trust-list {
+  display: flex; flex-direction: column; gap: 9px;
+  padding-top: 16px; border-top: 1px solid var(--border); margin-bottom: 16px;
+}
+.trust-item { display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: var(--text-2); }
+.t-icon { font-size: 13px; flex-shrink: 0; }
+
+/* Gift */
+.gift-link {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  font-size: 12px; color: var(--text-3); cursor: pointer;
+  padding-top: 14px; border-top: 1px solid var(--border);
+}
+.gift-link:hover { color: var(--text-2); }
+
+/* ══════════════════════════
+   RELATED SECTION
+══════════════════════════ */
+.related-section {
+  background: var(--bg-2); border-top: 1px solid var(--border); padding: 64px 0;
+}
+.related-inner { max-width: 1344px; margin: 0 auto; padding: 0 48px; }
+
+.section-head-row {
+  display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 32px;
+}
+.s-title-lg {
+  font-family: 'Riforma', sans-serif;
+  font-size: 26px; font-weight: 400;
+  text-transform: uppercase; letter-spacing: 2px;
+}
+.see-all { font-size: 13px; font-weight: 600; color: var(--red); text-decoration: none; }
+.see-all:hover { text-decoration: underline; }
+
+.cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+.course-card {
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: 8px;
+  overflow: hidden; cursor: pointer; transition: transform 0.2s, border-color 0.2s;
+}
+.course-card:hover { transform: translateY(-3px); border-color: var(--border-2); }
+
+.card-thumb { height: 168px; position: relative; overflow: hidden; }
+.ct-1 { background: linear-gradient(150deg, #0D1825 0%, #2A0D1A 100%); }
+.ct-2 { background: linear-gradient(150deg, #0A2520 0%, #1A0A2D 100%); }
+.ct-3 { background: linear-gradient(150deg, #1C1A08 0%, #0A1A2A 100%); }
+.ct-4 { background: linear-gradient(150deg, #200A2D 0%, #0A2010 100%); }
+.card-thumb-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%);
+  display: flex; align-items: flex-end; padding: 12px;
+}
+.ct-instr-tag { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.8); }
+.mubi-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: var(--red); color: #fff;
+  font-size: 7px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px;
+}
+
+.card-body { padding: 16px; }
+.card-cat {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--red); margin-bottom: 6px;
+}
+.card-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 16px; font-weight: 400; line-height: 1.3; color: var(--text); margin-bottom: 4px;
+  text-transform: uppercase; letter-spacing: 1.5px;
+}
+.card-instr { font-size: 12px; color: var(--text-3); margin-bottom: 12px; }
+.card-foot { display: flex; align-items: center; justify-content: space-between; }
+.card-rating { display: flex; align-items: center; gap: 4px; font-size: 12px; }
+.card-stars { color: var(--gold); font-size: 11px; }
+.card-rating-val { color: var(--text-2); font-weight: 600; }
+.card-rating-ct { color: var(--text-3); }
+.card-price { font-size: 13px; font-weight: 700; color: var(--text-2); }
+
+/* Subscription callout below grid */
+.sub-callout {
+  margin-top: 32px;
+  background: linear-gradient(135deg, rgba(0,20,137,0.08) 0%, rgba(0,20,137,0.03) 100%);
+  border: 1px solid rgba(0,20,137,0.18); border-radius: 10px;
+  padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+}
+.callout-left {}
+.callout-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.callout-sub { font-size: 13px; color: var(--text-2); }
+.callout-cta {
+  background: var(--btn); color: #fff; border: none; border-radius: 5px;
+  padding: 12px 28px; font-size: 14px; font-weight: 700; cursor: pointer;
+  white-space: nowrap; flex-shrink: 0; text-transform: uppercase;
+}
+.callout-cta:hover { background: var(--btn-hover); }
+
+/* ══════════════════════════
+   FOOTER
+══════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 36px 48px; display: flex;
+  align-items: center; justify-content: space-between;
+  max-width: 1440px; margin: 0 auto;
+}
+.f-logo { display: flex; align-items: center; gap: 12px; }
+.f-mubi-img { height: 20px; width: auto; display: block; }
+.f-acad { font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--text-3); }
+.f-links { display: flex; gap: 28px; }
+.f-link { font-size: 12px; color: var(--text-3); text-decoration: none; }
+.f-link:hover { color: var(--text-2); }
+.f-copy { font-size: 12px; color: var(--text-3); }
+</style>
+</head>
+<body>
+
+<!-- ████ NAVIGATION ████ -->
+<nav class="nav">
+  <div class="nav-left">
+    <a class="nav-logo" href="#">
+      <img src="brand_assets/Mubi_logo_white.svg" alt="MUBI" class="nav-logo-mubi-img">
+      <span class="nav-logo-divider"></span>
+      <span class="nav-logo-academy">Academy</span>
+    </a>
+    <div class="nav-links">
+      <a class="nav-link" href="#">Browse All</a>
+      <a class="nav-link" href="#">Directors</a>
+      <a class="nav-link" href="#">Cinematography</a>
+      <a class="nav-link" href="#">Screenwriting</a>
+      <a class="nav-link active" href="#">My Learning</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <span class="nav-gift">🎁 Gift a Course</span>
+    <span class="nav-signin">Sign In</span>
+    <button class="nav-cta-btn">Try Free — 7 Days</button>
+  </div>
+</nav>
+
+<!-- ████ HERO ████ -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-light"></div>
+  <div class="hero-bar hero-bar-top"></div>
+  <div class="hero-bar hero-bar-bottom"></div>
+  <div class="filmstrip filmstrip-left">
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+  </div>
+  <div class="filmstrip filmstrip-right">
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+    <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+  </div>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-badge">
+    <span class="badge-red">MUBI</span>
+    <span class="badge-original">Academy Original</span>
+  </div>
+
+  <div class="hero-play">
+    <div class="play-tri"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Directing</div>
+    <h1 class="hero-title">In the Mood for<br>Filmmaking</h1>
+    <div class="hero-subtitle-text">A Masterclass in Cinematic Storytelling</div>
+    <div class="hero-meta">
+      <div class="hero-instructor-chip">
+        <div class="instructor-avatar-sm"></div>
+        <span class="instructor-name-sm">Wong Kar-wai</span>
+      </div>
+      <span class="hero-sep"></span>
+      <span class="hero-stat-sm">⏱ 8 Episodes · 4h 52m</span>
+      <span class="hero-sep"></span>
+      <span class="hero-stat-sm">★ 4.9 · 3,241 learners</span>
+    </div>
+  </div>
+  <div class="hero-progress"></div>
+</div>
+
+<!-- ████ CONTENT ████ -->
+<div class="page-wrap">
+  <div class="content-grid">
+
+    <!-- ── MAIN COLUMN ── -->
+    <div class="main-col">
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a class="bc-link" href="#">Home</a>
+        <span class="bc-sep">›</span>
+        <a class="bc-link" href="#">Directing</a>
+        <span class="bc-sep">›</span>
+        <span class="bc-current">In the Mood for Filmmaking</span>
+      </div>
+
+      <!-- Tag + Title -->
+      <div class="course-tag">🎬 Directing · Advanced</div>
+      <h2 class="course-title">In the Mood for Filmmaking</h2>
+      <div class="course-subtitle">A Masterclass in Cinematic Storytelling by Wong Kar-wai</div>
+
+      <!-- Instructor -->
+      <div class="instructor-row">
+        <div class="instructor-photo"></div>
+        <div>
+          <div class="instr-label">Your Instructor</div>
+          <div class="instr-name">Wong Kar-wai</div>
+          <div class="instr-sub">Director · Palme d'Or nominee · Hong Kong New Wave</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stars-group">
+          <span class="stars">★★★★★</span>
+          <span class="rating-num">4.9</span>
+          <span class="rating-ct">(3,241 reviews)</span>
+        </div>
+        <span class="stat-div"></span>
+        <div class="stat-chip"><span class="stat-chip-icon">🎬</span> 8 Episodes</div>
+        <span class="stat-div"></span>
+        <div class="stat-chip"><span class="stat-chip-icon">⏱</span> 4h 52m total</div>
+        <span class="stat-div"></span>
+        <div class="stat-chip"><span class="stat-chip-icon">🌍</span> 12 subtitles</div>
+        <span class="stat-div"></span>
+        <div class="stat-chip"><span class="stat-chip-icon">🏆</span> Certificate</div>
+        <div class="enrolled-chip">3,241 Enrolled</div>
+      </div>
+
+      <!-- Description -->
+      <h3 class="s-title">About this Course</h3>
+      <div class="description">
+        <p>In this deeply personal masterclass, acclaimed director Wong Kar-wai opens the doors to his singular creative world—a place where time is elastic, emotion is texture, and the camera is an instrument of longing. Drawing from thirty years of making some of cinema's most revered films, he reveals the intuitive, often unexpected processes behind his art.</p>
+        <p>Over eight episodes, Wong explores the poetic logic of non-linear storytelling, his philosophy of shooting without a script, and how he works with actors to discover truth in the space between words. He shares the obsessive attention to light, colour, and music that defines his visual language—and how patience and uncertainty are not obstacles, but the very source of his films' power.</p>
+      </div>
+
+      <!-- What you'll learn -->
+      <div class="learn-box">
+        <div class="learn-box-title">What You'll Learn</div>
+        <div class="learn-grid">
+          <div class="learn-item"><span class="learn-check">✓</span> Build a distinctive visual language through colour and light</div>
+          <div class="learn-item"><span class="learn-check">✓</span> Work intuitively without a fixed screenplay</div>
+          <div class="learn-item"><span class="learn-check">✓</span> Use time and non-linearity as emotional tools</div>
+          <div class="learn-item"><span class="learn-check">✓</span> Direct actors through trust and improvisation</div>
+          <div class="learn-item"><span class="learn-check">✓</span> Integrate music and sound as narrative layers</div>
+          <div class="learn-item"><span class="learn-check">✓</span> Develop a deeply personal cinematic voice</div>
+        </div>
+      </div>
+
+      <!-- ── EPISODES ── -->
+      <div class="episodes-section">
+        <div class="episodes-header">
+          <h3 class="s-title" style="margin-bottom:0">Course Episodes</h3>
+        </div>
+        <div class="episodes-meta">8 episodes · 4 hours 52 minutes · First episode free to preview</div>
+
+        <!-- Ep 1 - FREE -->
+        <div class="ep-item">
+          <span class="ep-num">01</span>
+          <div class="ep-thumb ep-thumb-1">
+            <div class="ep-thumb-overlay"></div>
+            <div class="ep-play-btn"><div class="ep-play-tri"></div></div>
+          </div>
+          <div class="ep-info">
+            <div class="ep-title">The Architecture of Memory</div>
+            <div class="ep-desc">How personal memory becomes the raw material of cinematic time — where to begin</div>
+          </div>
+          <div class="ep-right">
+            <span class="ep-duration">28:14</span>
+            <span class="ep-free">Free Preview</span>
+          </div>
+        </div>
+
+        <!-- Ep 2 -->
+        <div class="ep-item">
+          <span class="ep-num">02</span>
+          <div class="ep-thumb ep-thumb-2">
+            <div class="ep-thumb-overlay"></div>
+            <div class="ep-lock-icon">🔒</div>
+          </div>
+          <div class="ep-info">
+            <div class="ep-title">Light as Language</div>
+            <div class="ep-desc">Working with cinematographer Christopher Doyle — building a visual palette with available light</div>
+          </div>
+          <div class="ep-right">
+            <span class="ep-duration">34:52</span>
+            <span class="ep-locked-icon">🔒</span>
+          </div>
+        </div>
+
+        <!-- Ep 3 -->
+        <div class="ep-item">
+          <span class="ep-num">03</span>
+          <div class="ep-thumb ep-thumb-3">
+            <div class="ep-thumb-overlay"></div>
+            <div class="ep-lock-icon">🔒</div>
+          </div>
+          <div class="ep-info">
+            <div class="ep-title">Time Out of Joint</div>
+            <div class="ep-desc">Non-linear storytelling as an emotional experience — why chronology limits feeling</div>
+          </div>
+          <div class="ep-right">
+            <span class="ep-duration">42:17</span>
+            <span class="ep-locked-icon">🔒</span>
+          </div>
+        </div>
+
+        <!-- Ep 4 -->
+        <div class="ep-item">
+          <span class="ep-num">04</span>
+          <div class="ep-thumb ep-thumb-4">
+            <div class="ep-thumb-overlay"></div>
+            <div class="ep-lock-icon">🔒</div>
+          </div>
+          <div class="ep-info">
+            <div class="ep-title">The Music of Film</div>
+            <div class="ep-desc">From Nat King Cole to Shigeru Umebayashi — choosing music as a narrative instrument</div>
+          </div>
+          <div class="ep-right">
+            <span class="ep-duration">38:44</span>
+            <span class="ep-locked-icon">🔒</span>
+          </div>
+        </div>
+
+        <!-- Ep 5 -->
+        <div class="ep-item">
+          <span class="ep-num">05</span>
+          <div class="ep-thumb ep-thumb-5">
+            <div class="ep-thumb-overlay"></div>
+            <div class="ep-lock-icon">🔒</div>
+          </div>
+          <div class="ep-info">
+            <div class="ep-title">Longing and Distance</div>
+            <div class="ep-desc">Blocking and framing for emotional impact — what the camera refuses to show</div>
+          </div>
+          <div class="ep-right">
+            <span class="ep-duration">29:38</span>
+            <span class="ep-locked-icon">🔒</span>
+          </div>
+        </div>
+
+        <!-- Ep 6 -->
+        <div class="ep-item">
+          <span class="ep-num">06</span>
+          <div class="ep-thumb ep-thumb-6">
+            <div class="ep-thumb-overlay"></div>
+            <div class="ep-lock-icon">🔒</div>
+          </div>
+          <div class="ep-info">
+            <div class="ep-title">Improvisation and Control</div>
+            <div class="ep-desc">Building trust with actors — how the absence of a script creates unexpected truth</div>
+          </div>
+          <div class="ep-right">
+            <span class="ep-duration">31:22</span>
+            <span class="ep-locked-icon">🔒</span>
+          </div>
+        </div>
+
+        <!-- Ep 7 -->
+        <div class="ep-item">
+          <span class="ep-num">07</span>
+          <div class="ep-thumb ep-thumb-7">
+            <div class="ep-thumb-overlay"></div>
+            <div class="ep-lock-icon">🔒</div>
+          </div>
+          <div class="ep-info">
+            <div class="ep-title">The Art of Waiting</div>
+            <div class="ep-desc">Patience in production — how to transform uncertainty into creative momentum</div>
+          </div>
+          <div class="ep-right">
+            <span class="ep-duration">44:05</span>
+            <span class="ep-locked-icon">🔒</span>
+          </div>
+        </div>
+
+        <!-- Ep 8 -->
+        <div class="ep-item">
+          <span class="ep-num">08</span>
+          <div class="ep-thumb ep-thumb-8">
+            <div class="ep-thumb-overlay"></div>
+            <div class="ep-lock-icon">🔒</div>
+          </div>
+          <div class="ep-info">
+            <div class="ep-title">Your Vision, Your Voice</div>
+            <div class="ep-desc">Final reflections — finding the thing only you can say, and why now is the time to say it</div>
+          </div>
+          <div class="ep-right">
+            <span class="ep-duration">37:51</span>
+            <span class="ep-locked-icon">🔒</span>
+          </div>
+        </div>
+
+      </div><!-- /episodes -->
+
+      <!-- ── ABOUT INSTRUCTOR ── -->
+      <div class="instr-section">
+        <div class="instr-big-photo"></div>
+        <div>
+          <div class="instr-bio-eyebrow">Your Instructor</div>
+          <div class="instr-bio-name">Wong Kar-wai</div>
+          <div class="instr-bio-text">
+            One of cinema's most distinctive and poetic voices, Wong Kar-wai has spent four decades redefining what films can feel like. His works — including <em>In the Mood for Love</em>, <em>Chungking Express</em>, and <em>2046</em> — are celebrated for their immersive atmospheres, fragmented time, and aching emotional precision. A multiple Cannes laureate, Wong's films are held in the permanent collection of major world cinematheques. In this Academy original, he speaks frankly about the intuition, obsession, and philosophy behind his method.
+          </div>
+          <div class="instr-awards">
+            <div class="award-chip"><span class="award-icon">🏆</span> Best Director, Cannes</div>
+            <div class="award-chip"><span class="award-icon">🎬</span> 9 Films · 30 Years</div>
+            <div class="award-chip"><span class="award-icon">🌍</span> Tribeca Jury Prize</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-col -->
+
+    <!-- ── PRICING SIDEBAR ── -->
+    <aside class="pricing-sidebar">
+      <div class="pricing-card">
+
+        <!-- Preview thumb -->
+        <div class="pricing-thumb">
+          <div class="pricing-thumb-glow"></div>
+          <div class="thumb-play-wrap">
+            <div class="thumb-play-ring"><div class="thumb-play-tri"></div></div>
+            <div class="thumb-preview-label">Preview Episode 1</div>
+          </div>
+          <div class="thumb-ep-badge">28:14 · Free</div>
+        </div>
+
+        <!-- Body -->
+        <div class="pricing-body">
+          <div class="pricing-label">Choose your access</div>
+
+          <!-- Option 1: Monthly -->
+          <div class="p-option active">
+            <div class="p-popular">Most Popular</div>
+            <div class="p-option-radio"><div class="p-radio-dot"></div></div>
+            <div class="p-option-head">
+              <div>
+                <div class="p-option-name">Monthly Subscription</div>
+                <div class="p-option-desc">Unlimited access to all MUBI Academy courses. Cancel anytime.</div>
+              </div>
+              <div class="p-price">
+                <div class="p-price-amount">£9</div>
+                <span class="p-price-period">per month</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Option 2: Pay as you go -->
+          <div class="p-option">
+            <div class="p-option-radio"></div>
+            <div class="p-option-head">
+              <div>
+                <div class="p-option-name">Pay as You Go</div>
+                <div class="p-option-desc">Buy this lesson only. Lifetime access to purchased content.</div>
+              </div>
+              <div class="p-price">
+                <div class="p-price-amount">£60</div>
+                <span class="p-price-period">this lesson</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="cta-primary">Start Learning — £9 / month</div>
+          <div class="cta-secondary-btn">Buy This Lesson — £60</div>
+
+          <!-- Trust signals -->
+          <div class="trust-list">
+            <div class="trust-item"><span class="t-icon">↩</span> 30-day money-back guarantee</div>
+            <div class="trust-item"><span class="t-icon">✕</span> Cancel anytime, no commitment</div>
+            <div class="trust-item"><span class="t-icon">📱</span> Watch on TV, tablet, or mobile</div>
+            <div class="trust-item"><span class="t-icon">♾</span> Lifetime access on Pay as You Go</div>
+            <div class="trust-item"><span class="t-icon">🏆</span> Certificate of completion</div>
+          </div>
+
+          <!-- Gift -->
+          <div class="gift-link">🎁 &nbsp;Gift this course to someone</div>
+
+        </div>
+      </div>
+    </aside>
+
+  </div><!-- /content-grid -->
+</div><!-- /page-wrap -->
+
+<!-- ████ RELATED SECTION ████ -->
+<div class="related-section">
+  <div class="related-inner">
+
+    <div class="section-head-row">
+      <h3 class="s-title-lg">Related Lessons</h3>
+      <a class="see-all" href="#">Browse all courses →</a>
+    </div>
+
+    <div class="cards-grid">
+      <!-- Card 1 -->
+      <div class="course-card">
+        <div class="card-thumb ct-1">
+          <div class="mubi-badge">MUBI</div>
+          <div class="card-thumb-overlay">
+            <span class="ct-instr-tag">Agnès Varda</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Documentary</div>
+          <div class="card-title">The Art of Documentary Truth</div>
+          <div class="card-instr">Agnès Varda · 6 Episodes · 3h 20m</div>
+          <div class="card-foot">
+            <div class="card-rating">
+              <span class="card-stars">★★★★★</span>
+              <span class="card-rating-val">4.8</span>
+              <span class="card-rating-ct">(1,847)</span>
+            </div>
+            <div class="card-price">£60 / £9 mo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="course-card">
+        <div class="card-thumb ct-2">
+          <div class="mubi-badge">MUBI</div>
+          <div class="card-thumb-overlay">
+            <span class="ct-instr-tag">Park Chan-wook</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Directing</div>
+          <div class="card-title">Genre as Philosophy</div>
+          <div class="card-instr">Park Chan-wook · 8 Episodes · 5h 10m</div>
+          <div class="card-foot">
+            <div class="card-rating">
+              <span class="card-stars">★★★★★</span>
+              <span class="card-rating-val">4.9</span>
+              <span class="card-rating-ct">(2,203)</span>
+            </div>
+            <div class="card-price">£60 / £9 mo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="course-card">
+        <div class="card-thumb ct-3">
+          <div class="mubi-badge">MUBI</div>
+          <div class="card-thumb-overlay">
+            <span class="ct-instr-tag">Charlie Kaufman</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Screenwriting</div>
+          <div class="card-title">Writing the Unwritten</div>
+          <div class="card-instr">Charlie Kaufman · 7 Episodes · 4h 05m</div>
+          <div class="card-foot">
+            <div class="card-rating">
+              <span class="card-stars">★★★★★</span>
+              <span class="card-rating-val">4.7</span>
+              <span class="card-rating-ct">(988)</span>
+            </div>
+            <div class="card-price">£60 / £9 mo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="course-card">
+        <div class="card-thumb ct-4">
+          <div class="mubi-badge">MUBI</div>
+          <div class="card-thumb-overlay">
+            <span class="ct-instr-tag">Roger Deakins</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Cinematography</div>
+          <div class="card-title">The Language of Light</div>
+          <div class="card-instr">Roger Deakins · 10 Episodes · 6h 30m</div>
+          <div class="card-foot">
+            <div class="card-rating">
+              <span class="card-stars">★★★★★</span>
+              <span class="card-rating-val">5.0</span>
+              <span class="card-rating-ct">(4,112)</span>
+            </div>
+            <div class="card-price">£60 / £9 mo</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /cards-grid -->
+
+    <!-- Subscription callout -->
+    <div class="sub-callout">
+      <div class="callout-left">
+        <div class="callout-title">Access every MUBI Academy course for £9 / month</div>
+        <div class="callout-sub">Unlimited learning from the world's greatest filmmakers. Cancel anytime.</div>
+      </div>
+      <button class="callout-cta">Start Your Free Trial</button>
+    </div>
+
+  </div>
+</div><!-- /related-section -->
+
+<!-- ████ FOOTER ████ -->
+<footer>
+  <div class="f-logo">
+    <img src="brand_assets/Mubi_logo_white.svg" alt="MUBI" class="f-mubi-img">
+    <span style="width:1px;height:14px;background:rgba(255,255,255,0.12);align-self:center;margin:0 7px;"></span>
+    <span class="f-acad">Academy</span>
+  </div>
+  <div class="f-links">
+    <a class="f-link" href="#">About</a>
+    <a class="f-link" href="#">Help</a>
+    <a class="f-link" href="#">Privacy</a>
+    <a class="f-link" href="#">Terms</a>
+    <a class="f-link" href="#">Gifting</a>
+  </div>
+  <div class="f-copy">© 2024 MUBI Academy. All rights reserved.</div>
+</footer>
+
+</body>
+</html>

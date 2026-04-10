@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>MUBI Academy — TV — In the Mood for Filmmaking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..1000&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2');
+  font-weight: bold;
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2');
+  font-style: italic;
+}
+
+:root {
+  --bg: #0A0A0A;
+  --bg-2: #141414;
+  --bg-3: #1E1E1E;
+  --bg-4: #282828;
+  --text: #FFFFFF;
+  --text-2: #B0B0B0;
+  --text-3: #666666;
+  --red: #001489;
+  --red-hover: #001AAF;
+  --btn: #001489;
+  --btn-hover: #001AAF;
+  --gold: #F5A623;
+  --green: #2DC75E;
+  --border: rgba(255,255,255,0.08);
+  --border-2: rgba(255,255,255,0.16);
+  --focus: rgba(0,20,137,0.8);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Safe zone — TV overscan (5% on all sides) */
+.tv-safe {
+  position: absolute;
+  top: 40px; left: 60px; right: 60px; bottom: 40px;
+  display: flex; flex-direction: column;
+}
+
+/* ══════════════════════════
+   NAV BAR
+══════════════════════════ */
+.tv-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 28px;
+  flex-shrink: 0;
+}
+
+.tv-nav-logo { display: flex; align-items: center; gap: 14px; }
+.tv-logo-mubi-img { height: 30px; width: auto; display: block; }
+.tv-logo-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.15); align-self: center; }
+.tv-logo-acad { font-size: 12px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+
+.tv-nav-right { display: flex; align-items: center; gap: 40px; }
+.tv-nav-link {
+  font-family: 'Riforma', sans-serif; font-size: 18px; font-weight: 400;
+  color: rgba(255,255,255,0.35); letter-spacing: 0.3px; cursor: pointer; text-transform: uppercase;
+}
+.tv-nav-link.active { color: var(--text); }
+
+/* Focus ring — visible on TV when item is focused */
+.tv-focusable { outline: none; }
+.tv-focusable:focus {
+  box-shadow: 0 0 0 3px var(--focus);
+  border-radius: 6px;
+}
+
+/* ══════════════════════════
+   MAIN CONTENT AREA
+══════════════════════════ */
+.tv-main {
+  display: grid;
+  grid-template-columns: 820px 1fr;
+  gap: 60px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── LEFT: Video Thumbnail ── */
+.tv-video-col {
+  position: relative; overflow: hidden;
+  border-radius: 8px;
+  display: flex; flex-direction: column;
+}
+
+.tv-video-thumb {
+  flex: 1;
+  background-image: url('brand_assets/hero_image.jpeg');
+  background-size: cover;
+  background-position: center;
+  position: relative; border-radius: 8px; overflow: hidden;
+}
+
+/* Film grain */
+.tv-grain {
+  position: absolute; inset: 0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 180px 180px; opacity: 0.04;
+}
+
+/* Letterbox */
+.tv-lbox { position: absolute; left: 0; right: 0; background: #000; }
+.tv-lbox-top { top: 0; height: 50px; }
+.tv-lbox-bot { bottom: 0; height: 50px; }
+
+/* Film strip (decorative) */
+.tv-strip { position: absolute; top: 0; bottom: 0; width: 20px; background: #000; display: flex; flex-direction: column; justify-content: space-around; padding: 54px 0; }
+.tv-strip-l { left: 0; }
+.tv-strip-r { right: 0; }
+.tv-sprocket { width: 9px; height: 7px; background: #111; border-radius: 1.5px; margin: 0 auto; }
+
+/* Bottom gradient for info overlay */
+.tv-video-gradient {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%);
+}
+
+/* Play button */
+.tv-play-btn {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 96px; height: 96px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.7);
+  background: rgba(0,0,0,0.3); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 5;
+}
+.tv-play-tri {
+  width: 0; height: 0; border-style: solid;
+  border-width: 18px 0 18px 30px;
+  border-color: transparent transparent transparent rgba(255,255,255,0.9);
+  margin-left: 8px;
+}
+
+/* Video overlay labels */
+.tv-video-badge {
+  position: absolute; top: 58px; left: 28px; z-index: 5;
+  display: flex; align-items: center; gap: 10px;
+}
+.tv-badge-red {
+  background: var(--red); color: #fff;
+  font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 2px;
+}
+.tv-badge-orig {
+  font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.45);
+  letter-spacing: 2.5px; text-transform: uppercase;
+}
+
+.tv-video-ep {
+  position: absolute; bottom: 58px; left: 28px; right: 28px; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tv-ep-label { font-size: 16px; font-weight: 600; color: rgba(255,255,255,0.65); }
+.tv-ep-duration {
+  background: rgba(0,0,0,0.6); color: rgba(255,255,255,0.7);
+  font-size: 14px; font-weight: 600; padding: 5px 12px; border-radius: 5px;
+}
+
+/* ── RIGHT: Course Info ── */
+.tv-info-col {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 8px 0;
+}
+
+/* Tag */
+.tv-course-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(0,20,137,0.1); border: 1px solid rgba(0,20,137,0.22);
+  color: var(--red); font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 6px 14px; border-radius: 3px; margin-bottom: 18px;
+  width: fit-content;
+}
+
+/* Title */
+.tv-course-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 52px; line-height: 1.05; font-weight: 400; letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.tv-course-subtitle {
+  font-family: 'Riforma', sans-serif;
+  font-size: 22px; font-style: italic; font-weight: 400;
+  color: var(--text-2); margin-bottom: 22px;
+}
+
+/* Instructor */
+.tv-instructor {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 22px;
+}
+.tv-instr-photo {
+  width: 52px; height: 52px; border-radius: 50%; overflow: hidden;
+  background-image: url('brand_assets/WongKarWai.webp');
+  background-size: cover; background-position: center top;
+  flex-shrink: 0;
+}
+.tv-instr-label { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-3); margin-bottom: 3px; }
+.tv-instr-name { font-size: 20px; font-weight: 600; color: var(--text); }
+
+/* Stats chips */
+.tv-stats {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap; margin-bottom: 20px;
+}
+.tv-stat-chip {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--bg-3); border: 1px solid var(--border-2);
+  padding: 8px 16px; border-radius: 6px;
+  font-size: 15px; color: var(--text-2); font-weight: 500;
+}
+.tv-stat-icon { font-size: 15px; }
+.tv-stars-chip {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.2);
+  padding: 8px 16px; border-radius: 6px;
+  font-size: 15px; color: var(--gold); font-weight: 600;
+}
+
+/* Description (abbreviated for TV) */
+.tv-desc {
+  font-size: 17px; color: var(--text-2); line-height: 1.7;
+  max-width: 620px; margin-bottom: 32px;
+  /* Clamp to 3 lines for TV */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* CTA Buttons — large for TV remote */
+.tv-ctas { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+.tv-cta-primary {
+  background: var(--btn); color: #fff; border: none; border-radius: 8px;
+  padding: 20px 40px; font-size: 20px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.3px; white-space: nowrap; text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px;
+  transition: background 0.15s;
+  outline: none;
+}
+.tv-cta-primary:focus { box-shadow: 0 0 0 4px var(--focus); background: var(--btn-hover); }
+
+.tv-cta-secondary {
+  background: transparent; color: var(--text-2);
+  border: 2px solid var(--border-2); border-radius: 8px;
+  padding: 18px 36px; font-size: 20px; font-weight: 600; cursor: pointer;
+  white-space: nowrap; text-transform: uppercase;
+  outline: none;
+}
+.tv-cta-secondary:focus { box-shadow: 0 0 0 4px rgba(255,255,255,0.3); }
+
+.tv-preview-link {
+  font-size: 16px; color: var(--text-3); cursor: pointer; text-decoration: underline;
+  white-space: nowrap; align-self: center;
+}
+
+/* Price display */
+.tv-price-label {
+  font-size: 13px; color: var(--text-3); margin-bottom: 4px;
+}
+
+/* ══════════════════════════
+   EPISODES STRIP (full width, at bottom)
+══════════════════════════ */
+.tv-episodes-section {
+  flex-shrink: 0;
+  margin-top: 32px;
+}
+
+.tv-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.tv-section-title {
+  font-size: 18px; font-weight: 700; color: var(--text);
+  text-transform: uppercase; letter-spacing: 2px;
+}
+.tv-section-meta { font-size: 15px; color: var(--text-3); }
+.tv-section-right { font-size: 15px; color: var(--text-3); }
+
+/* Episode cards row */
+.tv-ep-row {
+  display: flex; gap: 16px; overflow: hidden;
+}
+
+.tv-ep-card {
+  flex-shrink: 0;
+  width: 222px;
+  background: var(--bg-2); border: 1.5px solid var(--border); border-radius: 8px;
+  overflow: hidden; cursor: pointer;
+  transition: border-color 0.15s;
+  outline: none;
+}
+/* First card focused state */
+.tv-ep-card.focused {
+  border-color: var(--red);
+  box-shadow: 0 0 0 1px var(--red);
+}
+.tv-ep-card:focus { border-color: var(--red); box-shadow: 0 0 0 1px var(--red); }
+
+.tv-ep-card-thumb {
+  height: 124px; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.tc-1 { background: linear-gradient(140deg, #0D1825, #2A1040); }
+.tc-2 { background: linear-gradient(140deg, #1A0D25, #0D2540); }
+.tc-3 { background: linear-gradient(140deg, #0D251A, #251A0D); }
+.tc-4 { background: linear-gradient(140deg, #250D0D, #0D1825); }
+.tc-5 { background: linear-gradient(140deg, #1A250D, #0D1A25); }
+.tc-6 { background: linear-gradient(140deg, #25100D, #0D2510); }
+.tc-7 { background: linear-gradient(140deg, #10250D, #251025); }
+.tc-8 { background: linear-gradient(140deg, #0D2025, #20100D); }
+
+.tv-ep-thumb-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%);
+}
+.tv-ep-play {
+  position: absolute; width: 34px; height: 34px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.55);
+  display: flex; align-items: center; justify-content: center; z-index: 1;
+}
+.tv-ep-play-tri {
+  width: 0; height: 0; border-style: solid;
+  border-width: 6px 0 6px 10px;
+  border-color: transparent transparent transparent rgba(255,255,255,0.8);
+  margin-left: 2px;
+}
+.tv-ep-lock { font-size: 16px; opacity: 0.4; }
+
+.tv-ep-num {
+  position: absolute; top: 8px; left: 10px;
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.45);
+}
+.tv-ep-dur {
+  position: absolute; bottom: 8px; right: 10px;
+  font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 600;
+}
+.tv-ep-free-tag {
+  position: absolute; top: 8px; right: 8px;
+  background: rgba(45,199,94,0.9); color: #fff;
+  font-size: 8px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 7px; border-radius: 3px;
+}
+
+.tv-ep-card-info { padding: 12px 14px; }
+.tv-ep-card-title {
+  font-size: 14px; font-weight: 600; color: var(--text);
+  line-height: 1.3; margin-bottom: 4px;
+  text-transform: uppercase; letter-spacing: 1px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tv-ep-card-subtitle { font-size: 12px; color: var(--text-3); }
+
+/* ══════════════════════════
+   PRICING OVERLAY (bottom-right, compact on TV)
+══════════════════════════ */
+/* Pricing info embedded in right column */
+.tv-price-options {
+  display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.tv-price-pill {
+  display: flex; flex-direction: column;
+  background: var(--bg-3); border: 1.5px solid var(--border-2);
+  border-radius: 8px; padding: 12px 20px;
+  cursor: pointer;
+}
+.tv-price-pill.active { border-color: var(--red); background: rgba(0,20,137,0.07); }
+.tv-pill-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.tv-pill-amount { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; line-height: 1.1; }
+.tv-pill-period { font-size: 11px; color: var(--text-3); }
+.tv-pill-popular {
+  display: inline-block; background: var(--red); color: #fff;
+  font-size: 8px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px; margin-bottom: 4px; width: fit-content;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Full dark background with subtle vignette -->
+<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%, rgba(14,14,20,0) 0%, rgba(0,0,0,0.4) 100%);pointer-events:none;z-index:0;"></div>
+
+<div class="tv-safe">
+
+  <!-- ████ NAV ████ -->
+  <div class="tv-nav">
+    <div class="tv-nav-logo">
+      <img src="brand_assets/Mubi_logo_white.svg" alt="MUBI" class="tv-logo-mubi-img">
+      <span class="tv-logo-sep"></span>
+      <span class="tv-logo-acad">Academy</span>
+    </div>
+    <div class="tv-nav-right">
+      <span class="tv-nav-link active">Now Learning</span>
+      <span class="tv-nav-link">Browse</span>
+      <span class="tv-nav-link">My Library</span>
+      <span class="tv-nav-link">Search</span>
+    </div>
+  </div>
+
+  <!-- ████ MAIN GRID ████ -->
+  <div class="tv-main">
+
+    <!-- ── LEFT: VIDEO THUMBNAIL ── -->
+    <div class="tv-video-col">
+      <div class="tv-video-thumb" style="flex:1">
+        <div class="tv-grain"></div>
+        <div class="tv-lbox tv-lbox-top"></div>
+        <div class="tv-lbox tv-lbox-bot"></div>
+        <div class="tv-strip tv-strip-l">
+          <div class="tv-sprocket"></div><div class="tv-sprocket"></div><div class="tv-sprocket"></div>
+          <div class="tv-sprocket"></div><div class="tv-sprocket"></div><div class="tv-sprocket"></div>
+          <div class="tv-sprocket"></div>
+        </div>
+        <div class="tv-strip tv-strip-r">
+          <div class="tv-sprocket"></div><div class="tv-sprocket"></div><div class="tv-sprocket"></div>
+          <div class="tv-sprocket"></div><div class="tv-sprocket"></div><div class="tv-sprocket"></div>
+          <div class="tv-sprocket"></div>
+        </div>
+        <div class="tv-video-gradient"></div>
+
+        <!-- Badge -->
+        <div class="tv-video-badge">
+          <span class="tv-badge-red">MUBI</span>
+          <span class="tv-badge-orig">Academy Original</span>
+        </div>
+
+        <!-- Play button -->
+        <div class="tv-play-btn tv-focusable">
+          <div class="tv-play-tri"></div>
+        </div>
+
+        <!-- Bottom labels -->
+        <div class="tv-video-ep">
+          <span class="tv-ep-label">Episode 1 — The Architecture of Memory</span>
+          <span class="tv-ep-duration">28:14 · Free Preview</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: COURSE INFO ── -->
+    <div class="tv-info-col">
+
+      <!-- Tag -->
+      <div class="tv-course-tag">🎬 Directing · Advanced</div>
+
+      <!-- Title -->
+      <h1 class="tv-course-title">In the Mood for<br>Filmmaking</h1>
+      <div class="tv-course-subtitle">A Masterclass in Cinematic Storytelling</div>
+
+      <!-- Instructor -->
+      <div class="tv-instructor">
+        <div class="tv-instr-photo"></div>
+        <div>
+          <div class="tv-instr-label">Your Instructor</div>
+          <div class="tv-instr-name">Wong Kar-wai</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="tv-stats">
+        <div class="tv-stars-chip">
+          <span>★★★★★</span>
+          <span style="color:rgba(255,255,255,0.8);font-weight:700;">4.9</span>
+          <span style="color:var(--text-3);font-size:14px;">(3,241)</span>
+        </div>
+        <div class="tv-stat-chip"><span class="tv-stat-icon">🎬</span> 8 Episodes</div>
+        <div class="tv-stat-chip"><span class="tv-stat-icon">⏱</span> 4h 52m</div>
+        <div class="tv-stat-chip"><span class="tv-stat-icon">🌍</span> 12 subtitles</div>
+      </div>
+
+      <!-- Description (3-line TV version) -->
+      <div class="tv-desc">
+        Wong Kar-wai opens the doors to his singular creative world — where time is elastic, emotion is texture, and the camera is an instrument of longing. Drawing from thirty years of filmmaking, he reveals the intuitive processes behind his art: working without a script, using colour and music as language, and how patience transforms uncertainty into cinematic truth.
+      </div>
+
+      <!-- Pricing pills -->
+      <div class="tv-price-options">
+        <div class="tv-price-pill active">
+          <div class="tv-pill-popular">Most Popular</div>
+          <div class="tv-pill-name">Monthly Subscription</div>
+          <div class="tv-pill-amount">£9</div>
+          <div class="tv-pill-period">/ month · all courses</div>
+        </div>
+        <div class="tv-price-pill">
+          <div style="height:18px;margin-bottom:4px;"></div>
+          <div class="tv-pill-name">Pay as You Go</div>
+          <div class="tv-pill-amount">£60</div>
+          <div class="tv-pill-period">/ this lesson · lifetime</div>
+        </div>
+      </div>
+
+      <!-- CTAs — large for remote -->
+      <div class="tv-ctas">
+        <button class="tv-cta-primary tv-focusable">
+          ▶ &nbsp;Start Learning — £9 / mo
+        </button>
+        <button class="tv-cta-secondary tv-focusable">Buy Lesson — £60</button>
+        <span class="tv-preview-link">Preview free →</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ████ EPISODES STRIP ████ -->
+  <div class="tv-episodes-section">
+    <div class="tv-section-header">
+      <div>
+        <span class="tv-section-title">Course Episodes</span>
+        <span class="tv-section-meta" style="margin-left:16px;">8 episodes · 4h 52m total</span>
+      </div>
+      <div class="tv-section-right">Episode 1 of 8 ›</div>
+    </div>
+
+    <div class="tv-ep-row">
+
+      <!-- Ep 1 - FREE - FOCUSED -->
+      <div class="tv-ep-card focused">
+        <div class="tv-ep-card-thumb tc-1">
+          <div class="tv-ep-thumb-overlay"></div>
+          <div class="tv-ep-num">01</div>
+          <div class="tv-ep-play"><div class="tv-ep-play-tri"></div></div>
+          <div class="tv-ep-dur">28:14</div>
+          <div class="tv-ep-free-tag">Free</div>
+        </div>
+        <div class="tv-ep-card-info">
+          <div class="tv-ep-card-title">The Architecture of Memory</div>
+          <div class="tv-ep-card-subtitle">Free Preview</div>
+        </div>
+      </div>
+
+      <!-- Ep 2 -->
+      <div class="tv-ep-card">
+        <div class="tv-ep-card-thumb tc-2">
+          <div class="tv-ep-thumb-overlay"></div>
+          <div class="tv-ep-num">02</div>
+          <div class="tv-ep-lock">🔒</div>
+          <div class="tv-ep-dur">34:52</div>
+        </div>
+        <div class="tv-ep-card-info">
+          <div class="tv-ep-card-title">Light as Language</div>
+          <div class="tv-ep-card-subtitle">Subscribe to unlock</div>
+        </div>
+      </div>
+
+      <!-- Ep 3 -->
+      <div class="tv-ep-card">
+        <div class="tv-ep-card-thumb tc-3">
+          <div class="tv-ep-thumb-overlay"></div>
+          <div class="tv-ep-num">03</div>
+          <div class="tv-ep-lock">🔒</div>
+          <div class="tv-ep-dur">42:17</div>
+        </div>
+        <div class="tv-ep-card-info">
+          <div class="tv-ep-card-title">Time Out of Joint</div>
+          <div class="tv-ep-card-subtitle">Subscribe to unlock</div>
+        </div>
+      </div>
+
+      <!-- Ep 4 -->
+      <div class="tv-ep-card">
+        <div class="tv-ep-card-thumb tc-4">
+          <div class="tv-ep-thumb-overlay"></div>
+          <div class="tv-ep-num">04</div>
+          <div class="tv-ep-lock">🔒</div>
+          <div class="tv-ep-dur">38:44</div>
+        </div>
+        <div class="tv-ep-card-info">
+          <div class="tv-ep-card-title">The Music of Film</div>
+          <div class="tv-ep-card-subtitle">Subscribe to unlock</div>
+        </div>
+      </div>
+
+      <!-- Ep 5 -->
+      <div class="tv-ep-card">
+        <div class="tv-ep-card-thumb tc-5">
+          <div class="tv-ep-thumb-overlay"></div>
+          <div class="tv-ep-num">05</div>
+          <div class="tv-ep-lock">🔒</div>
+          <div class="tv-ep-dur">29:38</div>
+        </div>
+        <div class="tv-ep-card-info">
+          <div class="tv-ep-card-title">Longing and Distance</div>
+          <div class="tv-ep-card-subtitle">Subscribe to unlock</div>
+        </div>
+      </div>
+
+      <!-- Ep 6 -->
+      <div class="tv-ep-card">
+        <div class="tv-ep-card-thumb tc-6">
+          <div class="tv-ep-thumb-overlay"></div>
+          <div class="tv-ep-num">06</div>
+          <div class="tv-ep-lock">🔒</div>
+          <div class="tv-ep-dur">31:22</div>
+        </div>
+        <div class="tv-ep-card-info">
+          <div class="tv-ep-card-title">Improvisation and Control</div>
+          <div class="tv-ep-card-subtitle">Subscribe to unlock</div>
+        </div>
+      </div>
+
+      <!-- Ep 7 -->
+      <div class="tv-ep-card">
+        <div class="tv-ep-card-thumb tc-7">
+          <div class="tv-ep-thumb-overlay"></div>
+          <div class="tv-ep-num">07</div>
+          <div class="tv-ep-lock">🔒</div>
+          <div class="tv-ep-dur">44:05</div>
+        </div>
+        <div class="tv-ep-card-info">
+          <div class="tv-ep-card-title">The Art of Waiting</div>
+          <div class="tv-ep-card-subtitle">Subscribe to unlock</div>
+        </div>
+      </div>
+
+      <!-- Ep 8 -->
+      <div class="tv-ep-card">
+        <div class="tv-ep-card-thumb tc-8">
+          <div class="tv-ep-thumb-overlay"></div>
+          <div class="tv-ep-num">08</div>
+          <div class="tv-ep-lock">🔒</div>
+          <div class="tv-ep-dur">37:51</div>
+        </div>
+        <div class="tv-ep-card-info">
+          <div class="tv-ep-card-title">Your Vision, Your Voice</div>
+          <div class="tv-ep-card-subtitle">Subscribe to unlock</div>
+        </div>
+      </div>
+
+    </div><!-- /ep-row -->
+  </div><!-- /episodes-section -->
+
+</div><!-- /tv-safe -->
+
+</body>
+</html>
