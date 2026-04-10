@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>MUBI — Watchlist (Light)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..1000&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2');
+  font-weight: bold;
+}
+
+:root {
+  --bg:       #F5F4F0;
+  --bg-2:     #EDECEA;
+  --bg-3:     #E4E3DF;
+  --bg-4:     #D9D8D4;
+  --text:     #111111;
+  --text-2:   #484848;
+  --text-3:   #959595;
+  --red:      #001489;
+  --green:    #17843B;
+  --border:   rgba(0,0,0,0.09);
+  --border-2: rgba(0,0,0,0.17);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 390px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Riforma', sans-serif;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+.screen {
+  width: 390px;
+  height: 844px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* Status Bar */
+.status-bar {
+  height: 44px;
+  padding: 14px 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.status-time { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; color: var(--text); }
+.status-icons { display: flex; align-items: center; gap: 7px; }
+
+/* Page Header */
+.page-header {
+  padding: 10px 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.page-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.count-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-3);
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.2px;
+  margin-top: 3px;
+}
+.sort-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-2);
+}
+
+/* Filter Pills */
+.filter-row {
+  padding: 12px 16px 12px;
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.filter-pill {
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  border: 1px solid var(--border-2);
+  background: var(--bg-2);
+  color: var(--text-3);
+}
+.filter-pill.active {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+/* Content */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.content::-webkit-scrollbar { display: none; }
+
+/* Film List */
+.film-list { padding: 0 16px; }
+
+.film-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.film-item:last-child { border-bottom: none; }
+
+.film-thumb {
+  width: 60px;
+  height: 84px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+.film-thumb-bg { width: 100%; height: 100%; }
+
+.film-item-info { flex: 1; min-width: 0; }
+.film-item-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: -0.3px;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.film-item-director {
+  font-size: 11px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+  margin-bottom: 3px;
+}
+.film-item-meta {
+  font-size: 10.5px;
+  color: var(--text-3);
+  margin-bottom: 5px;
+}
+.film-item-added {
+  font-size: 9.5px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+.film-item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.days-badge {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--green);
+  background: rgba(23,132,59,0.1);
+  border: 1px solid rgba(23,132,59,0.25);
+  padding: 3px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Poster BGs */
+.pt-1 { background: linear-gradient(160deg, #DDE8F6, #E6D8F0); }
+.pt-2 { background: linear-gradient(160deg, #F0D8D8, #F6E8D4); }
+.pt-3 { background: linear-gradient(160deg, #D8EEE2, #E4F0D4); }
+.pt-4 { background: linear-gradient(160deg, #F4EDD4, #EDD8F0); }
+.pt-5 { background: linear-gradient(160deg, #EEDDF8, #DDE8F6); }
+.pt-6 { background: linear-gradient(160deg, #F4DEF0, #F0F4D8); }
+.pt-7 { background: linear-gradient(160deg, #D8E6F4, #F4EDD4); }
+.pt-8 { background: linear-gradient(160deg, #E6DFF4, #F4D8D8); }
+.pt-9 { background: linear-gradient(160deg, #DEF0E6, #DDE8F6); }
+
+/* Section Header */
+.section-header {
+  padding: 16px 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* Watched check */
+.watched-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(23,132,59,0.12);
+  border: 1.5px solid rgba(23,132,59,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Bottom Nav */
+.bottom-nav {
+  height: 83px;
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  padding-top: 10px;
+  flex-shrink: 0;
+}
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 2px 0;
+}
+.nav-icon { color: var(--text-3); }
+.nav-icon.active { color: var(--text); }
+.nav-label { font-size: 9.5px; font-weight: 500; color: var(--text-3); letter-spacing: 0.2px; }
+.nav-label.active { color: var(--text); }
+.nav-tab.active-tab .nav-dot {
+  width: 4px; height: 4px; border-radius: 50%; background: var(--text); margin-top: 2px;
+}
+
+/* Sort Sheet */
+.sheet-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.35);
+  z-index: 100; opacity: 0; pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.sheet-overlay.open { opacity: 1; pointer-events: all; }
+.sort-sheet {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--bg); border-radius: 16px 16px 0 0;
+  padding-bottom: 16px; z-index: 101;
+  transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32,0.72,0,1);
+}
+.sort-sheet.open { transform: translateY(0); }
+.sheet-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: var(--bg-4); margin: 12px auto 0;
+}
+.sheet-title {
+  font-family: 'Riforma', sans-serif; font-size: 13px; font-weight: bold;
+  text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-3);
+  padding: 14px 20px 10px;
+}
+.sort-option {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; cursor: pointer; border-bottom: 1px solid var(--border);
+}
+.sort-option:last-child { border-bottom: none; }
+.sort-option-label { font-size: 15px; color: var(--text); }
+.sort-option-check {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid var(--border-2);
+  display: flex; align-items: center; justify-content: center;
+}
+.sort-option.selected .sort-option-check {
+  background: var(--text); border-color: var(--text);
+}
+.sort-option.selected .sort-option-label { font-weight: 600; }
+.screen { position: relative; }
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="#111111">
+        <rect x="0"    y="8"   width="3" height="4"   rx="0.5" opacity="0.25"/>
+        <rect x="4.5"  y="5.5" width="3" height="6.5" rx="0.5" opacity="0.25"/>
+        <rect x="9"    y="3"   width="3" height="9"   rx="0.5"/>
+        <rect x="13.5" y="0"   width="3" height="12"  rx="0.5"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+        <path d="M8 10C8.55 10 9 10.45 9 11S8.55 12 8 12 7 11.55 7 11 7.45 10 8 10Z" fill="#111111"/>
+        <path d="M5.2 8C6.2 7 7 6.5 8 6.5S9.8 7 10.8 8" stroke="#111111" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M2.8 5.5C4.5 3.8 6.1 3 8 3S11.5 3.8 13.2 5.5" stroke="#111111" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+        <rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#111111" stroke-opacity="0.3"/>
+        <rect x="22" y="4" width="2.5" height="4" rx="1" fill="#111111" fill-opacity="0.35"/>
+        <rect x="2" y="2" width="17" height="8" rx="2" fill="#111111"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title">
+      Watchlist
+      <span class="count-badge">14</span>
+    </div>
+    <div class="sort-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6H21M7 12H17M11 18H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Filter Pills -->
+  <div class="filter-row">
+    <div class="filter-pill active">All</div>
+    <div class="filter-pill">Unwatched</div>
+    <div class="filter-pill">Watched</div>
+  </div>
+
+  <!-- Scrollable Content -->
+  <div class="content">
+
+    <div class="film-list">
+
+      <div class="film-item">
+        <div class="film-thumb"><div class="film-thumb-bg pt-1"></div></div>
+        <div class="film-item-info">
+          <div class="film-item-title">In the Mood for Love</div>
+          <div class="film-item-director">Wong Kar-wai</div>
+          <div class="film-item-meta">2000 · Hong Kong · 1h 38m</div>
+          <div class="film-item-added">Added 2 days ago</div>
+        </div>
+        <div class="film-item-right">
+          <div class="days-badge">3d left</div>
+        </div>
+      </div>
+
+      <div class="film-item">
+        <div class="film-thumb"><div class="film-thumb-bg pt-2"></div></div>
+        <div class="film-item-info">
+          <div class="film-item-title">The Piano Teacher</div>
+          <div class="film-item-director">Michael Haneke</div>
+          <div class="film-item-meta">2001 · Austria · 2h 10m</div>
+          <div class="film-item-added">Added 5 days ago</div>
+        </div>
+        <div class="film-item-right">
+          <div class="days-badge">8d left</div>
+        </div>
+      </div>
+
+      <div class="film-item">
+        <div class="film-thumb"><div class="film-thumb-bg pt-3"></div></div>
+        <div class="film-item-info">
+          <div class="film-item-title">Portrait of a Lady</div>
+          <div class="film-item-director">Céline Sciamma</div>
+          <div class="film-item-meta">2019 · France · 2h 2m</div>
+          <div class="film-item-added">Added 1 week ago</div>
+        </div>
+        <div class="film-item-right">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" color="var(--text-3)">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="film-item">
+        <div class="film-thumb"><div class="film-thumb-bg pt-4"></div></div>
+        <div class="film-item-info">
+          <div class="film-item-title">Stalker</div>
+          <div class="film-item-director">Andrei Tarkovsky</div>
+          <div class="film-item-meta">1979 · USSR · 2h 42m</div>
+          <div class="film-item-added">Added 2 weeks ago</div>
+        </div>
+        <div class="film-item-right">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" color="var(--text-3)">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="film-item">
+        <div class="film-thumb"><div class="film-thumb-bg pt-5"></div></div>
+        <div class="film-item-info">
+          <div class="film-item-title">Jeanne Dielman</div>
+          <div class="film-item-director">Chantal Akerman</div>
+          <div class="film-item-meta">1975 · Belgium · 3h 21m</div>
+          <div class="film-item-added">Added 3 weeks ago</div>
+        </div>
+        <div class="film-item-right">
+          <div class="days-badge">5d left</div>
+        </div>
+      </div>
+
+      <div class="film-item">
+        <div class="film-thumb"><div class="film-thumb-bg pt-6"></div></div>
+        <div class="film-item-info">
+          <div class="film-item-title">Yi Yi</div>
+          <div class="film-item-director">Edward Yang</div>
+          <div class="film-item-meta">2000 · Taiwan · 2h 53m</div>
+          <div class="film-item-added">Added 1 month ago</div>
+        </div>
+        <div class="film-item-right">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" color="var(--text-3)">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Recently Watched -->
+    <div class="section-header">
+      <span class="section-eyebrow">Recently Watched</span>
+    </div>
+    <div class="film-list" style="padding-bottom: 24px;">
+
+      <div class="film-item">
+        <div class="film-thumb"><div class="film-thumb-bg pt-7"></div></div>
+        <div class="film-item-info">
+          <div class="film-item-title">Chungking Express</div>
+          <div class="film-item-director">Wong Kar-wai</div>
+          <div class="film-item-meta">1994 · Hong Kong · 1h 42m</div>
+          <div class="film-item-added">Watched 3 days ago</div>
+        </div>
+        <div class="film-item-right">
+          <div class="watched-check">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
+              <path d="M20 6L9 17L4 12" stroke="#17843B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="film-item">
+        <div class="film-thumb"><div class="film-thumb-bg pt-8"></div></div>
+        <div class="film-item-info">
+          <div class="film-item-title">The Favourite</div>
+          <div class="film-item-director">Yorgos Lanthimos</div>
+          <div class="film-item-meta">2018 · UK · 2h 1m</div>
+          <div class="film-item-added">Watched 1 week ago</div>
+        </div>
+        <div class="film-item-right">
+          <div class="watched-check">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
+              <path d="M20 6L9 17L4 12" stroke="#17843B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="film-item">
+        <div class="film-thumb"><div class="film-thumb-bg pt-9"></div></div>
+        <div class="film-item-info">
+          <div class="film-item-title">Parasite</div>
+          <div class="film-item-director">Bong Joon-ho</div>
+          <div class="film-item-meta">2019 · South Korea · 2h 12m</div>
+          <div class="film-item-added">Watched 2 weeks ago</div>
+        </div>
+        <div class="film-item-right">
+          <div class="watched-check">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
+              <path d="M20 6L9 17L4 12" stroke="#17843B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M3 12L12 4L21 12V20H15V14H9V20H3V12Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      <span class="nav-label">Home</span>
+    </div>
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M9.5 9L16 12L9.5 15V9Z" fill="currentColor" opacity="0.45"/>
+      </svg>
+      <span class="nav-label">Films</span>
+    </div>
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="11" cy="11" r="7.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M17 17L21.5 21.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="nav-label">Search</span>
+    </div>
+    <div class="nav-tab active-tab">
+      <svg class="nav-icon active" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M5 4H19V21L12 17L5 21V4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      </svg>
+      <span class="nav-label active">Watchlist</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M4 20C4 17 7.6 15 12 15C16.4 15 20 17 20 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="nav-label">Account</span>
+    </div>
+  </nav>
+
+  <!-- Sort Sheet Overlay -->
+  <div class="sheet-overlay" id="sortOverlay"></div>
+  <div class="sort-sheet" id="sortSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Sort by</div>
+    <div class="sort-option selected">
+      <span class="sort-option-label">Date Added — Newest First</span>
+      <div class="sort-option-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.8 7L9 1" stroke="#F5F4F0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="sort-option">
+      <span class="sort-option-label">Date Added — Oldest First</span>
+      <div class="sort-option-check"></div>
+    </div>
+    <div class="sort-option">
+      <span class="sort-option-label">Title — A to Z</span>
+      <div class="sort-option-check"></div>
+    </div>
+    <div class="sort-option">
+      <span class="sort-option-label">Title — Z to A</span>
+      <div class="sort-option-check"></div>
+    </div>
+    <div class="sort-option">
+      <span class="sort-option-label">Year — Newest First</span>
+      <div class="sort-option-check"></div>
+    </div>
+    <div class="sort-option">
+      <span class="sort-option-label">Director — A to Z</span>
+      <div class="sort-option-check"></div>
+    </div>
+  </div>
+
+</div>
+<script>
+// Sort sheet
+const sortBtn = document.querySelector('.sort-btn');
+const overlay = document.getElementById('sortOverlay');
+const sheet = document.getElementById('sortSheet');
+const sortOptions = document.querySelectorAll('.sort-option');
+
+function openSheet() { overlay.classList.add('open'); sheet.classList.add('open'); }
+function closeSheet() { overlay.classList.remove('open'); sheet.classList.remove('open'); }
+
+sortBtn.addEventListener('click', openSheet);
+overlay.addEventListener('click', closeSheet);
+
+sortOptions.forEach(opt => {
+  opt.addEventListener('click', () => {
+    sortOptions.forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    setTimeout(closeSheet, 220);
+  });
+});
+
+// Bottom nav
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  const label = tab.querySelector('.nav-label');
+  if (!label) return;
+  const map = {Home:'mubi-home-light.html',Films:'mubi-collections-light.html',Search:'mubi-search-mobile-light.html',Watchlist:'mubi-watchlist-light.html',Account:'mubi-account-light.html'};
+  const dest = map[label.textContent.trim()];
+  if (dest) tab.addEventListener('click', () => location.href = dest);
+});
+// Film items → film detail
+document.querySelectorAll('.film-item').forEach(item => item.addEventListener('click', () => location.href = 'mubi-film-detail-light.html'));
+</script>
+</body>
+</html>

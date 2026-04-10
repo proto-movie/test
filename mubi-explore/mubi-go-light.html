@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>MUBI GO (Light)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..1000&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2');
+  font-weight: bold;
+}
+
+:root {
+  --bg:       #F5F4F0;
+  --bg-2:     #EDECEA;
+  --bg-3:     #E4E3DF;
+  --bg-4:     #D9D8D4;
+  --text:     #111111;
+  --text-2:   #484848;
+  --text-3:   #959595;
+  --red:      #001489;
+  --green:    #17843B;
+  --border:   rgba(0,0,0,0.09);
+  --border-2: rgba(0,0,0,0.17);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 390px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Riforma', sans-serif;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+.screen {
+  width: 390px;
+  height: 844px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* Status Bar */
+.status-bar {
+  height: 44px;
+  padding: 14px 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.status-time { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; color: var(--text); }
+.status-icons { display: flex; align-items: center; gap: 7px; }
+
+/* Page Header */
+.page-header {
+  padding: 8px 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.page-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
+.go-title-badge {
+  background: var(--red);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 4px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* Content */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.content::-webkit-scrollbar { display: none; }
+
+/* Cinema Pass Card */
+.pass-card {
+  margin: 14px 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 24px rgba(0,20,137,0.12), 0 1px 4px rgba(0,0,0,0.06);
+  cursor: pointer;
+}
+.pass-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 100% at 90% 10%, rgba(0,20,137,0.15) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 60% at 10% 90%, rgba(60,0,120,0.1) 0%, transparent 50%),
+    linear-gradient(145deg, #D6DCF4 0%, #E2D6F0 40%, #EEE6D6 100%);
+}
+.pass-perforations-left {
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pass-perforations-right {
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.perf-hole {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg);
+}
+.pass-content {
+  position: relative;
+  z-index: 2;
+  padding: 18px 20px 20px;
+}
+.pass-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.pass-month {
+  font-family: 'Riforma', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.pass-valid {
+  font-size: 9.5px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 3px;
+}
+.pass-mubi-logo {
+  opacity: 0.6;
+}
+.pass-divider {
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--border-2) 0px, var(--border-2) 6px, transparent 6px, transparent 10px);
+  margin: 0 -20px;
+  margin-bottom: 16px;
+}
+.pass-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.pass-ticket-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 4px;
+}
+.pass-ticket-value {
+  font-family: 'Riforma', sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: -0.3px;
+}
+.pass-qr {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+/* Your film section */
+.section {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+.film-feature-card {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.ffc-bg {
+  height: 130px;
+  background:
+    radial-gradient(ellipse 80% 100% at 90% 0%, rgba(30,60,160,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 60% at 10% 80%, rgba(180,20,40,0.08) 0%, transparent 50%),
+    linear-gradient(158deg, #D8E0F4 0%, #E4D4EE 50%, #F0E8D4 100%);
+  position: relative;
+}
+.ffc-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(to top, rgba(245,244,240,1) 0%, transparent 100%);
+}
+.ffc-body {
+  padding: 10px 12px 12px;
+  background: var(--bg);
+}
+.ffc-eyebrow {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 4px;
+}
+.ffc-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: -0.3px;
+  margin-bottom: 3px;
+}
+.ffc-director {
+  font-size: 11px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+  margin-bottom: 10px;
+}
+.btn-redeem {
+  width: 100%;
+  height: 40px;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-family: 'Riforma', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Partners */
+.partner-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.partner-item {
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.partner-item:last-child { border-bottom: none; }
+.partner-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: -0.2px;
+}
+.partner-locations {
+  font-size: 10.5px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* How it works */
+.how-it-works {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.hiw-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.hiw-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-2);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.hiw-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+/* Past Tickets */
+.past-tickets {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.past-ticket-item {
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.past-ticket-item:last-child { border-bottom: none; }
+.past-month-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: -0.2px;
+}
+.past-ticket-title {
+  font-size: 10.5px;
+  color: var(--text-3);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+}
+.past-used-badge {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--green);
+  background: rgba(23,132,59,0.1);
+  border: 1px solid rgba(23,132,59,0.25);
+  padding: 3px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Bottom Nav */
+.bottom-nav {
+  height: 83px;
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  padding-top: 10px;
+  flex-shrink: 0;
+}
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 2px 0;
+}
+.nav-icon { color: var(--text-3); }
+.nav-icon.active { color: var(--text); }
+.nav-label { font-size: 9.5px; font-weight: 500; color: var(--text-3); letter-spacing: 0.2px; }
+.nav-label.active { color: var(--text); }
+.nav-tab.active-tab .nav-dot {
+  width: 4px; height: 4px; border-radius: 50%; background: var(--text); margin-top: 2px;
+}
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="#111111">
+        <rect x="0"    y="8"   width="3" height="4"   rx="0.5" opacity="0.25"/>
+        <rect x="4.5"  y="5.5" width="3" height="6.5" rx="0.5" opacity="0.25"/>
+        <rect x="9"    y="3"   width="3" height="9"   rx="0.5"/>
+        <rect x="13.5" y="0"   width="3" height="12"  rx="0.5"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+        <path d="M8 10C8.55 10 9 10.45 9 11S8.55 12 8 12 7 11.55 7 11 7.45 10 8 10Z" fill="#111111"/>
+        <path d="M5.2 8C6.2 7 7 6.5 8 6.5S9.8 7 10.8 8" stroke="#111111" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M2.8 5.5C4.5 3.8 6.1 3 8 3S11.5 3.8 13.2 5.5" stroke="#111111" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+        <rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#111111" stroke-opacity="0.3"/>
+        <rect x="22" y="4" width="2.5" height="4" rx="1" fill="#111111" fill-opacity="0.35"/>
+        <rect x="2" y="2" width="17" height="8" rx="2" fill="#111111"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title">MUBI GO</div>
+    <div class="go-title-badge">Active</div>
+  </div>
+
+  <!-- Scrollable Content -->
+  <div class="content">
+
+    <!-- Cinema Pass Card -->
+    <div class="pass-card">
+      <div class="pass-bg"></div>
+      <div class="pass-perforations-left">
+        <div class="perf-hole"></div>
+        <div class="perf-hole"></div>
+        <div class="perf-hole"></div>
+      </div>
+      <div class="pass-perforations-right">
+        <div class="perf-hole"></div>
+        <div class="perf-hole"></div>
+        <div class="perf-hole"></div>
+      </div>
+      <div class="pass-content">
+        <div class="pass-top">
+          <div>
+            <div class="pass-month">Week of 13 Mar</div>
+            <div class="pass-valid">Valid until 19 Mar 2026</div>
+          </div>
+          <div class="pass-mubi-logo">
+            <img src="../brand_assets/Mubi_logo_white.svg" alt="MUBI" style="height:16px; filter:invert(1) brightness(0); opacity:0.5;">
+          </div>
+        </div>
+        <div class="pass-divider"></div>
+        <div class="pass-bottom">
+          <div>
+            <div class="pass-ticket-label">Your pass</div>
+            <div class="pass-ticket-value">1 Free Film</div>
+          </div>
+          <svg class="pass-qr" id="go-qr" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Your Film This Week -->
+    <div class="section">
+      <div class="section-label">Recommended this week</div>
+      <div class="film-feature-card">
+        <div class="ffc-bg">
+          <div class="ffc-overlay"></div>
+        </div>
+        <div class="ffc-body">
+          <div class="ffc-eyebrow">Now in cinemas</div>
+          <div class="ffc-title">A Real Pain</div>
+          <div class="ffc-director">Jesse Eisenberg · 2025 · USA</div>
+          <button class="btn-redeem">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+              <rect x="2" y="5" width="20" height="14" rx="2" stroke="white" stroke-width="1.5"/>
+              <path d="M2 10H22" stroke="white" stroke-width="1.5"/>
+            </svg>
+            Redeem at Partner Cinema
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Partner Cinemas -->
+    <div class="section">
+      <div class="section-label">Partner Cinemas</div>
+      <div class="partner-list">
+        <div class="partner-item">
+          <div>
+            <div class="partner-name">Picturehouse</div>
+            <div class="partner-locations">22 locations · UK</div>
+          </div>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" color="var(--text-3)">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="partner-item">
+          <div>
+            <div class="partner-name">Curzon</div>
+            <div class="partner-locations">14 locations · UK</div>
+          </div>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" color="var(--text-3)">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="partner-item">
+          <div>
+            <div class="partner-name">Barbican</div>
+            <div class="partner-locations">1 location · London</div>
+          </div>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" color="var(--text-3)">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="partner-item">
+          <div>
+            <div class="partner-name">Everyman</div>
+            <div class="partner-locations">37 locations · UK</div>
+          </div>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" color="var(--text-3)">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="partner-item">
+          <div>
+            <div class="partner-name">Vue</div>
+            <div class="partner-locations">88 locations · UK &amp; Europe</div>
+          </div>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" color="var(--text-3)">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="section">
+      <div class="section-label">How it works</div>
+      <div class="how-it-works">
+        <div class="hiw-item">
+          <div class="hiw-num">1</div>
+          <div class="hiw-text">Each month you get one free ticket to any film at a partner cinema.</div>
+        </div>
+        <div class="hiw-item">
+          <div class="hiw-num">2</div>
+          <div class="hiw-text">Show your MUBI GO pass at the box office or use it online when booking.</div>
+        </div>
+        <div class="hiw-item">
+          <div class="hiw-num">3</div>
+          <div class="hiw-text">Unused tickets don't roll over — use it before Sunday midnight each week.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Past Tickets -->
+    <div class="section" style="padding-bottom: 24px;">
+      <div class="section-label">Past Tickets</div>
+      <div class="past-tickets">
+        <div class="past-ticket-item">
+          <div>
+            <div class="past-month-label">Wk of 6 Mar 2026</div>
+            <div class="past-ticket-title">Nickel Boys · Curzon Soho</div>
+          </div>
+          <div class="past-used-badge">Used</div>
+        </div>
+        <div class="past-ticket-item">
+          <div>
+            <div class="past-month-label">Wk of 27 Feb 2026</div>
+            <div class="past-ticket-title">The Brutalist · Barbican</div>
+          </div>
+          <div class="past-used-badge">Used</div>
+        </div>
+        <div class="past-ticket-item">
+          <div>
+            <div class="past-month-label">Wk of 20 Feb 2026</div>
+            <div class="past-ticket-title">Maria · Picturehouse Central</div>
+          </div>
+          <div class="past-used-badge">Used</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M3 12L12 4L21 12V20H15V14H9V20H3V12Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      <span class="nav-label">Home</span>
+    </div>
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M9.5 9L16 12L9.5 15V9Z" fill="currentColor" opacity="0.45"/>
+      </svg>
+      <span class="nav-label">Films</span>
+    </div>
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="11" cy="11" r="7.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M17 17L21.5 21.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="nav-label">Search</span>
+    </div>
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M5 4H19V21L12 17L5 21V4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      <span class="nav-label">Watchlist</span>
+    </div>
+    <div class="nav-tab active-tab">
+      <svg class="nav-icon active" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+        <path d="M4 20C4 17 7.6 15 12 15C16.4 15 20 17 20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span class="nav-label active">Account</span>
+      <div class="nav-dot"></div>
+    </div>
+  </nav>
+
+</div>
+<script>
+// Generate QR code for MUBI GO ticket
+(function(){
+  var svg=document.getElementById('go-qr');
+  if(!svg)return;
+  var size=15,cell=3,margin=1;
+  var W=(size+2*margin)*cell;
+  function lcg(seed){var s=seed;return function(){s=(1664525*s+1013904223)&0xFFFFFFFF;return(s>>>0)/4294967296;};}
+  var rand=lcg(0xA5F2C3B1);
+  function finder(r,c,col){
+    var h='';
+    h+='<rect x="'+((margin+c)*cell)+'" y="'+((margin+r)*cell)+'" width="'+(7*cell)+'" height="'+(7*cell)+'" fill="'+col+'"/>';
+    h+='<rect x="'+((margin+c+1)*cell)+'" y="'+((margin+r+1)*cell)+'" width="'+(5*cell)+'" height="'+(5*cell)+'" fill="#fff"/>';
+    h+='<rect x="'+((margin+c+2)*cell)+'" y="'+((margin+r+2)*cell)+'" width="'+(3*cell)+'" height="'+(3*cell)+'" fill="'+col+'"/>';
+    return h;
+  }
+  var html='<rect width="'+W+'" height="'+W+'" fill="white"/>';
+  html+=finder(0,0,'#001489');
+  html+=finder(0,8,'#001489');
+  html+=finder(8,0,'#001489');
+  // timing
+  for(var i=2;i<13;i++){if(i<8||i>9){html+='<rect x="'+((margin+i)*cell)+'" y="'+((margin+6)*cell)+'" width="'+cell+'" height="'+cell+'" fill="'+(i%2===0?'#001489':'#fff')+'"/>';html+='<rect x="'+((margin+6)*cell)+'" y="'+((margin+i)*cell)+'" width="'+cell+'" height="'+cell+'" fill="'+(i%2===0?'#001489':'#fff')+'"/>';}}
+  // data
+  for(var row=0;row<size;row++){for(var col=0;col<size;col++){var inF=(row<8&&col<8)||(row<8&&col>7)||(row>7&&col<8);var inT=(row===6&&col>=8&&col<13)||(col===6&&row>=8&&row<13);if(!inF&&!inT&&rand()>0.46){html+='<rect x="'+((margin+col)*cell)+'" y="'+((margin+row)*cell)+'" width="'+cell+'" height="'+cell+'" fill="#001489"/>';}}}
+  svg.innerHTML=html;
+  svg.setAttribute('viewBox','0 0 '+W+' '+W);
+})();
+
+// Bottom nav
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  const label = tab.querySelector('.nav-label');
+  if (!label) return;
+  const map = {Home:'mubi-home-light.html',Films:'mubi-collections-light.html',Search:'mubi-search-mobile-light.html',Watchlist:'mubi-watchlist-light.html',Account:'mubi-account-light.html'};
+  const dest = map[label.textContent.trim()];
+  if (dest) tab.addEventListener('click', () => location.href = dest);
+});
+// Film feature card → film detail
+document.querySelector('.film-feature-card')?.addEventListener('click', () => location.href = 'mubi-film-detail-light.html');
+// Redeem button → film detail (stops propagation from card click)
+document.querySelector('.btn-redeem')?.addEventListener('click', e => { e.stopPropagation(); location.href = 'mubi-film-detail-light.html'; });
+// Partner items → stay (no destination)
+// Past ticket items → stay (no destination)
+// Page title → back to account
+document.querySelector('.page-title')?.addEventListener('click', () => location.href = 'mubi-account-light.html');
+</script>
+</body>
+</html>

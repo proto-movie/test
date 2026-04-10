@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>MUBI — Search (Light)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..1000&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2');
+  font-weight: bold;
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2');
+  font-style: italic;
+}
+
+/* ── Light theme tokens (matches mubi-academy-desktop-light.html) ── */
+:root {
+  --bg:       #F5F4F0;
+  --bg-2:     #EDECEA;
+  --bg-3:     #E4E3DF;
+  --bg-4:     #D9D8D4;
+  --text:     #111111;
+  --text-2:   #484848;
+  --text-3:   #959595;
+  --red:      #001489;
+  --red-dark: #001070;
+  --btn:      #001489;
+  --btn-hover:#001AAF;
+  --gold:     #001489;
+  --green:    #17843B;
+  --border:   rgba(0,0,0,0.09);
+  --border-2: rgba(0,0,0,0.17);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 390px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Riforma', sans-serif;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Screen Shell ─────────────────────────────── */
+.screen {
+  width: 390px;
+  height: 844px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg);
+}
+
+/* ─── Status Bar ───────────────────────────────── */
+.status-bar {
+  height: 44px;
+  padding: 14px 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.status-time {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ─── Search Header ────────────────────────────── */
+.search-header {
+  padding: 6px 16px 10px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-bar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  padding: 0 12px;
+  height: 44px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.search-bar.focused {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(0,20,137,0.1);
+}
+
+.search-icon { color: var(--text-3); flex-shrink: 0; }
+
+.search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: 'Riforma', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.search-input::placeholder { color: var(--text-3); }
+
+.cancel-btn {
+  display: none;
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.search-wrap.active .cancel-btn { display: block; }
+
+/* ─── Content Area ─────────────────────────────── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.content::-webkit-scrollbar { display: none; }
+
+/* ─── Sections ─────────────────────────────────── */
+.section {
+  padding: 20px 0 0;
+}
+
+.section-header {
+  padding: 0 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.eyebrow-accent {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.see-all {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.2px;
+}
+
+/* ─── Genre Grid ───────────────────────────────── */
+.genre-grid {
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.genre-tile {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  cursor: pointer;
+  transition: transform 0.12s;
+  border: 1px solid var(--border);
+}
+
+.genre-tile:active { transform: scale(0.96); }
+
+.genre-tile .grain { display: none; }
+
+.genre-tile .tile-shadow { display: none; }
+
+.genre-tile .tile-content {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 9px 11px;
+  z-index: 3;
+}
+
+.genre-name {
+  font-family: 'Riforma', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: -0.4px;
+}
+
+.genre-count {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* Genre gradients — light editorial tints, each with a distinct hue */
+.g-drama {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(60,30,160,0.07) 0%, transparent 65%),
+    linear-gradient(158deg, #E6E0F4 0%, #EDE8F8 60%, #F3F0FA 100%);
+}
+.g-comedy {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(160,100,10,0.07) 0%, transparent 65%),
+    linear-gradient(158deg, #F4EDD4 0%, #F8F2E2 60%, #FBF7ED 100%);
+}
+.g-thriller {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(20,80,40,0.07) 0%, transparent 65%),
+    linear-gradient(158deg, #DEF0E6 0%, #E8F4EE 60%, #EFF8F3 100%);
+}
+.g-documentary {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(20,50,120,0.07) 0%, transparent 65%),
+    linear-gradient(158deg, #DDE8F4 0%, #E6EFF8 60%, #EEF4FB 100%);
+}
+.g-horror {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(150,20,20,0.07) 0%, transparent 65%),
+    linear-gradient(158deg, #F2DEDE 0%, #F8E8E8 60%, #FBEEEE 100%);
+}
+.g-romance {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(160,20,100,0.07) 0%, transparent 65%),
+    linear-gradient(158deg, #F4DEEE 0%, #F8E8F4 60%, #FBEEF8 100%);
+}
+.g-scifi {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(10,60,160,0.07) 0%, transparent 65%),
+    linear-gradient(158deg, #DDE8F6 0%, #E6EFF9 60%, #EEF4FB 100%);
+}
+.g-animation {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(80,20,160,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 60% at 10% 90%, rgba(10,100,120,0.05) 0%, transparent 60%),
+    linear-gradient(158deg, #E6DFF4 0%, #DDEEF4 60%, #EAF2F8 100%);
+}
+.g-classic {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(120,80,10,0.07) 0%, transparent 65%),
+    linear-gradient(158deg, #F4EDD6 0%, #F8F3E4 60%, #FBF8EE 100%);
+}
+.g-world {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(120,50,20,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 60% at 10% 90%, rgba(30,80,40,0.05) 0%, transparent 60%),
+    linear-gradient(158deg, #F0E6DC 0%, #F4EEE6 60%, #F8F3EE 100%);
+}
+.g-shorts {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(50,50,70,0.07) 0%, transparent 65%),
+    linear-gradient(158deg, #E6E6EE 0%, #EDEDF4 60%, #F2F2F8 100%);
+}
+.g-experimental {
+  background:
+    radial-gradient(ellipse 70% 90% at 80% 10%, rgba(120,10,150,0.07) 0%, transparent 65%),
+    linear-gradient(158deg, #EEDDF8 0%, #F4E8FB 60%, #F8F0FC 100%);
+}
+
+/* ─── Explore By Pills ─────────────────────────── */
+.explore-row {
+  padding: 0 16px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.explore-row::-webkit-scrollbar { display: none; }
+
+.explore-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.explore-pill:active {
+  background: var(--bg-4);
+  border-color: rgba(0,0,0,0.24);
+}
+
+.pill-icon { color: var(--text-2); display: flex; }
+
+.pill-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+}
+
+/* ─── Collections Row ──────────────────────────── */
+.collections-row {
+  padding: 0 16px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.collections-row::-webkit-scrollbar { display: none; }
+
+.coll-card {
+  flex-shrink: 0;
+  width: 128px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.12s;
+}
+
+.coll-card:active { transform: scale(0.96); }
+
+.coll-poster {
+  width: 128px;
+  height: 182px;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.coll-poster .grain { display: none; }
+
+.coll-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 40px 10px 12px;
+  background: linear-gradient(to top, rgba(245,244,240,0.98) 0%, rgba(245,244,240,0.8) 50%, transparent 100%);
+  z-index: 3;
+}
+
+.coll-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0,20,137,0.08);
+  border: 1px solid rgba(0,20,137,0.2);
+  color: var(--red);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 2px;
+  margin-bottom: 5px;
+}
+
+.coll-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: -0.4px;
+}
+
+.coll-count {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-3);
+  margin-top: 3px;
+}
+
+/* Collection poster backgrounds — light editorial tints */
+.cp-1 {
+  background:
+    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(60,30,160,0.08) 0%, transparent 65%),
+    linear-gradient(170deg, #E0D8F2 0%, #EAE4F8 60%, #F2EEF8 100%);
+}
+.cp-2 {
+  background:
+    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(150,20,20,0.08) 0%, transparent 65%),
+    linear-gradient(170deg, #F0D8D8 0%, #F6E4E4 60%, #FAF0F0 100%);
+}
+.cp-3 {
+  background:
+    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(20,90,45,0.08) 0%, transparent 65%),
+    linear-gradient(170deg, #D8EEE2 0%, #E4F4EA 60%, #EEF8F2 100%);
+}
+.cp-4 {
+  background:
+    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(130,85,10,0.08) 0%, transparent 65%),
+    linear-gradient(170deg, #F2E8D0 0%, #F6F0DC 60%, #FAF5E8 100%);
+}
+.cp-5 {
+  background:
+    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(10,50,140,0.08) 0%, transparent 65%),
+    linear-gradient(170deg, #D8E6F4 0%, #E2EEF8 60%, #EEF4FC 100%);
+}
+.cp-6 {
+  background:
+    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(110,10,140,0.08) 0%, transparent 65%),
+    linear-gradient(170deg, #EAD8F4 0%, #F0E4F8 60%, #F6EEFC 100%);
+}
+
+/* ─── Trending List ────────────────────────────── */
+.trending-list {
+  padding: 0 16px;
+}
+
+.trending-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.trending-item:last-child { border-bottom: none; }
+
+.trending-rank {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-2);
+  width: 22px;
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Trending thumbs stay dark — film poster miniatures */
+.trending-thumb {
+  width: 40px;
+  height: 56px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border);
+}
+
+.trending-thumb .grain { display: none; }
+
+.trending-info { flex: 1; min-width: 0; }
+
+.trending-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: -0.4px;
+}
+
+.trending-meta {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--text-3);
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+}
+
+.trending-arrow {
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+/* Trending thumbnail backgrounds — light tints matching genre moods */
+.tt-1 { background: linear-gradient(160deg, #E0D8F2, #EAE4F8); }
+.tt-2 { background: linear-gradient(160deg, #F0D8D8, #F6E4E4); }
+.tt-3 { background: linear-gradient(160deg, #D8EEE2, #E4F4EA); }
+.tt-4 { background: linear-gradient(160deg, #F4EDD4, #F8F3E4); }
+.tt-5 { background: linear-gradient(160deg, #F4DEF0, #F8EAF6); }
+.tt-6 { background: linear-gradient(160deg, #D8E6F4, #E2EEF8); }
+
+/* ─── Bottom Nav ───────────────────────────────── */
+.bottom-nav {
+  height: 83px;
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  padding-top: 10px;
+  flex-shrink: 0;
+}
+
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.nav-icon { color: var(--text-3); }
+.nav-icon.active { color: var(--text); }
+
+.nav-label {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.2px;
+}
+
+.nav-label.active { color: var(--text); }
+
+.nav-tab.active-tab .nav-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text);
+  margin-top: 2px;
+}
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <!-- ── Status Bar (dark content for light bg) ── -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <!-- Signal bars — black for light mode -->
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="#111111">
+        <rect x="0"    y="8"   width="3" height="4"   rx="0.5" opacity="0.25"/>
+        <rect x="4.5"  y="5.5" width="3" height="6.5" rx="0.5" opacity="0.25"/>
+        <rect x="9"    y="3"   width="3" height="9"   rx="0.5"/>
+        <rect x="13.5" y="0"   width="3" height="12"  rx="0.5"/>
+      </svg>
+      <!-- WiFi — black for light mode -->
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+        <path d="M8 10C8.55 10 9 10.45 9 11S8.55 12 8 12 7 11.55 7 11 7.45 10 8 10Z" fill="#111111"/>
+        <path d="M5.2 8C6.2 7 7 6.5 8 6.5S9.8 7 10.8 8" stroke="#111111" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M2.8 5.5C4.5 3.8 6.1 3 8 3S11.5 3.8 13.2 5.5" stroke="#111111" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M0.5 3C3 0.8 5.3 0 8 0S13 0.8 15.5 3" stroke="#111111" stroke-width="1.2" stroke-linecap="round" opacity="0.25"/>
+      </svg>
+      <!-- Battery — black for light mode -->
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+        <rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#111111" stroke-opacity="0.3"/>
+        <rect x="22" y="4" width="2.5" height="4" rx="1" fill="#111111" fill-opacity="0.35"/>
+        <rect x="2" y="2" width="17" height="8" rx="2" fill="#111111"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── Search Header ── -->
+  <div class="search-header">
+    <div class="search-wrap" id="searchWrap">
+      <div class="search-bar" id="searchBar">
+        <div class="search-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7.5" stroke="currentColor" stroke-width="1.9"/>
+            <path d="M17 17L21.5 21.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <input
+          class="search-input"
+          id="searchInput"
+          type="text"
+          placeholder="Films, directors, themes…"
+          autocomplete="off"
+          autocorrect="off"
+        >
+      </div>
+      <span class="cancel-btn" id="cancelBtn">Cancel</span>
+    </div>
+  </div>
+
+  <!-- ── Scrollable Content ── -->
+  <div class="content">
+
+    <!-- Browse by Genre -->
+    <div class="section" style="padding-top: 4px;">
+      <div class="section-header">
+        <p class="eyebrow">Browse by Genre</p>
+      </div>
+      <div class="genre-grid">
+
+        <div class="genre-tile g-drama">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">Drama</div>
+            <div class="genre-count">1,240 films</div>
+          </div>
+        </div>
+
+        <div class="genre-tile g-comedy">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">Comedy</div>
+            <div class="genre-count">830 films</div>
+          </div>
+        </div>
+
+        <div class="genre-tile g-thriller">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">Thriller</div>
+            <div class="genre-count">610 films</div>
+          </div>
+        </div>
+
+        <div class="genre-tile g-documentary">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">Documentary</div>
+            <div class="genre-count">540 films</div>
+          </div>
+        </div>
+
+        <div class="genre-tile g-horror">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">Horror</div>
+            <div class="genre-count">390 films</div>
+          </div>
+        </div>
+
+        <div class="genre-tile g-romance">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">Romance</div>
+            <div class="genre-count">445 films</div>
+          </div>
+        </div>
+
+        <div class="genre-tile g-scifi">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">Sci-Fi</div>
+            <div class="genre-count">285 films</div>
+          </div>
+        </div>
+
+        <div class="genre-tile g-animation">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">Animation</div>
+            <div class="genre-count">310 films</div>
+          </div>
+        </div>
+
+        <div class="genre-tile g-classic">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">Classic Cinema</div>
+            <div class="genre-count">920 films</div>
+          </div>
+        </div>
+
+        <div class="genre-tile g-world">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">World Cinema</div>
+            <div class="genre-count">760 films</div>
+          </div>
+        </div>
+
+        <div class="genre-tile g-shorts">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">Short Films</div>
+            <div class="genre-count">195 films</div>
+          </div>
+        </div>
+
+        <div class="genre-tile g-experimental">
+          <div class="grain"></div>
+          <div class="tile-shadow"></div>
+          <div class="tile-content">
+            <div class="genre-name">Experimental</div>
+            <div class="genre-count">168 films</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Explore By -->
+    <div class="section">
+      <div class="section-header">
+        <p class="eyebrow">Explore By</p>
+      </div>
+      <div class="explore-row">
+
+        <div class="explore-pill">
+          <div class="pill-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M12 2.5C12 2.5 9 7 9 12S12 21.5 12 21.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M12 2.5C12 2.5 15 7 15 12S12 21.5 12 21.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2.5 12H21.5" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <span class="pill-label">Country</span>
+        </div>
+
+        <div class="explore-pill">
+          <div class="pill-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M3 9H21" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 2V6M16 2V6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <rect x="7" y="13" width="3" height="3" rx="0.5" fill="currentColor" opacity="0.7"/>
+              <rect x="14" y="13" width="3" height="3" rx="0.5" fill="currentColor" opacity="0.7"/>
+            </svg>
+          </div>
+          <span class="pill-label">Decade</span>
+        </div>
+
+        <div class="explore-pill">
+          <div class="pill-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M15 10L21 7V17L15 14" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <rect x="2" y="7" width="13" height="10" rx="2" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+          </div>
+          <span class="pill-label">Director</span>
+        </div>
+
+        <div class="explore-pill">
+          <div class="pill-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L14.5 8.5L22 9.3L16.5 14.3L18.2 22L12 18.5L5.8 22L7.5 14.3L2 9.3L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="pill-label">Awards</span>
+        </div>
+
+        <div class="explore-pill">
+          <div class="pill-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M8 21H16M12 17V21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M6 8H18M6 11H13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/>
+            </svg>
+          </div>
+          <span class="pill-label">Collections</span>
+        </div>
+
+        <div class="explore-pill">
+          <div class="pill-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="pill-label">Language</span>
+        </div>
+
+        <div class="explore-pill">
+          <div class="pill-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M10 9.5L16 12L10 14.5V9.5Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <span class="pill-label">MUBI GO</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Curated Collections -->
+    <div class="section">
+      <div class="section-header">
+        <p class="eyebrow-accent">Curated Collections</p>
+        <span class="see-all">See all</span>
+      </div>
+      <div class="collections-row">
+
+        <div class="coll-card">
+          <div class="coll-poster cp-1">
+            <div class="grain"></div>
+            <div class="coll-overlay">
+              <div class="coll-badge">Director</div>
+              <div class="coll-title">Wong Kar-wai: Complete Works</div>
+              <div class="coll-count">11 films</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="coll-card">
+          <div class="coll-poster cp-2">
+            <div class="grain"></div>
+            <div class="coll-overlay">
+              <div class="coll-badge">Awards</div>
+              <div class="coll-title">Palme d'Or Winners</div>
+              <div class="coll-count">76 films</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="coll-card">
+          <div class="coll-poster cp-3">
+            <div class="grain"></div>
+            <div class="coll-overlay">
+              <div class="coll-badge">Movement</div>
+              <div class="coll-title">French New Wave</div>
+              <div class="coll-count">38 films</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="coll-card">
+          <div class="coll-poster cp-4">
+            <div class="grain"></div>
+            <div class="coll-overlay">
+              <div class="coll-badge">Era</div>
+              <div class="coll-title">Golden Age of Hollywood</div>
+              <div class="coll-count">52 films</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="coll-card">
+          <div class="coll-poster cp-5">
+            <div class="grain"></div>
+            <div class="coll-overlay">
+              <div class="coll-badge">Movement</div>
+              <div class="coll-title">Japanese New Wave</div>
+              <div class="coll-count">29 films</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="coll-card">
+          <div class="coll-poster cp-6">
+            <div class="grain"></div>
+            <div class="coll-overlay">
+              <div class="coll-badge">Theme</div>
+              <div class="coll-title">The Experimental Canon</div>
+              <div class="coll-count">44 films</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Trending on MUBI -->
+    <div class="section" style="padding-bottom: 24px;">
+      <div class="section-header">
+        <p class="eyebrow-accent">Trending on MUBI</p>
+      </div>
+      <div class="trending-list">
+
+        <div class="trending-item">
+          <span class="trending-rank">1</span>
+          <div class="trending-thumb tt-1"><div class="grain"></div></div>
+          <div class="trending-info">
+            <div class="trending-title">All We Imagine as Light</div>
+            <div class="trending-meta">Payal Kapadia · 2024 · Drama</div>
+          </div>
+          <svg class="trending-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="trending-item">
+          <span class="trending-rank">2</span>
+          <div class="trending-thumb tt-2"><div class="grain"></div></div>
+          <div class="trending-info">
+            <div class="trending-title">The Substance</div>
+            <div class="trending-meta">Coralie Fargeat · 2024 · Horror</div>
+          </div>
+          <svg class="trending-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="trending-item">
+          <span class="trending-rank">3</span>
+          <div class="trending-thumb tt-3"><div class="grain"></div></div>
+          <div class="trending-info">
+            <div class="trending-title">Anora</div>
+            <div class="trending-meta">Sean Baker · 2024 · Drama</div>
+          </div>
+          <svg class="trending-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="trending-item">
+          <span class="trending-rank">4</span>
+          <div class="trending-thumb tt-4"><div class="grain"></div></div>
+          <div class="trending-info">
+            <div class="trending-title">Thelma</div>
+            <div class="trending-meta">Josh Margolin · 2024 · Comedy</div>
+          </div>
+          <svg class="trending-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="trending-item">
+          <span class="trending-rank">5</span>
+          <div class="trending-thumb tt-5"><div class="grain"></div></div>
+          <div class="trending-info">
+            <div class="trending-title">I Saw the TV Glow</div>
+            <div class="trending-meta">Jane Schoenbrun · 2024 · Horror</div>
+          </div>
+          <svg class="trending-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="trending-item">
+          <span class="trending-rank">6</span>
+          <div class="trending-thumb tt-6"><div class="grain"></div></div>
+          <div class="trending-info">
+            <div class="trending-title">Dune: Part Two</div>
+            <div class="trending-meta">Denis Villeneuve · 2024 · Sci-Fi</div>
+          </div>
+          <svg class="trending-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ── Bottom Navigation ── -->
+  <nav class="bottom-nav">
+
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M3 12L12 4L21 12V20H15V14H9V20H3V12Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      <span class="nav-label">Home</span>
+    </div>
+
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M9.5 9L16 12L9.5 15V9Z" fill="currentColor" opacity="0.45"/>
+      </svg>
+      <span class="nav-label">Films</span>
+    </div>
+
+    <div class="nav-tab active-tab">
+      <svg class="nav-icon active" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="11" cy="11" r="7.5" stroke="currentColor" stroke-width="2.1"/>
+        <path d="M17 17L21.5 21.5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>
+      </svg>
+      <span class="nav-label active">Search</span>
+      <div class="nav-dot"></div>
+    </div>
+
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M5 4H19V21L12 17L5 21V4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      <span class="nav-label">Watchlist</span>
+    </div>
+
+    <div class="nav-tab">
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M4 20C4 17 7.6 15 12 15C16.4 15 20 17 20 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="nav-label">Account</span>
+    </div>
+
+  </nav>
+
+</div><!-- /screen -->
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const searchWrap  = document.getElementById('searchWrap');
+const searchBar   = document.getElementById('searchBar');
+const cancelBtn   = document.getElementById('cancelBtn');
+
+searchInput.addEventListener('focus', () => {
+  searchWrap.classList.add('active');
+  searchBar.classList.add('focused');
+});
+
+cancelBtn.addEventListener('click', () => {
+  searchInput.value = '';
+  searchInput.blur();
+  searchWrap.classList.remove('active');
+  searchBar.classList.remove('focused');
+});
+
+// Bottom nav
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  const label = tab.querySelector('.nav-label');
+  if (!label) return;
+  const map = {Home:'mubi-home-light.html',Films:'mubi-collections-light.html',Search:'mubi-search-mobile-light.html',Watchlist:'mubi-watchlist-light.html',Account:'mubi-account-light.html'};
+  const dest = map[label.textContent.trim()];
+  if (dest) tab.addEventListener('click', () => location.href = dest);
+});
+// Collection cards → film detail
+document.querySelectorAll('.coll-card').forEach(c => c.addEventListener('click', () => location.href = 'mubi-film-detail-light.html'));
+// Genre tiles → collections
+document.querySelectorAll('.genre-tile').forEach(t => t.addEventListener('click', () => location.href = 'mubi-collections-light.html'));
+// Trending items → film detail
+document.querySelectorAll('.trending-item').forEach(i => i.addEventListener('click', () => location.href = 'mubi-film-detail-light.html'));
+// Explore pills
+document.querySelectorAll('.explore-pill').forEach(p => {
+  const label = p.querySelector('.pill-label')?.textContent.trim();
+  if (label === 'MUBI GO') p.addEventListener('click', () => location.href = 'mubi-go-light.html');
+  else if (label === 'Collections') p.addEventListener('click', () => location.href = 'mubi-collections-light.html');
+  else p.addEventListener('click', () => location.href = 'mubi-collections-light.html');
+});
+</script>
+</body>
+</html>

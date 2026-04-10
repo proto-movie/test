@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>MUBI — Onboarding (Light)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..1000&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2');
+  font-weight: bold;
+}
+
+:root {
+  --bg:       #F5F4F0;
+  --bg-2:     #EDECEA;
+  --bg-3:     #E4E3DF;
+  --bg-4:     #D9D8D4;
+  --text:     #111111;
+  --text-2:   #484848;
+  --text-3:   #959595;
+  --red:      #001489;
+  --border:   rgba(0,0,0,0.09);
+  --border-2: rgba(0,0,0,0.17);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 390px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Riforma', sans-serif;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+.screen {
+  width: 390px;
+  height: 844px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* Top bar */
+.top-bar {
+  padding: 52px 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.back-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text);
+}
+
+/* Logo area */
+.logo-area {
+  padding: 28px 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Step dots */
+.step-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  margin-top: 2px;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bg-4);
+}
+.dot.active {
+  width: 18px;
+  border-radius: 3px;
+  background: var(--red);
+}
+
+/* Heading */
+.onb-heading {
+  font-family: 'Riforma', sans-serif;
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  text-align: center;
+  margin-bottom: 8px;
+  padding: 0 16px;
+}
+.onb-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-3);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Mood Grid */
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 0 16px;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.mood-grid::-webkit-scrollbar { display: none; }
+
+.mood-tile {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-2);
+  background: var(--bg-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.mood-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.mood-tile.selected {
+  border-color: var(--red);
+  background: rgba(0,20,137,0.06);
+}
+.mood-tile.selected::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--red);
+  background-image: url("data:image/svg+xml,%3Csvg width='8' height='8' viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 5L4.3 7.5L8 2.5' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.mood-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+.mood-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: -0.2px;
+  text-align: center;
+  line-height: 1.2;
+}
+.mood-tile.selected .mood-label { color: var(--red); }
+
+/* Bottom actions */
+.bottom-actions {
+  padding: 16px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.btn-continue {
+  width: 100%;
+  height: 50px;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Riforma', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-skip {
+  width: 100%;
+  height: 36px;
+  background: none;
+  color: var(--text-3);
+  border: none;
+  font-family: 'Riforma', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <!-- invisible spacer -->
+    <div style="width:34px;"></div>
+  </div>
+
+  <!-- Logo + step -->
+  <div class="logo-area">
+    <img src="brand_assets/Mubi_logo_icon_only.svg" alt="MUBI" style="height:28px; margin-bottom:18px; filter: invert(1) brightness(0);">
+    <div class="step-dots">
+      <div class="dot"></div>
+      <div class="dot active"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <!-- Heading -->
+  <div class="onb-heading">What moves you?</div>
+  <div class="onb-sub">Select all that resonate</div>
+
+  <!-- Mood Grid -->
+  <div class="mood-grid">
+
+    <div class="mood-tile selected">
+      <span class="mood-icon">🎞</span>
+      <span class="mood-label">Slow Cinema</span>
+    </div>
+
+    <div class="mood-tile">
+      <span class="mood-icon">✊</span>
+      <span class="mood-label">Political</span>
+    </div>
+
+    <div class="mood-tile selected">
+      <span class="mood-icon">💛</span>
+      <span class="mood-label">Romantic</span>
+    </div>
+
+    <div class="mood-tile">
+      <span class="mood-icon">😨</span>
+      <span class="mood-label">Disturbing</span>
+    </div>
+
+    <div class="mood-tile selected">
+      <span class="mood-icon">🔬</span>
+      <span class="mood-label">Experimental</span>
+    </div>
+
+    <div class="mood-tile">
+      <span class="mood-icon">😂</span>
+      <span class="mood-label">Funny</span>
+    </div>
+
+    <div class="mood-tile selected">
+      <span class="mood-icon">🌅</span>
+      <span class="mood-label">Nostalgic</span>
+    </div>
+
+    <div class="mood-tile">
+      <span class="mood-icon">⚡</span>
+      <span class="mood-label">Thrilling</span>
+    </div>
+
+    <div class="mood-tile selected">
+      <span class="mood-icon">👤</span>
+      <span class="mood-label">Personal</span>
+    </div>
+
+    <div class="mood-tile">
+      <span class="mood-icon">🌍</span>
+      <span class="mood-label">Epic</span>
+    </div>
+
+    <div class="mood-tile selected">
+      <span class="mood-icon">🔮</span>
+      <span class="mood-label">Mysterious</span>
+    </div>
+
+    <div class="mood-tile">
+      <span class="mood-icon">🌿</span>
+      <span class="mood-label">Poetic</span>
+    </div>
+
+  </div>
+
+  <!-- Bottom Actions -->
+  <div class="bottom-actions">
+    <button class="btn-continue">
+      Continue
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M5 12H19M13 6L19 12L13 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="btn-skip">Skip for now</button>
+  </div>
+
+</div>
+<script>
+// Continue → home
+document.querySelector('.btn-continue')?.addEventListener('click', () => location.href = 'mubi-home-light.html');
+// Skip → home
+document.querySelector('.btn-skip')?.addEventListener('click', () => location.href = 'mubi-home-light.html');
+// Back → previous (account taste preferences entry point)
+document.querySelector('.back-btn')?.addEventListener('click', () => history.length > 1 ? history.back() : location.href = 'mubi-account-light.html');
+// Toggle mood tiles
+document.querySelectorAll('.mood-tile').forEach(tile => {
+  tile.addEventListener('click', () => tile.classList.toggle('selected'));
+});
+</script>
+</body>
+</html>

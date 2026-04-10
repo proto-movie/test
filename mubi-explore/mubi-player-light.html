@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>MUBI — Player (Light)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..1000&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'Riforma';
+  font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2');
+  font-weight: bold;
+}
+
+:root {
+  --bg:       #F5F4F0;
+  --bg-2:     #EDECEA;
+  --bg-3:     #E4E3DF;
+  --bg-4:     #D9D8D4;
+  --text:     #111111;
+  --text-2:   #484848;
+  --text-3:   #959595;
+  --red:      #001489;
+  --border:   rgba(0,0,0,0.09);
+  --border-2: rgba(0,0,0,0.17);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 390px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Riforma', sans-serif;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+.screen {
+  width: 390px;
+  height: 844px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* Status Bar (dark on light bg) */
+.status-bar {
+  height: 44px;
+  padding: 14px 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.status-time { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; color: var(--text); }
+.status-icons { display: flex; align-items: center; gap: 7px; }
+
+/* Video Area — dark exception */
+.video-area {
+  width: 390px;
+  height: 220px;
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+.video-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 90% at 50% 50%, rgba(30,50,120,0.4) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 80% 20%, rgba(100,20,40,0.3) 0%, transparent 50%),
+    linear-gradient(160deg, #0D1229 0%, #1A0D18 50%, #0A0A0A 100%);
+}
+.video-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+.video-top {
+  position: absolute;
+  top: 12px; left: 12px; right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.video-back {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.video-title-block { text-align: center; }
+.video-title-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.9);
+  text-transform: uppercase;
+  letter-spacing: -0.3px;
+}
+.video-right-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.play-btn-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Scrubber + Controls */
+.player-controls {
+  padding: 14px 16px 10px;
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.time-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.time-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2px;
+}
+.scrubber-track {
+  width: 100%;
+  height: 3px;
+  background: var(--bg-4);
+  border-radius: 2px;
+  position: relative;
+  margin-bottom: 14px;
+}
+.scrubber-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 38%;
+  background: var(--red);
+  border-radius: 2px;
+}
+.scrubber-thumb {
+  position: absolute;
+  top: 50%;
+  left: 38%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 3px rgba(0,20,137,0.2);
+}
+.controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+.ctrl-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.ctrl-btn.main {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+}
+.ctrl-extras {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ctrl-small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+/* Film Info Below */
+.film-info-below {
+  padding: 16px 16px 0;
+  border-top: 1px solid var(--border);
+}
+.now-playing-eye {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 5px;
+}
+.playing-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: -0.4px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.playing-director {
+  font-size: 12px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+  margin-bottom: 16px;
+}
+
+/* Chapter */
+.chapter-row {
+  padding: 14px 16px;
+  background: var(--bg-2);
+  border-radius: 8px;
+  margin: 0 16px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border);
+}
+.chapter-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+  color: var(--text-3);
+  margin-bottom: 3px;
+}
+.chapter-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: -0.3px;
+}
+.chapter-time {
+  font-size: 12px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="#111111">
+        <rect x="0"    y="8"   width="3" height="4"   rx="0.5" opacity="0.25"/>
+        <rect x="4.5"  y="5.5" width="3" height="6.5" rx="0.5" opacity="0.25"/>
+        <rect x="9"    y="3"   width="3" height="9"   rx="0.5"/>
+        <rect x="13.5" y="0"   width="3" height="12"  rx="0.5"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+        <path d="M8 10C8.55 10 9 10.45 9 11S8.55 12 8 12 7 11.55 7 11 7.45 10 8 10Z" fill="#111111"/>
+        <path d="M5.2 8C6.2 7 7 6.5 8 6.5S9.8 7 10.8 8" stroke="#111111" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M2.8 5.5C4.5 3.8 6.1 3 8 3S11.5 3.8 13.2 5.5" stroke="#111111" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M0.5 3C3 0.8 5.3 0 8 0S13 0.8 15.5 3" stroke="#111111" stroke-width="1.2" stroke-linecap="round" opacity="0.25"/>
+      </svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+        <rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#111111" stroke-opacity="0.3"/>
+        <rect x="22" y="4" width="2.5" height="4" rx="1" fill="#111111" fill-opacity="0.35"/>
+        <rect x="2" y="2" width="17" height="8" rx="2" fill="#111111"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Video Area (dark) -->
+  <div class="video-area">
+    <div class="video-bg"></div>
+    <div class="video-grain"></div>
+    <div class="video-top">
+      <div class="video-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="rgba(255,255,255,0.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="video-title-block">
+        <div class="video-title-label">In the Mood for Love</div>
+      </div>
+      <div class="video-right-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v9m0 0l-3-3m3 3l3-3M7 16h10a2 2 0 002-2v-1" stroke="rgba(255,255,255,0.9)" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="play-btn-center">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <polygon points="6,3 20,12 6,21" fill="rgba(255,255,255,0.9)"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Player Controls -->
+  <div class="player-controls">
+    <div class="time-row">
+      <span class="time-label">35:14</span>
+      <span class="time-label">1:38:00</span>
+    </div>
+    <div class="scrubber-track">
+      <div class="scrubber-fill"></div>
+      <div class="scrubber-thumb"></div>
+    </div>
+    <div class="controls-row">
+      <!-- 15s back -->
+      <div class="ctrl-btn">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M2 7L2 12L7 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="6" y="15" font-size="6" fill="currentColor" font-family="sans-serif" font-weight="600">15</text>
+        </svg>
+      </div>
+      <!-- Play/Pause main -->
+      <div class="ctrl-btn main">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <rect x="6" y="4" width="4" height="16" rx="1" fill="white"/>
+          <rect x="14" y="4" width="4" height="16" rx="1" fill="white"/>
+        </svg>
+      </div>
+      <!-- 15s forward -->
+      <div class="ctrl-btn">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M22 7L22 12L17 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="6" y="15" font-size="6" fill="currentColor" font-family="sans-serif" font-weight="600">15</text>
+        </svg>
+      </div>
+    </div>
+    <div class="ctrl-extras">
+      <div class="ctrl-small">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <polygon points="11,5 2,12 11,19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <polygon points="22,5 13,12 22,19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        1.0×
+      </div>
+      <div class="ctrl-small">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Vol
+      </div>
+      <div class="ctrl-small">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        HD
+      </div>
+      <div class="ctrl-small">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8 21H16M12 17V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M7 8H17M7 11H12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity="0.6"/>
+        </svg>
+        CC
+      </div>
+    </div>
+  </div>
+
+  <!-- Film Info Below Fold -->
+  <div class="film-info-below">
+    <div class="now-playing-eye">Now Playing</div>
+    <div class="playing-title">In the Mood<br>for Love</div>
+    <div class="playing-director">Wong Kar-wai · 2000 · 1h 38m</div>
+  </div>
+
+  <!-- Chapter Info -->
+  <div class="chapter-row">
+    <div>
+      <div class="chapter-label">Up Next</div>
+      <div class="chapter-title">Happy Together</div>
+    </div>
+    <div class="chapter-time">1h 36m</div>
+  </div>
+
+</div>
+<script>
+// Back arrow → film detail
+document.querySelector('.video-back')?.addEventListener('click', () => location.href = 'mubi-film-detail-light.html');
+// Back arrow in page header (below video)
+document.querySelector('.film-info-below svg')?.addEventListener('click', () => location.href = 'mubi-film-detail-light.html');
+// Up Next chapter → home (next film)
+document.querySelector('.chapter-row')?.addEventListener('click', () => location.href = 'mubi-film-detail-light.html');
+</script>
+</body>
+</html>
