@@ -28,16 +28,27 @@
 }
 
 :root {
-  --bg:       #F5F4F0;
-  --bg-2:     #EDECEA;
-  --bg-3:     #E4E3DF;
-  --bg-4:     #D9D8D4;
+  --bg:       #f0f2f6;
+  --bg-2:     #e4e8f0;
+  --bg-3:     #d6dbe6;
+  --bg-4:     #c8cedb;
   --text:     #111111;
   --text-2:   #484848;
   --text-3:   #959595;
   --red:      #001489;
   --border:   rgba(0,0,0,0.09);
   --border-2: rgba(0,0,0,0.17);
+}
+.dark {
+  --bg:       #0d1117;
+  --bg-2:     #161c26;
+  --bg-3:     #1e2533;
+  --bg-4:     #262e3f;
+  --text:     #e8edf5;
+  --text-2:   #a8b4c8;
+  --text-3:   #6b7a94;
+  --border:   rgba(168,180,200,0.08);
+  --border-2: rgba(168,180,200,0.15);
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -74,6 +85,9 @@ html, body {
 .page-header {
   padding: 10px 16px 0;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .page-title {
   font-family: 'Riforma', sans-serif;
@@ -123,57 +137,58 @@ html, body {
 /* Featured Hero Card */
 .featured-hero {
   margin: 12px 16px;
-  border-radius: 10px;
   overflow: hidden;
   height: 168px;
   position: relative;
   cursor: pointer;
-  border: 1px solid var(--border);
 }
 .fh-bg {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 80% 100% at 90% 0%, rgba(30,60,160,0.12) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 60% at 10% 80%, rgba(180,20,40,0.08) 0%, transparent 50%),
-    linear-gradient(158deg, #D6E2F4 0%, #E4D6EE 50%, #EEE2D2 100%);
+  background-size: cover;
+  background-position: center;
 }
-.fh-grain {
+.fh-scrim {
   position: absolute;
   inset: 0;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 180px;
+}
+.fh-treatment {
+  display: block;
+  max-height: 80px;
+  max-width: 80%;
+  object-fit: contain;
+  object-position: left center;
+  margin-bottom: 6px;
 }
 .fh-content {
   position: absolute;
   inset: 0;
-  padding: 16px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
 }
-.fh-eyebrow {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--red);
-  margin-bottom: 6px;
-}
 .fh-title {
   font-family: 'Riforma', sans-serif;
-  font-size: 22px;
+  font-size: 19px;
   font-weight: bold;
-  color: var(--text);
+  color: #fff;
   text-transform: uppercase;
   letter-spacing: -0.4px;
-  line-height: 1;
-  margin-bottom: 6px;
+  line-height: 1.05;
+  margin-bottom: 5px;
+}
+.fh-subtitle {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.72);
+  text-transform: uppercase;
+  letter-spacing: 0.1px;
+  margin-bottom: 5px;
 }
 .fh-count {
   font-size: 11px;
-  color: var(--text-3);
+  color: rgba(255,255,255,0.55);
   text-transform: uppercase;
   letter-spacing: -0.1px;
 }
@@ -181,9 +196,8 @@ html, body {
   position: absolute;
   top: 14px;
   right: 14px;
-  background: rgba(0,20,137,0.08);
-  border: 1px solid rgba(0,20,137,0.2);
-  color: var(--red);
+  background: rgba(0,0,0,0.35);
+  color: rgba(255,255,255,0.85);
   font-size: 8px;
   font-weight: 800;
   letter-spacing: 1.5px;
@@ -197,117 +211,73 @@ html, body {
   padding: 0 16px;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 160px;
   gap: 10px;
 }
 
 .coll-card {
-  border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  border: 1px solid var(--border);
+  background: var(--bg-3);
+  height: 100%;
 }
 
 .coll-card-bg {
-  height: 130px;
-  position: relative;
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
 }
 
-.coll-card-overlay {
-  padding: 30px 10px 10px;
-  background: linear-gradient(to top, rgba(245,244,240,1) 0%, rgba(245,244,240,0.6) 60%, transparent 100%);
-  margin-top: -20px;
-  position: relative;
+.coll-card-bg-scrim {
+  position: absolute;
+  inset: 0;
 }
 
-.coll-card-eyebrow {
-  font-size: 7.5px;
-  font-weight: 800;
-  letter-spacing: 1.3px;
-  text-transform: uppercase;
-  color: var(--red);
+.coll-treatment-img {
+  display: block;
+  max-height: 50px;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left bottom;
   margin-bottom: 4px;
+}
+
+.coll-card-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px 10px 8px;
+  min-height: 68px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
 }
 .coll-card-title {
   font-family: 'Riforma', sans-serif;
   font-size: 12px;
   font-weight: 500;
-  color: var(--text);
   text-transform: uppercase;
-  letter-spacing: -0.3px;
-  line-height: 1.15;
-  margin-bottom: 4px;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+  margin-bottom: 3px;
+  color: #ffffff;
+}
+.coll-card-subtitle {
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: -0.1px;
+  line-height: 1.2;
+  margin-bottom: 3px;
+  color: #ffffff;
 }
 .coll-card-meta {
-  font-size: 10px;
-  color: var(--text-3);
-}
-.coll-type-badge {
-  display: inline-block;
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 2px;
-  margin-bottom: 5px;
-}
-.badge-editorial {
-  background: rgba(0,20,137,0.07);
-  border: 1px solid rgba(0,20,137,0.18);
-  color: var(--red);
-}
-.badge-festival {
-  background: rgba(120,80,10,0.07);
-  border: 1px solid rgba(120,80,10,0.2);
-  color: #7A500A;
-}
-.badge-director {
-  background: rgba(60,100,20,0.07);
-  border: 1px solid rgba(60,100,20,0.2);
-  color: #3A6414;
-}
-
-/* Card BG gradients */
-.cb-1 {
-  background:
-    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(150,20,20,0.09) 0%, transparent 60%),
-    linear-gradient(160deg, #F0D8D8 0%, #F8E8D4 100%);
-}
-.cb-2 {
-  background:
-    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(60,30,160,0.09) 0%, transparent 60%),
-    linear-gradient(160deg, #E0D8F2 0%, #EAE4F8 100%);
-}
-.cb-3 {
-  background:
-    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(20,80,40,0.09) 0%, transparent 60%),
-    linear-gradient(160deg, #D8EEE2 0%, #E8F4D8 100%);
-}
-.cb-4 {
-  background:
-    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(20,50,120,0.09) 0%, transparent 60%),
-    linear-gradient(160deg, #DDE8F4 0%, #D8EEF4 100%);
-}
-.cb-5 {
-  background:
-    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(120,10,150,0.09) 0%, transparent 60%),
-    linear-gradient(160deg, #EEDDF8 0%, #F4E8D4 100%);
-}
-.cb-6 {
-  background:
-    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(120,80,10,0.09) 0%, transparent 60%),
-    linear-gradient(160deg, #F4EDD4 0%, #F8EDD4 100%);
-}
-.cb-7 {
-  background:
-    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(120,50,20,0.09) 0%, transparent 60%),
-    linear-gradient(160deg, #F0E6DC 0%, #F4EAD4 100%);
-}
-.cb-8 {
-  background:
-    radial-gradient(ellipse 70% 80% at 80% 10%, rgba(50,50,70,0.09) 0%, transparent 60%),
-    linear-gradient(160deg, #E6E6EE 0%, #EDEDF4 100%);
+  font-size: 14px;
+  opacity: 0.5;
 }
 
 /* Bottom Nav */
@@ -367,110 +337,39 @@ html, body {
   <!-- Page Header -->
   <div class="page-header">
     <div class="page-title">Collections</div>
+    <button id="theme-toggle" style="background:none;border:none;cursor:pointer;padding:0;color:var(--text-2);display:flex;align-items:center;">
+      <svg id="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z" fill="currentColor"/>
+      </svg>
+      <svg id="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <line x1="12" y1="2" x2="12" y2="5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="19" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="2" y1="12" x2="5" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="19" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="19.78" y1="4.22" x2="17.66" y2="6.34" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="6.34" y1="17.66" x2="4.22" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
   </div>
 
   <!-- Filter Tabs -->
   <div class="filter-tabs">
-    <div class="filter-tab active">All</div>
-    <div class="filter-tab">Festivals</div>
-    <div class="filter-tab">Directors</div>
-    <div class="filter-tab">Themes</div>
-    <div class="filter-tab">Countries</div>
+    <div class="filter-tab active">Recently Added</div>
+    <div class="filter-tab">Spotlight</div>
+    <div class="filter-tab">Director Focus</div>
+    <div class="filter-tab">Awards &amp; Festivals</div>
+    <div class="filter-tab">Decade</div>
+    <div class="filter-tab">Region</div>
   </div>
 
   <!-- Scrollable Content -->
   <div class="content">
-
-    <!-- Featured Hero -->
-    <div class="featured-hero">
-      <div class="fh-bg"></div>
-      <div class="fh-grain"></div>
-      <div class="fh-badge">Festival</div>
-      <div class="fh-content">
-        <div class="fh-eyebrow">Collection</div>
-        <div class="fh-title">Cannes Palme<br>d'Or Winners</div>
-        <div class="fh-count">76 films · Curated by MUBI</div>
-      </div>
-    </div>
-
-    <!-- Grid -->
-    <div class="coll-grid" style="padding-bottom: 24px;">
-
-      <div class="coll-card">
-        <div class="coll-card-bg cb-2"></div>
-        <div class="coll-card-overlay">
-          <div class="coll-type-badge badge-director">Director</div>
-          <div class="coll-card-title">Wong Kar-wai</div>
-          <div class="coll-card-meta">11 films</div>
-        </div>
-      </div>
-
-      <div class="coll-card">
-        <div class="coll-card-bg cb-3"></div>
-        <div class="coll-card-overlay">
-          <div class="coll-type-badge badge-editorial">Theme</div>
-          <div class="coll-card-title">Slow Cinema</div>
-          <div class="coll-card-meta">28 films</div>
-        </div>
-      </div>
-
-      <div class="coll-card">
-        <div class="coll-card-bg cb-4"></div>
-        <div class="coll-card-overlay">
-          <div class="coll-type-badge badge-festival">Festival</div>
-          <div class="coll-card-title">Berlin Golden Bear</div>
-          <div class="coll-card-meta">54 films</div>
-        </div>
-      </div>
-
-      <div class="coll-card">
-        <div class="coll-card-bg cb-5"></div>
-        <div class="coll-card-overlay">
-          <div class="coll-type-badge badge-editorial">Theme</div>
-          <div class="coll-card-title">Women Directors</div>
-          <div class="coll-card-meta">42 films</div>
-        </div>
-      </div>
-
-      <div class="coll-card">
-        <div class="coll-card-bg cb-6"></div>
-        <div class="coll-card-overlay">
-          <div class="coll-type-badge badge-editorial">Era</div>
-          <div class="coll-card-title">1990s World Cinema</div>
-          <div class="coll-card-meta">67 films</div>
-        </div>
-      </div>
-
-      <div class="coll-card">
-        <div class="coll-card-bg cb-7"></div>
-        <div class="coll-card-overlay">
-          <div class="coll-type-badge badge-director">Director</div>
-          <div class="coll-card-title">Pedro Costa</div>
-          <div class="coll-card-meta">9 films</div>
-        </div>
-      </div>
-
-      <div class="coll-card">
-        <div class="coll-card-bg cb-1"></div>
-        <div class="coll-card-overlay">
-          <div class="coll-type-badge badge-director">Director</div>
-          <div class="coll-card-title">Late Godard</div>
-          <div class="coll-card-meta">7 films</div>
-        </div>
-      </div>
-
-      <div class="coll-card">
-        <div class="coll-card-bg cb-8"></div>
-        <div class="coll-card-overlay">
-          <div class="coll-type-badge badge-editorial">Theme</div>
-          <div class="coll-card-title">The Experimental Canon</div>
-          <div class="coll-card-meta">44 films</div>
-        </div>
-      </div>
-
-    </div>
-
-  </div><!-- /content -->
+    <div id="featured-hero" class="featured-hero"></div>
+    <div class="coll-grid" id="coll-grid" style="padding-bottom: 24px;"></div>
+  </div>
 
   <!-- Bottom Nav -->
   <nav class="bottom-nav">
@@ -482,10 +381,12 @@ html, body {
     </div>
     <div class="nav-tab active-tab">
       <svg class="nav-icon active" width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
-        <path d="M9.5 9L16 12L9.5 15V9Z" fill="currentColor" opacity="0.7"/>
+        <rect x="3" y="3" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="13" y="3" width="8" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="13" y="11" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="3" y="15" width="8" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
       </svg>
-      <span class="nav-label active">Films</span>
+      <span class="nav-label active">Collections</span>
       <div class="nav-dot"></div>
     </div>
     <div class="nav-tab">
@@ -512,18 +413,126 @@ html, body {
 
 </div>
 <script>
+// Blend hex colour with white at given ratio (0=hex, 1=white)
+function tintColor(hex, ratio) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  const tr = Math.round(r + (255-r)*ratio), tg = Math.round(g + (255-g)*ratio), tb = Math.round(b + (255-b)*ratio);
+  return `rgb(${tr},${tg},${tb})`;
+}
+// Pick black or white text based on luminance of tinted bg
+function textColor(hex, ratio) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  const tr = r + (255-r)*ratio, tg = g + (255-g)*ratio, tb = b + (255-b)*ratio;
+  const lum = (0.299*tr + 0.587*tg + 0.114*tb) / 255;
+  return lum > 0.55 ? '#111111' : '#ffffff';
+}
+
+const COLLECTIONS = [{"slug": "stories-from-home", "title": "Stories from Home", "subtitle": "", "items": "8", "img": "https://images.mubicdn.net/images/film_group/2427/cache-1123199-1774976126/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/965622/cache-965622-1774976211/images-original.png", "color": "#1f2822", "override": "", "synopsis": "A house can tell us much (or suspiciously little) about its inhabitants, and the drama of that dynamic is plum…"}, {"slug": "akinola-davies-jr", "title": "A Tender Age:", "subtitle": "Two by Akinola Davies Jr.", "items": "2", "img": "https://images.mubicdn.net/images/film/280320/cache-1118619-1773167098/image-w1280.jpg", "treatment": "", "color": "#5C524A", "override": "", "synopsis": "Akinola Davies Jr. writes his acclaimed coming-of-age films with his brother, resurfacing shared memories of w…"}, {"slug": "my-undesirable-friends", "title": "My Undesirable Friends", "subtitle": "Part I — Last Air in Moscow", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2372/cache-1113941-1774540230/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/962089/cache-962089-1774539298/images-original.png", "color": "#000e57", "override": "", "synopsis": "Across five potent, immersive chapters, this vital work of long-form filmmaking accompanies young women journa…"}, {"slug": "jonathan-demme", "title": "Windows to the Soul:", "subtitle": "Three by Jonathan Demme", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2343/cache-1122122-1774544993/image-original.jpg", "treatment": "", "color": "#000000", "override": "", "synopsis": "A jack-of-all-trades who mastered them too, Jonathan Demme could seemingly do anything. The films of this grea…"}, {"slug": "kleber-tropical-uk", "title": "Kleber Mendonça Filho", "subtitle": "Tropical Anxieties", "items": "7", "img": "https://images.mubicdn.net/images/film_group/2338/cache-1107199-1769616277/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/912299/cache-912299-1769616369/images-original.png", "color": "#ce5346", "override": "", "synopsis": "With his Oscar®-nominated The Secret Agent arriving in cinemas, this collection traces the evolution of Kleber…"}, {"slug": "sorrentino-servillo", "title": "Double Act:", "subtitle": "Paolo Sorrentino and Toni Servillo", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2334/cache-1116815-1772105919/image-original.png", "treatment": "", "color": "#001530", "override": "", "synopsis": "Director Paolo Sorrentino and actor Toni Servillo have worked side-by-side for fifteen years, shaping filmmaki…"}, {"slug": "women-misbehaving-tbd", "title": "Outta the Way!:", "subtitle": "Women at Play", "items": "17", "img": "https://images.mubicdn.net/images/film_group/2327/cache-1117761-1772628250/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/938791/cache-938791-1772638397/images-original.png", "color": "#181c2f", "override": "", "synopsis": "Name-calling, brat energy, clowning around: There are 101 ways to stick it to the man when you’re a woman—and …"}, {"slug": "wiseman-america", "title": "Frederick Wiseman", "subtitle": "American Lives", "items": "8", "img": "https://images.mubicdn.net/images/film_group/2322/cache-1120607-1773938368/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/954922/cache-954922-1773927413/images-original.png", "color": "#616164", "override": "", "synopsis": "The documentary filmmaker Frederick Wiseman, who died in February 2026, didn’t confine his filmmaking to the U…"}, {"slug": "douglas-sirk-double-bill", "title": "In the Realm of Melodrama", "subtitle": "Two by Douglas Sirk", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2300/cache-1109893-1769015801/image-original.jpg", "treatment": "", "color": "#070708", "override": "", "synopsis": "Douglas Sirk’s opulent Technicolor melodramas weaponize sensation to mount sophisticated critiques of social c…"}, {"slug": "udo-kier", "title": "Udo Kier:", "subtitle": "Scene Stealer", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2294/cache-1099025-1764175886/image-original.jpg", "treatment": "", "color": "#5057b9", "override": "", "synopsis": "With his piercing gaze and sonorous voice, Udo Kier was an indelible presence onscreen, lending gravitas and a…"}, {"slug": "heart-before-head", "title": "Heart Before Head", "subtitle": "The Rom-Com Variations", "items": "8", "img": "https://images.mubicdn.net/images/film_group/2282/cache-1108409-1768323631/image-original.jpg", "treatment": "", "color": "#E18C8C", "override": "", "synopsis": "Look away from the classics, and alternative rom-coms appear across cinema history, hidden there like little l…"}, {"slug": "big-five-oscars", "title": "“Big Five”", "subtitle": "Oscar Winners", "items": "12", "img": "https://images.mubicdn.net/images/film_group/2281/cache-1112672-1770998218/image-original.png", "treatment": "", "color": "#86352b", "override": "", "synopsis": "Some Academy Awards® may be said to sparkle more than others. For those lucky few who win the prize for best p…"}, {"slug": "buster-keaton-uk", "title": "Crash, Bang, Wallop", "subtitle": "The Cinema of Buster Keaton", "items": "4", "img": "https://images.mubicdn.net/images/film_group/2280/cache-1103822-1766052242/image-original.jpg", "treatment": "", "color": "#000000", "override": "", "synopsis": "The most modern of the silent clowns, Buster Keaton expanded the possibilities of filmmaking both behind the c…"}, {"slug": "series", "title": "Next Episode:", "subtitle": "Series", "items": "5", "img": "https://images.mubicdn.net/images/film_group/2270/cache-1101953-1765795400/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/891908/cache-891908-1765795577/images-original.png", "color": "#581504", "override": "", "synopsis": "The series is a generous form, inspiring filmmakers to greater heights of ambition and invention. Whether imme…"}, {"slug": "shooting-stars", "title": "Shooting Stars:", "subtitle": "Hollywood's Next Legends", "items": "11", "img": "https://images.mubicdn.net/images/film_group/2262/cache-1106013-1769087130/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/904832/cache-904832-1768299161/images-original.png", "color": "#AB53C9", "override": "", "synopsis": "While young stars move at lightning speed from one project to the next, there is pleasure in revisiting those …"}, {"slug": "billy-wilder-comedies", "title": "Nobody's Perfect", "subtitle": "Three Comedies by Billy Wilder", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2261/cache-1103737-1765995195/image-original.png", "treatment": "", "color": "#bfbfbf", "override": "", "synopsis": "Billy Wilder and I. A. L. Diamond are one of the greatest writer-director duos of Hollywood’s golden age. Brin…"}, {"slug": "jafar-panahi-collection", "title": "Cinema by Any Means:", "subtitle": "A Jafar Panahi Retrospective", "items": "9", "img": "https://images.mubicdn.net/images/film_group/2259/cache-1116877-1772128427/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/941872/cache-941872-1772831268/images-original.png", "color": "#D39B84", "override": "", "synopsis": "Dedicated to the irrepressible auteur Jafar Panahi, this retrospective celebrates a towering figure of artisti…"}, {"slug": "asian-avant-garde", "title": "Between Tides", "subtitle": "Asian Avant-garde", "items": "9", "img": "https://images.mubicdn.net/images/film_group/2258/cache-1107566-1768211205/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/903322/cache-903322-1768211104/images-original.png", "color": "#171717", "override": "", "synopsis": "Presented by MUBI in partnership with CHANEL Culture Fund and M+ Museum, this collection celebrates the bold v…"}, {"slug": "new-years", "title": "Should Old Acquaintance Be Forgot?", "subtitle": "New Year's on Film", "items": "4", "img": "https://images.mubicdn.net/images/film_group/2237/cache-1102440-1765372921/image-original.png", "treatment": "", "color": "#3e003e", "override": "", "synopsis": "One of the most visually splendorous and emotionally poignant days of the year, New Year’s Eve offers filmmake…"}, {"slug": "emma-seligman", "title": "Double Act:", "subtitle": "Emma Seligman and Rachel Sennott", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2229/cache-1102663-1765453260/image-original.png", "treatment": "", "color": "#ac34b7", "override": "", "synopsis": "The formidable cowriting partnership of director Emma Seligman and actor Rachel Sennott has changed the face o…"}, {"slug": "truly-madly-deeply", "title": "Truly, Madly, Deeply", "subtitle": "", "items": "19", "img": "https://images.mubicdn.net/images/film_group/2222/cache-1099251-1770724682/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/923044/cache-923044-1770978556/images-original.png", "color": "#342B19", "override": "", "synopsis": "Romance can be uncomplicated for some: fall in love, walk into the sunset, and live happily ever after. That, …"}, {"slug": "trans-awareness-week", "title": "Trans Awareness Week", "subtitle": "Four Essentials of Trans Cinema", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2208/cache-1095456-1762430599/image-original.png", "treatment": "", "color": "#2478b6", "override": "", "synopsis": "These essentials of trans cinema examine the multitude of experiences and identities within the trans communit…"}, {"slug": "dream-factory", "title": "Dream Factory:", "subtitle": "Los Angeles on Screen", "items": "7", "img": "https://images.mubicdn.net/images/film_group/2207/cache-1089517-1760610226/image-original.png", "treatment": "", "color": "#611F41", "override": "", "synopsis": "Hope and cynicism, illusion and reality, pornography and art: Los Angeles is a fascinating tangle of contradic…"}, {"slug": "2025-debuts", "title": "Maiden Voyages:", "subtitle": "2025's Outstanding Debut Women Directors", "items": "6", "img": "https://images.mubicdn.net/images/film_group/2180/cache-1086843-1761060008/image-original.jpg", "treatment": "", "color": "#3e4c98", "override": "", "synopsis": "It’s harvest time, and we’re celebrating the year’s bumper crop of debut features by women and non-binary dire…"}, {"slug": "video-nasties", "title": "Ban This Sick Filth!", "subtitle": "Video Nasties", "items": "4", "img": "https://images.mubicdn.net/images/film_group/2174/cache-1089351-1760633031/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/873356/cache-873356-1760633894/images-original.png", "color": "#000000", "override": "", "synopsis": "In the summer of 1982, Britain’s high streets were engulfed in moral panic. “Ban video sadism now,” roared one…"}, {"slug": "back-in-the-game", "title": "Back in the Game", "subtitle": "", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2161/cache-1083103-1757608376/image-original.png", "treatment": "", "color": "#000000", "override": "", "synopsis": "Few things unite the entertainment press like an actor’s return to play. Showcasing three revelatory performan…"}, {"slug": "adam-driver", "title": "Performers We Love:", "subtitle": "Adam Driver", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2160/cache-1081673-1756981760/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/854008/cache-854008-1756982477/images-original.png", "color": "#362b46", "override": "", "synopsis": "A devoted craftsman, playful as he is serious, Adam Driver stands apart as one of the more daring and delibera…"}, {"slug": "lone-rangers", "title": "People are Strange:", "subtitle": "Outsiders on Film", "items": "6", "img": "https://images.mubicdn.net/images/film_group/2146/cache-1081017-1756803991/image-original.jpg", "treatment": "", "color": "#142eb3", "override": "", "synopsis": "Outlaws, eccentrics, and strays: Cinema throngs with unconventional characters who go their own way. This coll…"}, {"slug": "1980s-on-screen", "title": "More More More", "subtitle": "Films From the 80s", "items": "4", "img": "https://images.mubicdn.net/images/film_group/2132/cache-1076080-1754990876/image-original.jpg", "treatment": "", "color": "#e56ca8", "override": "", "synopsis": "In an era of rapid economic growth that promised opulence for all, the filmmakers of this collection reckoned …"}, {"slug": "locarno-db", "title": "Against the Grain", "subtitle": "Two from Locarno", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2123/cache-1073872-1753466641/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/846931/cache-846931-1753912017/images-original.png", "color": "#2d5bb3", "override": "", "synopsis": "Committed to championing new voices, the Locarno Film Festival is home to the future of cinema. This collectio…"}, {"slug": "alex-ross-perry-db", "title": "Reunion Tour", "subtitle": "Two by Alex Ross Perry", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2121/cache-1078371-1755534144/image-original.jpg", "treatment": "", "color": "#9fdc8e", "override": "", "synopsis": "Alex Ross Perry is no people-pleaser, whether exposing egos through uniquely nervy character studies or experi…"}, {"slug": "uhd-restorations", "title": "Now in Glorious 4K!", "subtitle": "", "items": "8", "img": "https://images.mubicdn.net/images/film_group/2108/cache-1110729-1769692419/image-original.jpg", "treatment": "", "color": "#1e4d62", "override": "", "synopsis": "With crystal-clear images and immersive sound, these sublime 4K restorations reveal stunning detail in beloved…"}, {"slug": "welcome-to-twin-peaks", "title": "Welcome to Twin Peaks", "subtitle": "", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2085/cache-1059922-1748447788/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/779787/cache-779787-1748444972/images-original.png", "color": "#202F2B", "override": "", "synopsis": "All is not what it seems in this place “both wonderful and strange,” where the woods hold ancient secrets, and…"}, {"slug": "shinji-somai-db", "title": "Tides of Youth", "subtitle": "Two by Shinji Sômai", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2077/cache-1067500-1750945667/image-original.jpg", "treatment": "", "color": "#68ca7a", "override": "", "synopsis": "Revered by the likes of Ryusuke Hamaguchi and Kiyoshi Kurosawa, Shinji Sômai bottles the rain and the sunshine…"}, {"slug": "rob-epstein-db", "title": "Queer Histories, Reclaimed", "subtitle": "Two by Rob Epstein", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2070/cache-1066121-1750345235/image-original.jpg", "treatment": "", "color": "#88425d", "override": "", "synopsis": "Vital archival documents, these two acclaimed documentaries by Rob Epstein bring queer lives, perspectives, an…"}, {"slug": "90s-araki", "title": "Totally F***ed Up", "subtitle": "Two ’90s Cuts by Gregg Araki", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2065/cache-1059914-1748425322/image-original.jpg", "treatment": "", "color": "#2b3bb6", "override": "", "synopsis": "Obsessed with sex yet haunted by mortality, these uninhibited, often outrageous films from Los Angeles icon Gr…"}, {"slug": "the-summer-blues", "title": "The Summer Blues", "subtitle": "", "items": "19", "img": "https://images.mubicdn.net/images/film_group/2059/cache-1067106-1750774313/image-original.jpg", "treatment": "", "color": "#548FB1", "override": "", "synopsis": "Sunshine can feel like a balm for the soul. But for the melancholy characters in this collection, the radiance…"}, {"slug": "ulman-db", "title": "Fake It, Make It", "subtitle": "Two by Amalia Ulman", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2058/cache-1058078-1747756611/image-original.png", "treatment": "", "color": "#bc84a0", "override": "", "synopsis": "With variably resourceful characters faking it until they make it, Amalia Ulman’s cinema is all about the hust…"}, {"slug": "this-is-not-coming-out-story", "title": "This Is Not a Coming Out Story", "subtitle": "", "items": "26", "img": "https://images.mubicdn.net/images/film_group/2054/cache-1058328-1747848375/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/779686/cache-779686-1748351832/images-original.png", "color": "#f06461", "override": "", "synopsis": "While coming-out stories are vital to dismantling the celluloid closet, well-worn narratives have also left au…"}, {"slug": "orlando", "title": "Beyond Binaries", "subtitle": "An Orlando Double Bill", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2046/cache-1052919-1747929093/image-original.png", "treatment": "", "color": "#0B0E0E", "override": "", "synopsis": "The free spirit of Virginia Woolf’s Orlando thrums through this collection, which offers two singular interpre…"}, {"slug": "food-and-film", "title": "Let's Eat! Food and Film", "subtitle": "", "items": "12", "img": "https://images.mubicdn.net/images/film_group/2045/cache-1067503-1764038396/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/886298/cache-886298-1764082302/images-original.png", "color": "#d7dfd7", "override": "", "synopsis": "More than mere prop, food is the main event in this collection. We can’t eat the screen, but these films are a…"}, {"slug": "bonello-bertrand", "title": "Time Out of Mind", "subtitle": "Films by Bertrand Bonello", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2004/cache-1032734-1738170517/image-original.png", "treatment": "", "color": "#121A33", "override": "", "synopsis": "More than modern, the cinema of Bertrand Bonello is visionary. Running through his diverse filmography is an a…"}, {"slug": "post-apocalypse", "title": "After the End", "subtitle": "Postapocalyptic Cinema", "items": "4", "img": "https://images.mubicdn.net/images/film_group/2002/cache-1045197-1742925979/image-original.png", "treatment": "", "color": "#000000", "override": "", "synopsis": "Living among civilization’s ruins, the embattled characters in this collection fight to survive, against the o…"}, {"slug": "rejtman-martin", "title": "Humor and Melancholy", "subtitle": "The Cinema of Martín Rejtman", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1998/cache-1034275-1757326303/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/857035/cache-857035-1757326285/images-original.png", "color": "#db2a0f", "override": "", "synopsis": "The films of Argentinian auteur Martín Rejtman have the beauty of feeling familiar while at the same time surp…"}, {"slug": "grand-tour", "title": "Grand Tour", "subtitle": "Cinematic Travelogues", "items": "9", "img": "https://images.mubicdn.net/images/film_group/1997/cache-1047243-1743673025/image-original.png", "treatment": "", "color": "#4B4B4B", "override": "", "synopsis": "Away from home, the travelers of this collection reveal more of themselves than usual. Though their journeys v…"}, {"slug": "animated-desires", "title": "Animated Desires", "subtitle": "", "items": "9", "img": "https://images.mubicdn.net/images/film_group/1995/cache-1050260-1744887018/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/768959/cache-768959-1744891160/images-original.png", "color": "#292929", "override": "", "synopsis": "Outrageous, hilarious, NSFW—these irresistible shorts depict desire with titillation and irreverence. Crafting…"}, {"slug": "our-body-our-choice", "title": "Our Body, Our Choice", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1978/cache-1039622-1741014392/image-original.png", "treatment": "", "color": "#A86B58", "override": "", "synopsis": "In the fight for women’s bodily autonomy, cinema has not stayed on the sidelines. Featuring women who unsettle…"}, {"slug": "women-action", "title": "A Piece of the Action", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1967/cache-1039105-1740502718/image-original.jpg", "treatment": "", "color": "#88260D", "override": "", "synopsis": "The action genre has long been perceived as a boys’ club. From the mountains of Corsica to the Moroccan desert…"}, {"slug": "will-they-wont-they", "title": "Will They?", "subtitle": "Won't They?", "items": "12", "img": "https://images.mubicdn.net/images/film_group/1950/cache-1032454-1739441154/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/757852/cache-757852-1739441439/images-original.png", "color": "#534445", "override": "", "synopsis": "For the wandering hearts in this collection, romance can blossom at first sight, or it can take its sweet time…"}, {"slug": "two-ads-nwr", "title": "House of NWR", "subtitle": "Two Ads by Nicolas Winding Refn", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1938/cache-1029515-1737043363/image-original.png", "treatment": "", "color": "#0b0d1f", "override": "", "synopsis": "Much like the luxury brands that commissioned the films in this collection, Nicolas Winding Refn lets his styl…"}, {"slug": "handpicked-mati-diop", "title": "Hand-picked by Mati Diop", "subtitle": "", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1937/cache-1017144-1738675214/image-original.jpeg", "treatment": "https://images.mubicdn.net/images/artworks/747564/cache-747564-1733247571/images-original.png", "color": "#47392C", "override": "", "synopsis": "Winner of the Golden Bear at the 2024 Berlinale, Mati Diop’s Dahomey  is a vital work of cinematic imagination…"}, {"slug": "try-the-substance", "title": "Try the Substance", "subtitle": "", "items": "6", "img": "https://images.mubicdn.net/images/film_group/1896/cache-1005300-1729616130/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/726319/cache-726319-1729675411/images-original.png", "color": "#248900", "override": "", "synopsis": "If you are enjoying The Substance, then you could be a candidate for an increased intake. Good news! The next …"}, {"slug": "midnight-mubi", "title": "You Up?", "subtitle": "Midnight Movies", "items": "6", "img": "https://images.mubicdn.net/images/film_group/1879/cache-1006652-1732275509/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/744441/cache-744441-1732275428/images-original.png", "color": "#000000", "override": "", "synopsis": "Prepare to enter a world of vice and excess with this erotically charged collection of midnight movies. From s…"}, {"slug": "sean-baker", "title": "Diamonds in the Rough", "subtitle": "Two by Sean Baker", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1876/cache-1007308-1729696979/image-original.png", "treatment": "", "color": "#C68CDE", "override": "", "synopsis": "Sean Baker’s American misfits lead risky, adventurous lives—and his spirited films take us along for the ride.…"}, {"slug": "raul-valeria-trilogy", "title": "Playing with Time", "subtitle": "Films by Raúl Ruiz and Valeria Sarmiento", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1871/cache-1007634-1729776626/image-original.png", "treatment": "", "color": "#4D3B31", "override": "", "synopsis": "Once wandering in a state of exile, the unfinished projects left behind by Chilean maestro Raúl Ruiz have gain…"}, {"slug": "coralie-fargeat-focus", "title": "A New You:", "subtitle": "Three by Coralie Fargeat", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1866/cache-1009595-1757325689/image-original.jpg", "treatment": "", "color": "#efb833", "override": "", "synopsis": "Seduced by the thought of a new you? Change is a double-edged sword in The Substance and two other films by Co…"}, {"slug": "girls-uk", "title": "Not Just a Girl", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1826/cache-997844-1726678445/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/707920/cache-707920-1726740289/images-original.png", "color": "#000000", "override": "", "synopsis": "Read as “difficult” in the eyes of the patriarchy, the young women in our collection carve out their own paths…"}, {"slug": "modern-love", "title": "Modern Lovers", "subtitle": "", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1825/cache-994560-1725362420/image-original.png", "treatment": "", "color": "#296549", "override": "", "synopsis": "Does the guy get the girl? Do they live happily ever after? The films in this collection have no time for such…"}, {"slug": "ross-brothers-db", "title": "Chasing Rainbows", "subtitle": "A Ross Brothers Double Bill", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1819/cache-973977-1717663623/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/692363/cache-692363-1718707193/images-original.png", "color": "#0898b4", "override": "", "synopsis": "Abrading the line between fiction and nonfiction filmmaking, this collection takes to the road with the Ross B…"}, {"slug": "besties-only-uk", "title": "Besties Only", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1816/cache-988876-1722849877/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/706391/cache-706391-1726158479/images-original.png", "color": "#a9dd40", "override": "", "synopsis": "Friendship is central to the films in this collection, which assembles various cinematic examples of that most…"}, {"slug": "ira-sachs-early-works", "title": "Ira Sachs", "subtitle": "The Early Years", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1806/cache-984994-1724318588/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/702814/cache-702814-1724153507/images-original.png", "color": "#d34547", "override": "", "synopsis": "Ira Sachs is one of our favorite filmmakers, and has an astounding back catalog to confirm it. Shimmering perf…"}, {"slug": "kit-zauhar", "title": "Must We Mean What We Say?:", "subtitle": "Two by Kit Zauhar", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1801/cache-976014-1718705216/image-original.png", "treatment": "", "color": "#525BA0", "override": "", "synopsis": "Writer, director, and actor Kit Zauhar knows that actual people often speak at cross purposes; her excruciatin…"}, {"slug": "piotr-szulkin", "title": "Apocalypse Now", "subtitle": "Four Sci-Fi Parables by Piotr Szulkin", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1799/cache-989826-1723137690/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/702248/cache-702248-1723652523/images-original.png", "color": "#5B6C4A", "override": "", "synopsis": "One of the great visionaries of European cinema, Piotr Szulkin’s films are provocative allegories one and all.…"}, {"slug": "british-debuts", "title": "The Next Generation", "subtitle": "British Debuts", "items": "8", "img": "https://images.mubicdn.net/images/film_group/1781/cache-977218-1773923935/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/695351/cache-695351-1720449564/images-original.png", "color": "#36383a", "override": "", "synopsis": "Like a breath of fresh air, a new generation of directors are heralding an exciting era of British filmmaking …"}, {"slug": "luna-carmoon", "title": "Films for Gross Girls", "subtitle": "Three by Luna Carmoon", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1780/cache-975226-1718961392/image-original.png", "treatment": "", "color": "#553531", "override": "", "synopsis": "Young English talent Luna Carmoon isn’t one to gloss over the icky growing pains of girlhood—in fact, she like…"}, {"slug": "queer-spaces", "title": "A Place of Our Own", "subtitle": "Queer Spaces on Film", "items": "6", "img": "https://images.mubicdn.net/images/film_group/1753/cache-970982-1716543544/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/689904/cache-689904-1716913625/images-original.png", "color": "#162779", "override": "", "synopsis": "Comprising timeless classics and lesser-known gems, the eclectic collection offers a window onto a constellati…"}, {"slug": "one-day", "title": "Just for One Day", "subtitle": "", "items": "8", "img": "https://images.mubicdn.net/images/film_group/1735/cache-964963-1715763795/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/687628/cache-687628-1715763634/images-original.png", "color": "#3E271B", "override": "", "synopsis": "David Bowie was on to something when he sang we can be heroes / just for one day. Immersed in the lives of the…"}, {"slug": "making-of-priscilla", "title": "Priscilla", "subtitle": "Beyond the Frame", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1713/cache-955271-1711622135/image-original.png", "treatment": "", "color": "#612224", "override": "", "synopsis": "Who better to document the making of a film about a teenager than a teenager herself? Coupled with Sofia Coppo…"}, {"slug": "writers-on-screen", "title": "Between the Lines", "subtitle": "Writers on Screen", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1709/cache-958610-1712854356/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/677532/cache-677532-1712741169/images-original.png", "color": "#5D5191", "override": "", "synopsis": "What goes on between bookish lines? Are blank pages so terrifying? How do darlings get killed? Aspiring noveli…"}, {"slug": "david-lynch-fr", "title": "David Lynch", "subtitle": "Delusions and dreams", "items": "6", "img": "https://images.mubicdn.net/images/film_group/1697/cache-942175-1707135376/image-original.jpeg", "treatment": "https://images.mubicdn.net/images/artworks/754539/cache-754539-1737373405/images-original.png", "color": "#5E1916", "override": "", "synopsis": "David Lynch’s art manifests itself as an eruption of his subconscious. Fascinated by the darkness that lurks b…"}, {"slug": "women-cinematographers", "title": "Calling the Shots", "subtitle": "Women Cinematographers", "items": "5", "img": "https://images.mubicdn.net/images/film_group/1678/cache-948241-1709723949/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/671638/cache-671638-1709743464/images-original.png", "color": "#42110E", "override": "", "synopsis": "Many of the most unforgettable images in film history have been shot by women cinematographers who, against al…"}, {"slug": "oscar-international", "title": "Around the World", "subtitle": "The International Oscar", "items": "7", "img": "https://images.mubicdn.net/images/film_group/1640/cache-939906-1738836229/image-original.jpg", "treatment": "", "color": "#353451", "override": "", "synopsis": "Dialogue may be spoken in myriad tongues, but the language of cinema is universal. This collection brings toge…"}, {"slug": "love-triangles", "title": "The More the Messier", "subtitle": "Love Triangles on Film", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1636/cache-940757-1707403487/image-original.jpg", "treatment": "", "color": "#7324ff", "override": "", "synopsis": "The mathematics of attraction are far from a straightforward science. Between the sheets, two plus one can equ…"}, {"slug": "whodunit", "title": "Guess Who?", "subtitle": "Murder Mysteries", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1607/cache-927270-1701799389/image-original.jpg", "treatment": "", "color": "#F2955D", "override": "", "synopsis": "Endlessly entertaining in their devilish twists and turns, murder mysteries thrill with their alluring setting…"}, {"slug": "quentin-dupieux", "title": "Madcap Adventure", "subtitle": "Comedies by Quentin Dupieux", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1601/cache-929935-1735829126/image-original.png", "treatment": "", "color": "#628ACE", "override": "", "synopsis": "Plunging with glee into wilder-than-dreams weirdness, Quentin Dupieux is a cinematic surrealist for the 21st c…"}, {"slug": "akin-uk", "title": "Soul Cinema", "subtitle": "Films by Fatih Akin", "items": "5", "img": "https://images.mubicdn.net/images/film_group/1587/cache-910266-1696261385/image-original.jpeg", "treatment": "", "color": "#7F7C82", "override": "", "synopsis": "Moving within and beyond Germany’s borders, Fatih Akin’s transnational output is poignantly grounded in memory…"}, {"slug": "hit-the-road", "title": "Hit the Road", "subtitle": "Road Movies", "items": "7", "img": "https://images.mubicdn.net/images/film_group/1585/cache-978780-1722533743/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/699863/cache-699863-1722533868/images-original.png", "color": "#302A39", "override": "", "synopsis": "Out on the open road, the possibilities are truly endless. New horizons—and breathtaking landscapes—promise wi…"}, {"slug": "meltdown", "title": "Millennial Meltdown", "subtitle": "", "items": "9", "img": "https://images.mubicdn.net/images/film_group/1584/cache-913881-1724846235/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/703077/cache-703077-1724846408/images-original.png", "color": "#01127e", "override": "", "synopsis": "Feeling crushed under the weight of adulthood? You are not alone! These restless, lovably messy souls are also…"}, {"slug": "aki-kaurismaki", "title": "How to Be a Human", "subtitle": "Films by Aki Kaurismäki", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1576/cache-921858-1700058476/image-original.png", "treatment": "", "color": "#45414A", "override": "", "synopsis": "Few filmmakers boast a style as inimitable as the great Finnish auteur, Aki Kaurismäki. Moving to the insisten…"}, {"slug": "neo-western", "title": "Neo-westerns", "subtitle": "A New Frontier", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1545/cache-910627-1711044892/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/672325/cache-672325-1710331137/images-original.png", "color": "#C79388", "override": "", "synopsis": "A genre as old as cinema itself, the western has gone through countless cycles of fascinating reinvention. Cel…"}, {"slug": "adele-exarchopoulos", "title": "Adèle Exarchopoulos", "subtitle": "Fire Starter", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1479/cache-892583-1690457739/image-original.png", "treatment": "", "color": "#5F3917", "override": "", "synopsis": "Fiercely talented, award-winning actor Adèle Exarchopoulos is a dynamite presence in contemporary cinema. Burn…"}, {"slug": "international-booker-prize", "title": "International Booker Prize 2023", "subtitle": "", "items": "5", "img": "https://images.mubicdn.net/images/film_group/1453/cache-879692-1684514430/image-original.jpg", "treatment": "", "color": "#4D8B7D", "override": "", "synopsis": "Since 2005, the International Booker Prize has celebrated the best fiction translated into English from other …"}, {"slug": "weerasethakul", "title": "To Sleep So as to Dream:", "subtitle": "Films by Apichatpong Weerasethakul", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1421/cache-879080-1685637108/image-original.jpg", "treatment": "", "color": "#087E7D", "override": "", "synopsis": "To watch the films of Apichatpong Weerasethakul is to be set adrift through liminal, transitional spaces, wher…"}, {"slug": "short-films-big-names", "title": "Short Films", "subtitle": "Big Names", "items": "12", "img": "https://images.mubicdn.net/images/film_group/1271/cache-870688-1730911497/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/732469/cache-732469-1730912253/images-original.png", "color": "#513554", "override": "", "synopsis": "Featuring essential and thrilling shorts crafted by some of the best directors working today, this special foc…"}, {"slug": "british-cinema", "title": "British Cinema", "subtitle": "", "items": "16", "img": "https://images.mubicdn.net/images/film_group/1256/cache-825657-1666888048/image-original.jpg", "treatment": "", "color": "#84aa55", "override": "", "synopsis": "This evolving collection of films seeks to spotlight some of the most innovative British cinematic voices and …"}, {"slug": "action", "title": "Lights, Camera... Action!", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1172/cache-833380-1669659188/image-original.jpg", "treatment": "", "color": "#0E132E", "override": "", "synopsis": "It’s hard to beat the rush of adrenaline that comes with a well-staged action sequence. From punch-ups and sho…"}, {"slug": "family", "title": "Family Viewing", "subtitle": "", "items": "12", "img": "https://images.mubicdn.net/images/film_group/1142/cache-781906-1662983896/image-original.jpg", "treatment": "", "color": "#729ED7", "override": "", "synopsis": "It is never too early to become a movie lover, and our collection of family-friendly films promises a wonderfu…"}, {"slug": "souvenir", "title": "The Souvenir", "subtitle": "A Joanna Hogg Diptych", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1119/cache-776156-1741087084/image-original.jpg", "treatment": "", "color": "#412626", "override": "", "synopsis": "A profound exploration of love, grief, and the toils of the creative process, Joanna Hogg’s luminous The Souve…"}, {"slug": "tilda-swinton", "title": "The One and Only", "subtitle": "Tilda Swinton", "items": "7", "img": "https://images.mubicdn.net/images/film_group/1110/cache-805265-1662983901/image-original.png", "treatment": "", "color": "#bea3a2", "override": "", "synopsis": "Effacing the borders of gender and genre, the chameleonic Tilda Swinton embodies the infinite possibilities of…"}, {"slug": "oslo-trilogy", "title": "Joachim Trier", "subtitle": "The Oslo Trilogy", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1091/cache-767552-1662983890/image-original.jpg", "treatment": "", "color": "#a6a6a6", "override": "", "synopsis": "Spanning over fifteen years, Joachim Trier’s “Oslo” trilogy observes the unceasing march of time and modernity…"}, {"slug": "mubi-podcast", "title": "Featured on the MUBI Podcast", "subtitle": "", "items": "37", "img": "https://images.mubicdn.net/images/film_group/1085/cache-776836-1746021237/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/462316/cache-462316-1651060593/images-original.png", "color": "#704381", "override": "", "synopsis": "Every episode of the MUBI Podcast is a thrilling journey of discovery through the work of some of the world’s …"}, {"slug": "tscherkassky", "title": "The Darkroom Dreams of Peter Tscherkassky", "subtitle": "", "items": "7", "img": "https://images.mubicdn.net/images/film_group/1070/cache-760231-1662983888/image-original.jpg", "treatment": "", "color": "#65288C", "override": "", "synopsis": "To celebrate Train Again, we’re bringing together a series of Peter Tscherkassky’s analogue experiments in the…"}, {"slug": "rogowski", "title": "Franz Rogowski", "subtitle": "The Man of the Hour", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1062/cache-761412-1662983888/image-original.jpg", "treatment": "", "color": "#6E7B73", "override": "", "synopsis": "A beguiling screen presence of stunning intensity, Franz Rogowski has taken the international film world by st…"}, {"slug": "animation", "title": "Drawn to Life", "subtitle": "Animated Films", "items": "13", "img": "https://images.mubicdn.net/images/film_group/1051/cache-842926-1672261183/image-original.jpg", "treatment": "", "color": "#57719A", "override": "", "synopsis": "From startling stop-motion to mechanical innovation, the tactility of hand-drawn images to dazzling CGI: anima…"}, {"slug": "cut-to-black", "title": "Cut to Black", "subtitle": "Celebrating Black Cinema", "items": "24", "img": "https://images.mubicdn.net/images/film_group/942/cache-699904-1738001169/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/710453/cache-710453-1728057988/images-original.png", "color": "#000000", "override": "", "synopsis": "Cut to Black celebrates the incredible wealth of Black artistry, both in front of and behind the camera. From …"}, {"slug": "venice", "title": "Festival Focus", "subtitle": "Venice", "items": "36", "img": "https://images.mubicdn.net/images/film_group/941/cache-699882-1766162427/image-original.jpg", "treatment": "", "color": "#000000", "override": "", "synopsis": "For more than 90 years, filmmakers have convened on the Lido of the Venice lagoon every September for the best…"}, {"slug": "spotlight-uk", "title": "Latest & Greatest", "subtitle": "", "items": "39", "img": "https://images.mubicdn.net/images/film_group/918/cache-687040-1723138690/image-original.jpg", "treatment": "", "color": "#52443A", "override": "", "synopsis": "Showcasing some of the most inspiring and compelling new films, fresh from cinemas and festivals. A world of b…"}, {"slug": "actors-directing", "title": "Role Reversals", "subtitle": "When Actors Direct", "items": "3", "img": "https://images.mubicdn.net/images/film_group/895/cache-676183-1662983865/image-original.jpg", "treatment": "", "color": "#5B5231", "override": "", "synopsis": "From Harry Langdon to Ida Lupino, Michel Piccoli to Greta Gerwig, actors have ventured into the director’s cha…"}, {"slug": "award-winners", "title": "Golden Palms, Lions, and Bears, Oh My!", "subtitle": "Award-winning Greats", "items": "26", "img": "https://images.mubicdn.net/images/film_group/894/cache-676182-1662983865/image-original.jpg", "treatment": "", "color": "#CB821B", "override": "", "synopsis": "An integral part of cinema history, movie awards have at once shaped film canons and amplified otherwise overl…"}, {"slug": "cult-films", "title": "Embracing Infamy", "subtitle": "Cult Films", "items": "11", "img": "https://images.mubicdn.net/images/film_group/892/cache-676178-1736761839/image-original.png", "treatment": "", "color": "#541313", "override": "", "synopsis": "Presenting a collection of the weird and the wonderful. These are the pictures that were cast adrift on the ma…"}, {"slug": "coming-of-age", "title": "Growing Pains", "subtitle": "Coming-of-age Films", "items": "29", "img": "https://images.mubicdn.net/images/film_group/880/cache-671320-1747246582/image-original.jpg", "treatment": "", "color": "#0b1b75", "override": "", "synopsis": "Charting the journey from childhood into adulthood, the coming-of-age film is one of spiritual and moral awake…"}, {"slug": "1920s-masterpieces", "title": "1920s Masterpieces", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/864/cache-664884-1662983861/image-original.jpg", "treatment": "", "color": "#AEAEAE", "override": "", "synopsis": ""}, {"slug": "christian-petzold", "title": "Phantoms Among Us", "subtitle": "The Films of Christian Petzold", "items": "1", "img": "https://images.mubicdn.net/images/film_group/856/cache-664448-1662983861/image-original.jpg", "treatment": "", "color": "#0C0509", "override": "", "synopsis": "Presenting the genre riffs and spectral, in-between landscapes of Christian Petzold’s psychological thrillers.…"}, {"slug": "lgbtq", "title": "Pride Unprejudiced", "subtitle": "LGBTQ+ Cinema", "items": "40", "img": "https://images.mubicdn.net/images/film_group/852/cache-659107-1685115057/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/545281/cache-545281-1685121706/images-original.png", "color": "#381405", "override": "", "synopsis": "From intimate dramas to daring experimental features, our collection of LGBTQ+ cinema is a celebration of quee…"}, {"slug": "hrwff", "title": "25 Years of the", "subtitle": "Human Rights Watch Film Festival", "items": "3", "img": "https://images.mubicdn.net/images/film_group/823/cache-643939-1662983857/image-original.jpg", "treatment": "", "color": "#545233", "override": "", "synopsis": "To celebrate the 25th edition of Human Rights Watch Film Festival in London, running from the 18-26 March, we …"}, {"slug": "romance", "title": "In the Mood", "subtitle": "for Love", "items": "35", "img": "https://images.mubicdn.net/images/film_group/569/cache-618227-1662983854/image-original.jpg", "treatment": "", "color": "#cc551e", "override": "", "synopsis": "Get ready to fall in love with some of our favorite cinematic romances. Whether it’s the thrill of that first …"}, {"slug": "festival-focus-locarno", "title": "Festival Focus:", "subtitle": "Locarno Film Festival", "items": "33", "img": "https://images.mubicdn.net/images/film_group/568/cache-589519-1724149977/image-original.jpg", "treatment": "", "color": "#d2ba41", "override": "", "synopsis": "Taking place in a scenic lakeside Swiss town every August, the Locarno Film Festival is home to the grandmaste…"}, {"slug": "horror", "title": "Fear on Film", "subtitle": "", "items": "24", "img": "https://images.mubicdn.net/images/film_group/564/cache-603845-1760011691/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/870776/cache-870776-1760020540/images-original.png", "color": "#000000", "override": "", "synopsis": "Like a sneaky ghost on a moonless night, Halloween season is already upon us. For this spookiest time of the y…"}, {"slug": "1990s-masterpieces", "title": "1990s Masterpieces", "subtitle": "", "items": "19", "img": "https://images.mubicdn.net/images/film/311/cache-8078-1745489497/image-w1280.jpg", "treatment": "", "color": "#7E6C55", "override": "", "synopsis": ""}, {"slug": "1960s-masterpieces", "title": "1960s Masterpieces", "subtitle": "", "items": "12", "img": "https://images.mubicdn.net/images/film_group/528/cache-578126-1662983839/image-original.jpg", "treatment": "", "color": "#181222", "override": "", "synopsis": ""}, {"slug": "1970s-masterpieces", "title": "1970s Masterpieces", "subtitle": "", "items": "6", "img": "https://images.mubicdn.net/images/film_group/527/cache-578346-1662983839/image-original.jpg", "treatment": "", "color": "#220F15", "override": "", "synopsis": ""}, {"slug": "1980s-masterpieces", "title": "1980s Masterpieces", "subtitle": "", "items": "7", "img": "https://images.mubicdn.net/images/film_group/526/cache-579965-1662983839/image-original.jpg", "treatment": "", "color": "#565656", "override": "", "synopsis": ""}, {"slug": "portrait-of-artists", "title": "Portrait of the Artist", "subtitle": "", "items": "7", "img": "https://images.mubicdn.net/images/film_group/513/cache-602200-1724752747/image-original.jpg", "treatment": "", "color": "#7D5712", "override": "", "synopsis": "A series of portraits of the most influential artists of our time, whose work spans a wide range of crafts and…"}, {"slug": "short-films", "title": "Shorts", "subtitle": "", "items": "58", "img": "https://images.mubicdn.net/images/film_group/495/cache-547119-1662983836/image-original.jpg", "treatment": "", "color": "#5C5544", "override": "", "synopsis": "Throughout cinema history, short filmmaking has been at the vanguard of formal and storytelling experimentatio…"}, {"slug": "documentaries", "title": "Documentaries", "subtitle": "", "items": "68", "img": "https://images.mubicdn.net/images/film_group/494/cache-547118-1743443121/image-original.jpg", "treatment": "", "color": "#6E4872", "override": "", "synopsis": "Think talking heads and archive footage, or imagine flies on walls: What nonfiction cinema encompasses changes…"}, {"slug": "comedies", "title": "Funny Ha Ha", "subtitle": "", "items": "58", "img": "https://images.mubicdn.net/images/film_group/493/cache-619961-1774544124/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/674490/cache-674490-1711102671/images-original.png", "color": "#6EBCE7", "override": "", "synopsis": "Everyone could do with a good laugh. From slapstick and screwball to arthouse subversion and sharp political s…"}, {"slug": "women-directors", "title": "Reframing", "subtitle": "Women Directors", "items": "99", "img": "https://images.mubicdn.net/images/film_group/492/cache-546708-1680272042/image-original.jpg", "treatment": "", "color": "#63417D", "override": "", "synopsis": "This collection showcases work by women auteurs spanning a diverse array of themes, styles, and genres. It’s t…"}, {"slug": "films-about-films", "title": "Films about Films", "subtitle": "", "items": "15", "img": "https://images.mubicdn.net/images/film_group/488/cache-546705-1773222202/image-original.jpg", "treatment": "", "color": "#888888", "override": "", "synopsis": "Like the best of magicians, cinema delights in hiding its tricks. More than love letters to an art form, the f…"}, {"slug": "modern-masterpieces", "title": "Modern Masterpieces", "subtitle": "", "items": "34", "img": "https://images.mubicdn.net/images/film_group/487/cache-546706-1746021876/image-original.jpg", "treatment": "", "color": "#2C242B", "override": "", "synopsis": ""}, {"slug": "film-festival-favorites", "title": "Film Festival", "subtitle": "Favorites", "items": "70", "img": "https://images.mubicdn.net/images/film_group/486/cache-546707-1662983833/image-original.jpg", "treatment": "", "color": "#3D2020", "override": "", "synopsis": ""}, {"slug": "festival-focus-berlinale", "title": "Festival Focus", "subtitle": "Berlinale", "items": "40", "img": "https://images.mubicdn.net/images/film_group/713/cache-609153-1766161979/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/521262/cache-521262-1676372039/images-original.png", "color": "#000000", "override": "", "synopsis": "Widely celebrated for showcasing socially and politically engaged cinema, the Berlinale is one of the highligh…"}, {"slug": "mubi-music-fest", "title": "Turn It Up", "subtitle": "Music on Film", "items": "8", "img": "https://images.mubicdn.net/images/film_group/392/cache-695810-1722534145/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/699864/cache-699864-1722534053/images-original.png", "color": "#372D25", "override": "", "synopsis": "The adrenaline-pumping vibrations that musical performances elicit are at once physical and spiritual. Encompa…"}, {"slug": "hoss-petzold", "title": "Double Act:", "subtitle": "Nina Hoss & Christian Petzold", "items": "0", "img": "https://images.mubicdn.net/images/film_group/387/cache-689908-1691080653/image-original.png", "treatment": "", "color": "#D38300", "override": "", "synopsis": "The collaboration of Christian Petzold and Nina Hoss has been an alchemical pairing with few worthy rivals in …"}, {"slug": "juliette-binoche", "title": "Juliette Binoche", "subtitle": "The Woman With a Thousand Faces", "items": "5", "img": "https://images.mubicdn.net/images/film_group/370/cache-547071-1673634555/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/223181/cache-223181-1621566745/images-original.png", "color": "#010101", "override": "", "synopsis": "Our screens would look different (duller! worse!) without four decades of the incomparable Juliette Binoche, w…"}, {"slug": "viewfinder", "title": "Viewfinder", "subtitle": "", "items": "9", "img": "https://images.mubicdn.net/images/film_group/700/cache-609141-1662983849/image-original.jpg", "treatment": "", "color": "#9DADA8", "override": "", "synopsis": "A globetrotting survey of bold storytelling and essential perspectives on the world."}, {"slug": "rediscovered", "title": "Rediscovered", "subtitle": "", "items": "12", "img": "https://images.mubicdn.net/images/film_group/698/cache-609139-1766162191/image-original.jpg", "treatment": "", "color": "#000000", "override": "", "synopsis": "Exclusive restorations and revivals of classic, under-known, and once-lost films."}, {"slug": "the-new-auteurs", "title": "The New Auteurs", "subtitle": "", "items": "13", "img": "https://images.mubicdn.net/images/film_group/696/cache-609137-1662983849/image-original.jpg", "treatment": "", "color": "#020F14", "override": "", "synopsis": "Distinct visions from emerging artists and rising filmmakers."}, {"slug": "brief-encounters", "title": "Brief Encounters", "subtitle": "", "items": "18", "img": "https://images.mubicdn.net/images/film_group/695/cache-609136-1766162199/image-original.jpg", "treatment": "", "color": "#000000", "override": "", "synopsis": "New short films by some of the best up-and-coming as well as established filmmakers and artists."}, {"slug": "debuts", "title": "Debuts", "subtitle": "", "items": "15", "img": "https://images.mubicdn.net/images/film_group/693/cache-609133-1766162092/image-original.jpg", "treatment": "", "color": "#000000", "override": "", "synopsis": "A celebration of first features that hail the arrival of exciting directors."}, {"slug": "adaptations", "title": "Adaptations", "subtitle": "", "items": "29", "img": "https://images.mubicdn.net/images/film_group/328/cache-547043-1762181778/image-original.jpg", "treatment": "", "color": "#a33d37", "override": "", "synopsis": "The adaptation of pre-existing texts has long been a foundation of film art, as directors make fascinating cho…"}, {"slug": "laura-huertas-millan", "title": "Ethnographic Fictions", "subtitle": "Spotlight on Laura Huertas Millán", "items": "2", "img": "https://images.mubicdn.net/images/film/162435/cache-186735-1745493416/image-w1280.jpg", "treatment": "", "color": "#594F48", "override": "", "synopsis": "Even if Colombia-born, France-based artist filmmaker Laura Huertas Millán has so far only worked with short an…"}, {"slug": "festival-focus-rotterdam", "title": "Festival Focus", "subtitle": "Rotterdam", "items": "32", "img": "https://images.mubicdn.net/images/film_group/314/cache-633277-1674151755/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/515097/cache-515097-1674209876/images-original.png", "color": "#455768", "override": "", "synopsis": "A constant vanguard for daring, risk-taking cinema, the lauded International Film Festival Rotterdam (IFFR) ar…"}, {"slug": "kieslowski", "title": "Krzysztof Kieślowski:", "subtitle": "Three Colors Trilogy", "items": "3", "img": "https://images.mubicdn.net/images/film_group/677/cache-609116-1686578647/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/857034/cache-857034-1757326085/images-original.png", "color": "#1035a2", "override": "", "synopsis": "Krzysztof Kieślowski’s ambitious and interconnected trilogy deciphers the mysteries of the human condition. St…"}, {"slug": "bynwr", "title": "Restored By Nicolas Winding Refn", "subtitle": "", "items": "24", "img": "https://images.mubicdn.net/images/film_group/185/cache-547041-1662983834/image-original.jpg", "treatment": "", "color": "#1B1B1B", "override": "", "synopsis": "“It was a myth… No one had ever seen it.” —Nicolas Winding Refn on The Nest of the Cuckoo Birds Welcome to the…"}, {"slug": "indies", "title": "American Indies", "subtitle": "", "items": "26", "img": "https://images.mubicdn.net/images/film_group/124/cache-547301-1742903483/image-original.jpg", "treatment": "", "color": "#6C3329", "override": "", "synopsis": "American low-budget, outside-the-mainstream films seem to be populating our watchlists today more than ever. O…"}, {"slug": "oscars", "title": "And the Oscar Goes to...", "subtitle": "", "items": "44", "img": "https://images.mubicdn.net/images/film_group/114/cache-661125-1773252490/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/290798/cache-290798-1621574935/images-original.png", "color": "#000000", "override": "", "synopsis": "Star-studded and Oscar®-nominated—some winners, some losers—the films here are among the choicest cuts from th…"}, {"slug": "first-films-first", "title": "First Films First", "subtitle": "", "items": "15", "img": "https://images.mubicdn.net/images/film_group/106/cache-547094-1764851440/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/508329/cache-508329-1671820315/images-original.png", "color": "#3A6C7F", "override": "", "synopsis": "A director’s first film can provide the roadmap for an entire oeuvre. Our series of directorial debuts revisit…"}, {"slug": "lavdiaz", "title": "It's About Time", "subtitle": "The Cinema of Lav Diaz", "items": "7", "img": "https://images.mubicdn.net/images/film_group/58/cache-546275-1727187183/image-original.png", "treatment": "", "color": "#292929", "override": "", "synopsis": "This spotlight focuses on the visionary films of renowned Filipino auteur Lav Diaz. His sprawling sagas of the…"}, {"slug": "reichardt", "title": "American Outsider:", "subtitle": "The Films of Kelly Reichardt", "items": "5", "img": "https://images.mubicdn.net/images/film_group/45/cache-684209-1759486416/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/868730/cache-868730-1759485591/images-original.png", "color": "#c2c2c2", "override": "", "synopsis": "Kelly Reichardt is, quite simply, one of the most distinctive voices in independent cinema, often reframing ho…"}];
+
+// Render featured hero (first collection)
+const DEFAULT_HERO = COLLECTIONS[0];
+const DIRECTOR_HERO = COLLECTIONS.find(c => c.slug === 'david-lynch-fr') || DEFAULT_HERO;
+
+const HERO_BG_POSITION = {
+  'david-lynch-fr': 'center 20%'
+};
+const HERO_TREATMENT_HEIGHT = {
+  'david-lynch-fr': '36px'
+};
+
+function renderHero(col) {
+  const fColor = col.override || col.color;
+  const bgPos = HERO_BG_POSITION[col.slug] || 'center';
+  const treatH = HERO_TREATMENT_HEIGHT[col.slug] || '80px';
+  document.getElementById('featured-hero').innerHTML = `
+    <div class="fh-bg" style="background-image:url('${col.img}'); background-color:${fColor}; background-position:${bgPos}"></div>
+    <div class="fh-scrim" style="background:linear-gradient(to top, ${fColor} 0%, transparent 60%)"></div>
+    <div class="fh-content">
+      ${col.treatment
+        ? `<img class="fh-treatment" src="${col.treatment}" alt="${col.title}" style="max-height:${treatH}">`
+        : `<div class="fh-title">${col.title}</div>`}
+      ${col.subtitle ? `<div class="fh-subtitle">${col.subtitle}</div>` : ''}
+    </div>
+  `;
+}
+
+renderHero(DEFAULT_HERO);
+
+const DIRECTOR_SLUGS = new Set([
+  'buster-keaton-uk','jafar-panahi-collection','2025-debuts','rejtman-martin',
+  'david-lynch-fr','christian-petzold','women-directors','the-new-auteurs',
+  'lavdiaz','reichardt'
+]);
+
+function getCategory(c) {
+  if (DIRECTOR_SLUGS.has(c.slug)) return 'director';
+  return 'all';
+}
+
+// Render grid (all collections except featured)
+const grid = document.getElementById('coll-grid');
+function renderCard(c) {
+  const card = document.createElement('div');
+  card.className = 'coll-card';
+  card.dataset.category = getCategory(c);
+  const col = c.override || c.color;
+  card.style.backgroundColor = col;
+  card.innerHTML = `
+    <div class="coll-card-bg" style="background-image:url('${c.img}'); background-color:${col}">
+      <div class="coll-card-bg-scrim" style="background:linear-gradient(to top, ${col} 0%, transparent 90%)"></div>
+    </div>
+    <div class="coll-card-info" style="background:linear-gradient(to bottom, transparent, ${col} 20px); color:#ffffff">
+      ${c.treatment
+        ? `<img class="coll-treatment-img" src="${c.treatment}" alt="${c.title}">`
+        : c.subtitle
+          ? `<div class="coll-card-title">${c.title}</div>
+             <div class="coll-card-subtitle">${c.subtitle}</div>`
+          : `<div class="coll-card-subtitle">${c.title}</div>`
+      }
+    </div>
+  `;
+  card.addEventListener('click', () => location.href = 'mubi-film-detail-light.html');
+  return card;
+}
+
+COLLECTIONS.slice(1).forEach(c => grid.appendChild(renderCard(c)));
+
+// Tab filtering
+let activeFilter = 'all';
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const label = tab.textContent.trim().toLowerCase();
+    activeFilter = label === 'director focus' ? 'director' : 'all';
+    renderHero(activeFilter === 'director' ? DIRECTOR_HERO : DEFAULT_HERO);
+    document.getElementById('featured-hero').addEventListener('click', () => location.href = 'mubi-film-detail-light.html');
+    document.querySelectorAll('.coll-card').forEach(card => {
+      const show = activeFilter === 'all' || card.dataset.category === activeFilter;
+      card.style.display = show ? '' : 'none';
+    });
+  });
+});
+
+// Featured hero click
+document.getElementById('featured-hero').addEventListener('click', () => location.href = 'mubi-film-detail-light.html');
+
+// Theme toggle
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const isDark = document.querySelector('.screen').classList.toggle('dark');
+  document.querySelector('html').classList.toggle('dark', isDark);
+  document.getElementById('icon-moon').style.display = isDark ? 'none' : '';
+  document.getElementById('icon-sun').style.display = isDark ? '' : 'none';
+});
+
 // Bottom nav
 document.querySelectorAll('.nav-tab').forEach(tab => {
   const label = tab.querySelector('.nav-label');
   if (!label) return;
-  const map = {Home:'mubi-home-light.html',Films:'mubi-collections-light.html',Search:'mubi-search-mobile-light.html',Watchlist:'mubi-watchlist-light.html',Account:'mubi-account-light.html'};
+  const map = {Home:'mubi-home-light.html',Collections:'mubi-collections-light.html',Search:'mubi-search-mobile-light.html',Watchlist:'mubi-watchlist-light.html',Account:'mubi-account-light.html'};
   const dest = map[label.textContent.trim()];
   if (dest) tab.addEventListener('click', () => location.href = dest);
 });
-// Featured hero → film detail
-document.querySelector('.featured-hero')?.addEventListener('click', () => location.href = 'mubi-film-detail-light.html');
-// Collection grid cards → film detail
-document.querySelectorAll('.coll-card').forEach(c => c.addEventListener('click', () => location.href = 'mubi-film-detail-light.html'));
 </script>
 </body>
 </html>

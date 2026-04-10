@@ -537,10 +537,12 @@ html, body {
     </div>
     <div class="nav-tab">
       <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M9.5 9L16 12L9.5 15V9Z" fill="currentColor" opacity="0.45"/>
+        <rect x="3" y="3" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="13" y="3" width="8" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="13" y="11" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="3" y="15" width="8" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
       </svg>
-      <span class="nav-label">Films</span>
+      <span class="nav-label">Collections</span>
     </div>
     <div class="nav-tab">
       <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -622,7 +624,7 @@ sortOptions.forEach(opt => {
 document.querySelectorAll('.nav-tab').forEach(tab => {
   const label = tab.querySelector('.nav-label');
   if (!label) return;
-  const map = {Home:'mubi-home-light.html',Films:'mubi-collections-light.html',Search:'mubi-search-mobile-light.html',Watchlist:'mubi-watchlist-light.html',Account:'mubi-account-light.html'};
+  const map = {Home:'mubi-home-light.html',Collections:'mubi-collections-light.html',Search:'mubi-search-mobile-light.html',Watchlist:'mubi-watchlist-light.html',Account:'mubi-account-light.html'};
   const dest = map[label.textContent.trim()];
   if (dest) tab.addEventListener('click', () => location.href = dest);
 });
