@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Film Database — MUBI</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <style>
+    @font-face { font-family: 'Riforma'; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-weight: 500; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-weight: bold; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-style: italic; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2'); }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Riforma, Helvetica, Arial, sans-serif;
+      background: #fff;
+      color: #323232;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; padding: 0; }
+
+    /* ─── CONTAINER ─── */
+    .wrap { width: 100%; padding: 0 20px; margin: 0 auto; }
+    @media (min-width: 810px)  { .wrap { padding: 0 22px; max-width: 836px; } }
+    @media (min-width: 1186px) { .wrap { max-width: 1124px; } }
+    @media (min-width: 1562px) { .wrap { max-width: 1500px; } }
+
+    /* ─── HEADER / NAV ─── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #fff;
+      border-bottom: 1px solid #EAEAEA;
+      height: 60px;
+    }
+    @media (min-width: 1186px) { .site-header { height: 50px; } }
+
+    .nav-desktop {
+      display: none;
+    }
+    @media (min-width: 1186px) {
+      .nav-desktop {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 22px;
+        max-width: 1124px;
+        margin: 0 auto;
+      }
+    }
+    @media (min-width: 1562px) { .nav-desktop { max-width: 1500px; } }
+
+    .nav-logo { flex-shrink: 0; padding-right: 21px; display: flex; align-items: center; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      align-self: flex-end;
+      margin-bottom: 7px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .nav-link {
+      display: block;
+      padding: 0 15px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      line-height: 24px;
+      color: rgba(0,0,0,0.45);
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { color: #323232; }
+    .nav-link.is-active { color: #323232; }
+    .nav-search {
+      display: flex; align-items: center; align-self: flex-end;
+      margin-bottom: 8px; margin-right: 6px; flex-shrink: 0;
+      opacity: 0.5; transition: opacity 0.15s;
+    }
+    .nav-search:hover { opacity: 1; }
+
+    .nav-avatar {
+      display: flex; align-items: center;
+      padding: 0 8px 0 15px;
+    }
+    .nav-avatar img {
+      width: 22px; height: 22px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .nav-hamburger {
+      display: flex; align-items: center;
+      padding: 0 8px 0 8px;
+      color: rgba(0,0,0,0.45);
+    }
+    .nav-hamburger:hover { color: #323232; }
+    .nav-hamburger-wrap { position: relative; }
+
+    .nav-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: #fff;
+      border: 1px solid #E0E0E0;
+      min-width: 200px;
+      z-index: 200;
+    }
+    .nav-dropdown.open { display: block; }
+    .nav-dropdown a {
+      display: block;
+      padding: 9px 16px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #666;
+      white-space: nowrap;
+    }
+    .nav-dropdown a:hover { color: #323232; background: #F8F8F8; }
+    .nav-dropdown-sep { height: 1px; background: #E8E8E8; margin: 4px 0; }
+
+    /* ─── CROSSFADE CAROUSEL ─── */
+    .carousel-outer {
+      position: relative;
+      height: 70vh;
+      min-height: 320px;
+      overflow: hidden;
+      margin-top: 24px;
+      margin-bottom: 40px;
+      background: #111;
+    }
+    .carousel-track {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .carousel-slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 1.4s ease;
+    }
+    .carousel-slide.is-active { opacity: 1; }
+
+    .hero-still {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: 50% 20%;
+    }
+    .hero-grad-1 {
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.4) 100%),
+        linear-gradient(to top, transparent 0%, transparent 70%, rgba(0,0,0,0.25) 90%, rgba(0,0,0,0.35) 100%);
+    }
+    .hero-grad-2 {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(to top, rgba(0,0,0,0.375) 0%, transparent 50%);
+    }
+
+    /* Info overlay */
+    .hero-info {
+      position: absolute;
+      inset: 0;
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px 40px 36px;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .hero-info * { pointer-events: auto; }
+
+    /* Label row: eyebrow + nav controls side by side */
+    .hero-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+    .hero-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .hero-nav-btn {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 50%;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      padding: 0;
+    }
+    .hero-nav-btn:hover { border-color: #fff; color: #fff; }
+    .hero-nav-counter {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      white-space: nowrap;
+      min-width: 32px;
+      text-align: center;
+    }
+
+    /* Rank + title stacked */
+    .hero-rank {
+      font-family: Riforma, sans-serif;
+      font-size: clamp(38px, 4.5vw, 64px);
+      font-weight: bold;
+      color: rgba(255,255,255,0.1);
+      line-height: 0.85;
+      letter-spacing: -3px;
+      margin-bottom: 0;
+    }
+    .hero-title-text {
+      font-family: Riforma, sans-serif;
+      font-size: clamp(22px, 2.8vw, 40px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.3px;
+      line-height: 1.04;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .hero-meta { display: flex; flex-direction: column; gap: 3px; }
+    .hero-meta-director-row { display: flex; align-items: baseline; gap: 7px; }
+    .hero-meta-label {
+      font-size: 11px; font-weight: 400;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: rgba(255,255,255,0.5);
+    }
+    .hero-meta-director {
+      font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.3px;
+      color: rgba(255,255,255,0.9);
+    }
+    .hero-meta-country-row {
+      font-size: 12px; font-weight: 400;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.55);
+    }
+
+    /* ─── PAGE TITLE ─── */
+    .page-hero {
+      padding: 32px 0 20px;
+    }
+    .page-subtitle {
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(0,0,0,0.45);
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    /* ─── DB SEARCH ─── */
+    .db-search {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 18px 0 20px;
+      border-bottom: 1px solid #E0E0E0;
+      margin-bottom: 28px;
+      cursor: text;
+    }
+    .db-search-icon {
+      flex-shrink: 0;
+      opacity: 0.55;
+      width: 40px;
+      height: 40px;
+    }
+    .db-search-input {
+      flex: 1;
+      font-family: Riforma, sans-serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: #323232;
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 0;
+      line-height: 1.2;
+    }
+    .db-search-input::placeholder {
+      color: rgba(0,0,0,0.28);
+    }
+    @media (min-width: 1186px) {
+      .db-search-input { font-size: 26px; }
+      .db-search-icon { width: 46px; height: 46px; }
+    }
+
+    .page-tabs {
+      display: flex;
+      border-bottom: 1px solid #EAEAEA;
+    }
+    .page-tab {
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: rgba(0,0,0,0.45);
+      padding: 10px 0;
+      margin-right: 24px;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+      transition: color 0.15s;
+      text-decoration: none;
+    }
+    .page-tab:hover { color: #323232; }
+    .page-tab.is-active { color: #323232; border-bottom-color: #323232; }
+    .page-title {
+      font-family: Riforma, sans-serif;
+      font-size: 32px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      color: #323232;
+    }
+
+    /* ─── FILM GRID ─── */
+    .page-body { padding: 32px 0 80px; }
+
+    .film-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 4px;
+      row-gap: 36px;
+    }
+    @media (min-width: 650px)  { .film-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1562px) { .film-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .film-card { display: block; background: #fff; cursor: pointer; transition: background 0.1s; }
+    .film-card:hover { background: #fafafa; }
+
+    .card-img-wrap {
+      position: relative;
+      aspect-ratio: 371 / 209;
+      overflow: hidden;
+      background: #d0d0d0;
+    }
+    .card-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s ease;
+    }
+    .film-card:hover .card-img { transform: scale(1.03); }
+
+    .card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 55%, transparent 100%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 12px 14px;
+    }
+    .card-title {
+      font-family: Riforma, sans-serif;
+      font-size: 22px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: -0.1px;
+      line-height: 1.2; color: #fff;
+      margin-bottom: 1px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-meta {
+      font-family: Riforma, sans-serif;
+      font-size: 12px; font-weight: 400;
+      text-transform: uppercase; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .card-meta-director { font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-desktop">
+    <div class="nav-logo">
+      <a href="mubi-showing.html" aria-label="MUBI">
+        <svg viewBox="0 0 800 240" width="75" style="vertical-align:top" aria-hidden="true">
+          <g fill="#000000">
+            <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+            <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+            <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+            <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+            <circle cx="766.5"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="118.11" r="33.13"/>
+            <circle cx="681.2"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="33.13"  r="33.13"/>
+            <circle cx="681.2"  cy="33.13"  r="33.13"/>
+            <circle cx="595.89" cy="203.1"  r="33.13"/>
+            <circle cx="681.2"  cy="203.1"  r="33.13"/>
+          </g>
+        </svg>
+      </a>
+    </div>
+
+    <a href="#" class="nav-search" aria-label="Search">
+      <svg width="22" height="22" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M57.8497 52.1132C60.6668 48.1454 62.319 43.2855 62.319 38.021C62.319 24.6571 51.4953 13.8334 38.021 13.8334C24.657 13.8334 13.8333 24.6571 13.8333 38.021C13.8333 51.4954 24.657 62.3191 38.021 62.3191C43.2855 62.3191 48.1454 60.6668 52.1132 57.8498L63.5339 69.1667L69.1667 63.534L57.8497 52.1132ZM38.021 54.2565C29.1853 54.2565 21.8959 46.9671 21.8959 38.021C21.8959 29.1853 29.1853 21.8959 38.021 21.8959C46.9671 21.8959 54.2565 29.1853 54.2565 38.021C54.2565 46.9671 46.9671 54.2565 38.021 54.2565Z" fill="#323232"/></svg>
+    </a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="mubi-showing.html" class="nav-link">Now Showing</a>
+      <a href="explore.html" class="nav-link">Browse</a>
+      <a href="#" class="nav-link">Watchlist</a>
+    </nav>
+
+    <div style="flex: 1;"></div>
+
+    <nav class="nav-links" aria-label="Secondary navigation">
+      <a href="#" class="nav-link">Notebook</a>
+      <a href="#" class="nav-link">MUBI GO</a>
+      <a href="#" class="nav-avatar" aria-label="Profile">
+        <img src="../../brand_assets/avatar.png" alt="Profile">
+      </a>
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="toggleDropdown(event)" aria-label="More" aria-expanded="false" id="navHamburger">
+          <span class="material-icons" style="font-size:20px;">menu</span>
+        </button>
+        <div class="nav-dropdown" id="navDropdown">
+          <a href="#">Viewing History</a>
+          <a href="#">Earn 1 month free</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="film-database.html" style="color:#323232; font-weight:500;">Film Database</a>
+          <a href="#">Notebook Magazine</a>
+          <a href="#">MUBI Editions</a>
+          <a href="#">SHOP</a>
+          <a href="#">Gift MUBI</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">About</a>
+          <a href="#">Students</a>
+          <a href="#">Contribute</a>
+          <a href="#">Jobs</a>
+          <a href="#">Terms &amp; Privacy</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">Settings</a>
+          <a href="#">Help</a>
+          <a href="#">Log Out</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="page-hero">
+    <h1 class="page-title">Film Database</h1>
+    <p class="page-subtitle">Every film, series, cast &amp; crew in existence. For discovery, research, and finding what you didn't know you were looking for.</p>
+  </div>
+  <div class="db-search" onclick="this.querySelector('input').focus()">
+    <svg class="db-search-icon" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M57.8497 52.1132C60.6668 48.1454 62.319 43.2855 62.319 38.021C62.319 24.6571 51.4953 13.8334 38.021 13.8334C24.657 13.8334 13.8333 24.6571 13.8333 38.021C13.8333 51.4954 24.657 62.3191 38.021 62.3191C43.2855 62.3191 48.1454 60.6668 52.1132 57.8498L63.5339 69.1667L69.1667 63.534L57.8497 52.1132ZM38.021 54.2565C29.1853 54.2565 21.8959 46.9671 21.8959 38.021C21.8959 29.1853 29.1853 21.8959 38.021 21.8959C46.9671 21.8959 54.2565 29.1853 54.2565 38.021C54.2565 46.9671 46.9671 54.2565 38.021 54.2565Z" fill="#323232"/></svg>
+    <input class="db-search-input" type="text" placeholder="Search any film, series, cast &amp; crew out of 500,000+ films in existence" aria-label="Search the film database">
+  </div>
+  <div class="page-tabs">
+    <a href="#" class="page-tab is-active">Films</a>
+    <a href="#" class="page-tab">Series</a>
+    <a href="#" class="page-tab">Cast &amp; Crew</a>
+    <a href="#" class="page-tab">Awards &amp; Festivals</a>
+  </div>
+</div>
+
+<!-- ─── TOP 10 CROSSFADE CAROUSEL ─── -->
+<div class="wrap">
+<div class="carousel-outer" id="heroCarousel" aria-label="Top 10 releases globally in cinema">
+  <div class="carousel-track" id="carouselTrack">
+    <div class="carousel-slide is-active"><img class="hero-still" src="https://assets.mubicdn.net/images/film/400478/image-w1280.jpg" alt="" fetchpriority="high"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/400360/image-w1280.jpg" alt=""><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/360569/image-w1280.jpg" alt=""><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/255497/image-w1280.jpg" alt=""><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/332868/image-w1280.jpg" alt=""><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/441162/image-w1280.jpg" alt=""><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/422583/image-w1280.jpg" alt=""><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/400471/image-w1280.jpg" alt=""><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/400395/image-w1280.jpg" alt=""><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/354432/image-w1280.jpg" alt=""><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+  </div>
+
+  <div class="hero-info">
+    <div class="hero-label-row">
+      <span class="hero-eyebrow">Top 10 releases globally in cinema</span>
+      <div class="hero-nav">
+        <button class="hero-nav-btn" onclick="heroPrev()" aria-label="Previous">
+          <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,1 2,6 6,11"/></svg>
+        </button>
+        <span class="hero-nav-counter"><span id="heroCurrent">1</span> / 10</span>
+        <button class="hero-nav-btn" onclick="heroNext()" aria-label="Next">
+          <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,1 6,6 2,11"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="hero-rank" id="heroRank">01</div>
+    <p class="hero-title-text" id="heroTitle">Michael</p>
+    <div class="hero-meta">
+      <div class="hero-meta-director-row">
+        <span class="hero-meta-label">Directed by</span>
+        <span class="hero-meta-director" id="heroDirector">Antoine Fuqua</span>
+      </div>
+      <div class="hero-meta-country-row" id="heroMeta">United States · 2026</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<main>
+  <div class="wrap">
+    <div class="page-body">
+      <div class="film-grid" id="filmGrid"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ─── TOP 10 CAROUSEL ─── */
+const CAROUSEL_FILMS = [
+  { rank:'01', title:'Michael',               director:'Antoine Fuqua',         meta:'United States · 2026' },
+  { rank:'02', title:'Sentimental Value',      director:'Joachim Trier',          meta:'Norway · 2025' },
+  { rank:'03', title:'Die My Love',            director:'Lynne Ramsay',           meta:'United States · 2025' },
+  { rank:'04', title:'No Other Choice',        director:'Park Chan-wook',         meta:'South Korea · 2025' },
+  { rank:'05', title:'The Substance',          director:'Coralie Fargeat',        meta:'United States · 2024' },
+  { rank:'06', title:'It Was Just an Accident',director:'Jafar Panahi',           meta:'Iran · 2025' },
+  { rank:'07', title:'The Mastermind',         director:'Kelly Reichardt',        meta:'United States · 2025' },
+  { rank:'08', title:'Harvest',                director:'Athina Rachel Tsangari', meta:'United Kingdom · 2024' },
+  { rank:'09', title:'Grand Tour',             director:'Miguel Gomes',           meta:'Portugal · 2024' },
+  { rank:'10', title:'Priscilla',              director:'Sofia Coppola',          meta:'United States · 2023' },
+];
+
+let heroIndex = 0;
+let heroTimer;
+
+function heroGoTo(idx) {
+  const slides = document.querySelectorAll('.carousel-slide');
+  slides[heroIndex].classList.remove('is-active');
+  heroIndex = (idx + CAROUSEL_FILMS.length) % CAROUSEL_FILMS.length;
+  slides[heroIndex].classList.add('is-active');
+  const f = CAROUSEL_FILMS[heroIndex];
+  document.getElementById('heroRank').textContent      = f.rank;
+  document.getElementById('heroTitle').textContent     = f.title;
+  document.getElementById('heroDirector').textContent  = f.director;
+  document.getElementById('heroMeta').textContent      = f.meta;
+  document.getElementById('heroCurrent').textContent   = heroIndex + 1;
+}
+function heroNext() { clearInterval(heroTimer); heroGoTo(heroIndex + 1); heroStartAuto(); }
+function heroPrev() { clearInterval(heroTimer); heroGoTo(heroIndex - 1); heroStartAuto(); }
+function heroStartAuto() { heroTimer = setInterval(() => heroGoTo(heroIndex + 1), 6000); }
+heroStartAuto();
+
+const ALL_FILMS = [
+  { title:"Mitski: The Land", director:"Grant James", year:2025, country:"United States", image:"https://assets.mubicdn.net/images/film/458206/image-w448.jpg?1777028350", fX:0.50, fY:0.48 },
+  { title:"No Other Choice", director:"Park Chan-wook", year:2025, country:"South Korea", image:"https://assets.mubicdn.net/images/film/255497/image-w448.jpg?1753801050", fX:0.51, fY:0.63 },
+  { title:"It Was Just an Accident", director:"Jafar Panahi", year:2025, country:"Iran, France", image:"https://assets.mubicdn.net/images/film/441162/image-w448.jpg?1747995632", fX:0.52, fY:0.42 },
+  { title:"Sentimental Value", director:"Joachim Trier", year:2025, country:"Norway, Germany", image:"https://assets.mubicdn.net/images/film/400360/image-w448.jpg?1757575671", fX:0.77, fY:0.40 },
+  { title:"Die My Love", director:"Lynne Ramsay", year:2025, country:"United States, UK", image:"https://assets.mubicdn.net/images/film/360569/image-w448.jpg?1761916729", fX:0.52, fY:0.44 },
+  { title:"The Mastermind", director:"Kelly Reichardt", year:2025, country:"United States", image:"https://assets.mubicdn.net/images/film/422583/image-w448.jpg?1765544027", fX:0.35, fY:0.01 },
+  { title:"Hot Milk", director:"Rebecca Lenkiewicz", year:2025, country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/332978/image-w448.jpg?1746718753", fX:0.31, fY:0.44 },
+  { title:"Harvest", director:"Athina Rachel Tsangari", year:2024, country:"UK, Germany", image:"https://assets.mubicdn.net/images/film/400471/image-w448.jpg?1745502898", fX:0.55, fY:0.30 },
+  { title:"Magic Farm", director:"Amalia Ulman", year:2025, country:"Argentina, USA", image:"https://assets.mubicdn.net/images/film/418722/image-w448.jpg?1745503382", fX:0.54, fY:0.47 },
+  { title:"The End", director:"Joshua Oppenheimer", year:2024, country:"Denmark, Germany", image:"https://assets.mubicdn.net/images/film/391666/image-w448.jpg?1747444187", fX:0.00, fY:0.19 },
+  { title:"Grand Tour", director:"Miguel Gomes", year:2024, country:"Portugal, Italy", image:"https://assets.mubicdn.net/images/film/400395/image-w448.jpg?1745502227", fX:0.25, fY:0.51 },
+  { title:"September Says", director:"Ariane Labed", year:2024, country:"France, UK", image:"https://assets.mubicdn.net/images/film/409204/image-w448.jpg?1745502559", fX:0.53, fY:0.25 },
+  { title:"Bring Them Down", director:"Christopher Andrews", year:2024, country:"Ireland, UK", image:"https://assets.mubicdn.net/images/film/369358/image-w448.jpg?1745501001", fX:0.11, fY:0.50 },
+  { title:"The Girl with the Needle", director:"Magnus von Horn", year:2024, country:"Denmark, Poland", image:"https://assets.mubicdn.net/images/film/401325/image-w448.jpg?1745502562", fX:0.50, fY:0.54 },
+  { title:"Dahomey", director:"Mati Diop", year:2024, country:"France, Senegal", image:"https://assets.mubicdn.net/images/film/401676/image-w448.jpg?1745502278", fX:0.52, fY:0.51 },
+  { title:"The Substance", director:"Coralie Fargeat", year:2024, country:"United States, UK", image:"https://assets.mubicdn.net/images/film/332868/image-w448.jpg?1745502662", fX:0.69, fY:0.42 },
+  { title:"A Natural History of the Studio", director:"William Kentridge", year:2024, country:"South Africa, USA", image:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006", fX:0.96, fY:0.73 },
+  { title:"My First Film", director:"Zia Anger", year:2024, country:"United States", image:"https://assets.mubicdn.net/images/film/391609/image-w448.jpg?1745502467", fX:0.32, fY:0.50 },
+  { title:"Crossing", director:"Levan Akin", year:2024, country:"Sweden, Turkey", image:"https://assets.mubicdn.net/images/film/374529/image-w448.jpg?1745502259", fX:0.54, fY:0.35 },
+  { title:"Gasoline Rainbow", director:"Bill Ross IV, Turner Ross", year:2023, country:"United States", image:"https://assets.mubicdn.net/images/film/385392/image-w448.jpg?1745501631", fX:0.48, fY:0.12 },
+  { title:"The Delinquents", director:"Rodrigo Moreno", year:2023, country:"Argentina, Brazil", image:"https://assets.mubicdn.net/images/film/376078/image-w448.jpg?1745501368", fX:0.48, fY:0.64 },
+  { title:"High & Low — John Galliano", director:"Kevin Macdonald", year:2023, country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/380148/image-w448.jpg?1745501368", fX:0.52, fY:0.36 },
+  { title:"Perfect Days", director:"Wim Wenders", year:2023, country:"Japan, Germany", image:"https://assets.mubicdn.net/images/film/343977/image-w448.jpg?1745501776", fX:0.59, fY:0.28 },
+  { title:"The Settlers", director:"Felipe Gálvez", year:2023, country:"Chile, Argentina", image:"https://assets.mubicdn.net/images/film/376083/image-w448.jpg?1745502117", fX:0.33, fY:0.54 },
+  { title:"Priscilla", director:"Sofia Coppola", year:2023, country:"United States, Italy", image:"https://assets.mubicdn.net/images/film/354432/image-w448.jpg?1745501476", fX:0.46, fY:0.30 },
+  { title:"Fallen Leaves", director:"Aki Kaurismäki", year:2023, country:"Finland, Germany", image:"https://assets.mubicdn.net/images/film/346537/image-w448.jpg?1745501249", fX:0.39, fY:0.40 },
+  { title:"Passages", director:"Ira Sachs", year:2023, country:"France", image:"https://assets.mubicdn.net/images/film/325455/image-w448.jpg?1745499517", fX:0.45, fY:0.19 },
+  { title:"Rotting in the Sun", director:"Sebastián Silva", year:2023, country:"United States, Mexico", image:"https://assets.mubicdn.net/images/film/364307/image-w448.jpg?1745500732", fX:0.49, fY:0.38 },
+  { title:"Medusa Deluxe", director:"Thomas Hardiman", year:2022, country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/343641/image-w448.jpg?1745499941", fX:0.26, fY:0.49 },
+  { title:"Return to Seoul", director:"Davy Chou", year:2022, country:"France, Germany", image:"https://assets.mubicdn.net/images/film/339537/image-w448.jpg?1745499786", fX:0.43, fY:0.23 },
+];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderGrid() {
+  const films = shuffle(ALL_FILMS).slice(0, 20);
+  document.getElementById('filmGrid').innerHTML = films.map(film => {
+    const posX = Math.round(film.fX * 100);
+    const posY = Math.round(film.fY * 100);
+    return `
+      <a class="film-card" href="#" aria-label="${film.title}">
+        <div class="card-img-wrap">
+          <img class="card-img" src="${film.image}" alt="${film.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
+          <div class="card-overlay">
+            <div class="card-title">${film.title}</div>
+            <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
+          </div>
+        </div>
+      </a>`;
+  }).join('');
+}
+renderGrid();
+
+function toggleDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('navDropdown');
+  const open = dd.classList.toggle('open');
+  document.getElementById('navHamburger').setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('navDropdown');
+  if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', false); }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const dd = document.getElementById('navDropdown');
+    if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', false); }
+  }
+});
+</script>
+</body>
+</html>

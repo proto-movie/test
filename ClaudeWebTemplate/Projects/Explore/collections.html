@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Collections — MUBI</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <style>
+    @font-face { font-family: 'Riforma'; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-weight: 500; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-weight: bold; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-style: italic; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2'); }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Riforma, Helvetica, Arial, sans-serif;
+      background: #fff;
+      color: #323232;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; padding: 0; }
+
+    /* ─── CONTAINER ─── */
+    .wrap { width: 100%; padding: 0 20px; margin: 0 auto; }
+    @media (min-width: 810px)  { .wrap { padding: 0 22px; max-width: 836px; } }
+    @media (min-width: 1186px) { .wrap { max-width: 1124px; } }
+    @media (min-width: 1562px) { .wrap { max-width: 1500px; } }
+
+    /* ─── HEADER / NAV ─── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #fff;
+      border-bottom: 1px solid #EAEAEA;
+      height: 60px;
+    }
+    @media (min-width: 1186px) { .site-header { height: 50px; } }
+
+    .nav-desktop {
+      display: none;
+    }
+    @media (min-width: 1186px) {
+      .nav-desktop {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 22px;
+        max-width: 1124px;
+        margin: 0 auto;
+      }
+    }
+    @media (min-width: 1562px) { .nav-desktop { max-width: 1500px; } }
+
+    .nav-logo { flex-shrink: 0; padding-right: 21px; display: flex; align-items: center; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      align-self: flex-end;
+      margin-bottom: 7px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .nav-link {
+      display: block;
+      padding: 0 15px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      line-height: 24px;
+      color: rgba(0,0,0,0.45);
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { color: #323232; }
+    .nav-link.is-active { color: #323232; }
+    .nav-search {
+      display: flex; align-items: center; align-self: flex-end;
+      margin-bottom: 8px; margin-right: 6px; flex-shrink: 0;
+      opacity: 0.5; transition: opacity 0.15s;
+    }
+    .nav-search:hover { opacity: 1; }
+
+    .nav-avatar {
+      display: flex; align-items: center;
+      padding: 0 8px 0 15px;
+    }
+    .nav-avatar img {
+      width: 22px; height: 22px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .nav-hamburger {
+      display: flex; align-items: center;
+      padding: 0 8px 0 8px;
+      color: rgba(0,0,0,0.45);
+    }
+    .nav-hamburger:hover { color: #323232; }
+    .nav-hamburger-wrap { position: relative; }
+
+    .nav-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: #fff;
+      border: 1px solid #E0E0E0;
+      min-width: 200px;
+      z-index: 200;
+    }
+    .nav-dropdown.open { display: block; }
+    .nav-dropdown a {
+      display: block;
+      padding: 9px 16px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #666;
+      white-space: nowrap;
+    }
+    .nav-dropdown a:hover { color: #323232; background: #F8F8F8; }
+    .nav-dropdown-sep { height: 1px; background: #E8E8E8; margin: 4px 0; }
+
+    /* ─── PAGE TITLE ─── */
+    .page-hero {
+      padding: 32px 0 20px;
+    }
+    .page-tabs {
+      display: flex;
+      border-bottom: 1px solid #EAEAEA;
+    }
+    .page-tab {
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: rgba(0,0,0,0.45);
+      padding: 10px 0;
+      margin-right: 24px;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+      transition: color 0.15s;
+      text-decoration: none;
+    }
+    .page-tab:hover { color: #323232; }
+    .page-tab.is-active { color: #323232; border-bottom-color: #323232; }
+    .page-eyebrow {
+      font-family: Riforma, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(0,0,0,0.45);
+      margin-bottom: 2px;
+    }
+    .page-title {
+      font-family: Riforma, sans-serif;
+      font-size: 32px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      color: #323232;
+    }
+
+    /* ─── FILM GRID ─── */
+    .page-body { padding: 32px 0 80px; }
+
+    .film-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 4px;
+      row-gap: 36px;
+    }
+    @media (min-width: 650px)  { .film-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1562px) { .film-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .film-card { display: block; background: #fff; cursor: pointer; transition: background 0.1s; }
+    .film-card:hover { background: #fafafa; }
+
+    .card-img-wrap {
+      position: relative;
+      aspect-ratio: 371 / 209;
+      overflow: hidden;
+      background: #d0d0d0;
+    }
+    .card-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s ease;
+    }
+    .film-card:hover .card-img { transform: scale(1.03); }
+
+    .card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 55%, transparent 100%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 12px 14px;
+    }
+    .card-title {
+      font-family: Riforma, sans-serif;
+      font-size: 22px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: -0.1px;
+      line-height: 1.2; color: #fff;
+      margin-bottom: 1px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-meta {
+      font-family: Riforma, sans-serif;
+      font-size: 12px; font-weight: 400;
+      text-transform: uppercase; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .card-meta-director { font-weight: 700; }
+
+    /* ─── COLLECTION TILES ─── */
+    .coll-tile {
+      display: flex;
+      aspect-ratio: 371 / 209;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .coll-tile-left {
+      flex: 1;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .coll-tile-count {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #fff;
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .coll-tile-count svg { flex-shrink: 0; }
+    .coll-tile-treatment {
+      display: block;
+      max-width: 90%;
+      max-height: 82px;
+      object-fit: contain;
+      object-position: left top;
+    }
+    .coll-tile-title {
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.2px;
+      line-height: 1.2;
+      color: #fff;
+    }
+    .coll-tile-title--solo { font-size: 22px; }
+    .coll-tile-subtitle {
+      display: block;
+      font-size: 22px;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+    .coll-tile-right {
+      width: 185px;
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .coll-tile-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ─── CONTENT PLACEHOLDER ─── */
+    .page-body {
+      padding: 48px 0 80px;
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-desktop">
+    <div class="nav-logo">
+      <a href="mubi-showing.html" aria-label="MUBI">
+        <svg viewBox="0 0 800 240" width="75" style="vertical-align:top" aria-hidden="true">
+          <g fill="#000000">
+            <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+            <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+            <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+            <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+            <circle cx="766.5"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="118.11" r="33.13"/>
+            <circle cx="681.2"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="33.13"  r="33.13"/>
+            <circle cx="681.2"  cy="33.13"  r="33.13"/>
+            <circle cx="595.89" cy="203.1"  r="33.13"/>
+            <circle cx="681.2"  cy="203.1"  r="33.13"/>
+          </g>
+        </svg>
+      </a>
+    </div>
+
+    <a href="#" class="nav-search" aria-label="Search">
+      <svg width="22" height="22" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M57.8497 52.1132C60.6668 48.1454 62.319 43.2855 62.319 38.021C62.319 24.6571 51.4953 13.8334 38.021 13.8334C24.657 13.8334 13.8333 24.6571 13.8333 38.021C13.8333 51.4954 24.657 62.3191 38.021 62.3191C43.2855 62.3191 48.1454 60.6668 52.1132 57.8498L63.5339 69.1667L69.1667 63.534L57.8497 52.1132ZM38.021 54.2565C29.1853 54.2565 21.8959 46.9671 21.8959 38.021C21.8959 29.1853 29.1853 21.8959 38.021 21.8959C46.9671 21.8959 54.2565 29.1853 54.2565 38.021C54.2565 46.9671 46.9671 54.2565 38.021 54.2565Z" fill="#323232"/></svg>
+    </a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="mubi-showing.html" class="nav-link">Now Showing</a>
+      <a href="explore.html" class="nav-link is-active">Browse</a>
+      <a href="#" class="nav-link">Watchlist</a>
+    </nav>
+
+    <div style="flex: 1;"></div>
+
+    <nav class="nav-links" aria-label="Secondary navigation">
+      <a href="#" class="nav-link">Notebook</a>
+      <a href="#" class="nav-link">MUBI GO</a>
+      <a href="#" class="nav-avatar" aria-label="Profile">
+        <img src="../../brand_assets/avatar.png" alt="Profile">
+      </a>
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="toggleDropdown(event)" aria-label="More" aria-expanded="false" id="navHamburger">
+          <span class="material-icons" style="font-size:20px;">menu</span>
+        </button>
+        <div class="nav-dropdown" id="navDropdown">
+          <a href="#">Viewing History</a>
+          <a href="#">Earn 1 month free</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="film-database.html">Film Database</a>
+          <a href="#">Notebook Magazine</a>
+          <a href="#">MUBI Editions</a>
+          <a href="#">SHOP</a>
+          <a href="#">Gift MUBI</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">About</a>
+          <a href="#">Students</a>
+          <a href="#">Contribute</a>
+          <a href="#">Jobs</a>
+          <a href="#">Terms &amp; Privacy</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">Settings</a>
+          <a href="#">Help</a>
+          <a href="#">Log Out</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="page-hero">
+      <h1 class="page-title">Collections</h1>
+    </div>
+    <div class="page-tabs">
+      <a href="explore.html" class="page-tab">Films</a>
+      <a href="#" class="page-tab">Series</a>
+      <a href="#" class="page-tab is-active">Collections</a>
+    </div>
+    <div class="page-body">
+      <div class="film-grid" id="collectionsGrid"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const COLLECTIONS = [{"slug": "stories-from-home", "title": "Stories from Home", "subtitle": "", "items": "8", "img": "https://images.mubicdn.net/images/film_group/2427/cache-1123199-1774976126/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/965622/cache-965622-1774976211/images-original.png", "color": "#1f2822", "override": "", "synopsis": "A house can tell us much (or suspiciously little) about its inhabitants, and the drama of that dynamic is plum…"}, {"slug": "akinola-davies-jr", "title": "A Tender Age:", "subtitle": "Two by Akinola Davies Jr.", "items": "2", "img": "https://images.mubicdn.net/images/film/280320/cache-1118619-1773167098/image-w1280.jpg", "treatment": "", "color": "#5C524A", "override": "", "synopsis": "Akinola Davies Jr. writes his acclaimed coming-of-age films with his brother, resurfacing shared memories of w…"}, {"slug": "my-undesirable-friends", "title": "My Undesirable Friends", "subtitle": "Part I — Last Air in Moscow", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2372/cache-1113941-1774540230/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/962089/cache-962089-1774539298/images-original.png", "color": "#000e57", "override": "", "synopsis": "Across five potent, immersive chapters, this vital work of long-form filmmaking accompanies young women journa…"}, {"slug": "jonathan-demme", "title": "Windows to the Soul:", "subtitle": "Three by Jonathan Demme", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2343/cache-1122122-1774544993/image-original.jpg", "treatment": "", "color": "#000000", "override": "", "synopsis": "A jack-of-all-trades who mastered them too, Jonathan Demme could seemingly do anything. The films of this grea…"}, {"slug": "kleber-tropical-uk", "title": "Kleber Mendonça Filho", "subtitle": "Tropical Anxieties", "items": "7", "img": "https://images.mubicdn.net/images/film_group/2338/cache-1107199-1769616277/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/912299/cache-912299-1769616369/images-original.png", "color": "#ce5346", "override": "", "synopsis": "With his Oscar®-nominated The Secret Agent arriving in cinemas, this collection traces the evolution of Kleber…"}, {"slug": "sorrentino-servillo", "title": "Double Act:", "subtitle": "Paolo Sorrentino and Toni Servillo", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2334/cache-1116815-1772105919/image-original.png", "treatment": "", "color": "#001530", "override": "", "synopsis": "Director Paolo Sorrentino and actor Toni Servillo have worked side-by-side for fifteen years, shaping filmmaki…"}, {"slug": "women-misbehaving-tbd", "title": "Outta the Way!:", "subtitle": "Women at Play", "items": "17", "img": "https://images.mubicdn.net/images/film_group/2327/cache-1117761-1772628250/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/938791/cache-938791-1772638397/images-original.png", "color": "#181c2f", "override": "", "synopsis": "Name-calling, brat energy, clowning around: There are 101 ways to stick it to the man when you're a woman—and …"}, {"slug": "wiseman-america", "title": "Frederick Wiseman", "subtitle": "American Lives", "items": "8", "img": "https://images.mubicdn.net/images/film_group/2322/cache-1120607-1773938368/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/954922/cache-954922-1773927413/images-original.png", "color": "#616164", "override": "", "synopsis": "The documentary filmmaker Frederick Wiseman, who died in February 2026, didn't confine his filmmaking to the U…"}, {"slug": "douglas-sirk-double-bill", "title": "In the Realm of Melodrama", "subtitle": "Two by Douglas Sirk", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2300/cache-1109893-1769015801/image-original.jpg", "treatment": "", "color": "#070708", "override": "", "synopsis": "Douglas Sirk's opulent Technicolor melodramas weaponize sensation to mount sophisticated critiques of social c…"}, {"slug": "udo-kier", "title": "Udo Kier:", "subtitle": "Scene Stealer", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2294/cache-1099025-1764175886/image-original.jpg", "treatment": "", "color": "#5057b9", "override": "", "synopsis": "With his piercing gaze and sonorous voice, Udo Kier was an indelible presence onscreen, lending gravitas and a…"}, {"slug": "heart-before-head", "title": "Heart Before Head", "subtitle": "The Rom-Com Variations", "items": "8", "img": "https://images.mubicdn.net/images/film_group/2282/cache-1108409-1768323631/image-original.jpg", "treatment": "", "color": "#E18C8C", "override": "", "synopsis": "Look away from the classics, and alternative rom-coms appear across cinema history, hidden there like little l…"}, {"slug": "big-five-oscars", "title": "“Big Five”", "subtitle": "Oscar Winners", "items": "12", "img": "https://images.mubicdn.net/images/film_group/2281/cache-1112672-1770998218/image-original.png", "treatment": "", "color": "#86352b", "override": "", "synopsis": "Some Academy Awards® may be said to sparkle more than others. For those lucky few who win the prize for best p…"}, {"slug": "buster-keaton-uk", "title": "Crash, Bang, Wallop", "subtitle": "The Cinema of Buster Keaton", "items": "4", "img": "https://images.mubicdn.net/images/film_group/2280/cache-1103822-1766052242/image-original.jpg", "treatment": "", "color": "#000000", "override": "", "synopsis": "The most modern of the silent clowns, Buster Keaton expanded the possibilities of filmmaking both behind the c…"}, {"slug": "series", "title": "Next Episode:", "subtitle": "Series", "items": "5", "img": "https://images.mubicdn.net/images/film_group/2270/cache-1101953-1765795400/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/891908/cache-891908-1765795577/images-original.png", "color": "#581504", "override": "", "synopsis": "The series is a generous form, inspiring filmmakers to greater heights of ambition and invention. Whether imme…"}, {"slug": "shooting-stars", "title": "Shooting Stars:", "subtitle": "Hollywood's Next Legends", "items": "11", "img": "https://images.mubicdn.net/images/film_group/2262/cache-1106013-1769087130/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/904832/cache-904832-1768299161/images-original.png", "color": "#AB53C9", "override": "", "synopsis": "While young stars move at lightning speed from one project to the next, there is pleasure in revisiting those …"}, {"slug": "billy-wilder-comedies", "title": "Nobody's Perfect", "subtitle": "Three Comedies by Billy Wilder", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2261/cache-1103737-1765995195/image-original.png", "treatment": "", "color": "#bfbfbf", "override": "", "synopsis": "Billy Wilder and I. A. L. Diamond are one of the greatest writer-director duos of Hollywood's golden age. Brin…"}, {"slug": "jafar-panahi-collection", "title": "Cinema by Any Means:", "subtitle": "A Jafar Panahi Retrospective", "items": "9", "img": "https://images.mubicdn.net/images/film_group/2259/cache-1116877-1772128427/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/941872/cache-941872-1772831268/images-original.png", "color": "#D39B84", "override": "", "synopsis": "Dedicated to the irrepressible auteur Jafar Panahi, this retrospective celebrates a towering figure of artisti…"}, {"slug": "asian-avant-garde", "title": "Between Tides", "subtitle": "Asian Avant-garde", "items": "9", "img": "https://images.mubicdn.net/images/film_group/2258/cache-1107566-1768211205/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/903322/cache-903322-1768211104/images-original.png", "color": "#171717", "override": "", "synopsis": "Presented by MUBI in partnership with CHANEL Culture Fund and M+ Museum, this collection celebrates the bold v…"}, {"slug": "lgbtq", "title": "Pride Unprejudiced", "subtitle": "LGBTQ+ Cinema", "items": "40", "img": "https://images.mubicdn.net/images/film_group/852/cache-659107-1685115057/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/545281/cache-545281-1685121706/images-original.png", "color": "#381405", "override": "", "synopsis": ""}, {"slug": "david-lynch-fr", "title": "David Lynch", "subtitle": "Delusions and dreams", "items": "6", "img": "https://images.mubicdn.net/images/film_group/1697/cache-942175-1707135376/image-original.jpeg", "treatment": "https://images.mubicdn.net/images/artworks/754539/cache-754539-1737373405/images-original.png", "color": "#5E1916", "override": "", "synopsis": ""}, {"slug": "cut-to-black", "title": "Cut to Black", "subtitle": "Celebrating Black Cinema", "items": "24", "img": "https://images.mubicdn.net/images/film_group/942/cache-699904-1738001169/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/710453/cache-710453-1728057988/images-original.png", "color": "#000000", "override": "", "synopsis": ""}, {"slug": "jafar-panahi-collection", "title": "Cinema by Any Means:", "subtitle": "A Jafar Panahi Retrospective", "items": "9", "img": "https://images.mubicdn.net/images/film_group/2259/cache-1116877-1772128427/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/941872/cache-941872-1772831268/images-original.png", "color": "#D39B84", "override": "", "synopsis": ""}, {"slug": "horror", "title": "Fear on Film", "subtitle": "", "items": "24", "img": "https://images.mubicdn.net/images/film_group/564/cache-603845-1760011691/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/870776/cache-870776-1760020540/images-original.png", "color": "#000000", "override": "", "synopsis": ""}, {"slug": "romance", "title": "In the Mood", "subtitle": "for Love", "items": "35", "img": "https://images.mubicdn.net/images/film_group/569/cache-618227-1662983854/image-original.jpg", "treatment": "", "color": "#cc551e", "override": "", "synopsis": ""}, {"slug": "coming-of-age", "title": "Growing Pains", "subtitle": "Coming-of-age Films", "items": "29", "img": "https://images.mubicdn.net/images/film_group/880/cache-671320-1747246582/image-original.jpg", "treatment": "", "color": "#0b1b75", "override": "", "synopsis": ""}, {"slug": "award-winners", "title": "Golden Palms, Lions, and Bears, Oh My!", "subtitle": "Award-winning Greats", "items": "26", "img": "https://images.mubicdn.net/images/film_group/894/cache-676182-1662983865/image-original.jpg", "treatment": "", "color": "#CB821B", "override": "", "synopsis": ""}, {"slug": "documentaries", "title": "Documentaries", "subtitle": "", "items": "68", "img": "https://images.mubicdn.net/images/film_group/494/cache-547118-1743443121/image-original.jpg", "treatment": "", "color": "#6E4872", "override": "", "synopsis": ""}, {"slug": "women-directors", "title": "Reframing", "subtitle": "Women Directors", "items": "99", "img": "https://images.mubicdn.net/images/film_group/492/cache-546708-1680272042/image-original.jpg", "treatment": "", "color": "#63417D", "override": "", "synopsis": ""}, {"slug": "modern-masterpieces", "title": "Modern Masterpieces", "subtitle": "", "items": "34", "img": "https://images.mubicdn.net/images/film_group/487/cache-546706-1746021876/image-original.jpg", "treatment": "", "color": "#2C242B", "override": "", "synopsis": ""}, {"slug": "short-films", "title": "Shorts", "subtitle": "", "items": "58", "img": "https://images.mubicdn.net/images/film_group/495/cache-547119-1662983836/image-original.jpg", "treatment": "", "color": "#5C5544", "override": "", "synopsis": ""}, {"slug": "comedies", "title": "Funny Ha Ha", "subtitle": "", "items": "58", "img": "https://images.mubicdn.net/images/film_group/493/cache-619961-1774544124/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/674490/cache-674490-1711102671/images-original.png", "color": "#6EBCE7", "override": "", "synopsis": ""}];
+
+function fitCollTileText() {
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.coll-tile-left').forEach(left => {
+      const available = left.clientWidth - 28;
+      ['.coll-tile-subtitle', '.coll-tile-title--solo'].forEach(sel => {
+        const el = left.querySelector(sel);
+        if (!el) return;
+        el.style.fontSize = '';
+        let size = 22;
+        while (el.scrollWidth > available && size > 11) {
+          size -= 0.5;
+          el.style.fontSize = size + 'px';
+        }
+      });
+    });
+  });
+}
+
+function renderCollections() {
+  document.getElementById('collectionsGrid').innerHTML = COLLECTIONS.map(col => {
+    const left = col.treatment
+      ? `<img class="coll-tile-treatment" src="${col.treatment}" alt="${col.title}" loading="lazy">`
+      : col.subtitle
+        ? `<div class="coll-tile-title">${col.title}<span class="coll-tile-subtitle">${col.subtitle}</span></div>`
+        : `<div class="coll-tile-title coll-tile-title--solo">${col.title}</div>`;
+    return `<a class="coll-tile" href="#" aria-label="${col.title}">
+      <div class="coll-tile-left" style="background:${col.color}">
+        <div>${left}</div>
+        <div class="coll-tile-count"><svg width="24" height="18" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.4121 0C21.0432 0 21.5546 0.511527 21.5547 1.14258V14.4248C21.5546 15.0559 21.0432 15.5674 20.4121 15.5674H1.14258C0.511562 15.5673 5.76033e-05 15.0558 0 14.4248V1.14258C0.00013309 0.511609 0.511609 0.00013335 1.14258 0H20.4121ZM8.38281 11.1768L15.3682 7.68359L8.38281 4.19141V11.1768Z" fill="white"/><mask id="ci-mask" fill="white"><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282"/></mask><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282" stroke="white" stroke-width="2.395" mask="url(#ci-mask)"/></svg>${col.items}</div>
+      </div>
+      <div class="coll-tile-right"><img class="coll-tile-img" src="${col.img}" alt="${col.title}" loading="lazy"></div>
+    </a>`;
+  }).join('');
+  fitCollTileText();
+}
+renderCollections();
+
+function toggleDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('navDropdown');
+  const open = dd.classList.toggle('open');
+  document.getElementById('navHamburger').setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('navDropdown');
+  if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', false); }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const dd = document.getElementById('navDropdown');
+    if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', false); }
+  }
+});
+</script>
+</body>
+</html>
