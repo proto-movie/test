@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Browse — MUBI</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <style>
+    @font-face { font-family: 'Riforma'; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-weight: 500; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-weight: bold; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-style: italic; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2'); }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Riforma, Helvetica, Arial, sans-serif;
+      background: #fff;
+      color: #323232;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; padding: 0; }
+
+    /* ─── CONTAINER ─── */
+    .wrap { width: 100%; padding: 0 20px; margin: 0 auto; }
+    @media (min-width: 810px)  { .wrap { padding: 0 22px; max-width: 836px; } }
+    @media (min-width: 1186px) { .wrap { max-width: 1124px; } }
+    @media (min-width: 1562px) { .wrap { max-width: 1500px; } }
+
+    /* ─── HEADER / NAV ─── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #fff;
+      border-bottom: 1px solid #EAEAEA;
+      height: 60px;
+    }
+    @media (min-width: 1186px) { .site-header { height: 50px; } }
+
+    .nav-desktop {
+      display: none;
+    }
+    @media (min-width: 1186px) {
+      .nav-desktop {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 22px;
+        max-width: 1124px;
+        margin: 0 auto;
+      }
+    }
+    @media (min-width: 1562px) { .nav-desktop { max-width: 1500px; } }
+
+    .nav-logo { flex-shrink: 0; padding-right: 21px; display: flex; align-items: center; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      align-self: flex-end;
+      margin-bottom: 7px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .nav-link {
+      display: block;
+      padding: 0 15px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      line-height: 24px;
+      color: rgba(0,0,0,0.45);
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { color: #323232; }
+    .nav-link.is-active { color: #323232; }
+
+    .nav-avatar {
+      display: flex; align-items: center;
+      padding: 0 8px 0 15px;
+    }
+    .nav-avatar img {
+      width: 22px; height: 22px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .nav-hamburger {
+      display: flex; align-items: center;
+      padding: 0 8px 0 8px;
+      color: rgba(0,0,0,0.45);
+    }
+    .nav-hamburger:hover { color: #323232; }
+    .nav-hamburger-wrap { position: relative; }
+
+    .nav-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: #fff;
+      border: 1px solid #E0E0E0;
+      min-width: 200px;
+      z-index: 200;
+    }
+    .nav-dropdown.open { display: block; }
+    .nav-dropdown a {
+      display: block;
+      padding: 9px 16px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #666;
+      white-space: nowrap;
+    }
+    .nav-dropdown a:hover { color: #323232; background: #F8F8F8; }
+    .nav-dropdown-sep { height: 1px; background: #E8E8E8; margin: 4px 0; }
+
+    /* ─── PAGE TITLE ─── */
+    .page-hero {
+      padding: 32px 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .hero-search-btn {
+      display: flex;
+      align-items: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0.6;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+    }
+    .hero-search-btn:hover { opacity: 1; }
+
+    /* ─── SEARCH TAKEOVER ─── */
+    .search-backdrop {
+      position: fixed;
+      inset: 0;
+      top: 50px;
+      background: #fff;
+      z-index: 149;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .search-backdrop.is-open { opacity: 1; pointer-events: auto; }
+    .search-takeover {
+      position: fixed;
+      top: 65px;
+      left: 0; right: 0;
+      background: #fff;
+      z-index: 150;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .search-takeover.is-open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .search-takeover-inner {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 20px 22px;
+    }
+    .search-takeover-input {
+      flex: 1;
+      font-family: Riforma, sans-serif;
+      font-size: 26px;
+      font-weight: 400;
+      line-height: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #323232;
+    }
+    .search-takeover-input::placeholder { color: rgba(0,0,0,0.25); }
+    .search-close-btn {
+      display: flex;
+      align-items: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      opacity: 0.5;
+      transition: opacity 0.15s;
+    }
+    .search-close-btn:hover { opacity: 1; }
+    .page-tabs {
+      display: flex;
+      border-bottom: 1px solid #EAEAEA;
+    }
+    .page-tab {
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: rgba(0,0,0,0.45);
+      padding: 10px 0;
+      margin-right: 24px;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+      transition: color 0.15s;
+      text-decoration: none;
+    }
+    .page-tab:hover { color: #323232; }
+    .page-tab.is-active { color: #323232; border-bottom-color: #323232; }
+    .page-eyebrow {
+      font-family: Riforma, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #323232;
+      margin-bottom: 2px;
+      text-align: left;
+      display: block;
+    }
+    .page-title {
+      font-family: Riforma, sans-serif;
+      font-size: 32px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      color: #323232;
+    }
+
+    /* ─── FILM GRID ─── */
+    .page-body { padding: 32px 0 80px; }
+
+    .film-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 4px;
+      row-gap: 36px;
+    }
+    @media (min-width: 650px)  { .film-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1562px) { .film-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .film-card { display: block; background: #fff; cursor: pointer; transition: background 0.1s; }
+    .film-card:hover { background: #fafafa; }
+
+    .card-img-wrap {
+      position: relative;
+      aspect-ratio: 371 / 209;
+      overflow: hidden;
+      background: #d0d0d0;
+    }
+    .card-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s ease;
+    }
+    .film-card:hover .card-img { transform: scale(1.03); }
+
+    .card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 55%, transparent 100%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 12px 14px;
+    }
+    .card-title {
+      font-family: Riforma, sans-serif;
+      font-size: 22px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: -0.1px;
+      line-height: 1.2; color: #fff;
+      margin-bottom: 1px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-meta {
+      font-family: Riforma, sans-serif;
+      font-size: 12px; font-weight: 400;
+      text-transform: uppercase; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .card-meta-director { font-weight: 700; }
+    .coll-filter-bar {
+      padding: 12px 0 0;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .coll-filter-icon {
+      margin-left: auto;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      color: #323232;
+      padding-left: 12px;
+    }
+    .coll-filter-icon .material-icons { font-size: 20px; }
+    .coll-filter-tab {
+      padding: 7px 14px 7px 0;
+      margin-right: 14px;
+      font-family: Riforma, sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: rgba(0,0,0,0.45);
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    .coll-filter-tab:hover { color: #323232; }
+    .coll-filter-tab.is-active { color: #323232; border-bottom-color: #323232; }
+    .filter-bar {
+      padding: 12px 0 0;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .pills-wrap {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+    }
+    .pills-wrap--overflow::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 16px;
+      background: linear-gradient(to right, transparent, #fff 75%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .pills-wrap--overflow::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 64px;
+      background: linear-gradient(to left, transparent, #fff 75%);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .pills-wrap--overflow.has-scroll-left::before { opacity: 1; }
+    .pills-chevron {
+      position: absolute;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%) translateY(-1px);
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      opacity: 1;
+      color: #000;
+      transition: opacity 0.15s;
+    }
+    .pills-chevron--left {
+      position: absolute;
+      left: 5px;
+      right: auto;
+      opacity: 0;
+      color: #000;
+      transition: opacity 0.15s;
+      pointer-events: none;
+    }
+    .pills-wrap--overflow.has-scroll-left .pills-chevron--left {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .genre-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .genre-pills::-webkit-scrollbar { display: none; }
+    .filter-sort {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      padding: 5px 10px 5px 12px;
+      border: 1px solid #EAEAEA;
+      border-radius: 50px;
+      background: #fff;
+      margin-left: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .filter-sort .filter-select {
+      border: none;
+      font-size: 12px;
+      background: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23323232' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 0 center transparent;
+      padding: 0 18px 0 0;
+    }
+    .genre-pill {
+      font-family: Riforma, sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: #323232;
+      border: 1px solid #EAEAEA;
+      border-radius: 50px;
+      padding: 5px 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      background: #fff;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+    .genre-pill:hover { border-color: #323232; }
+    .genre-pill.is-active { background: #323232; color: #fff; border-color: #323232; }
+    .filter-btn {
+      display: flex; align-items: center; gap: 5px;
+      flex-shrink: 0;
+      padding: 5px 12px;
+      border: 1px solid #EAEAEA;
+      border-radius: 50px;
+      background: #fff;
+      font-family: Riforma, sans-serif;
+      font-size: 12px; font-weight: 500;
+      color: #323232;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-left: 4px;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .filter-btn:hover { background: #323232; color: #fff; border-color: #323232; }
+    .filter-btn.is-active { background: #323232; color: #fff; border-color: #323232; }
+    .filter-sort:hover { background: #323232; color: #fff; border-color: #323232; }
+    .filter-sort:hover .filter-select { color: #fff; background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23ffffff' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+    .filter-sort:hover .material-icons { color: #fff !important; }
+    .filter-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 200;
+    }
+    .filter-overlay.is-open { display: block; }
+    .filter-panel {
+      position: fixed;
+      width: 360px;
+      background: #fff;
+      border: 1px solid #E0E0E0;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.13), 0 2px 6px rgba(0,0,0,0.06);
+      z-index: 201;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .filter-panel.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .filter-panel-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid #EAEAEA;
+      flex-shrink: 0;
+    }
+    .filter-panel-title {
+      font-family: Riforma, sans-serif;
+      font-size: 14px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.4px;
+      color: #323232;
+    }
+    .filter-panel-close {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      cursor: pointer; color: rgba(0,0,0,0.45);
+      transition: color 0.15s;
+    }
+    .filter-panel-close:hover { color: #323232; }
+    .filter-panel-body {
+      padding: 18px 20px 20px;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+    .filter-panel-label {
+      font-family: Riforma, sans-serif;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.6px;
+      color: rgba(0,0,0,0.4);
+      margin-bottom: 12px;
+    }
+    .lang-type-toggle {
+      display: flex;
+      gap: 0;
+      border: 1px solid #EAEAEA;
+      border-radius: 50px;
+      overflow: hidden;
+      background: #fff;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+    .lang-type-btn {
+      font-family: Riforma, sans-serif;
+      font-size: 12px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.4px;
+      color: rgba(0,0,0,0.45);
+      padding: 6px 0;
+      flex: 1; text-align: center;
+      cursor: pointer;
+      background: none;
+      border: none;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+    .lang-type-btn:hover { color: #323232; }
+    .lang-type-btn.is-active { background: #323232; color: #fff; }
+    #langPills { flex-wrap: wrap; overflow: visible; gap: 6px; }
+    #langPills .genre-pill { margin: 0; }
+    .filter-select {
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #323232;
+      background: #fff url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23323232' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+      border: 1px solid #EAEAEA;
+      border-radius: 2px;
+      padding: 7px 30px 7px 12px;
+      cursor: pointer;
+      outline: none;
+    }
+    .filter-select:hover { border-color: #323232; }
+    .card-eyebrow {
+      font-family: Riforma, sans-serif;
+      font-size: 12px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.4px;
+      color: #fff;
+      margin-bottom: 1px;
+    }
+
+    /* ─── COLLECTION TILES ─── */
+    .coll-tile {
+      display: flex;
+      aspect-ratio: 371 / 209;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .coll-tile-left {
+      flex: 1;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .coll-tile-count {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #fff;
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .coll-tile-count svg { flex-shrink: 0; }
+    .coll-tile-treatment {
+      display: block;
+      max-width: 90%;
+      max-height: 82px;
+      object-fit: contain;
+      object-position: left top;
+    }
+    .coll-tile-title {
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.2px;
+      line-height: 1.2;
+      color: #fff;
+    }
+    .coll-tile-title--solo { font-size: 22px; }
+    .coll-tile-subtitle {
+      display: block;
+      font-size: 22px;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+    .coll-tile-right {
+      width: 185px;
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .coll-tile-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ─── DIRECTOR CARDS ─── */
+    #directorsGrid { grid-template-columns: repeat(8, 1fr); row-gap: 20px; }
+    .director-card { display: block; cursor: pointer; text-decoration: none; }
+    .director-img-wrap {
+      aspect-ratio: 1 / 1;
+      position: relative;
+      overflow: hidden;
+      background: #d0d0d0;
+    }
+    .director-img-wrap .card-img { filter: grayscale(100%); transition: transform 0.45s ease; }
+    .director-card:hover .card-img { transform: scale(1.03); }
+    .director-info {
+      background: #fff;
+      padding: 8px 0 4px;
+    }
+    .director-name {
+      font-family: Riforma, sans-serif;
+      font-size: 13px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.1px;
+      line-height: 1.3; color: #323232;
+      margin-bottom: 2px;
+    }
+    .director-count {
+      font-family: Riforma, sans-serif;
+      font-size: 12px; font-weight: 400;
+      text-transform: uppercase; color: rgba(0,0,0,0.45);
+    }
+
+    .director-card.is-selected .card-img { filter: grayscale(0%); }
+    .director-card.is-selected .director-name { color: #000; }
+
+    /* ─── DIRECTOR FILTER SECTION ─── */
+    .director-filter-section { margin-top: 0; }
+    .director-tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 0 20px;
+    }
+    .director-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px 6px 14px;
+      background: #323232;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .director-tag-x {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      color: #fff;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+    .director-tag-x:hover { opacity: 1; }
+
+    /* ─── CONTENT PLACEHOLDER ─── */
+    .page-body {
+      padding: 20px 0 80px;
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-desktop">
+    <div class="nav-logo">
+      <a href="mubi-showing.html" aria-label="MUBI">
+        <svg viewBox="0 0 800 240" width="75" style="vertical-align:top" aria-hidden="true">
+          <g fill="#000000">
+            <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+            <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+            <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+            <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+            <circle cx="766.5"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="118.11" r="33.13"/>
+            <circle cx="681.2"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="33.13"  r="33.13"/>
+            <circle cx="681.2"  cy="33.13"  r="33.13"/>
+            <circle cx="595.89" cy="203.1"  r="33.13"/>
+            <circle cx="681.2"  cy="203.1"  r="33.13"/>
+          </g>
+        </svg>
+      </a>
+    </div>
+
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="mubi-showing.html" class="nav-link">Now Showing</a>
+      <a href="explore.html" class="nav-link is-active">Browse</a>
+      <a href="#" class="nav-link">Watchlist</a>
+    </nav>
+
+    <div style="flex: 1;"></div>
+
+    <nav class="nav-links" aria-label="Secondary navigation">
+      <a href="#" class="nav-avatar" aria-label="Profile">
+        <img src="../../brand_assets/avatar.png" alt="Profile">
+      </a>
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="toggleDropdown(event)" aria-label="More" aria-expanded="false" id="navHamburger">
+          <span class="material-icons" style="font-size:20px;">menu</span>
+        </button>
+        <div class="nav-dropdown" id="navDropdown">
+          <a href="#">Viewing History</a>
+          <a href="#">Earn 1 month free</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="film-database.html">Film Database</a>
+          <a href="#">Notebook Magazine</a>
+          <a href="#">MUBI Editions</a>
+          <a href="#">SHOP</a>
+          <a href="#">Gift MUBI</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">About</a>
+          <a href="#">Students</a>
+          <a href="#">Contribute</a>
+          <a href="#">Jobs</a>
+          <a href="#">Terms &amp; Privacy</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">Settings</a>
+          <a href="#">Help</a>
+          <a href="#">Log Out</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="page-hero">
+      <h1 class="page-title">Browse</h1>
+      <button class="hero-search-btn" id="searchOpenBtn" aria-label="Open search">
+        <svg width="40" height="40" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M57.8497 52.1132C60.6668 48.1454 62.319 43.2855 62.319 38.021C62.319 24.6571 51.4953 13.8334 38.021 13.8334C24.657 13.8334 13.8333 24.6571 13.8333 38.021C13.8333 51.4954 24.657 62.3191 38.021 62.3191C43.2855 62.3191 48.1454 60.6668 52.1132 57.8498L63.5339 69.1667L69.1667 63.534L57.8497 52.1132ZM38.021 54.2565C29.1853 54.2565 21.8959 46.9671 21.8959 38.021C21.8959 29.1853 29.1853 21.8959 38.021 21.8959C46.9671 21.8959 54.2565 29.1853 54.2565 38.021C54.2565 46.9671 46.9671 54.2565 38.021 54.2565Z" fill="#323232"/></svg>
+      </button>
+    </div>
+
+    <div class="search-backdrop" id="searchBackdrop"></div>
+    <div class="search-takeover" id="searchTakeover" role="search">
+      <div class="search-takeover-inner">
+        <svg width="40" height="40" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M57.8497 52.1132C60.6668 48.1454 62.319 43.2855 62.319 38.021C62.319 24.6571 51.4953 13.8334 38.021 13.8334C24.657 13.8334 13.8333 24.6571 13.8333 38.021C13.8333 51.4954 24.657 62.3191 38.021 62.3191C43.2855 62.3191 48.1454 60.6668 52.1132 57.8498L63.5339 69.1667L69.1667 63.534L57.8497 52.1132ZM38.021 54.2565C29.1853 54.2565 21.8959 46.9671 21.8959 38.021C21.8959 29.1853 29.1853 21.8959 38.021 21.8959C46.9671 21.8959 54.2565 29.1853 54.2565 38.021C54.2565 46.9671 46.9671 54.2565 38.021 54.2565Z" fill="#323232"/></svg>
+        <input class="search-takeover-input" id="searchTakeoverInput" type="text" placeholder="Search films, series, collections and directors now showing on MUBI" autocomplete="off">
+        <button class="search-close-btn" id="searchCloseBtn" aria-label="Close search">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 10L30 30M30 10L10 30" stroke="#323232" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="page-tabs">
+      <a href="#" class="page-tab is-active">Films</a>
+      <a href="#" class="page-tab">Series</a>
+      <a href="#" class="page-tab">Collections</a>
+      <a href="#" class="page-tab">Directors</a>
+    </div>
+    <div class="filter-bar" id="filterBar">
+      <div class="pills-wrap pills-wrap--overflow" id="genrePillsWrap">
+        <button class="pills-chevron pills-chevron--left" id="genreScrollLeft" aria-label="Scroll left">
+          <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 1L1 5L5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="genre-pills" id="genrePills">
+          <a href="#" class="genre-pill is-active">All</a>
+          <a href="#" class="genre-pill">Drama</a>
+          <a href="#" class="genre-pill">Comedy</a>
+          <a href="#" class="genre-pill">Thriller</a>
+          <a href="#" class="genre-pill">Crime</a>
+          <a href="#" class="genre-pill">Romance</a>
+          <a href="#" class="genre-pill">Documentary</a>
+          <a href="#" class="genre-pill">LGBTQ+</a>
+          <a href="#" class="genre-pill">Mystery</a>
+          <a href="#" class="genre-pill">Fantasy</a>
+          <a href="#" class="genre-pill">Horror</a>
+          <a href="#" class="genre-pill">Sci-Fi</a>
+          <a href="#" class="genre-pill">History</a>
+          <a href="#" class="genre-pill">Animation</a>
+          <a href="#" class="genre-pill">Biography</a>
+          <a href="#" class="genre-pill">Musical</a>
+          <a href="#" class="genre-pill">Film noir</a>
+          <a href="#" class="genre-pill">Avant-Garde</a>
+          <a href="#" class="genre-pill">Short</a>
+          <a href="#" class="genre-pill">Adventure</a>
+          <a href="#" class="genre-pill">Western</a>
+          <a href="#" class="genre-pill">War</a>
+          <a href="#" class="genre-pill">Sport</a>
+          <a href="#" class="genre-pill">Cult</a>
+          <a href="#" class="genre-pill">Music</a>
+          <a href="#" class="genre-pill">Action</a>
+          <a href="#" class="genre-pill">Family</a>
+        </div>
+        <button class="pills-chevron" id="genreScrollRight" aria-label="Scroll right">
+          <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="filter-sort">
+        <span class="material-icons" style="font-size:14px; line-height:1; color:#323232;">sort</span>
+        <select class="filter-select" id="sortDropdown-sort" name="sort">
+          <option value="trending">Trending</option>
+          <option value="popularity_quality_score">Most Popular</option>
+          <option value="average_rating">Top Rated</option>
+          <option value="year">Most Recent</option>
+          <option value="title">Title (A-Z)</option>
+        </select>
+      </div>
+      <button class="filter-btn" id="filterBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span id="filterBtnLabel">Language filters</span>
+      </button>
+    </div>
+    <div class="filter-action-bar" id="filterActionBar" style="display:none; justify-content:flex-end; padding: 8px 0 0;">
+      <button class="filter-btn" id="filterBtnSeries">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span id="filterBtnSeriesLabel">Language filters</span>
+      </button>
+    </div>
+    <div class="filter-overlay" id="filterOverlay"></div>
+    <div class="filter-panel" id="filterPanel">
+      <div class="filter-panel-head">
+        <span class="filter-panel-title">Language filters</span>
+        <button class="filter-panel-close" id="filterPanelClose" aria-label="Close filters">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="filter-panel-body">
+        <div class="filter-panel-label">Language</div>
+        <div class="lang-type-toggle">
+          <button class="lang-type-btn is-active" data-lang-type="original">Original</button>
+          <button class="lang-type-btn" data-lang-type="dubbed">Dubbed</button>
+          <button class="lang-type-btn" data-lang-type="subtitles">Subtitles</button>
+        </div>
+        <div class="genre-pills" id="langPills"></div>
+      </div>
+    </div>
+    <div class="coll-filter-bar" id="collFilterBar" style="display:none">
+      <div class="pills-wrap">
+        <div class="genre-pills">
+          <a href="#" class="genre-pill is-active">Recently Added</a>
+          <a href="#" class="genre-pill">Spotlight</a>
+          <a href="#" class="genre-pill">Director Focus</a>
+          <a href="#" class="genre-pill">Awards &amp; Festivals</a>
+          <a href="#" class="genre-pill">Decade</a>
+          <a href="#" class="genre-pill">Region</a>
+          <a href="#" class="genre-pill">A–Z</a>
+        </div>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="film-grid" id="filmGrid"></div>
+      <div class="film-grid" id="seriesGrid" style="display:none"></div>
+      <div class="film-grid" id="collectionsGrid" style="display:none"></div>
+      <div class="film-grid" id="directorsGrid" style="display:none"></div>
+      <div class="director-filter-section" id="directorFilterSection" style="display:none">
+        <div class="director-tags-row" id="directorTagsRow"></div>
+        <div class="film-grid" id="directorFilmsGrid"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const ALL_FILMS = [
+  { title:"Drive My Car", director:"Ryusuke Hamaguchi", year:"2021", country:"Japan", image:"https://assets.mubicdn.net/images/film/293319/image-w448.jpg?1745498585", fX:0.5975, fY:0.2624, genres:["Drama", "Romance", "Mystery"] },
+  { title:"No Other Choice", director:"Park Chan-wook", year:"2025", country:"South Korea", image:"https://assets.mubicdn.net/images/film/255497/image-w448.jpg?1753801050", fX:0.51, fY:0.63, genres:["Comedy", "Crime", "Drama"] },
+  { title:"It Was Just an Accident", director:"Jafar Panahi", year:"2025", country:"Iran, France", image:"https://assets.mubicdn.net/images/film/441162/image-w448.jpg?1747995632", fX:0.5223, fY:0.4208, genres:["Crime", "Thriller", "Drama", "Mystery"] },
+  { title:"Sentimental Value", director:"Joachim Trier", year:"2025", country:"Norway, Germany", image:"https://assets.mubicdn.net/images/film/400360/image-w448.jpg?1757575671", fX:0.77, fY:0.4, genres:["Drama"] },
+  { title:"Die My Love", director:"Lynne Ramsay", year:"2025", country:"United States, United Kingdom", image:"https://assets.mubicdn.net/images/film/360569/image-w448.jpg?1761916729", fX:0.52, fY:0.44, genres:["Drama", "Thriller"] },
+  { title:"The Mastermind", director:"Kelly Reichardt", year:"2025", country:"United States", image:"https://assets.mubicdn.net/images/film/422583/image-w448.jpg?1765544027", fX:0.35, fY:0.01, genres:["Crime"] },
+  { title:"Hot Milk", director:"Rebecca Lenkiewicz", year:"2025", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/332978/image-w448.jpg?1746718753", fX:0.3129, fY:0.437, genres:["Drama", "LGBTQ+"] },
+  { title:"Harvest", director:"Athina Rachel Tsangari", year:"2024", country:"United Kingdom, Germany", image:"https://assets.mubicdn.net/images/film/400471/image-w448.jpg?1745502898", fX:0.5466, fY:0.2988, genres:["Drama"] },
+  { title:"Magic Farm", director:"Amalia Ulman", year:"2025", country:"Argentina, United States", image:"https://assets.mubicdn.net/images/film/418722/image-w448.jpg?1745503382", fX:0.539, fY:0.4703, genres:["Comedy"] },
+  { title:"The End", director:"Joshua Oppenheimer", year:"2024", country:"Denmark, Germany", image:"https://assets.mubicdn.net/images/film/391666/image-w448.jpg?1747444187", fX:0.0028, fY:0.1856, genres:["Musical", "Drama", "Fantasy"] },
+  { title:"Grand Tour", director:"Miguel Gomes", year:"2024", country:"Portugal, Italy", image:"https://assets.mubicdn.net/images/film/400395/image-w448.jpg?1745502227", fX:0.2493, fY:0.5124, genres:["History", "Drama"] },
+  { title:"September Says", director:"Ariane Labed", year:"2024", country:"France, United Kingdom", image:"https://assets.mubicdn.net/images/film/409204/image-w448.jpg?1745502559", fX:0.5299, fY:0.2519, genres:["Drama"] },
+  { title:"Bring Them Down", director:"Christopher Andrews", year:"2024", country:"Ireland, United Kingdom", image:"https://assets.mubicdn.net/images/film/369358/image-w448.jpg?1745501001", fX:0.1099, fY:0.5037, genres:["Drama"] },
+  { title:"The Girl with the Needle", director:"Magnus von Horn", year:"2024", country:"Denmark, Poland", image:"https://assets.mubicdn.net/images/film/401325/image-w448.jpg?1745502562", fX:0.4958, fY:0.5371, genres:["Drama"] },
+  { title:"Dahomey", director:"Mati Diop", year:"2024", country:"France, Senegal", image:"https://assets.mubicdn.net/images/film/401676/image-w448.jpg?1745502278", fX:0.5167, fY:0.5124, genres:["Documentary"] },
+  { title:"The Substance", director:"Coralie Fargeat", year:"2024", country:"United States, United Kingdom", image:"https://assets.mubicdn.net/images/film/332868/image-w448.jpg?1745502662", fX:0.694, fY:0.4198, genres:["Horror"] },
+  { title:"A Natural History of the Studio", director:"William Kentridge", year:"2024", country:"South Africa, United States", image:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006", fX:0.961, fY:0.7252, genres:["Documentary", "TV Mini-series"] },
+  { title:"My First Film", director:"Zia Anger", year:"2024", country:"United States", image:"https://assets.mubicdn.net/images/film/391609/image-w448.jpg?1745502467", fX:0.3203, fY:0.5025, genres:["Drama"] },
+  { title:"Crossing", director:"Levan Akin", year:"2024", country:"Sweden, Turkey", image:"https://assets.mubicdn.net/images/film/374529/image-w448.jpg?1745502259", fX:0.5369, fY:0.3531, genres:["Drama", "LGBTQ+"] },
+  { title:"Gasoline Rainbow", director:"Bill Ross IV, Turner Ross", year:"2023", country:"United States", image:"https://assets.mubicdn.net/images/film/385392/image-w448.jpg?1745501631", fX:0.4819, fY:0.1163, genres:["Adventure"] },
+  { title:"The Delinquents", director:"Rodrigo Moreno", year:"2023", country:"Argentina, Brazil", image:"https://assets.mubicdn.net/images/film/376078/image-w448.jpg?1745501368", fX:0.4847, fY:0.6386, genres:["Comedy", "Drama", "Crime"] },
+  { title:"High & Low - John Galliano", director:"Kevin Macdonald", year:"2023", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/380148/image-w448.jpg?1745501368", fX:0.5181, fY:0.3639, genres:["Documentary", "Biography", "LGBTQ+"] },
+  { title:"Perfect Days", director:"Wim Wenders", year:"2023", country:"Japan, Germany", image:"https://assets.mubicdn.net/images/film/343977/image-w448.jpg?1745501776", fX:0.59, fY:0.2772, genres:["Drama"] },
+  { title:"The Settlers", director:"Felipe G\u00e1lvez", year:"2023", country:"Chile, Argentina", image:"https://assets.mubicdn.net/images/film/376083/image-w448.jpg?1745502117", fX:0.3324, fY:0.5407, genres:["History", "Western", "Drama", "Thriller"] },
+  { title:"Priscilla", director:"Sofia Coppola", year:"2023", country:"United States, Italy", image:"https://assets.mubicdn.net/images/film/354432/image-w448.jpg?1745501476", fX:0.4618, fY:0.2963, genres:["Drama", "Biography"] },
+  { title:"Fallen Leaves", director:"Aki Kaurism\u00e4ki", year:"2023", country:"Finland, Germany", image:"https://assets.mubicdn.net/images/film/346537/image-w448.jpg?1745501249", fX:0.3894, fY:0.3975, genres:["Drama", "Comedy", "Romance"] },
+  { title:"Passages", director:"Ira Sachs", year:"2023", country:"France", image:"https://assets.mubicdn.net/images/film/325455/image-w448.jpg?1745499517", fX:0.4465, fY:0.1852, genres:["Drama", "LGBTQ+", "Romance"] },
+  { title:"Rotting in the Sun", director:"Sebasti\u00e1n Silva", year:"2023", country:"United States, Mexico", image:"https://assets.mubicdn.net/images/film/364307/image-w448.jpg?1745500732", fX:0.4944, fY:0.3787, genres:["Comedy", "LGBTQ+", "Mystery", "Thriller"] },
+  { title:"Medusa Deluxe", director:"Thomas Hardiman", year:"2022", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/343641/image-w448.jpg?1745499941", fX:0.2632, fY:0.4863, genres:["Drama", "Mystery"] },
+  { title:"Return to Seoul", director:"Davy Chou", year:"2022", country:"France, Germany", image:"https://assets.mubicdn.net/images/film/339537/image-w448.jpg?1745499786", fX:0.4308, fY:0.231, genres:["Drama"] },
+  { title:"One Fine Morning", director:"Mia Hansen-L\u00f8ve", year:"2022", country:"France, Germany", image:"https://assets.mubicdn.net/images/film/330413/image-w448.jpg?1745499808", fX:0.8496, fY:0.2995, genres:["Drama", "Romance"] },
+  { title:"Unclenching the Fists", director:"Kira Kovalenko", year:"2021", country:"Russia", image:"https://assets.mubicdn.net/images/film/307330/image-w448.jpg?1745500680", fX:0.5188, fY:0.4741, genres:["Drama"] },
+  { title:"The Five Devils", director:"L\u00e9a Mysius", year:"2022", country:"France", image:"https://assets.mubicdn.net/images/film/289223/image-w448.jpg?1745500884", fX:0.5014, fY:0.4084, genres:["Drama", "Fantasy", "Romance", "Thriller", "LGBTQ+"] },
+  { title:"Close", director:"Lukas Dhont", year:"2022", country:"Belgium, Netherlands", image:"https://assets.mubicdn.net/images/film/339480/image-w448.jpg?1745499781", fX:0.2577, fY:0.4059, genres:["Drama"] },
+  { title:"Holy Spider", director:"Ali Abbasi", year:"2022", country:"Denmark, Germany", image:"https://assets.mubicdn.net/images/film/339426/image-w448.jpg?1745499783", fX:0.3552, fY:0.4653, genres:["Crime", "Drama", "Thriller"] },
+  { title:"Alcarr\u00e0s", director:"Carla Sim\u00f3n", year:"2022", country:"Spain, Italy", image:"https://assets.mubicdn.net/images/film/332332/image-w448.jpg?1745499506", fX:0.5571, fY:0.4307, genres:["Drama"] },
+  { title:"Aftersun", director:"Charlotte Wells", year:"2022", country:"United Kingdom, United States", image:"https://assets.mubicdn.net/images/film/340287/image-w448.jpg?1745499810", fX:0.6393, fY:0.6856, genres:["Drama"] },
+  { title:"Decision to Leave", director:"Park Chan-wook", year:"2022", country:"South Korea", image:"https://assets.mubicdn.net/images/film/281688/image-w448.jpg?1745499781", fX:0.5627, fY:0.3317, genres:["Crime", "Drama", "Mystery", "Romance", "Thriller"] },
+  { title:"The Unheavenly Host", director:"Lars von Trier", year:"1994", country:"Denmark, Sweden", image:"https://assets.mubicdn.net/images/film/30673/image-w448.jpg?1745489980", fX:0.5265, fY:0.6015, genres:["Comedy", "Drama", "TV Series"] },
+  { title:"The Box", director:"Lorenzo Vigas", year:"2021", country:"Venezuela, Mexico", image:"https://assets.mubicdn.net/images/film/313105/image-w448.jpg?1745498772", fX:0.5251, fY:0.9975, genres:["Drama"] },
+  { title:"Free Chol Soo Lee", director:"Julie Ha, Eugene Yi", year:"2022", country:"United States", image:"https://assets.mubicdn.net/images/film/328602/image-w448.jpg?1745499368", fX:0.5174, fY:0.5333, genres:["Documentary"] },
+  { title:"Invisible Demons", director:"Rahul Jain", year:"2021", country:"Finland, Germany", image:"https://assets.mubicdn.net/images/film/311403/image-w448.jpg?1745498702", fX:0.7563, fY:0.3837, genres:["Documentary"] },
+  { title:"One Second", director:"Zhang Yimou", year:"2020", country:"China", image:"https://assets.mubicdn.net/images/film/227589/image-w448.jpg?1745495742", fX:0.39, fY:0.297, genres:["Drama"] },
+  { title:"A Chiara", director:"Jonas Carpignano", year:"2021", country:"Italy, France", image:"https://assets.mubicdn.net/images/film/297974/image-w448.jpg?1745498609", fX:0.5348, fY:0.3639, genres:["Drama"] },
+  { title:"Faya Dayi", director:"Jessica Beshir", year:"2021", country:"Ethiopia, United States", image:"https://assets.mubicdn.net/images/film/288622/image-w448.jpg?1745497878", fX:0.8036, fY:0.1906, genres:["Documentary", "Drama"] },
+  { title:"Bergman Island", director:"Mia Hansen-L\u00f8ve", year:"2021", country:"France, Belgium", image:"https://assets.mubicdn.net/images/film/173000/image-w448.jpg?1745500169", fX:0.1936, fY:0.3465, genres:["Drama"] },
+  { title:"Benedetta", director:"Paul Verhoeven", year:"2021", country:"France", image:"https://assets.mubicdn.net/images/film/176949/image-w448.jpg?1745495295", fX:0.4861, fY:0.1199, genres:["Biography", "Drama", "History", "LGBTQ+"] },
+  { title:"Pleasure", director:"Ninja Thyberg", year:"2021", country:"Sweden, Netherlands", image:"https://assets.mubicdn.net/images/film/269720/image-w448.jpg?1745497171", fX:0.5195, fY:0.052, genres:["Drama"] },
+  { title:"The Worst Person in the World", director:"Joachim Trier", year:"2021", country:"Norway, France", image:"https://assets.mubicdn.net/images/film/235851/image-w448.jpg?1745498543", fX:0.6128, fY:0.4975, genres:["Drama", "Comedy", "Romance"] },
+  { title:"Great Freedom", director:"Sebastian Meise", year:"2021", country:"Austria, Germany", image:"https://assets.mubicdn.net/images/film/307322/image-w448.jpg?1745498574", fX:0.4039, fY:0.2946, genres:["Drama", "LGBTQ+"] },
+  { title:"Prayers for the Stolen", director:"Tatiana Huezo", year:"2021", country:"Mexico, Germany", image:"https://assets.mubicdn.net/images/film/307326/image-w448.jpg?1745498585", fX:0.4972, fY:0.0743, genres:["Drama"] },
+  { title:"Lingui, The Sacred Bonds", director:"Mahamat-Saleh Haroun", year:"2021", country:"France, Germany", image:"https://assets.mubicdn.net/images/film/307316/image-w448.jpg?1745498585", fX:0.3288, fY:0.4043, genres:["Drama"] },
+  { title:"Lamb", director:"Valdimar J\u00f3hannsson", year:"2021", country:"Iceland, Sweden", image:"https://assets.mubicdn.net/images/film/269756/image-w448.jpg?1745497167", fX:0.4847, fY:0.3243, genres:["Drama", "Mystery", "Horror", "Fantasy"] },
+  { title:"Petite Maman", director:"C\u00e9line Sciamma", year:"2021", country:"France", image:"https://assets.mubicdn.net/images/film/284698/image-w448.jpg?1745498085", fX:0.5724, fY:0.3416, genres:["Drama", "Fantasy"] },
+  { title:"Taste", director:"Le Bao", year:"2021", country:"Vietnam, Singapore", image:"https://assets.mubicdn.net/images/film/294106/image-w448.jpg?1745498078", fX:0.5627, fY:0.4282, genres:["Drama"] },
+  { title:"Cow", director:"Andrea Arnold", year:"2021", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/291527/image-w448.jpg?1745498577", fX:0.4666, fY:0.4604, genres:["Documentary"] },
+  { title:"Azor", director:"Andreas Fontana", year:"2021", country:"Switzerland, France", image:"https://assets.mubicdn.net/images/film/294098/image-w448.jpg?1745498078", fX:0.429, fY:0.4752, genres:["Drama"] },
+  { title:"Annette", director:"Leos Carax", year:"2021", country:"France, United States", image:"https://assets.mubicdn.net/images/film/164163/image-w448.jpg?1745496846", fX:0.5223, fY:0.4158, genres:["Drama", "Musical", "Avant-Garde"] },
+  { title:"Cryptozoo", director:"Dash Shaw", year:"2021", country:"United States", image:"https://assets.mubicdn.net/images/film/287808/image-w448.jpg?1745497846", fX:0.6671, fY:0.4876, genres:["Animation", "Avant-Garde", "Fantasy"] },
+  { title:"Limbo", director:"Ben Sharrock", year:"2020", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/241060/image-w448.jpg?1745497165", fX:0.6351, fY:0.2005, genres:["Drama", "Comedy"] },
+  { title:"New Order", director:"Michel Franco", year:"2020", country:"Mexico, France", image:"https://assets.mubicdn.net/images/film/274391/image-w448.jpg?1745497343", fX:0.2855, fY:0.4579, genres:["Drama"] },
+  { title:"First Cow", director:"Kelly Reichardt", year:"2019", country:"United States", image:"https://assets.mubicdn.net/images/film/220819/image-w448.jpg?1745496271", fX:0.4916, fY:0.2995, genres:["Drama", "Western"] },
+  { title:"Shiva Baby", director:"Emma Seligman", year:"2020", country:"United States", image:"https://assets.mubicdn.net/images/film/254618/image-w448.jpg?1745496747", fX:0.344, fY:0.4579, genres:["Comedy", "Drama", "LGBTQ+"] },
+  { title:"State Funeral", director:"Sergei Loznitsa", year:"2019", country:"Netherlands, Lithuania", image:"https://assets.mubicdn.net/images/film/241300/image-w448.jpg?1745496241", fX:0.7493, fY:0.3465, genres:["Documentary", "History"] },
+  { title:"Notturno", director:"Gianfranco Rosi", year:"2020", country:"Italy, France", image:"https://assets.mubicdn.net/images/film/274397/image-w448.jpg?1745497347", fX:0.4721, fY:0.1559, genres:["Documentary"] },
+  { title:"Beginning", director:"Dea Kulumbegashvili", year:"2020", country:"Georgia, France", image:"https://assets.mubicdn.net/images/film/269724/image-w448.jpg?1745497229", fX:0.4833, fY:0.3762, genres:["Drama"] },
+  { title:"The Other Lamb", director:"Ma\u0142gorzata Szumowska", year:"2019", country:"Ireland, Belgium", image:"https://assets.mubicdn.net/images/film/235926/image-w448.jpg?1745496046", fX:0.4513, fY:0.2649, genres:["Horror", "Drama"] },
+  { title:"Matthias & Maxime", director:"Xavier Dolan", year:"2019", country:"Canada", image:"https://assets.mubicdn.net/images/film/205825/image-w448.jpg?1745495637", fX:0.7371, fY:0.3605, genres:["Drama", "Romance", "LGBTQ+"] },
+  { title:"Ema", director:"Pablo Larra\u00edn", year:"2019", country:"Chile", image:"https://assets.mubicdn.net/images/film/224483/image-w448.jpg?1745495637", fX:0.4903, fY:0.4653, genres:["Drama"] },
+  { title:"Bacurau", director:"Kleber Mendon\u00e7a Filho, Juliano Dornelles", year:"2019", country:"Brazil, France", image:"https://assets.mubicdn.net/images/film/226295/image-w448.jpg?1770821020", fX:0.58, fY:0.98, genres:["Drama", "Thriller", "Western"] },
+  { title:"The Wild Goose Lake", director:"Diao Yi'nan", year:"2019", country:"China, France", image:"https://assets.mubicdn.net/images/film/229011/image-w448.jpg?1745495964", fX:0.5864, fY:0.8119, genres:["Drama", "Film noir", "Crime"] },
+  { title:"A Dog Called Money", director:"Seamus Murphy", year:"2019", country:"Ireland, United Kingdom", image:"https://assets.mubicdn.net/images/film/225137/image-w448.jpg?1745495659", fX:0.5153, fY:0.0371, genres:["Documentary", "Music"] },
+  { title:"Yves Saint Laurent: The Last Collections", director:"Olivier Meyrou", year:"2018", country:"France", image:"https://assets.mubicdn.net/images/film/217139/image-w448.jpg?1745495387", fX:0.273, fY:0.3515, genres:["Documentary"] },
+  { title:"Zombi Child", director:"Bertrand Bonello", year:"2019", country:"France", image:"https://assets.mubicdn.net/images/film/224485/image-w448.jpg?1745495980", fX:0.454, fY:0.3589, genres:["Fantasy", "Horror", "Drama"] },
+  { title:"Beanpole", director:"Kantemir Balagov", year:"2019", country:"Russia", image:"https://assets.mubicdn.net/images/film/233827/image-w448.jpg?1745495952", fX:0.4958, fY:0.1634, genres:["Drama", "War"] },
+  { title:"Madeline's Madeline", director:"Josephine Decker", year:"2018", country:"United States", image:"https://assets.mubicdn.net/images/film/164518/image-w448.jpg?1745494431", fX:0.4666, fY:0.4233, genres:["Drama"] },
+  { title:"Under the Silver Lake", director:"David Robert Mitchell", year:"2018", country:"United States", image:"https://assets.mubicdn.net/images/film/156024/image-w448.jpg?1745494846", fX:0.5097, fY:0.2748, genres:["Thriller", "Mystery", "Comedy", "Film noir"] },
+  { title:"The Image Book", director:"Jean-Luc Godard", year:"2018", country:"Switzerland, France", image:"https://assets.mubicdn.net/images/film/164456/image-w448.jpg?1745498326", fX:0.4638, fY:0.2822, genres:["Avant-Garde", "Documentary", "Drama"] },
+  { title:"Touch Me Not", director:"Adina Pintilie", year:"2018", country:"Romania, Germany", image:"https://assets.mubicdn.net/images/film/196948/image-w448.jpg?1745494704", fX:0.5613, fY:0.5792, genres:["Drama", "Avant-Garde"] },
+  { title:"Have a Nice Day", director:"Liu Jian", year:"2017", country:"China", image:"https://assets.mubicdn.net/images/film/164464/image-w448.jpg?1745493515", fX:0.7061, fY:0.0322, genres:["Animation", "Crime", "Comedy"] },
+  { title:"F\u00e9licit\u00e9", director:"Alain Gomis", year:"2017", country:"France, Belgium", image:"https://assets.mubicdn.net/images/film/163327/image-w448.jpg?1745493469", fX:0.5432, fY:0.6856, genres:["Drama", "Music"] },
+  { title:"On Body and Soul", director:"Ildik\u00f3 Enyedi", year:"2017", country:"Hungary", image:"https://assets.mubicdn.net/images/film/162643/image-w448.jpg?1745493423", fX:0.5348, fY:0.4752, genres:["Drama", "Fantasy", "Romance"] },
+  { title:"Slack Bay", director:"Bruno Dumont", year:"2016", country:"France, Germany", image:"https://assets.mubicdn.net/images/film/134930/image-w448.jpg?1745492754", fX:0.3983, fY:0.453, genres:["Comedy", "Drama", "Mystery"] },
+  { title:"The Happiest Day in the Life of Olli M\u00e4ki", director:"Juho Kuosmanen", year:"2016", country:"Finland, Germany", image:"https://assets.mubicdn.net/images/film/153007/image-w448.jpg?1745492753", fX:0.5585, fY:0.2847, genres:["Drama", "Sport", "Biography"] },
+  { title:"The Secret Agent", director:"Kleber Mendon\u00e7a Filho", year:"2025", country:"France, Brazil", image:"https://assets.mubicdn.net/images/film/411498/image-w448.jpg?1771581654", fX:0.42, fY:0.34, genres:["Thriller", "Drama"] },
+  { title:"My Father's Shadow", director:"Akinola Davies Jr.", year:"2025", country:"United Kingdom, Nigeria", image:"https://assets.mubicdn.net/images/film/410994/image-w448.jpg?1745503807", fX:0.54, fY:0.44, genres:["Drama"] },
+  { title:"Discipline", director:"Mona Fastvold", year:"2026", country:"United States", image:"https://assets.mubicdn.net/images/film/465582/image-w448.jpg?1772538660", fX:0.47, fY:0.35, genres:["Short", "Drama"] },
+  { title:"A Regular Woman", director:"Sherry Hormann", year:"2019", country:"Germany", image:"https://assets.mubicdn.net/images/film/228443/image-w448.jpg?1745495771", fX:0.49, fY:0.45, genres:["Drama", "Crime"] },
+  { title:"Thelma & Louise", director:"Ridley Scott", year:"1991", country:"United States, United Kingdom", image:"https://assets.mubicdn.net/images/film/17147/image-w448.jpg?1762361235", fX:0.56, fY:0.81, genres:["Drama", "Crime", "Adventure"] },
+  { title:"Ingrid Goes West", director:"Matt Spicer", year:"2017", country:"United States", image:"https://assets.mubicdn.net/images/film/158264/image-w448.jpg?1745493395", fX:0.7959, fY:0.304, genres:["Comedy", "Drama"] },
+  { title:"Thoroughbreds", director:"Cory Finley", year:"2017", country:"United States", image:"https://assets.mubicdn.net/images/film/155406/image-w448.jpg?1773338025", fX:0.52, fY:0.35, genres:["Drama", "Thriller", "Comedy"] },
+  { title:"The Mirror", director:"Jafar Panahi", year:"1997", country:"Iran", image:"https://assets.mubicdn.net/images/film/1265/image-w448.jpg?1772110522", fX:0.56, fY:0.18, genres:["Drama"] },
+  { title:"The White Balloon", director:"Jafar Panahi", year:"1995", country:"Iran", image:"https://assets.mubicdn.net/images/film/1744/image-w448.jpg?1745489535", fX:0.52, fY:0.28, genres:["Drama", "Family"] },
+  { title:"Closed Curtain", director:"Jafar Panahi, Kambuzia Partovi", year:"2013", country:"Iran", image:"https://assets.mubicdn.net/images/film/103282/image-w448.jpg?1745491488", fX:0.6922, fY:0.2401, genres:["Documentary", "Drama"] },
+  { title:"Altman", director:"Ron Mann", year:"2014", country:"Canada", image:"https://assets.mubicdn.net/images/film/118459/image-w448.jpg?1745492123", fX:0.5251, fY:0.4109, genres:["Documentary"] },
+  { title:"Crimson Gold", director:"Jafar Panahi", year:"2003", country:"Iran", image:"https://assets.mubicdn.net/images/film/1295/image-w448.jpg?1772110228", fX:0.58, fY:0.34, genres:["Drama", "Crime"] },
+  { title:"Nickel Boys", director:"RaMell Ross", year:"2024", country:"United States", image:"https://assets.mubicdn.net/images/film/400382/image-w448.jpg?1745503396", fX:0.7357, fY:0.6691, genres:["Drama", "Crime"] },
+  { title:"The Circle", director:"Jafar Panahi", year:"2000", country:"Iran, Switzerland", image:"https://assets.mubicdn.net/images/film/1080/image-w448.jpg?1745489517", fX:0.31, fY:0.45, genres:["Drama"] },
+  { title:"Offside", director:"Jafar Panahi", year:"2006", country:"Iran", image:"https://assets.mubicdn.net/images/film/1200/image-w448.jpg?1745489521", fX:0.3549, fY:0.4405, genres:["Comedy", "Sport"] },
+  { title:"Being John Smith", director:"John Smith", year:"2024", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/420637/image-w448.jpg?1771503314", fX:0.3, fY:0.43, genres:["Short", "Avant-Garde"] },
+  { title:"Parasite", director:"Bong Joon Ho", year:"2019", country:"South Korea", image:"https://assets.mubicdn.net/images/film/172930/image-w448.jpg?1745495498", fX:0.7137, fY:0.5039, genres:["Drama", "Comedy", "Thriller"] },
+  { title:"Pictures of Ghosts", director:"Kleber Mendon\u00e7a Filho", year:"2023", country:"Brazil", image:"https://assets.mubicdn.net/images/film/376310/image-w448.jpg?1745501345", fX:0.53, fY:0.37, genres:["Documentary"] },
+  { title:"Eletrodom\u00e9stica", director:"Kleber Mendon\u00e7a Filho", year:"2005", country:"Brazil", image:"https://assets.mubicdn.net/images/film/163018/image-w448.jpg?1745493438", fX:0.6189, fY:0.2247, genres:["Drama", "Short"] },
+  { title:"Friday Night Saturday Morning", director:"Kleber Mendon\u00e7a Filho", year:"2006", country:"Brazil, Ukraine", image:"https://assets.mubicdn.net/images/film/173048/image-w448.jpg?1745493788", fX:0.507, fY:0.4381, genres:["Short", "Drama"] },
+  { title:"Cold Tropics", director:"Kleber Mendon\u00e7a Filho", year:"2009", country:"Brazil", image:"https://assets.mubicdn.net/images/film/118497/image-w448.jpg?1765364444", fX:0.54, fY:0.12, genres:["Drama", "Documentary", "Short"] },
+  { title:"Wadjda", director:"Haifaa Al-Mansour", year:"2012", country:"Saudi Arabia, Germany", image:"https://assets.mubicdn.net/images/film/99686/image-w448.jpg?1745491331", fX:0.4847, fY:0.1733, genres:["Drama"] },
+  { title:"Being John Malkovich", director:"Spike Jonze", year:"1999", country:"United States", image:"https://assets.mubicdn.net/images/film/258/image-w448.jpg?1745489495", fX:0.4847, fY:0.3069, genres:["Comedy", "Sci-Fi", "Drama", "Fantasy"] },
+  { title:"The Capsule", director:"Athina Rachel Tsangari", year:"2012", country:"Greece", image:"https://assets.mubicdn.net/images/film/99341/image-w448.jpg?1745501046", fX:0.4909, fY:0.547, genres:["Drama", "Short"] },
+  { title:"Taxi Tehran", director:"Jafar Panahi", year:"2015", country:"Iran", image:"https://assets.mubicdn.net/images/film/119983/image-w448.jpg?1745492168", fX:0.4624, fY:0.3416, genres:["Drama", "Comedy"] },
+  { title:"Mekong Hotel", director:"Apichatpong Weerasethakul", year:"2012", country:"Thailand, United Kingdom", image:"https://assets.mubicdn.net/images/film/97304/image-w448.jpg?1745491247", fX:0.6769, fY:0.995, genres:["Drama"] },
+  { title:"Green Vinyl", director:"Kleber Mendon\u00e7a Filho", year:"2005", country:"Brazil", image:"https://assets.mubicdn.net/images/film/118492/image-w448.jpg?1745492122", fX:0.4401, fY:0.0272, genres:["Fantasy", "Short"] },
+  { title:"Neighbouring Sounds", director:"Kleber Mendon\u00e7a Filho", year:"2012", country:"Brazil", image:"https://assets.mubicdn.net/images/film/94584/image-w448.jpg?1745491052", fX:0.4652, fY:0.5248, genres:["Drama", "Thriller"] },
+  { title:"Sibyl", director:"Justine Triet", year:"2019", country:"France, Belgium", image:"https://assets.mubicdn.net/images/film/227269/image-w448.jpg?1745501140", fX:0.6588, fY:0.2698, genres:["Drama"] },
+  { title:"Wetlands", director:"David Wnendt", year:"2013", country:"Germany", image:"https://assets.mubicdn.net/images/film/108516/image-w448.jpg?1745491666", fX:0.52, fY:0.43, genres:["Drama", "Comedy"] },
+  { title:"Bottoms", director:"Emma Seligman", year:"2023", country:"United States", image:"https://assets.mubicdn.net/images/film/300894/image-w448.jpg?1745500947", fX:0.23, fY:0.45, genres:["Comedy", "LGBTQ+"] },
+  { title:"El Planeta", director:"Amalia Ulman", year:"2021", country:"Spain, United States", image:"https://assets.mubicdn.net/images/film/287910/image-w448.jpg?1745497851", fX:0.5125, fY:0.1733, genres:["Comedy"] },
+  { title:"Orlando", director:"Sally Potter", year:"1992", country:"United Kingdom, Russia", image:"https://assets.mubicdn.net/images/film/2691/image-w448.jpg?1745490495", fX:0.4694, fY:0.2716, genres:["Drama", "Fantasy", "Romance", "LGBTQ+", "Comedy"] },
+  { title:"Born in Flames", director:"Lizzie Borden", year:"1983", country:"United States", image:"https://assets.mubicdn.net/images/film/12073/image-w448.jpg?1745490968", fX:0.4624, fY:0.6064, genres:["Comedy", "Drama", "Fantasy", "LGBTQ+", "Sci-Fi"] },
+  { title:"Pepi, Luci, Bom", director:"Pedro Almod\u00f3var", year:"1980", country:"Spain", image:"https://assets.mubicdn.net/images/film/5138/image-w448.jpg?1745490706", fX:0.4359, fY:0.1488, genres:["Comedy", "Cult"] },
+  { title:"The Hypnosis", director:"Ernst De Geer", year:"2023", country:"Sweden, Norway", image:"https://assets.mubicdn.net/images/film/381765/image-w448.jpg?1745501443", fX:0.7326, fY:0.3663, genres:["Comedy", "Drama"] },
+  { title:"Something Wild", director:"Jonathan Demme", year:"1986", country:"United States", image:"https://assets.mubicdn.net/images/film/26916/image-w448.jpg?1747920011", fX:0.3092, fY:0.9629, genres:["Comedy", "Crime", "Romance", "Thriller"] },
+  { title:"Northwest Passage", director:"David Lynch", year:"1990", country:"United States", image:"https://assets.mubicdn.net/images/film/433422/image-w448.jpg?1747141083", fX:0.3774, fY:0.5619, genres:["Drama", "Thriller", "Crime", "Mystery", "TV Series", "Cult"] },
+  { title:"Eternal Sunshine of the Spotless Mind", director:"Michel Gondry", year:"2004", country:"United States", image:"https://assets.mubicdn.net/images/film/92/image-w448.jpg?1766101038", fX:0.72, fY:0.46, genres:["Drama", "Romance", "Sci-Fi"] },
+  { title:"2015", director:"Rodrigo Sorogoyen", year:"2024", country:"Spain, France", image:"https://assets.mubicdn.net/images/film/448214/image-w448.jpg?1760109597", fX:0.52, fY:0.38, genres:["Drama", "TV Mini-series"] },
+  { title:"Phantom Thread", director:"Paul Thomas Anderson", year:"2017", country:"United States, China", image:"https://assets.mubicdn.net/images/film/157754/image-w448.jpg?1764350842", fX:0.4, fY:0.28, genres:["Drama", "Romance"] },
+  { title:"Mysterious Skin", director:"Gregg Araki", year:"2004", country:"United States, Netherlands", image:"https://assets.mubicdn.net/images/film/400/image-w448.jpg?1745493141", fX:0.266, fY:0.4314, genres:["Drama", "Cult", "LGBTQ+"] },
+  { title:"Moonstruck", director:"Norman Jewison", year:"1987", country:"United States", image:"https://assets.mubicdn.net/images/film/9487/image-w448.jpg?1745490768", fX:0.2629, fY:0.3802, genres:["Romance", "Comedy", "Drama"] },
+  { title:"The Piano Accident", director:"Quentin Dupieux", year:"2025", country:"France", image:"https://assets.mubicdn.net/images/film/447318/image-w448.jpg?1764695248", fX:0.31, fY:0.24, genres:["Comedy", "Drama"] },
+  { title:"The Fall", director:"Tarsem Singh", year:"2006", country:"United States, India", image:"https://assets.mubicdn.net/images/film/8696/image-w448.jpg?1745489624", fX:0.6811, fY:0.6782, genres:["Drama", "Fantasy", "Cult"] },
+  { title:"Touki Bouki", director:"Djibril Diop Mamb\u00e9ty", year:"1973", country:"Senegal", image:"https://assets.mubicdn.net/images/film/2036/image-w448.jpg?1745490817", fX:0.62, fY:0.43, genres:["Drama"] },
+  { title:"When Harry Met Sally...", director:"Rob Reiner", year:"1989", country:"United States", image:"https://assets.mubicdn.net/images/film/3473/image-w448.jpg?1745490500", fX:0.4903, fY:0.245, genres:["Comedy", "Drama", "Romance"] },
+  { title:"Reprise", director:"Joachim Trier", year:"2006", country:"Norway", image:"https://assets.mubicdn.net/images/film/3197/image-w448.jpg?1745492014", fX:0.4596, fY:0.396, genres:["Drama"] },
+  { title:"Winter in Sokcho", director:"Koya Kamura", year:"2024", country:"France", image:"https://assets.mubicdn.net/images/film/419387/image-w448.jpg?1762450266", fX:0.63, fY:0.32, genres:["Drama"] },
+  { title:"Fargo", director:"Joel Coen", year:"1996", country:"United States, United Kingdom", image:"https://assets.mubicdn.net/images/film/170/image-w448.jpg?1745490955", fX:0.5794, fY:0.3416, genres:["Crime", "Thriller", "Comedy"] },
+  { title:"We Need to Talk About Kevin", director:"Lynne Ramsay", year:"2011", country:"United Kingdom, United States", image:"https://assets.mubicdn.net/images/film/39858/image-w448.jpg?1745492504", fX:0.4526, fY:0.5025, genres:["Drama", "Mystery", "Crime"] },
+  { title:"Blue Velvet", director:"David Lynch", year:"1986", country:"United States", image:"https://assets.mubicdn.net/images/film/1309/image-w448.jpg?1753726625", fX:0.56, fY:0.25, genres:["Mystery", "Thriller", "Cult"] },
+  { title:"Mulholland Drive", director:"David Lynch", year:"2001", country:"United States, France", image:"https://assets.mubicdn.net/images/film/187/image-w448.jpg?1745491092", fX:0.5975, fY:0.297, genres:["Drama", "Mystery", "Thriller", "Film noir"] },
+  { title:"Good Time", director:"Josh Safdie, Benny Safdie", year:"2017", country:"United States", image:"https://assets.mubicdn.net/images/film/151966/image-w448.jpg?1745492717", fX:0.4728, fY:0.3465, genres:["Drama", "Crime", "Thriller"] },
+  { title:"La ci\u00e9naga", director:"Lucrecia Martel", year:"2001", country:"Argentina, Spain", image:"https://assets.mubicdn.net/images/film/259/image-w448.jpg?1745492285", fX:0.6337, fY:0.3193, genres:["Drama", "Comedy"] },
+  { title:"Magnificent Obsession", director:"Douglas Sirk", year:"1954", country:"United States", image:"https://assets.mubicdn.net/images/film/973/image-w448.jpg?1769797342", fX:0.48, fY:0.61, genres:["Drama", "Romance"] },
+  { title:"Witches", director:"Elizabeth Sankey", year:"2024", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/411752/image-w448.jpg?1745502645", fX:0.5097, fY:0.698, genres:["Documentary"] },
+  { title:"Women Talking", director:"Sarah Polley", year:"2022", country:"United States", image:"https://assets.mubicdn.net/images/film/288066/image-w448.jpg?1765382162", fX:0.07, fY:0.41, genres:["Drama"] },
+  { title:"The Apartment", director:"Billy Wilder", year:"1960", country:"United States", image:"https://assets.mubicdn.net/images/film/1694/image-w448.jpg?1745489533", fX:0.5181, fY:0.3985, genres:["Comedy", "Romance", "Drama"] },
+  { title:"Part 1", director:"David Lynch", year:"2017", country:"United States", image:"https://assets.mubicdn.net/images/film/433459/image-w448.jpg?1747696370", fX:0.5961, fY:0.2475, genres:["Drama", "Fantasy", "Thriller", "Crime", "Mystery", "TV Mini-series"] },
+  { title:"Sexual Drive", director:"Kota Yoshida", year:"2021", country:"Japan", image:"https://assets.mubicdn.net/images/film/288509/image-w448.jpg?1745497873", fX:0.3733, fY:0.2871, genres:["Drama", "Anthology", "Comedy"] },
+  { title:"The Lunchbox", director:"Ritesh Batra", year:"2013", country:"India, France", image:"https://assets.mubicdn.net/images/film/104695/image-w448.jpg?1745491544", fX:0.5292, fY:0.3614, genres:["Drama", "Romance"] },
+  { title:"Midnight Cowboy", director:"John Schlesinger", year:"1969", country:"United States", image:"https://assets.mubicdn.net/images/film/5703/image-w448.jpg?1758236735", fX:0.52, fY:0.35, genres:["Drama", "LGBTQ+"] },
+  { title:"Three Colors: Blue", director:"Krzysztof Kie\u015blowski", year:"1993", country:"France, Poland", image:"https://assets.mubicdn.net/images/film/414/image-w448.jpg?1745490957", fX:0.4847, fY:0.8243, genres:["Drama", "Music"] },
+  { title:"Certified Copy", director:"Abbas Kiarostami", year:"2010", country:"France, Italy", image:"https://assets.mubicdn.net/images/film/26220/image-w448.jpg?1745490961", fX:0.4596, fY:0.3317, genres:["Drama", "Romance"] },
+  { title:"The Silence of the Lambs", director:"Jonathan Demme", year:"1991", country:"United States", image:"https://assets.mubicdn.net/images/film/528/image-w448.jpg?1757512229", fX:0.47, fY:0.32, genres:["Thriller", "Crime", "Drama", "Horror"] },
+  { title:"The Dreamers", director:"Bernardo Bertolucci", year:"2003", country:"France", image:"https://assets.mubicdn.net/images/film/2108/image-w448.jpg?1745490438", fX:0.3788, fY:0.5866, genres:["Drama", "Romance"] },
+  { title:"Megalopolis", director:"Francis Ford Coppola", year:"2024", country:"United States", image:"https://assets.mubicdn.net/images/film/278115/image-w448.jpg?1756923772", fX:0.52, fY:0.35, genres:["Sci-Fi", "Drama", "Thriller"] },
+  { title:"Festen", director:"Thomas Vinterberg", year:"1998", country:"Denmark", image:"https://assets.mubicdn.net/images/film/199/image-w448.jpg?1745489494", fX:0.727, fY:0.2599, genres:["Drama"] },
+  { title:"Paris Is Burning", director:"Jennie Livingston", year:"1990", country:"United States", image:"https://assets.mubicdn.net/images/film/21477/image-w448.jpg?1745489723", fX:0.5418, fY:0.297, genres:["Documentary", "LGBTQ+", "History"] },
+  { title:"Licorice Pizza", director:"Paul Thomas Anderson", year:"2021", country:"United States", image:"https://assets.mubicdn.net/images/film/252593/image-w448.jpg?1746719549", fX:0.35, fY:0.18, genres:["Romance", "Comedy", "Drama"] },
+  { title:"The Practice", director:"Mart\u00edn Rejtman", year:"2023", country:"Argentina, Chile", image:"https://assets.mubicdn.net/images/film/385526/image-w448.jpg?1745501636", fX:0.6003, fY:0.2698, genres:["Comedy"] },
+  { title:"Soul Kitchen", director:"Fatih Ak\u0131n", year:"2009", country:"Germany, France", image:"https://assets.mubicdn.net/images/film/4311/image-w448.jpg?1745490177", fX:0.5279, fY:0.4629, genres:["Comedy", "Drama"] },
+  { title:"Sorry, Baby", director:"Eva Victor", year:"2025", country:"United States, France", image:"https://assets.mubicdn.net/images/film/431122/image-w448.jpg?1758281044", fX:0.46, fY:0.41, genres:["Drama"] },
+  { title:"Tom at the Farm", director:"Xavier Dolan", year:"2013", country:"Canada, France", image:"https://assets.mubicdn.net/images/film/108254/image-w448.jpg?1745491652", fX:0.4958, fY:0.5421, genres:["Drama", "Mystery", "LGBTQ+"] },
+  { title:"Three Colors: Red", director:"Krzysztof Kie\u015blowski", year:"1994", country:"France, Switzerland", image:"https://assets.mubicdn.net/images/film/412/image-w448.jpg?1745490939", fX:0.3844, fY:0.3936, genres:["Drama"] },
+  { title:"Written on the Wind", director:"Douglas Sirk", year:"1956", country:"United States", image:"https://assets.mubicdn.net/images/film/636/image-w448.jpg?1745492993", fX:0.273, fY:0.2426, genres:["Drama"] },
+  { title:"Three Colors: White", director:"Krzysztof Kie\u015blowski", year:"1994", country:"France, Poland", image:"https://assets.mubicdn.net/images/film/413/image-w448.jpg?1745490867", fX:0.624, fY:0.2129, genres:["Comedy", "Drama"] },
+  { title:"Winter's Bone", director:"Debra Granik", year:"2010", country:"United States", image:"https://assets.mubicdn.net/images/film/21846/image-w448.jpg?1745490976", fX:0.6114, fY:0.2525, genres:["Drama", "Thriller", "Crime"] },
+  { title:"Oslo, August 31st", director:"Joachim Trier", year:"2011", country:"Norway", image:"https://assets.mubicdn.net/images/film/43650/image-w448.jpg?1745490966", fX:0.7368, fY:0.2376, genres:["Drama"] },
+  { title:"Revenge", director:"Coralie Fargeat", year:"2017", country:"France", image:"https://assets.mubicdn.net/images/film/178197/image-w448.jpg?1745493993", fX:0.6968, fY:0.4543, genres:["Action", "Thriller", "Horror"] },
+  { title:"Totally F***ed Up", director:"Gregg Araki", year:"1993", country:"United States", image:"https://assets.mubicdn.net/images/film/23451/image-w448.jpg?1748645789", fX:0.5153, fY:0.9975, genres:["Comedy", "Drama", "Romance", "LGBTQ+"] },
+  { title:"Reality+", director:"Coralie Fargeat", year:"2014", country:"France", image:"https://assets.mubicdn.net/images/film/156533/image-w448.jpg?1745498855", fX:0.5014, fY:0.2351, genres:["Short", "Sci-Fi", "Romance"] },
+  { title:"Vi\u1ec7t and Nam", director:"Minh Qu\u00fd Tr\u01b0\u01a1ng", year:"2024", country:"Vietnam, France", image:"https://assets.mubicdn.net/images/film/409118/image-w448.jpg?1749144938", fX:0.5501, fY:0.3614, genres:["Drama", "LGBTQ+"] },
+  { title:"The Elephant Man", director:"David Lynch", year:"1980", country:"United States", image:"https://assets.mubicdn.net/images/film/1358/image-w448.jpg?1745489526", fX:0.4471, fY:0.6015, genres:["Drama"] },
+  { title:"Gerhard Richter Painting", director:"Corinna Belz", year:"2012", country:"Germany", image:"https://assets.mubicdn.net/images/film/89103/image-w448.jpg?1745490739", fX:0.6045, fY:0.5297, genres:["Documentary"] },
+  { title:"An Asian Ghost Story", director:"Bo Wang", year:"2023", country:"Hong Kong, Netherlands", image:"https://assets.mubicdn.net/images/film/372059/image-w448.jpg?1767802358", fX:0.28, fY:0.28, genres:["Short", "Documentary"] },
+  { title:"House by the River", director:"Fritz Lang", year:"1950", country:"United States", image:"https://assets.mubicdn.net/images/film/12263/image-w448.jpg?1745490413", fX:0.4944, fY:0.3267, genres:["Crime", "Drama", "Film noir"] },
+  { title:"Irreversible", director:"Gaspar No\u00e9", year:"2002", country:"France", image:"https://assets.mubicdn.net/images/film/111/image-w448.jpg?1745489493", fX:0.4916, fY:0.3837, genres:["Drama", "Avant-Garde"] },
+  { title:"Grand Theft Hamlet", director:"Pinny Grylls, Sam Crane", year:"2024", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/402447/image-w448.jpg?1745502310", fX:0.5641, fY:0.4752, genres:["Documentary"] },
+  { title:"Dona Flor and Her Two Husbands", director:"Bruno Barreto", year:"1976", country:"Brazil", image:"https://assets.mubicdn.net/images/film/22518/image-w448.jpg?1745489745", fX:0.4198, fY:0.1881, genres:["Comedy", "Fantasy"] },
+  { title:"Silvia Prieto", director:"Mart\u00edn Rejtman", year:"1999", country:"Argentina", image:"https://assets.mubicdn.net/images/film/23535/image-w448.jpg?1745489773", fX:0.3677, fY:0.0198, genres:["Comedy", "Drama"] },
+  { title:"Charade", director:"Stanley Donen", year:"1963", country:"United States", image:"https://assets.mubicdn.net/images/film/603/image-w448.jpg?1755540748", fX:0.52, fY:0.3, genres:["Mystery", "Thriller", "Crime", "Romance", "Comedy"] },
+  { title:"Wuthering Heights", director:"Andrea Arnold", year:"2011", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/87308/image-w448.jpg?1745491892", fX:0.35, fY:0.35, genres:["Drama", "Romance"] },
+  { title:"Oxhide", director:"Liu Jiayin", year:"2005", country:"China", image:"https://assets.mubicdn.net/images/film/19167/image-w448.jpg?1767787805", fX:0.36, fY:0.24, genres:["Documentary"] },
+  { title:"Moon", director:"Kurdwin Ayub", year:"2024", country:"Austria", image:"https://assets.mubicdn.net/images/film/417791/image-w448.jpg?1745502859", fX:0.62, fY:0.38, genres:["Drama", "Thriller"] },
+  { title:"Perfumed Nightmare", director:"Kidlat Tahimik", year:"1977", country:"Philippines", image:"https://assets.mubicdn.net/images/film/24201/image-w448.jpg?1745490240", fX:0.67, fY:1.0, genres:["Comedy", "Drama"] },
+  { title:"When I Saw You", director:"Annemarie Jacir", year:"2012", country:"Palestine, Jordan", image:"https://assets.mubicdn.net/images/film/99903/image-w448.jpg?1745491342", fX:0.6281, fY:0.1975, genres:["Drama"] },
+  { title:"Moving", director:"Shinji S\u00f4mai", year:"1993", country:"Japan", image:"https://assets.mubicdn.net/images/film/37269/image-w448.jpg?1750807364", fX:0.7047, fY:0.9876, genres:["Drama"] },
+  { title:"45 Years", director:"Andrew Haigh", year:"2015", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/119023/image-w448.jpg?1745492168", fX:0.7967, fY:0.3936, genres:["Drama", "Romance"] },
+  { title:"The Cathedral", director:"Ricky D'Ambrose", year:"2021", country:"United States", image:"https://assets.mubicdn.net/images/film/313165/image-w448.jpg?1765391290", fX:0.52, fY:0.99, genres:["Drama"] },
+  { title:"AliEN0089", director:"Valeria Hofmann", year:"2023", country:"Chile", image:"https://assets.mubicdn.net/images/film/365160/image-w448.jpg?1764868104", fX:0.51, fY:0.79, genres:["Short", "Thriller"] },
+  { title:"Bad Tales", director:"Damiano D'Innocenzo, Fabio D'Innocenzo", year:"2020", country:"Italy, Switzerland", image:"https://assets.mubicdn.net/images/film/256256/image-w448.jpg?1745496765", fX:0.4819, fY:0.6478, genres:["Drama"] },
+  { title:"A Dessert for Constance", director:"Sarah Maldoror", year:"1981", country:"France", image:"https://assets.mubicdn.net/images/film/99638/image-w448.jpg?1764958668", fX:0.35, fY:0.31, genres:["TV Movie", "Comedy", "Short"] },
+  { title:"Fragments for Venus", director:"Alice Diop", year:"2025", country:"France, Italy", image:"https://assets.mubicdn.net/images/film/453108/image-w448.jpg?1762770049", fX:0.56, fY:0.28, genres:["Short", "Drama"] },
+  { title:"Oh, Moon!", director:"Reha Erdem", year:"1988", country:"Turkey, France", image:"https://assets.mubicdn.net/images/film/24395/image-w448.jpg?1755156747", fX:0.29, fY:0.36, genres:["Drama", "Fantasy"] },
+  { title:"The Loneliest Planet", director:"Julia Loktev", year:"2011", country:"United States, Germany", image:"https://assets.mubicdn.net/images/film/87417/image-w448.jpg?1745490967", fX:0.3733, fY:0.3045, genres:["Thriller"] },
+  { title:"The Friends", director:"Shinji S\u00f4mai", year:"1994", country:"Japan", image:"https://assets.mubicdn.net/images/film/98086/image-w448.jpg?1751548484", fX:0.624, fY:0.2723, genres:["Drama"] },
+  { title:"Delicatessen", director:"Jean-Pierre Jeunet, Marc Caro", year:"1991", country:"France", image:"https://assets.mubicdn.net/images/film/326/image-w448.jpg?1745489498", fX:0.5167, fY:0.2847, genres:["Comedy", "Fantasy"] },
+  { title:"The Bloodiest", director:"Jean-Pierre Bekolo", year:"2005", country:"Cameroon, France", image:"https://assets.mubicdn.net/images/film/34777/image-w448.jpg?1745490125", fX:0.5772, fY:0.4173, genres:["Comedy", "Sci-Fi"] },
+  { title:"Hollywood 90028", director:"Christina Hornisher", year:"1973", country:"United States", image:"https://assets.mubicdn.net/images/film/157125/image-w448.jpg?1759254498", fX:0.45, fY:0.99, genres:["Drama", "Horror"] },
+  { title:"Old Joy", director:"Kelly Reichardt", year:"2006", country:"United States", image:"https://assets.mubicdn.net/images/film/1490/image-w448.jpg?1745489529", fX:0.4401, fY:0.7178, genres:["Drama"] },
+  { title:"Humanist Vampire Seeking Consenting Suicidal Person", director:"Ariane Louis-Seize", year:"2023", country:"Canada, France", image:"https://assets.mubicdn.net/images/film/385335/image-w448.jpg?1745501629", fX:0.4429, fY:0.9876, genres:["Comedy", "Drama", "Horror"] },
+  { title:"Night of the Living Dead", director:"George A. Romero", year:"1968", country:"United States", image:"https://assets.mubicdn.net/images/film/318/image-w448.jpg?1745489497", fX:0.5223, fY:0.4356, genres:["Horror", "Cult", "Drama"] },
+  { title:"The Watermelon Woman", director:"Cheryl Dunye", year:"1996", country:"United States", image:"https://assets.mubicdn.net/images/film/23121/image-w448.jpg?1745489762", fX:0.585, fY:0.146, genres:["Drama", "Romance", "LGBTQ+", "Comedy"] },
+  { title:"Eight Postcards from Utopia", director:"Radu Jude, Christian Ferencz-Flatz", year:"2024", country:"Romania", image:"https://assets.mubicdn.net/images/film/417398/image-w448.jpg?1750070420", fX:0.4763, fY:0.2104, genres:["Documentary"] },
+  { title:"Pepe", director:"Nelson Carlo de los Santos Arias", year:"2024", country:"Dominican Republic, Namibia", image:"https://assets.mubicdn.net/images/film/401685/image-w448.jpg?1745502278", fX:0.4598, fY:0.1216, genres:["Avant-Garde", "Fantasy", "Drama"] },
+  { title:"Winter Boy", director:"Christophe Honor\u00e9", year:"2022", country:"France", image:"https://assets.mubicdn.net/images/film/350778/image-w448.jpg?1745500219", fX:0.4067, fY:0.0149, genres:["Drama", "LGBTQ+"] },
+  { title:"Super Happy Forever", director:"Kohei Igarashi", year:"2024", country:"Japan, France", image:"https://assets.mubicdn.net/images/film/418919/image-w448.jpg?1751558215", fX:0.5641, fY:0.5569, genres:["Comedy", "Drama", "Romance"] },
+  { title:"The Delta", director:"Ira Sachs", year:"1996", country:"United States", image:"https://assets.mubicdn.net/images/film/24578/image-w448.jpg?1745489803", fX:0.4206, fY:0.1485, genres:["Drama", "LGBTQ+"] },
+  { title:"Rewind & Play", director:"Alain Gomis", year:"2022", country:"France, Germany", image:"https://assets.mubicdn.net/images/film/333631/image-w448.jpg?1745501044", fX:0.5195, fY:0.2698, genres:["Documentary"] },
+  { title:"Pino", director:"Walter Fasano", year:"2020", country:"Italy", image:"https://assets.mubicdn.net/images/film/285819/image-w448.jpg?1745497775", fX:0.5599, fY:1.0, genres:["Documentary"] },
+  { title:"Passing Summer", director:"Angela Schanelec", year:"2001", country:"Germany", image:"https://assets.mubicdn.net/images/film/23061/image-w448.jpg?1754923644", fX:0.23, fY:0.42, genres:["Drama"] },
+  { title:"The Watchman", director:"Ali Cherri", year:"2024", country:"Italy, France", image:"https://assets.mubicdn.net/images/film/399137/image-w448.jpg?1745502182", fX:0.4596, fY:0.995, genres:["Short", "Drama"] },
+  { title:"Matt and Mara", director:"Kazik Radwanski", year:"2024", country:"Canada", image:"https://assets.mubicdn.net/images/film/401750/image-w448.jpg?1745502281", fX:0.5209, fY:0.995, genres:["Drama"] },
+  { title:"Toxic", director:"Saul\u0117 Bliuvait\u0117", year:"2024", country:"Lithuania", image:"https://assets.mubicdn.net/images/film/417871/image-w448.jpg?1752829727", fX:0.51, fY:0.97, genres:["Drama"] },
+  { title:"The Living End", director:"Gregg Araki", year:"1992", country:"United States", image:"https://assets.mubicdn.net/images/film/5994/image-w448.jpg?1748344699", fX:0.3565, fY:0.4134, genres:["Comedy", "Drama", "LGBTQ+", "Crime", "Cult"] },
+  { title:"Personal Shopper", director:"Olivier Assayas", year:"2016", country:"France, Germany", image:"https://assets.mubicdn.net/images/film/149437/image-w448.jpg?1745492632", fX:0.4638, fY:0.3144, genres:["Drama", "Mystery", "Thriller", "Fantasy"] },
+  { title:"Crossing the Bridge - The Sound of Istanbul", director:"Fatih Ak\u0131n", year:"2005", country:"Germany, Turkey", image:"https://assets.mubicdn.net/images/film/1357/image-w448.jpg?1745502820", fX:0.4526, fY:0.3317, genres:["Documentary", "Music"] },
+  { title:"It's Not Me", director:"Leos Carax", year:"2024", country:"France", image:"https://assets.mubicdn.net/images/film/381079/image-w448.jpg?1746525920", fX:0.6142, fY:0.4827, genres:["Drama", "Short"] },
+  { title:"Actual People", director:"Kit Zauhar", year:"2021", country:"United States", image:"https://assets.mubicdn.net/images/film/310823/image-w448.jpg?1745498679", fX:0.5125, fY:0.3787, genres:["Drama"] },
+  { title:"Yannick", director:"Quentin Dupieux", year:"2023", country:"France", image:"https://assets.mubicdn.net/images/film/383420/image-w448.jpg?1745501535", fX:0.3997, fY:0.4381, genres:["Comedy"] },
+  { title:"On the Road", director:"Walter Salles", year:"2012", country:"United States, France", image:"https://assets.mubicdn.net/images/film/87297/image-w448.jpg?1745490661", fX:0.4465, fY:0.3383, genres:["Drama", "Adventure", "LGBTQ+"] },
+  { title:"Desire Pie", director:"Lisa Crafts", year:"1977", country:"United States", image:"https://assets.mubicdn.net/images/film/196938/image-w448.jpg?1745494703", fX:0.539, fY:0.7525, genres:["Animation", "Short", "Avant-Garde", "Erotica"] },
+  { title:"Bad for a Moment", director:"Daniel Soares", year:"2024", country:"Portugal", image:"https://assets.mubicdn.net/images/film/411381/image-w448.jpg?1747061300", fX:0.4986, fY:0.5792, genres:["Short", "Drama"] },
+  { title:"The Celluloid Closet", director:"Rob Epstein, Jeffrey Friedman", year:"1995", country:"Germany, France", image:"https://assets.mubicdn.net/images/film/15624/image-w448.jpg?1750435159", fX:0.4944, fY:0.1733, genres:["Documentary", "LGBTQ+", "History"] },
+  { title:"Toomas Beneath the Valley of the Wild Wolves", director:"Chintis Lundgren, Dra\u0161ko Ivezi\u0107", year:"2019", country:"Estonia, Croatia", image:"https://assets.mubicdn.net/images/film/236011/image-w448.jpg?1745496050", fX:0.4986, fY:0.4901, genres:["Animation", "Short"] },
+  { title:"In the Heat of the Night", director:"Norman Jewison", year:"1967", country:"United States", image:"https://assets.mubicdn.net/images/film/15131/image-w448.jpg?1745489659", fX:0.47, fY:0.31, genres:["Crime", "Drama", "Mystery"] },
+  { title:"The Graduate", director:"Mike Nichols", year:"1967", country:"United States", image:"https://assets.mubicdn.net/images/film/193/image-w448.jpg?1745490304", fX:0.1936, fY:0.4084, genres:["Drama", "Comedy", "Romance"] },
+  { title:"The Wrestler", director:"Darren Aronofsky", year:"2008", country:"United States, France", image:"https://assets.mubicdn.net/images/film/1647/image-w448.jpg?1758117720", fX:0.5, fY:0.12, genres:["Drama", "Sport", "Romance"] },
+  { title:"This Is Not a Film", director:"Mojtaba Mirtahasebi, Jafar Panahi", year:"2011", country:"Iran", image:"https://assets.mubicdn.net/images/film/45427/image-w448.jpg?1745491872", fX:0.35, fY:0.47, genres:["Documentary"] },
+  { title:"The Cabinet of Dr. Caligari", director:"Robert Wiene", year:"1920", country:"Germany", image:"https://assets.mubicdn.net/images/film/1569/image-w448.jpg", fX:0.5, fY:0.5, genres:["Horror", "Fantasy"] },
+  { title:"Nosferatu", director:"F.W. Murnau", year:"1922", country:"Germany", image:"https://assets.mubicdn.net/images/film/178/image-w448.jpg", fX:0.5, fY:0.5, genres:["Horror"] },
+  { title:"Our Hospitality", director:"Buster Keaton", year:"1923", country:"United States", image:"https://assets.mubicdn.net/images/film/17372/image-w448.jpg", fX:0.5, fY:0.5, genres:["Comedy"] },
+  { title:"Battleship Potemkin", director:"Sergei Eisenstein", year:"1925", country:"Soviet Union", image:"https://assets.mubicdn.net/images/film/1528/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama", "History"] },
+  { title:"The Gold Rush", director:"Charlie Chaplin", year:"1925", country:"United States", image:"https://assets.mubicdn.net/images/film/1103/image-w448.jpg", fX:0.5, fY:0.5, genres:["Comedy"] },
+  { title:"The General", director:"Buster Keaton", year:"1926", country:"United States", image:"https://assets.mubicdn.net/images/film/12/image-w448.jpg", fX:0.5, fY:0.5, genres:["Comedy", "Action"] },
+  { title:"Metropolis", director:"Fritz Lang", year:"1927", country:"Germany", image:"https://assets.mubicdn.net/images/film/1507/image-w448.jpg", fX:0.5, fY:0.5, genres:["Sci-Fi", "Drama"] },
+  { title:"Sunrise: A Song of Two Humans", director:"F.W. Murnau", year:"1927", country:"United States", image:"https://assets.mubicdn.net/images/film/1501/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama", "Romance"] },
+  { title:"The Passion of Joan of Arc", director:"Carl Theodor Dreyer", year:"1928", country:"France", image:"https://assets.mubicdn.net/images/film/228/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama", "Biography", "History"] },
+  { title:"Spies", director:"Fritz Lang", year:"1928", country:"Germany", image:"https://assets.mubicdn.net/images/film/2462/image-w448.jpg", fX:0.5, fY:0.5, genres:["Thriller"] },
+  { title:"Pandora's Box", director:"Georg Wilhelm Pabst", year:"1929", country:"Germany", image:"https://assets.mubicdn.net/images/film/362/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama"] },
+  { title:"Un chien andalou", director:"Luis Bu\u00f1uel", year:"1929", country:"France", image:"https://assets.mubicdn.net/images/film/294/image-w448.jpg", fX:0.5, fY:0.5, genres:["Short", "Avant-Garde"] },
+  { title:"The Blue Angel", director:"Josef von Sternberg", year:"1930", country:"Germany", image:"https://assets.mubicdn.net/images/film/2670/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama"] },
+  { title:"City Lights", director:"Charlie Chaplin", year:"1931", country:"United States", image:"https://assets.mubicdn.net/images/film/894/image-w448.jpg", fX:0.5, fY:0.5, genres:["Comedy", "Romance"] },
+  { title:"M", director:"Fritz Lang", year:"1931", country:"Germany", image:"https://assets.mubicdn.net/images/film/558/image-w448.jpg", fX:0.5, fY:0.5, genres:["Crime", "Thriller"] },
+  { title:"Zero for Conduct", director:"Jean Vigo", year:"1933", country:"France", image:"https://assets.mubicdn.net/images/film/3588/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama"] },
+  { title:"It Happened One Night", director:"Frank Capra", year:"1934", country:"United States", image:"https://assets.mubicdn.net/images/film/932/image-w448.jpg", fX:0.5, fY:0.5, genres:["Comedy", "Romance"] },
+  { title:"L'Atalante", director:"Jean Vigo", year:"1934", country:"France", image:"https://assets.mubicdn.net/images/film/438/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama", "Romance"] },
+  { title:"Modern Times", director:"Charlie Chaplin", year:"1936", country:"United States", image:"https://assets.mubicdn.net/images/film/2283/image-w448.jpg", fX:0.5, fY:0.5, genres:["Comedy", "Drama"] },
+  { title:"Grand Illusion", director:"Jean Renoir", year:"1937", country:"France", image:"https://assets.mubicdn.net/images/film/351/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama", "War"] },
+  { title:"Make Way for Tomorrow", director:"Leo McCarey", year:"1937", country:"United States", image:"https://assets.mubicdn.net/images/film/2350/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama"] },
+  { title:"Bringing Up Baby", director:"Howard Hawks", year:"1938", country:"United States", image:"https://assets.mubicdn.net/images/film/865/image-w448.jpg", fX:0.5, fY:0.5, genres:["Comedy", "Romance"] },
+  { title:"The Lady Vanishes", director:"Alfred Hitchcock", year:"1938", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/358/image-w448.jpg", fX:0.5, fY:0.5, genres:["Thriller", "Mystery"] },
+  { title:"The Rules of the Game", director:"Jean Renoir", year:"1939", country:"France", image:"https://assets.mubicdn.net/images/film/295/image-w448.jpg", fX:0.5, fY:0.5, genres:["Comedy", "Drama"] },
+  { title:"Citizen Kane", director:"Orson Welles", year:"1941", country:"United States", image:"https://assets.mubicdn.net/images/film/285/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama"] },
+  { title:"The Maltese Falcon", director:"John Huston", year:"1941", country:"United States", image:"https://assets.mubicdn.net/images/film/3328/image-w448.jpg", fX:0.5, fY:0.5, genres:["Film noir", "Crime", "Mystery"] },
+  { title:"Casablanca", director:"Michael Curtiz", year:"1942", country:"United States", image:"https://assets.mubicdn.net/images/film/164/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama", "Romance", "War"] },
+  { title:"The Magnificent Ambersons", director:"Orson Welles", year:"1942", country:"United States", image:"https://assets.mubicdn.net/images/film/1660/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama"] },
+  { title:"Shadow of a Doubt", director:"Alfred Hitchcock", year:"1943", country:"United States", image:"https://assets.mubicdn.net/images/film/2863/image-w448.jpg", fX:0.5, fY:0.5, genres:["Thriller", "Mystery"] },
+  { title:"Double Indemnity", director:"Billy Wilder", year:"1944", country:"United States", image:"https://assets.mubicdn.net/images/film/172/image-w448.jpg", fX:0.5, fY:0.5, genres:["Film noir", "Crime", "Thriller"] },
+  { title:"Laura", director:"Otto Preminger", year:"1944", country:"United States", image:"https://assets.mubicdn.net/images/film/3301/image-w448.jpg", fX:0.5, fY:0.5, genres:["Film noir", "Mystery"] },
+  { title:"Brief Encounter", director:"David Lean", year:"1945", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/345/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama", "Romance"] },
+  { title:"The Best Years of Our Lives", director:"William Wyler", year:"1946", country:"United States", image:"https://assets.mubicdn.net/images/film/2473/image-w448.jpg", fX:0.5, fY:0.5, genres:["Drama"] },
+  { title:"The Big Sleep", director:"Howard Hawks", year:"1946", country:"United States", image:"https://assets.mubicdn.net/images/film/430/image-w448.jpg", fX:0.5, fY:0.5, genres:["Film noir", "Crime", "Mystery"] },
+  { title:"Out of the Past", director:"Jacques Tourneur", year:"1947", country:"United States", image:"https://assets.mubicdn.net/images/film/2414/image-w448.jpg", fX:0.5, fY:0.5, genres:["Film noir", "Crime", "Thriller"] },
+  { title:"The Third Man", director:"Carol Reed", year:"1949", country:"United Kingdom", image:"https://assets.mubicdn.net/images/film/236/image-w448.jpg", fX:0.5, fY:0.5, genres:["Film noir", "Thriller", "Mystery"] },
+  { title:"Twin Peaks: Fire Walk with Me", director:"David Lynch", year:"1992", country:"United States, France", image:"https://assets.mubicdn.net/images/film/2270/image-w448.jpg?1745491059", fX:0.5, fY:0.5, genres:["TV Series", "Mystery", "Drama"] },
+  { title:"The New Year", director:"Brett Haley", year:"2010", country:"United States", image:"https://assets.mubicdn.net/images/film/31168/image-w448.jpg?1745489995", fX:0.5, fY:0.5, genres:["Drama", "TV Series"] }
+];
+
+const GENRE_INDEX = {};
+ALL_FILMS.forEach((film, i) => {
+  (film.genres || []).forEach(g => {
+    if (!GENRE_INDEX[g]) GENRE_INDEX[g] = [];
+    GENRE_INDEX[g].push(i);
+  });
+});
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function filmCard(film) {
+  const posX = Math.round(film.fX * 100);
+  const posY = Math.round(film.fY * 100);
+  return `<a class="film-card" href="#" aria-label="${film.title}">
+    <div class="card-img-wrap">
+      <img class="card-img" src="${film.image}" alt="${film.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
+      <div class="card-overlay">
+        <div class="card-title">${film.title}</div>
+        <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
+      </div>
+    </div>
+  </a>`;
+}
+
+function renderGrid(genre) {
+  const sortVal = (document.getElementById('sortDropdown-sort') || {}).value || 'trending';
+  let films;
+  if (!genre || genre === 'all') {
+    films = [...ALL_FILMS];
+  } else {
+    const idxs = GENRE_INDEX[genre] || [];
+    films = idxs.map(i => ALL_FILMS[i]).filter(Boolean);
+  }
+  if (sortVal === 'trending') {
+    films = shuffle(films).slice(0, 100);
+  } else if (sortVal === 'year') {
+    films = films.slice().sort((a, b) => Number(b.year) - Number(a.year)).slice(0, 100);
+  } else if (sortVal === 'title') {
+    films = films.slice().sort((a, b) => a.title.localeCompare(b.title)).slice(0, 100);
+  } else if (sortVal === 'average_rating') {
+    films = films.slice().sort((a, b) => (b.rating || 0) - (a.rating || 0) || a.title.localeCompare(b.title)).slice(0, 100);
+  } else {
+    films = shuffle(films).slice(0, 100);
+  }
+  document.getElementById('filmGrid').innerHTML = films.map(filmCard).join('');
+}
+renderGrid();
+
+const ALL_SERIES = [
+  { title:"Hal & Harper", director:"Cooper Raiff", year:2025, country:"United States", image:"https://images.mubicdn.net/images/film/448206/cache-1082712-1757432851/image-w1280.jpg", fX:0.70, fY:0.30 },
+  { title:"The New Year", director:"Rodrigo Sorogoyen", year:2024, country:"Spain, France", image:"https://images.mubicdn.net/images/film/448214/cache-1088377-1760109597/image-w1280.jpg", fX:0.52, fY:0.38 },
+  { title:"Twin Peaks: A Limited Event Series", director:"David Lynch", year:2017, country:"United States", image:"https://images.mubicdn.net/images/film/433459/cache-1036225-1747696370/image-w1280.jpg", fX:0.60, fY:0.25 },
+  { title:"Self-Portrait as a Coffee-Pot", director:"William Kentridge", year:2024, country:"South Africa, United States", image:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006", fX:0.96, fY:0.73 },
+  { title:"Blossoms Shanghai", director:"Wong Kar Wai", year:2023, country:"China, Hong Kong", image:"https://images.mubicdn.net/images/film/442900/cache-1109912-1769020624/image-w1280.jpg", fX:0.58, fY:0.38 },
+  { title:"Twin Peaks", director:"David Lynch", year:1990, country:"United States", image:"https://images.mubicdn.net/images/film/433422/cache-1035490-1747141083/image-w1280.jpg", fX:0.38, fY:0.56 },
+  { title:"The Kingdom", director:"Lars von Trier", year:1994, country:"Denmark, Sweden", image:"https://assets.mubicdn.net/images/film/30673/image-w448.jpg?1745489980", fX:0.53, fY:0.60 },
+];
+
+let seriesRendered = false;
+function renderSeries() {
+  if (seriesRendered) return;
+  seriesRendered = true;
+  document.getElementById('seriesGrid').innerHTML = ALL_SERIES.map(film => {
+    const posX = Math.round(film.fX * 100);
+    const posY = Math.round(film.fY * 100);
+    return `
+      <a class="film-card" href="#" aria-label="${film.title}">
+        <div class="card-img-wrap">
+          <img class="card-img" src="${film.image}" alt="${film.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
+          <div class="card-overlay">
+            <div class="card-eyebrow">Series</div>
+            <div class="card-title">${film.title}</div>
+            <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
+          </div>
+        </div>
+      </a>`;
+  }).join('');
+}
+
+const COLLECTIONS = [{"slug": "stories-from-home", "title": "Stories from Home", "subtitle": "", "items": "8", "img": "https://images.mubicdn.net/images/film_group/2427/cache-1123199-1774976126/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/965622/cache-965622-1774976211/images-original.png", "color": "#1f2822", "synopsis": "A house can tell us much (or suspiciously little) about its inhabitants, and the drama of that dynamic is plumbed into cinema history. With this eclectic collection, we gather around the hearth for stories about home in all its manifestations and capacity for revelation. Come in—it’s an open house!"}, {"slug": "akinola-davies-jr", "title": "A Tender Age: ", "subtitle": "Two by Akinola Davies Jr.", "items": "2", "img": "https://images.mubicdn.net/images/film/280320/cache-1118619-1773167098/image-w1280.jpg", "treatment": "", "color": "#5C524A", "synopsis": "Akinola Davies Jr. writes his acclaimed coming-of-age films with his brother, resurfacing shared memories of what it is to look at the world with uncorrupted eyes. Set in a changing Lagos, each tale entwines Nigeria’s histories with the smaller, but still profound, discoveries of growing up."}, {"slug": "my-undesirable-friends", "title": "My Undesirable Friends:", "subtitle": "Part I — Last Air in Moscow", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2372/cache-1113941-1774540230/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/962089/cache-962089-1774539298/images-original.png", "color": "#000e57", "synopsis": "Across five potent, immersive chapters, this vital work of long-form filmmaking accompanies young women journalists through the terror and absurdity of state persecution. Critically acclaimed, Julia Loktev’s epic captures the integrity and courage of political resistance with unparalleled intimacy."}, {"slug": "jonathan-demme", "title": "Windows to the Soul: ", "subtitle": "Three by Jonathan Demme ", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2343/cache-1122122-1774544993/image-original.jpg", "treatment": "", "color": "#000000", "synopsis": "A jack-of-all-trades who mastered them too, Jonathan Demme could seemingly do anything. The films of this great American humanist are united by a limitless curiosity about the world around them. The beloved director’s legendary compassion radiates from every frame in these artful yet poppy classics."}, {"slug": "kleber-tropical-uk", "title": "Kleber Mendonça Filho:", "subtitle": "Tropical Anxieties", "items": "7", "img": "https://images.mubicdn.net/images/film_group/2338/cache-1107199-1769616277/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/912299/cache-912299-1769616369/images-original.png", "color": "#ce5346", "synopsis": "With his Oscar®-nominated The Secret Agent arriving in cinemas, this collection traces the evolution of Kleber Mendonça Filho’s singular style, from his early shorts to recent acclaimed features. Charting a changing Brazil, these eclectic marvels tackle societal upheaval with mischievous absurdism."}, {"slug": "sorrentino-servillo", "title": "Double Act: ", "subtitle": "Paolo Sorrentino and Toni Servillo", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2334/cache-1116815-1772105919/image-original.png", "treatment": "", "color": "#001530", "synopsis": "Director Paolo Sorrentino and actor Toni Servillo have worked side-by-side for fifteen years, shaping filmmaking culture far beyond their native Italy. Pairing an early critical success with their first international triumph, we celebrate the range and creativity of their vital collaboration."}, {"slug": "women-misbehaving-tbd", "title": "Outta the Way!: ", "subtitle": "Women at Play", "items": "17", "img": "https://images.mubicdn.net/images/film_group/2327/cache-1117761-1772628250/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/938791/cache-938791-1772638397/images-original.png", "color": "#181c2f", "synopsis": "Name-calling, brat energy, clowning around: There are 101 ways to stick it to the man when you’re a woman—and have a whole lot of fun while you’re at it! Transgressions big and small animate these playful films, which celebrate feminist rebellion and refusal this Women’s History Month."}, {"slug": "wiseman-america", "title": "Frederick Wiseman:", "subtitle": "American Lives", "items": "8", "img": "https://images.mubicdn.net/images/film_group/2322/cache-1120607-1773938368/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/954922/cache-954922-1773927413/images-original.png", "color": "#616164", "synopsis": "The documentary filmmaker Frederick Wiseman, who died in February 2026, didn’t confine his filmmaking to the United States, but his work will forever be synonymous with an expansive anatomization of American institutions. This panoramic collection surveys the inestimable legacy of a cinematic titan."}, {"slug": "douglas-sirk-double-bill", "title": "In the Realm of Melodrama:", "subtitle": "Two by Douglas Sirk", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2300/cache-1109893-1769015801/image-original.jpg", "treatment": "", "color": "#070708", "synopsis": "Douglas Sirk’s opulent Technicolor melodramas weaponize sensation to mount sophisticated critiques of social convention, exploding the distance between art and trash. Traversing the known universe of human emotion, the master of irony discovers the meaning of happiness in the wilds of heartache."}, {"slug": "udo-kier", "title": "Udo Kier: ", "subtitle": "Scene Stealer", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2294/cache-1099025-1764175886/image-original.jpg", "treatment": "", "color": "#5057b9", "synopsis": "With his piercing gaze and sonorous voice, Udo Kier was an indelible presence onscreen, lending gravitas and an edge of danger to even the briefest of performances. Following the devastating news of his death, this collection pays tribute to a film icon for whom there are truly no small parts."}, {"slug": "heart-before-head", "title": "Heart Before Head:", "subtitle": "The Rom-Com Variations", "items": "8", "img": "https://images.mubicdn.net/images/film_group/2282/cache-1108409-1768323631/image-original.jpg", "treatment": "", "color": "#E18C8C", "synopsis": "Look away from the classics, and alternative rom-coms appear across cinema history, hidden there like little loved-up secrets. Variations on cherished formulas, these surprise rom-coms might take different paths to romance, but are irresistible, and deserve our affections too."}, {"slug": "big-five-oscars", "title": "“Big Five”", "subtitle": " Oscar Winners", "items": "12", "img": "https://images.mubicdn.net/images/film_group/2281/cache-1112672-1770998218/image-original.png", "treatment": "", "color": "#86352b", "synopsis": "Some Academy Awards® may be said to sparkle more than others. For those lucky few who win the prize for best picture, director, actress, actor, or screenplay, it is a “Big Five” Oscar®—and this luminous collection celebrates those superlative films that succeeded in going for top-tier gold."}, {"slug": "buster-keaton-uk", "title": "Crash, Bang, Wallop:", "subtitle": "The Cinema of Buster Keaton", "items": "4", "img": "https://images.mubicdn.net/images/film_group/2280/cache-1103822-1766052242/image-original.jpg", "treatment": "", "color": "#000000", "synopsis": "The most modern of the silent clowns, Buster Keaton expanded the possibilities of filmmaking both behind the camera and in front of it. Endlessly innovative, miraculously athletic, and sublimely silly, Keaton pursued laughter at all costs—and elevated an art form in the process."}, {"slug": "series", "title": "Next Episode: ", "subtitle": "Series", "items": "5", "img": "https://images.mubicdn.net/images/film_group/2270/cache-1101953-1765795400/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/891908/cache-891908-1765795577/images-original.png", "color": "#581504", "synopsis": "The series is a generous form, inspiring filmmakers to greater heights of ambition and invention. Whether immersing audiences in extensive, densely populated worlds, or forgoing narrative in favor of something nearer collage, these series have us hooked, and powerless to stop watching. Next episode!"}, {"slug": "shooting-stars", "title": "Shooting Stars: ", "subtitle": "Hollywood's Next Legends", "items": "11", "img": "https://images.mubicdn.net/images/film_group/2262/cache-1106013-1769087130/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/904832/cache-904832-1768299161/images-original.png", "color": "#AB53C9", "synopsis": "While young stars move at lightning speed from one project to the next, there is pleasure in revisiting those early roles that saw their careers arc off the chart. This twinkling collection constellates today’s most talked-about actors and celebrates their turning-point performances."}, {"slug": "billy-wilder-comedies", "title": "Nobody's Perfect:", "subtitle": "Three Comedies by Billy Wilder", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2261/cache-1103737-1765995195/image-original.png", "treatment": "", "color": "#bfbfbf", "synopsis": "Billy Wilder and I. A. L. Diamond are one of the greatest writer-director duos of Hollywood’s golden age. Bringing together three of their most beloved comedies, this collection honors a creative partnership that celebrated the frustrations and contradictions of our shared humanity."}, {"slug": "jafar-panahi-collection", "title": "Cinema by Any Means: ", "subtitle": "A Jafar Panahi Retrospective", "items": "9", "img": "https://images.mubicdn.net/images/film_group/2259/cache-1116877-1772128427/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/941872/cache-941872-1772831268/images-original.png", "color": "#D39B84", "synopsis": "Dedicated to the irrepressible auteur Jafar Panahi, this retrospective celebrates a towering figure of artistic resilience. There is no limit that the Iranian filmmaker won’t overcome: In the face of censorship, he continues to make poetic, independent cinema by any means possible."}, {"slug": "asian-avant-garde", "title": "Between Tides:", "subtitle": "Asian Avant-garde", "items": "9", "img": "https://images.mubicdn.net/images/film_group/2258/cache-1107566-1768211205/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/903322/cache-903322-1768211104/images-original.png", "color": "#171717", "synopsis": "Presented by MUBI in partnership with CHANEL Culture Fund and M+ Museum, this collection celebrates the bold voices of Asian avant-garde cinema through experimental works that reflect on the past and imagine new futures."}, {"slug": "new-years", "title": "Should Old Acquaintance Be Forgot?:", "subtitle": "New Year's on Film", "items": "4", "img": "https://images.mubicdn.net/images/film_group/2237/cache-1102440-1765372921/image-original.png", "treatment": "", "color": "#3e003e", "synopsis": "One of the most visually splendorous and emotionally poignant days of the year, New Year’s Eve offers filmmakers spectacular opportunities. Its sparkling and colorful festivities light up the frame, and make for intensely felt works of beginnings and endings, filled with the stuff of life."}, {"slug": "emma-seligman", "title": "Double Act: ", "subtitle": "Emma Seligman and Rachel Sennott", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2229/cache-1102663-1765453260/image-original.png", "treatment": "", "color": "#ac34b7", "synopsis": "The formidable cowriting partnership of director Emma Seligman and actor Rachel Sennott has changed the face of coming-of-age comedy. Jabbing the zeitgeist in the eye, these feisty films riff mischievously on the awkwardness of sexual adventure and self-expression in the age of digital nativism."}, {"slug": "truly-madly-deeply", "title": "Truly, Madly, Deeply", "subtitle": "", "items": "19", "img": "https://images.mubicdn.net/images/film_group/2222/cache-1099251-1770724682/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/923044/cache-923044-1770978556/images-original.png", "color": "#342B19", "synopsis": "Romance can be uncomplicated for some: fall in love, walk into the sunset, and live happily ever after. That, however, is not how it unfolds in these intensely amorous films. Truly, madly, deeply desirous, their fervent characters turn the world upside down, head over heels and addicted to love."}, {"slug": "trans-awareness-week", "title": "Trans Awareness Week:", "subtitle": "Four Essentials of Trans Cinema", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2208/cache-1095456-1762430599/image-original.png", "treatment": "", "color": "#2478b6", "synopsis": "These essentials of trans cinema examine the multitude of experiences and identities within the trans community with dignity and playfulness. Recording the daily realities of the trans experience or rehearsing a better world to come, these stories of endurance and becoming glimpse liberation."}, {"slug": "dream-factory", "title": "Dream Factory: ", "subtitle": "Los Angeles on Screen", "items": "7", "img": "https://images.mubicdn.net/images/film_group/2207/cache-1089517-1760610226/image-original.png", "treatment": "", "color": "#611F41", "synopsis": "Hope and cynicism, illusion and reality, pornography and art: Los Angeles is a fascinating tangle of contradictions. Whether following the fame-hungry into chaos or tracing the heart lines of lovers, these films take us up into the hills and under the silver lake in hot pursuit of dreams."}, {"slug": "2025-debuts", "title": "Maiden Voyages: ", "subtitle": "2025's Outstanding Debut Women Directors", "items": "6", "img": "https://images.mubicdn.net/images/film_group/2180/cache-1086843-1761060008/image-original.jpg", "treatment": "", "color": "#3e4c98", "synopsis": "It’s harvest time, and we’re celebrating the year’s bumper crop of debut features by women and non-binary directors. Whether crossing over from acting or screenwriting, or emerging as an auteur from the off, these filmmakers have hit the ground running with films deserving of first-place rosettes."}, {"slug": "video-nasties", "title": "Ban This Sick Filth!:", "subtitle": "Video Nasties", "items": "4", "img": "https://images.mubicdn.net/images/film_group/2174/cache-1089351-1760633031/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/873356/cache-873356-1760633894/images-original.png", "color": "#000000", "synopsis": "In the summer of 1982, Britain’s high streets were engulfed in moral panic. “Ban video sadism now,” roared one tabloid headline. “We must protect our children,” cried another. This collection brings together some highlights from the infamous Video Nasty list, presented uncut in all their gory glory."}, {"slug": "back-in-the-game", "title": "Back in the Game", "subtitle": "", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2161/cache-1083103-1757608376/image-original.png", "treatment": "", "color": "#000000", "synopsis": "Few things unite the entertainment press like an actor’s return to play. Showcasing three revelatory performances from Demi Moore, Mickey Rourke, and Pamela Anderson, this collection applauds the late-career turns and fairy-tale transformations that ushered in new and exciting artistic directions."}, {"slug": "adam-driver", "title": "Performers We Love: ", "subtitle": "Adam Driver", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2160/cache-1081673-1756981760/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/854008/cache-854008-1756982477/images-original.png", "color": "#362b46", "synopsis": "A devoted craftsman, playful as he is serious, Adam Driver stands apart as one of the more daring and deliberate actors of his generation. As his upcoming films promise still more reinvention, this collection celebrates some of his most memorable performances and the ambition of his career to date."}, {"slug": "lone-rangers", "title": "People are Strange: ", "subtitle": "Outsiders on Film", "items": "6", "img": "https://images.mubicdn.net/images/film_group/2146/cache-1081017-1756803991/image-original.jpg", "treatment": "", "color": "#142eb3", "synopsis": "Outlaws, eccentrics, and strays: Cinema throngs with unconventional characters who go their own way. This collection assembles films about the exploits and adventures of nonconformists. Free-spirited, vampire-bitten, or just plain strange, there’s company in the unconventional. Outsiders assemble!"}, {"slug": "1980s-on-screen", "title": "More More More:", "subtitle": "Films From the 80s", "items": "4", "img": "https://images.mubicdn.net/images/film_group/2132/cache-1076080-1754990876/image-original.jpg", "treatment": "", "color": "#e56ca8", "synopsis": "In an era of rapid economic growth that promised opulence for all, the filmmakers of this collection reckoned with new definitions of happiness, dreams of flashy materialism, and careerist ambition. Made in the 1980s, these turbulent films are galvanized by the decade’s legendary exuberance."}, {"slug": "locarno-db", "title": "Against the Grain:", "subtitle": "Two from Locarno", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2123/cache-1073872-1753466641/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/846931/cache-846931-1753912017/images-original.png", "color": "#2d5bb3", "synopsis": "Committed to championing new voices, the Locarno Film Festival is home to the future of cinema. This collection brings together two award-winning titles from last year’s lineup—uncompromising tales of girlhood that fearlessly push against formal conventions and patriarchal dogmas."}, {"slug": "alex-ross-perry-db", "title": "Reunion Tour:", "subtitle": "Two by Alex Ross Perry", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2121/cache-1078371-1755534144/image-original.jpg", "treatment": "", "color": "#9fdc8e", "synopsis": "Alex Ross Perry is no people-pleaser, whether exposing egos through uniquely nervy character studies or experimenting with what the music documentary can be. In these two films about wayward performers, the independent filmmaker refuses to shut up and play the hits."}, {"slug": "uhd-restorations", "title": "Now in Glorious 4K!", "subtitle": "", "items": "8", "img": "https://images.mubicdn.net/images/film_group/2108/cache-1110729-1769692419/image-original.jpg", "treatment": "", "color": "#1e4d62", "synopsis": "With crystal-clear images and immersive sound, these sublime 4K restorations reveal stunning detail in beloved works of cinema. Offering a fresh chance to marvel at revered classics and underseen gems, this collection holds riches for first-time and return viewers alike—and looks as good as new."}, {"slug": "welcome-to-twin-peaks", "title": "Welcome to Twin Peaks", "subtitle": "", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2085/cache-1059922-1748447788/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/779787/cache-779787-1748444972/images-original.png", "color": "#202F2B", "synopsis": "All is not what it seems in this place “both wonderful and strange,” where the woods hold ancient secrets, and dreams bleed into the very fabric of reality. From the visionary minds of showrunners Mark Frost and David Lynch comes a TV phenomenon 30 years in the making. Welcome to Twin Peaks."}, {"slug": "shinji-somai-db", "title": "Tides of Youth:", "subtitle": "Two by Shinji Sômai", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2077/cache-1067500-1750945667/image-original.jpg", "treatment": "", "color": "#68ca7a", "synopsis": "Revered by the likes of Ryusuke Hamaguchi and Kiyoshi Kurosawa, Shinji Sômai bottles the rain and the sunshine of youth in his singular coming-of-age films. Naturalistic yet ethereal, these are tender hymns to the magic of summer, a time of introspection and discovery for children and adults alike."}, {"slug": "rob-epstein-db", "title": "Queer Histories, Reclaimed:", "subtitle": "Two by Rob Epstein", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2070/cache-1066121-1750345235/image-original.jpg", "treatment": "", "color": "#88425d", "synopsis": "Vital archival documents, these two acclaimed documentaries by Rob Epstein bring queer lives, perspectives, and stories away from the edges of the frame and into the light. Seminal works of historical reclamation, they’re alive with the defiant and celebratory energy of Pride Month."}, {"slug": "90s-araki", "title": "Totally F***ed Up:", "subtitle": "Two ’90s Cuts by Gregg Araki", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2065/cache-1059914-1748425322/image-original.jpg", "treatment": "", "color": "#2b3bb6", "synopsis": "Obsessed with sex yet haunted by mortality, these uninhibited, often outrageous films from Los Angeles icon Gregg Araki spit in the face of boring respectability. Rejecting American conservatism, the teenage dirtbags and anarchic criminals of this double bill are antiheroes of the New Queer Cinema."}, {"slug": "the-summer-blues", "title": "The Summer Blues", "subtitle": "", "items": "19", "img": "https://images.mubicdn.net/images/film_group/2059/cache-1067106-1750774313/image-original.jpg", "treatment": "", "color": "#548FB1", "synopsis": "Sunshine can feel like a balm for the soul. But for the melancholy characters in this collection, the radiance of summer illuminates their blues anew. Basking in fields of ever-changing emotions under beautiful azure skies, these films are as bittersweet—and cathartic—as the best of love songs."}, {"slug": "ulman-db", "title": "Fake It, Make It:", "subtitle": "Two by Amalia Ulman", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2058/cache-1058078-1747756611/image-original.png", "treatment": "", "color": "#bc84a0", "synopsis": "With variably resourceful characters faking it until they make it, Amalia Ulman’s cinema is all about the hustle. Immersed in the dog days of late capitalism, her sincerely savvy films give themselves over to the present: scandalous, outrageous absurdities, dizzyingly fun aesthetics, and all."}, {"slug": "this-is-not-coming-out-story", "title": "This Is Not a Coming Out Story", "subtitle": "", "items": "26", "img": "https://images.mubicdn.net/images/film_group/2054/cache-1058328-1747848375/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/779686/cache-779686-1748351832/images-original.png", "color": "#f06461", "synopsis": "While coming-out stories are vital to dismantling the celluloid closet, well-worn narratives have also left audiences hungry for more. Liberated from linear thinking around identity, the uncompromising films in this collection are just like their characters: they’re queer, and they’re here to stay."}, {"slug": "orlando", "title": "Beyond Binaries:", "subtitle": "An Orlando Double Bill", "items": "2", "img": "https://images.mubicdn.net/images/film_group/2046/cache-1052919-1747929093/image-original.png", "treatment": "", "color": "#0B0E0E", "synopsis": "The free spirit of Virginia Woolf’s Orlando thrums through this collection, which offers two singular interpretations of a queer literary classic. Attesting to the enduring legacy of a gender non-conforming icon, these mercurial marvels leap through time and space with dazzling experimentation."}, {"slug": "food-and-film", "title": "Let's Eat! Food and Film", "subtitle": "", "items": "12", "img": "https://images.mubicdn.net/images/film_group/2045/cache-1067503-1764038396/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/886298/cache-886298-1764082302/images-original.png", "color": "#d7dfd7", "synopsis": "More than mere prop, food is the main event in this collection. We can’t eat the screen, but these films are alive to the cinematic delights to be savored in cooking and eating. From tasty treats to inventive concoctions, this mouth-watering collection offers much to chew on."}, {"slug": "bonello-bertrand", "title": "Time Out of Mind:", "subtitle": "Films by Bertrand Bonello", "items": "3", "img": "https://images.mubicdn.net/images/film_group/2004/cache-1032734-1738170517/image-original.png", "treatment": "", "color": "#121A33", "synopsis": "More than modern, the cinema of Bertrand Bonello is visionary. Running through his diverse filmography is an avid curiosity for the ways in which yesterday and tomorrow make themselves felt in the present. Hypnotic and thought-provoking, the films in this collection tune into something in the air."}, {"slug": "post-apocalypse", "title": "After the End:", "subtitle": "Postapocalyptic Cinema", "items": "4", "img": "https://images.mubicdn.net/images/film_group/2002/cache-1045197-1742925979/image-original.png", "treatment": "", "color": "#000000", "synopsis": "Living among civilization’s ruins, the embattled characters in this collection fight to survive, against the odds and despite the lessons of history. Imagining how survivors of the apocalypse might weather the end times, these films bring us face to face with humanity at its most raw."}, {"slug": "rejtman-martin", "title": "Humor and Melancholy:", "subtitle": "The Cinema of Martín Rejtman", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1998/cache-1034275-1757326303/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/857035/cache-857035-1757326285/images-original.png", "color": "#db2a0f", "synopsis": "The films of Argentinian auteur Martín Rejtman have the beauty of feeling familiar while at the same time surprising us at every turn. Luminous and delightfully off-kilter, these are comedies of sheer originality—mordant, often tender, and always unpredictable."}, {"slug": "grand-tour", "title": "Grand Tour:", "subtitle": "Cinematic Travelogues", "items": "9", "img": "https://images.mubicdn.net/images/film_group/1997/cache-1047243-1743673025/image-original.png", "treatment": "", "color": "#4B4B4B", "synopsis": "Away from home, the travelers of this collection reveal more of themselves than usual. Though their journeys vary in mileage, even the shortest is transformative. As Miguel Gomes’s Grand Tour lands on our shores, we’re opening our harbor to other cinematic travelogues from around the world."}, {"slug": "animated-desires", "title": "Animated Desires", "subtitle": "", "items": "9", "img": "https://images.mubicdn.net/images/film_group/1995/cache-1050260-1744887018/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/768959/cache-768959-1744891160/images-original.png", "color": "#292929", "synopsis": "Outrageous, hilarious, NSFW—these irresistible shorts depict desire with titillation and irreverence. Crafting candid visions of sex and lust with hand-painted cels or stop-motion puppets, the animators in this collection are unbounded from realism, and go where few live-action films would dare."}, {"slug": "our-body-our-choice", "title": "Our Body, Our Choice", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1978/cache-1039622-1741014392/image-original.png", "treatment": "", "color": "#A86B58", "synopsis": "In the fight for women’s bodily autonomy, cinema has not stayed on the sidelines. Featuring women who unsettle the patriarchy in both public and private spheres, each of the films in this collection is a raised fist, an urgent call for women’s right to control their own bodies."}, {"slug": "women-action", "title": "A Piece of the Action", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1967/cache-1039105-1740502718/image-original.jpg", "treatment": "", "color": "#88260D", "synopsis": "The action genre has long been perceived as a boys’ club. From the mountains of Corsica to the Moroccan desert, from New York’s Chinatown to the metropolis of Manila, this collection takes a whistle-stop tour around the globe to meet the women of action who are beating the men at their own game."}, {"slug": "will-they-wont-they", "title": "Will They?", "subtitle": "Won't They?", "items": "12", "img": "https://images.mubicdn.net/images/film_group/1950/cache-1032454-1739441154/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/757852/cache-757852-1739441439/images-original.png", "color": "#534445", "synopsis": "For the wandering hearts in this collection, romance can blossom at first sight, or it can take its sweet time to grow. Led astray by destiny, mixed signals, and emotional indecision, these lovers in limbo must find their own ways into each other’s arms. Will they, or won’t they?"}, {"slug": "two-ads-nwr", "title": "House of NWR:", "subtitle": "Two Ads by Nicolas Winding Refn", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1938/cache-1029515-1737043363/image-original.png", "treatment": "", "color": "#0b0d1f", "synopsis": "Much like the luxury brands that commissioned the films in this collection, Nicolas Winding Refn lets his style do the talking. Including the first commercial to ever play in the Venice Film Festival’s official program, our double bill pairs two eye-popping ads from the Danish provocateur."}, {"slug": "handpicked-mati-diop", "title": "Hand-picked by Mati Diop", "subtitle": "", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1937/cache-1017144-1738675214/image-original.jpeg", "treatment": "https://images.mubicdn.net/images/artworks/747564/cache-747564-1733247571/images-original.png", "color": "#47392C", "synopsis": "Winner of the Golden Bear at the 2024 Berlinale, Mati Diop’s Dahomey  is a vital work of cinematic imagination. To celebrate the arrival of this prismatic hybrid documentary, the French filmmaker has curated a trio of dazzling shorts that spark a conversation with her spellbinding feature."}, {"slug": "try-the-substance", "title": "Try the Substance", "subtitle": "", "items": "6", "img": "https://images.mubicdn.net/images/film_group/1896/cache-1005300-1729616130/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/726319/cache-726319-1729675411/images-original.png", "color": "#248900", "synopsis": "If you are enjoying The Substance, then you could be a candidate for an increased intake. Good news! The next kit has been delivered: an extra set of switches, stabilizers, and activators, designed to enhance cinephile credentials. Click through for access. A better self is just moments away."}, {"slug": "midnight-mubi", "title": "You Up?:", "subtitle": "Midnight Movies", "items": "6", "img": "https://images.mubicdn.net/images/film_group/1879/cache-1006652-1732275509/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/744441/cache-744441-1732275428/images-original.png", "color": "#000000", "synopsis": "Prepare to enter a world of vice and excess with this erotically charged collection of midnight movies. From steamy examinations of amour fou to fevered tales of transgression from some of cinema’s great iconoclasts, these sexually explicit films tap into the dark side of desire."}, {"slug": "sean-baker", "title": "Diamonds in the Rough:", "subtitle": "Two by Sean Baker", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1876/cache-1007308-1729696979/image-original.png", "treatment": "", "color": "#C68CDE", "synopsis": "Sean Baker’s American misfits lead risky, adventurous lives—and his spirited films take us along for the ride. Embracing the good times that break raucously through convention and hardship, this double bill finds fun in freedom, and plays like a breath of fresh air."}, {"slug": "raul-valeria-trilogy", "title": "Playing with Time:", "subtitle": "Films by Raúl Ruiz and Valeria Sarmiento", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1871/cache-1007634-1729776626/image-original.png", "treatment": "", "color": "#4D3B31", "synopsis": "Once wandering in a state of exile, the unfinished projects left behind by Chilean maestro Raúl Ruiz have gained a poignant afterlife, thanks to his widow and collaborator Valeria Sarmiento. Dreamily surreal and deeply political, his singular vision lives on in these posthumously finished works."}, {"slug": "coralie-fargeat-focus", "title": "A New You: ", "subtitle": "Three by Coralie Fargeat", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1866/cache-1009595-1757325689/image-original.jpg", "treatment": "", "color": "#efb833", "synopsis": "Seduced by the thought of a new you? Change is a double-edged sword in The Substance and two other films by Coralie Fargeat. Sparking debate with trenchant social critique and body horror innovations, the French director gets under the skin of contemporary culture with extreme daring and insight."}, {"slug": "girls-uk", "title": "Not Just a Girl", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1826/cache-997844-1726678445/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/707920/cache-707920-1726740289/images-original.png", "color": "#000000", "synopsis": "Read as “difficult” in the eyes of the patriarchy, the young women in our collection carve out their own paths against a myriad of sexist hurdles. Fueled by fierce determination, these plucky heroines form a radical vision of womanhood, one that refuses to bend to the controlling gaze of others."}, {"slug": "modern-love", "title": "Modern Lovers", "subtitle": "", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1825/cache-994560-1725362420/image-original.png", "treatment": "", "color": "#296549", "synopsis": "Does the guy get the girl? Do they live happily ever after? The films in this collection have no time for such clichés. Getting into the complexities of real life, they expand the cinematic ABCs of love and boldly shatter convention, revealing the many different forms that modern romance can take."}, {"slug": "ross-brothers-db", "title": "Chasing Rainbows:", "subtitle": "A Ross Brothers Double Bill", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1819/cache-973977-1717663623/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/692363/cache-692363-1718707193/images-original.png", "color": "#0898b4", "synopsis": "Abrading the line between fiction and nonfiction filmmaking, this collection takes to the road with the Ross Brothers for a journey into the heart of the American experience. Insightful, empathetic, and searingly authentic, these enchanting films are all-embracing odes to communities lost and found."}, {"slug": "besties-only-uk", "title": "Besties Only", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1816/cache-988876-1722849877/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/706391/cache-706391-1726158479/images-original.png", "color": "#a9dd40", "synopsis": "Friendship is central to the films in this collection, which assembles various cinematic examples of that most powerful bond. Jointly facing whatever life throws at them, these onscreen friends draw strength from one another, finding refuge in the private world they have lovingly created."}, {"slug": "ira-sachs-early-works", "title": "Ira Sachs:", "subtitle": "The Early Years", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1806/cache-984994-1724318588/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/702814/cache-702814-1724153507/images-original.png", "color": "#d34547", "synopsis": "Ira Sachs is one of our favorite filmmakers, and has an astounding back catalog to confirm it. Shimmering performances, fragile erotics, and candid encounters in moving shades of blue dazzle and wound across these three films, glistening with an intimate understanding of human desire."}, {"slug": "kit-zauhar", "title": "Must We Mean What We Say?: ", "subtitle": "Two by Kit Zauhar", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1801/cache-976014-1718705216/image-original.png", "treatment": "", "color": "#525BA0", "synopsis": "Writer, director, and actor Kit Zauhar knows that actual people often speak at cross purposes; her excruciating, but engrossing dialogue gets to the mucked-up heart of modern relationships. She’s the talk of the town for good reason, spiking her first films with piercing insight and devastating wit."}, {"slug": "piotr-szulkin", "title": "Apocalypse Now:", "subtitle": "Four Sci-Fi Parables by Piotr Szulkin", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1799/cache-989826-1723137690/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/702248/cache-702248-1723652523/images-original.png", "color": "#5B6C4A", "synopsis": "One of the great visionaries of European cinema, Piotr Szulkin’s films are provocative allegories one and all. Made while Poland was under the thumb of Soviet totalitarianism, these potent works of science fiction combine righteous sociopolitical fury with the ample pleasures of genre."}, {"slug": "british-debuts", "title": "The Next Generation:", "subtitle": "British Debuts", "items": "8", "img": "https://images.mubicdn.net/images/film_group/1781/cache-977218-1773923935/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/695351/cache-695351-1720449564/images-original.png", "color": "#36383a", "synopsis": "Like a breath of fresh air, a new generation of directors are heralding an exciting era of British filmmaking with their audacious works. Highlighting some of the best debuts in recent years, our collection champions the emerging talents who are changing the world of cinema, one film at a time."}, {"slug": "luna-carmoon", "title": "Films for Gross Girls:", "subtitle": "Three by Luna Carmoon", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1780/cache-975226-1718961392/image-original.png", "treatment": "", "color": "#553531", "synopsis": "Young English talent Luna Carmoon isn’t one to gloss over the icky growing pains of girlhood—in fact, she likes to make them even more gross. Across the zesty and bittersweet films in this collection, the bold director vividly captures the textures and convulsions of adolescence, zits and all."}, {"slug": "queer-spaces", "title": "A Place of Our Own:", "subtitle": "Queer Spaces on Film", "items": "6", "img": "https://images.mubicdn.net/images/film_group/1753/cache-970982-1716543544/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/689904/cache-689904-1716913625/images-original.png", "color": "#162779", "synopsis": "Comprising timeless classics and lesser-known gems, the eclectic collection offers a window onto a constellation of queer spaces. Mapping out an atlas of desire from bars, nightclubs, cruising spots, and more, here are sites of joy, pleasure, and resistance. Come on in, and stay a while."}, {"slug": "one-day", "title": "Just for One Day", "subtitle": "", "items": "8", "img": "https://images.mubicdn.net/images/film_group/1735/cache-964963-1715763795/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/687628/cache-687628-1715763634/images-original.png", "color": "#3E271B", "synopsis": "David Bowie was on to something when he sang we can be heroes / just for one day. Immersed in the lives of their characters for 24 hours or less, these momentous films throw the ordinary and the mundane to the wind. Change can strike like lightning. Here is a cinema electrified by that possibility."}, {"slug": "making-of-priscilla", "title": "Priscilla:", "subtitle": "Beyond the Frame", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1713/cache-955271-1711622135/image-original.png", "treatment": "", "color": "#612224", "synopsis": "Who better to document the making of a film about a teenager than a teenager herself? Coupled with Sofia Coppola’s Priscilla, Liv McNeil’s making-of documentary paints an inspiring picture of visual artistry and creative collaboration, from one generation of women filmmakers to another."}, {"slug": "writers-on-screen", "title": "Between the Lines:", "subtitle": "Writers on Screen", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1709/cache-958610-1712854356/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/677532/cache-677532-1712741169/images-original.png", "color": "#5D5191", "synopsis": "What goes on between bookish lines? Are blank pages so terrifying? How do darlings get killed? Aspiring novelists revel in lively literary circles and soulful poets devote themselves to the wonders of the everyday in this collection, which casts light on the ambitious, imaginative lives of writers."}, {"slug": "david-lynch-fr", "title": "David Lynch:", "subtitle": "Delusions and dreams", "items": "6", "img": "https://images.mubicdn.net/images/film_group/1697/cache-942175-1707135376/image-original.jpeg", "treatment": "https://images.mubicdn.net/images/artworks/754539/cache-754539-1737373405/images-original.png", "color": "#5E1916", "synopsis": "David Lynch’s art manifests itself as an eruption of his subconscious. Fascinated by the darkness that lurks beyond the diaphanous facades of the American psyche, his alluring nightmares oscillate between beauty and chaos, collectively forming an ecstatic body of work unlike anything else in cinema."}, {"slug": "women-cinematographers", "title": "Calling the Shots:", "subtitle": "Women Cinematographers", "items": "5", "img": "https://images.mubicdn.net/images/film_group/1678/cache-948241-1709723949/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/671638/cache-671638-1709743464/images-original.png", "color": "#42110E", "synopsis": "Many of the most unforgettable images in film history have been shot by women cinematographers who, against all odds, have left a lasting mark on the big screen. Celebrating their contribution to cinema, this collection looks beyond the beautiful frame to honor the unsung figures behind the lens."}, {"slug": "oscar-international", "title": "Around the World:", "subtitle": "The International Oscar", "items": "7", "img": "https://images.mubicdn.net/images/film_group/1640/cache-939906-1738836229/image-original.jpg", "treatment": "", "color": "#353451", "synopsis": "Dialogue may be spoken in myriad tongues, but the language of cinema is universal. This collection brings together some of the greatest films to have either won or been nominated for Best International Feature Film at the Academy Awards®."}, {"slug": "love-triangles", "title": "The More the Messier:", "subtitle": "Love Triangles on Film", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1636/cache-940757-1707403487/image-original.jpg", "treatment": "", "color": "#7324ff", "synopsis": "The mathematics of attraction are far from a straightforward science. Between the sheets, two plus one can equal bliss—or a total catastrophe! Basking in the erotic unpredictability of three-way relationships, these alternative romances twist the conventions of cinema with sexiness and style."}, {"slug": "whodunit", "title": "Guess Who?:", "subtitle": "Murder Mysteries", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1607/cache-927270-1701799389/image-original.jpg", "treatment": "", "color": "#F2955D", "synopsis": "Endlessly entertaining in their devilish twists and turns, murder mysteries thrill with their alluring settings and morbid intrigue, beckoning us to step into the role of the master detective. Time to grab your magnifying glass and keep your eyes peeled for the clues: can you guess who did it?"}, {"slug": "quentin-dupieux", "title": "Madcap Adventure:", "subtitle": "Comedies by Quentin Dupieux", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1601/cache-929935-1735829126/image-original.png", "treatment": "", "color": "#628ACE", "synopsis": "Plunging with glee into wilder-than-dreams weirdness, Quentin Dupieux is a cinematic surrealist for the 21st century. Up is down and left is right in these ludicrous comedies—and it all makes a strange sort of sense under the direction of Dupieux, who pulls off his hijinks with killer style."}, {"slug": "akin-uk", "title": "Soul Cinema:", "subtitle": "Films by Fatih Akin", "items": "5", "img": "https://images.mubicdn.net/images/film_group/1587/cache-910266-1696261385/image-original.jpeg", "treatment": "", "color": "#7F7C82", "synopsis": "Moving within and beyond Germany’s borders, Fatih Akin’s transnational output is poignantly grounded in memory, language, and music. Politically vital and cinematically enthralling, these films redefine our understanding of national cinema, painting an arresting picture of global interconnectedness."}, {"slug": "hit-the-road", "title": "Hit the Road:", "subtitle": "Road Movies", "items": "7", "img": "https://images.mubicdn.net/images/film_group/1585/cache-978780-1722533743/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/699863/cache-699863-1722533868/images-original.png", "color": "#302A39", "synopsis": "Out on the open road, the possibilities are truly endless. New horizons—and breathtaking landscapes—promise wild escapades, unexpected connections, and even introspection. No need to leave the comfort of your couch: these cinematic road trips are guaranteed to sate your thirst for adventure!"}, {"slug": "meltdown", "title": "Millennial Meltdown", "subtitle": "", "items": "9", "img": "https://images.mubicdn.net/images/film_group/1584/cache-913881-1724846235/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/703077/cache-703077-1724846408/images-original.png", "color": "#01127e", "synopsis": "Feeling crushed under the weight of adulthood? You are not alone! These restless, lovably messy souls are also navigating the rough tides of a quarter-life crisis and, simply, trying their best. No need to wait for permission to spiral: this is your invite to our millennial meltdown party."}, {"slug": "aki-kaurismaki", "title": "How to Be a Human:", "subtitle": "Films by Aki Kaurismäki", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1576/cache-921858-1700058476/image-original.png", "treatment": "", "color": "#45414A", "synopsis": "Few filmmakers boast a style as inimitable as the great Finnish auteur, Aki Kaurismäki. Moving to the insistent beat of rock ‘n’ roll, and illuminated by the timeless lighting and color palettes of classical Hollywood, Kaurismäki’s films are, above all, masterclasses in how to be a human being."}, {"slug": "neo-western", "title": "Neo-westerns:", "subtitle": "A New Frontier", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1545/cache-910627-1711044892/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/672325/cache-672325-1710331137/images-original.png", "color": "#C79388", "synopsis": "A genre as old as cinema itself, the western has gone through countless cycles of fascinating reinvention. Celebrating the release of Pedro Almodóvar’s Strange Way of Life, a queer ode to frontier life, our neo-western collection gallops towards new horizons. Saddle up, partner, and enjoy the ride!"}, {"slug": "adele-exarchopoulos", "title": "Adèle Exarchopoulos:", "subtitle": "Fire Starter", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1479/cache-892583-1690457739/image-original.png", "treatment": "", "color": "#5F3917", "synopsis": "Fiercely talented, award-winning actor Adèle Exarchopoulos is a dynamite presence in contemporary cinema. Burning bright since an early age, the Parisienne’s star shows no signs of fading: ever the fearless and passionate performer, she is brilliant and she is inextinguishable."}, {"slug": "international-booker-prize", "title": "International Booker Prize 2023", "subtitle": "", "items": "5", "img": "https://images.mubicdn.net/images/film_group/1453/cache-879692-1684514430/image-original.jpg", "treatment": "", "color": "#4D8B7D", "synopsis": "Since 2005, the International Booker Prize has celebrated the best fiction translated into English from other languages. With the winning title of the 2023 edition due to be announced on May 23, we’re thrilled to present a series of films to complement each title on this year’s shortlist."}, {"slug": "weerasethakul", "title": "To Sleep So as to Dream: ", "subtitle": "Films by Apichatpong Weerasethakul ", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1421/cache-879080-1685637108/image-original.jpg", "treatment": "", "color": "#087E7D", "synopsis": "To watch the films of Apichatpong Weerasethakul is to be set adrift through liminal, transitional spaces, where spiritual borders are as permeable as those between consciousness and sleep. Our series is an invitation to a cinematic landscape delicately hewn from such stuff as dreams are made on."}, {"slug": "short-films-big-names", "title": "Short Films", "subtitle": "Big Names", "items": "12", "img": "https://images.mubicdn.net/images/film_group/1271/cache-870688-1730911497/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/732469/cache-732469-1730912253/images-original.png", "color": "#513554", "synopsis": "Featuring essential and thrilling shorts crafted by some of the best directors working today, this special focus proves that size does not matter. More than mere interludes, these little treasures from beloved titans provide a crucial window into the formation and evolution of a signature style."}, {"slug": "british-cinema", "title": "British Cinema", "subtitle": "", "items": "16", "img": "https://images.mubicdn.net/images/film_group/1256/cache-825657-1666888048/image-original.jpg", "treatment": "", "color": "#84aa55", "synopsis": "This evolving collection of films seeks to spotlight some of the most innovative British cinematic voices and singular artistic perspectives that the UK has to offer."}, {"slug": "action", "title": "Lights, Camera... Action!", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/1172/cache-833380-1669659188/image-original.jpg", "treatment": "", "color": "#0E132E", "synopsis": "It’s hard to beat the rush of adrenaline that comes with a well-staged action sequence. From punch-ups and shoot-outs to thrilling chases and jaw-dropping stunts, the films in this series are fast on their feet; explosive tales that put the human body—and a filmmaker’s mettle—to the test."}, {"slug": "family", "title": "Family Viewing", "subtitle": "", "items": "12", "img": "https://images.mubicdn.net/images/film_group/1142/cache-781906-1662983896/image-original.jpg", "treatment": "", "color": "#729ED7", "synopsis": "It is never too early to become a movie lover, and our collection of family-friendly films promises a wonderful bonding time for youngsters and adults alike. From colorful treasures of cinema history to modern classics, come with MUBI and step into a world of pure imagination!"}, {"slug": "souvenir", "title": "The Souvenir:", "subtitle": "A Joanna Hogg Diptych", "items": "2", "img": "https://images.mubicdn.net/images/film_group/1119/cache-776156-1741087084/image-original.jpg", "treatment": "", "color": "#412626", "synopsis": "A profound exploration of love, grief, and the toils of the creative process, Joanna Hogg’s luminous The Souvenir: Part I & II diptych dazzles with its uncanny intimacy. Like the eponymous Fragonard painting, these films are one-of-a-kind masterpieces that hold us captive and endlessly inspire."}, {"slug": "tilda-swinton", "title": "The One and Only:", "subtitle": "Tilda Swinton", "items": "7", "img": "https://images.mubicdn.net/images/film_group/1110/cache-805265-1662983901/image-original.png", "treatment": "", "color": "#bea3a2", "synopsis": "Effacing the borders of gender and genre, the chameleonic Tilda Swinton embodies the infinite possibilities of cinema. Charting the electric breadth of her screen personas, our retrospective celebrates a multi-hyphenated artist who has inspired us all to step out of the box and reach for the stars."}, {"slug": "oslo-trilogy", "title": "Joachim Trier:", "subtitle": "The Oslo Trilogy", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1091/cache-767552-1662983890/image-original.jpg", "treatment": "", "color": "#a6a6a6", "synopsis": "Spanning over fifteen years, Joachim Trier’s “Oslo” trilogy observes the unceasing march of time and modernity. Documenting a city in flux, these mercurial character portraits embrace the uncertainties and melancholy of adulthood with striking pathos."}, {"slug": "mubi-podcast", "title": "Featured on the MUBI Podcast", "subtitle": "", "items": "37", "img": "https://images.mubicdn.net/images/film_group/1085/cache-776836-1746021237/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/462316/cache-462316-1651060593/images-original.png", "color": "#704381", "synopsis": "Every episode of the MUBI Podcast is a thrilling journey of discovery through the work of some of the world’s greatest filmmakers. Featuring films mentioned on the show, this dazzling collection of global cinematic treasures is the perfect accompaniment to the cultural histories unearthed each week."}, {"slug": "tscherkassky", "title": "The Darkroom Dreams of Peter Tscherkassky", "subtitle": "", "items": "7", "img": "https://images.mubicdn.net/images/film_group/1070/cache-760231-1662983888/image-original.jpg", "treatment": "", "color": "#65288C", "synopsis": "To celebrate Train Again, we’re bringing together a series of Peter Tscherkassky’s analogue experiments in the darkroom. A major figure in contemporary found-footage filmmaking, the Austrian avant-garde artist is devoted to the sensory potential of celluloid, and committed to unveiling its artifice."}, {"slug": "rogowski", "title": "Franz Rogowski:", "subtitle": "The Man of the Hour", "items": "3", "img": "https://images.mubicdn.net/images/film_group/1062/cache-761412-1662983888/image-original.jpg", "treatment": "", "color": "#6E7B73", "synopsis": "A beguiling screen presence of stunning intensity, Franz Rogowski has taken the international film world by storm. Celebrating his latest triumph in Great Freedom, our spotlight raises a glass to the man of the hour, and one of the most exciting actors currently gracing the silver screen."}, {"slug": "animation", "title": "Drawn to Life:", "subtitle": "Animated Films", "items": "13", "img": "https://images.mubicdn.net/images/film_group/1051/cache-842926-1672261183/image-original.jpg", "treatment": "", "color": "#57719A", "synopsis": "From startling stop-motion to mechanical innovation, the tactility of hand-drawn images to dazzling CGI: animation’s possibilities are endless. This series brings together animated gems from around the globe, all of them testament to this most profoundly liberating and shape-shifting medium."}, {"slug": "cut-to-black", "title": "Cut to Black:", "subtitle": "Celebrating Black Cinema", "items": "24", "img": "https://images.mubicdn.net/images/film_group/942/cache-699904-1738001169/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/710453/cache-710453-1728057988/images-original.png", "color": "#000000", "synopsis": "Cut to Black celebrates the incredible wealth of Black artistry, both in front of and behind the camera. From acclaimed classics to hidden treasures, these distinctive achievements in film look to the past, reflect the present, and gesture to the future of cinema."}, {"slug": "venice", "title": "Festival Focus:", "subtitle": "Venice", "items": "36", "img": "https://images.mubicdn.net/images/film_group/941/cache-699882-1766162427/image-original.jpg", "treatment": "", "color": "#000000", "synopsis": "For more than 90 years, filmmakers have convened on the Lido of the Venice lagoon every September for the best in international cinema. We present a series of spellbinding discoveries and major films from some of cinema’s biggest names, all from past editions of the world’s oldest film festival."}, {"slug": "spotlight-uk", "title": "Latest & Greatest", "subtitle": "", "items": "39", "img": "https://images.mubicdn.net/images/film_group/918/cache-687040-1723138690/image-original.jpg", "treatment": "", "color": "#52443A", "synopsis": "Showcasing some of the most inspiring and compelling new films, fresh from cinemas and festivals. A world of bold new discoveries awaits you, exclusively on MUBI."}, {"slug": "actors-directing", "title": "Role Reversals:", "subtitle": "When Actors Direct", "items": "3", "img": "https://images.mubicdn.net/images/film_group/895/cache-676183-1662983865/image-original.jpg", "treatment": "", "color": "#5B5231", "synopsis": "From Harry Langdon to Ida Lupino, Michel Piccoli to Greta Gerwig, actors have ventured into the director’s chair since the early days of cinema. This series looks at actors-turned-directors—old and new—and the surprises that arise in switching from one side of the camera to the other."}, {"slug": "award-winners", "title": "Golden Palms, Lions, and Bears, Oh My!:", "subtitle": "Award-winning Greats", "items": "26", "img": "https://images.mubicdn.net/images/film_group/894/cache-676182-1662983865/image-original.jpg", "treatment": "", "color": "#CB821B", "synopsis": "An integral part of cinema history, movie awards have at once shaped film canons and amplified otherwise overlooked works. Skipping the red carpets and hours-long ceremonies, our selection of award-winning films will take you right to a shining treasure trove of garlanded cinema."}, {"slug": "cult-films", "title": "Embracing Infamy:", "subtitle": "Cult Films", "items": "11", "img": "https://images.mubicdn.net/images/film_group/892/cache-676178-1736761839/image-original.png", "treatment": "", "color": "#541313", "synopsis": "Presenting a collection of the weird and the wonderful. These are the pictures that were cast adrift on the mainstream cinematic highways and passed between fellow off-road travellers with a knowing smile, the genre oddities that clawed their way to the top. Welcome to the cult."}, {"slug": "coming-of-age", "title": "Growing Pains:", "subtitle": "Coming-of-age Films", "items": "29", "img": "https://images.mubicdn.net/images/film_group/880/cache-671320-1747246582/image-original.jpg", "treatment": "", "color": "#0b1b75", "synopsis": "Charting the journey from childhood into adulthood, the coming-of-age film is one of spiritual and moral awakening. These are tales of resilience and hope, of growing pains and teenage rebellion, every one of them a testament to the universal truth that growing up never comes easy."}, {"slug": "1920s-masterpieces", "title": "1920s Masterpieces", "subtitle": "", "items": "4", "img": "https://images.mubicdn.net/images/film_group/864/cache-664884-1662983861/image-original.jpg", "treatment": "", "color": "#AEAEAE", "synopsis": ""}, {"slug": "christian-petzold", "title": "Phantoms Among Us:", "subtitle": "The Films of Christian Petzold", "items": "1", "img": "https://images.mubicdn.net/images/film_group/856/cache-664448-1662983861/image-original.jpg", "treatment": "", "color": "#0C0509", "synopsis": "Presenting the genre riffs and spectral, in-between landscapes of Christian Petzold’s psychological thrillers. Our retrospective showcases some of his greatest films, a collective vision of Germany’s past, present, and future unlike any other in modern cinema."}, {"slug": "lgbtq", "title": "Pride Unprejudiced:", "subtitle": "LGBTQ+ Cinema", "items": "40", "img": "https://images.mubicdn.net/images/film_group/852/cache-659107-1685115057/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/545281/cache-545281-1685121706/images-original.png", "color": "#381405", "synopsis": "From intimate dramas to daring experimental features, our collection of LGBTQ+ cinema is a celebration of queer artistry and history, highlighting urgent issues and celebrating the sheer pleasure of unapologetic queer joy."}, {"slug": "hrwff", "title": "25 Years of the", "subtitle": "Human Rights Watch Film Festival", "items": "3", "img": "https://images.mubicdn.net/images/film_group/823/cache-643939-1662983857/image-original.jpg", "treatment": "", "color": "#545233", "synopsis": "To celebrate the 25th edition of Human Rights Watch Film Festival in London, running from the 18-26 March, we are proud to present a selection of festival highlights from previous editions."}, {"slug": "romance", "title": "In the Mood", "subtitle": "for Love", "items": "35", "img": "https://images.mubicdn.net/images/film_group/569/cache-618227-1662983854/image-original.jpg", "treatment": "", "color": "#cc551e", "synopsis": "Get ready to fall in love with some of our favorite cinematic romances. Whether it’s the thrill of that first encounter or the depth of a decade-long affair, a quick tryst or a bitter breakup, love can take many forms. Here are some of the best swoon-worthy romances to warm the coldest of hearts."}, {"slug": "festival-focus-locarno", "title": "Festival Focus: ", "subtitle": "Locarno Film Festival", "items": "33", "img": "https://images.mubicdn.net/images/film_group/568/cache-589519-1724149977/image-original.jpg", "treatment": "", "color": "#d2ba41", "synopsis": "Taking place in a scenic lakeside Swiss town every August, the Locarno Film Festival is home to the grandmasters as well as the emerging stars of tomorrow. MUBI exclusively presents a series of highlights from one of the world’s premiere venues for celebrating bold, adventurous cinema."}, {"slug": "horror", "title": "Fear on Film", "subtitle": "", "items": "24", "img": "https://images.mubicdn.net/images/film_group/564/cache-603845-1760011691/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/870776/cache-870776-1760020540/images-original.png", "color": "#000000", "synopsis": "Like a sneaky ghost on a moonless night, Halloween season is already upon us. For this spookiest time of the year, plunge into the heart of darkness with this spine-chilling selection of cinematic horrors. Watch if you dare!"}, {"slug": "1990s-masterpieces", "title": "1990s Masterpieces", "subtitle": "", "items": "19", "img": "https://images.mubicdn.net/images/film/311/cache-8078-1745489497/image-w1280.jpg", "treatment": "", "color": "#7E6C55", "synopsis": ""}, {"slug": "1960s-masterpieces", "title": "1960s Masterpieces", "subtitle": "", "items": "12", "img": "https://images.mubicdn.net/images/film_group/528/cache-578126-1662983839/image-original.jpg", "treatment": "", "color": "#181222", "synopsis": ""}, {"slug": "1970s-masterpieces", "title": "1970s Masterpieces", "subtitle": "", "items": "6", "img": "https://images.mubicdn.net/images/film_group/527/cache-578346-1662983839/image-original.jpg", "treatment": "", "color": "#220F15", "synopsis": ""}, {"slug": "1980s-masterpieces", "title": "1980s Masterpieces", "subtitle": "", "items": "7", "img": "https://images.mubicdn.net/images/film_group/526/cache-579965-1662983839/image-original.jpg", "treatment": "", "color": "#565656", "synopsis": ""}, {"slug": "portrait-of-artists", "title": "Portrait of the Artist", "subtitle": "", "items": "7", "img": "https://images.mubicdn.net/images/film_group/513/cache-602200-1724752747/image-original.jpg", "treatment": "", "color": "#7D5712", "synopsis": "A series of portraits of the most influential artists of our time, whose work spans a wide range of crafts and practices. These films provide an alluring window into the creative process of these inspiring figures, who have changed our viewpoints on the world in a myriad of enchanting ways."}, {"slug": "short-films", "title": "Shorts", "subtitle": "", "items": "58", "img": "https://images.mubicdn.net/images/film_group/495/cache-547119-1662983836/image-original.jpg", "treatment": "", "color": "#5C5544", "synopsis": "Throughout cinema history, short filmmaking has been at the vanguard of formal and storytelling experimentation, providing a creative haven for budding and seasoned directors alike. Compact in length and rich in visual innovation, these eclectic gems in our collection show that less is always more."}, {"slug": "documentaries", "title": "Documentaries", "subtitle": "", "items": "68", "img": "https://images.mubicdn.net/images/film_group/494/cache-547118-1743443121/image-original.jpg", "treatment": "", "color": "#6E4872", "synopsis": "Think talking heads and archive footage, or imagine flies on walls: What nonfiction cinema encompasses changes with each decade. Whether being creative with truth or observing life as it is, documentaries describe the world, spinning on the sharp axis of reality."}, {"slug": "comedies", "title": "Funny Ha Ha", "subtitle": "", "items": "58", "img": "https://images.mubicdn.net/images/film_group/493/cache-619961-1774544124/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/674490/cache-674490-1711102671/images-original.png", "color": "#6EBCE7", "synopsis": "Everyone could do with a good laugh. From slapstick and screwball to arthouse subversion and sharp political satire, this collection contains everything you need to soothe the soul."}, {"slug": "women-directors", "title": "Reframing:", "subtitle": "Women Directors", "items": "99", "img": "https://images.mubicdn.net/images/film_group/492/cache-546708-1680272042/image-original.jpg", "treatment": "", "color": "#63417D", "synopsis": "This collection showcases work by women auteurs spanning a diverse array of themes, styles, and genres. It’s time to reframe the conversation and focus our lens on films outside of the male-dominated canon of cinema."}, {"slug": "films-about-films", "title": "Films about Films", "subtitle": "", "items": "15", "img": "https://images.mubicdn.net/images/film_group/488/cache-546705-1773222202/image-original.jpg", "treatment": "", "color": "#888888", "synopsis": "Like the best of magicians, cinema delights in hiding its tricks. More than love letters to an art form, the films in this collection turn their gaze towards the filmmaking process itself, capturing the unique power that moving images continue to hold over countless cinema aficionados."}, {"slug": "modern-masterpieces", "title": "Modern Masterpieces", "subtitle": "", "items": "34", "img": "https://images.mubicdn.net/images/film_group/487/cache-546706-1746021876/image-original.jpg", "treatment": "", "color": "#2C242B", "synopsis": ""}, {"slug": "film-festival-favorites", "title": "Film Festival", "subtitle": "Favorites", "items": "70", "img": "https://images.mubicdn.net/images/film_group/486/cache-546707-1662983833/image-original.jpg", "treatment": "", "color": "#3D2020", "synopsis": ""}, {"slug": "festival-focus-berlinale", "title": "Festival Focus:", "subtitle": "Berlinale", "items": "40", "img": "https://images.mubicdn.net/images/film_group/713/cache-609153-1766161979/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/521262/cache-521262-1676372039/images-original.png", "color": "#000000", "synopsis": "Widely celebrated for showcasing socially and politically engaged cinema, the Berlinale is one of the highlights of the global film festival calendar. MUBI is rolling out the red carpet with a series of diverse, independent, and daring highlights from past editions of the festival."}, {"slug": "mubi-music-fest", "title": "Turn It Up:", "subtitle": "Music on Film", "items": "8", "img": "https://images.mubicdn.net/images/film_group/392/cache-695810-1722534145/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/699864/cache-699864-1722534053/images-original.png", "color": "#372D25", "synopsis": "The adrenaline-pumping vibrations that musical performances elicit are at once physical and spiritual. Encompassing both documentary and fiction, our music-on-film picks not only celebrate the electric magnetism of live concerts but also explore the trials and tribunals of the artists themselves."}, {"slug": "hoss-petzold", "title": "Double Act: ", "subtitle": "Nina Hoss & Christian Petzold", "items": "0", "img": "https://images.mubicdn.net/images/film_group/387/cache-689908-1691080653/image-original.png", "treatment": "", "color": "#D38300", "synopsis": "The collaboration of Christian Petzold and Nina Hoss has been an alchemical pairing with few worthy rivals in contemporary cinema. Two of their finest films together are Barbara and Phoenix: sociological melodramas set at particularly fraught points in Germany’s history during the 20th century."}, {"slug": "juliette-binoche", "title": "Juliette Binoche:", "subtitle": "The Woman With a Thousand Faces", "items": "5", "img": "https://images.mubicdn.net/images/film_group/370/cache-547071-1673634555/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/223181/cache-223181-1621566745/images-original.png", "color": "#010101", "synopsis": "Our screens would look different (duller! worse!) without four decades of the incomparable Juliette Binoche, whose versatility scintillates in some of contemporary cinema’s finest moments. From comedy to tragedy, she is a woman of a thousand faces—and a face that launched a thousand film lovers too."}, {"slug": "viewfinder", "title": "Viewfinder", "subtitle": "", "items": "9", "img": "https://images.mubicdn.net/images/film_group/700/cache-609141-1662983849/image-original.jpg", "treatment": "", "color": "#9DADA8", "synopsis": "A globetrotting survey of bold storytelling and essential perspectives on the world."}, {"slug": "rediscovered", "title": "Rediscovered", "subtitle": "", "items": "12", "img": "https://images.mubicdn.net/images/film_group/698/cache-609139-1766162191/image-original.jpg", "treatment": "", "color": "#000000", "synopsis": "Exclusive restorations and revivals of classic, under-known, and once-lost films."}, {"slug": "the-new-auteurs", "title": "The New Auteurs", "subtitle": "", "items": "13", "img": "https://images.mubicdn.net/images/film_group/696/cache-609137-1662983849/image-original.jpg", "treatment": "", "color": "#020F14", "synopsis": "Distinct visions from emerging artists and rising filmmakers."}, {"slug": "brief-encounters", "title": "Brief Encounters", "subtitle": "", "items": "18", "img": "https://images.mubicdn.net/images/film_group/695/cache-609136-1766162199/image-original.jpg", "treatment": "", "color": "#000000", "synopsis": "New short films by some of the best up-and-coming as well as established filmmakers and artists."}, {"slug": "debuts", "title": "Debuts", "subtitle": "", "items": "15", "img": "https://images.mubicdn.net/images/film_group/693/cache-609133-1766162092/image-original.jpg", "treatment": "", "color": "#000000", "synopsis": "A celebration of first features that hail the arrival of exciting directors."}, {"slug": "adaptations", "title": "Adaptations", "subtitle": "", "items": "29", "img": "https://images.mubicdn.net/images/film_group/328/cache-547043-1762181778/image-original.jpg", "treatment": "", "color": "#a33d37", "synopsis": "The adaptation of pre-existing texts has long been a foundation of film art, as directors make fascinating choices to reshape existing work, creating their own imprint while remaining in conversation with the original. To explore a vast basis of storytelling, we offer this eclectic ongoing series."}, {"slug": "laura-huertas-millan", "title": "Ethnographic Fictions:", "subtitle": "Spotlight on Laura Huertas Millán", "items": "2", "img": "https://images.mubicdn.net/images/film/162435/cache-186735-1745493416/image-w1280.jpg", "treatment": "", "color": "#594F48", "synopsis": "Even if Colombia-born, France-based artist filmmaker Laura Huertas Millán has so far only worked with short and medium-length formats, she has a remarkably sharp, meaningful body of work. MUBI is proud to present a double bill of two of her “ethnographic fictions”, a term borrowed from pioneer Je…"}, {"slug": "festival-focus-rotterdam", "title": "Festival Focus:", "subtitle": "Rotterdam", "items": "32", "img": "https://images.mubicdn.net/images/film_group/314/cache-633277-1674151755/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/515097/cache-515097-1674209876/images-original.png", "color": "#455768", "synopsis": "A constant vanguard for daring, risk-taking cinema, the lauded International Film Festival Rotterdam (IFFR) arrives every January with hundreds of film premieres from around the world. We are proud to exclusively present a number of special gems from recent years."}, {"slug": "kieslowski", "title": "Krzysztof Kieślowski: ", "subtitle": "Three Colors Trilogy", "items": "3", "img": "https://images.mubicdn.net/images/film_group/677/cache-609116-1686578647/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/857034/cache-857034-1757326085/images-original.png", "color": "#1035a2", "synopsis": "Krzysztof Kieślowski’s ambitious and interconnected trilogy deciphers the mysteries of the human condition. Starring Juliette Binoche, Julie Delpy and Irène Jacob, the Three Colors films attentively investigate the behaviors of everyday characters in stories of death, fate, chance, and love."}, {"slug": "bynwr", "title": "Restored By Nicolas Winding Refn", "subtitle": "", "items": "24", "img": "https://images.mubicdn.net/images/film_group/185/cache-547041-1662983834/image-original.jpg", "treatment": "", "color": "#1B1B1B", "synopsis": "“It was a myth… No one had ever seen it.” —Nicolas Winding Refn on The Nest of the Cuckoo Birds Welcome to the world of byNWR AN UNADULTERATED CULTURAL EXPRESSWAY FOR THE ARTS Born from Nicolas Winding Refn’s passion for the rare, the forgotten and the unknown, byNWR breathes new …"}, {"slug": "indies", "title": "American Indies", "subtitle": "", "items": "26", "img": "https://images.mubicdn.net/images/film_group/124/cache-547301-1742903483/image-original.jpg", "treatment": "", "color": "#6C3329", "synopsis": "American low-budget, outside-the-mainstream films seem to be populating our watchlists today more than ever. Only a few of them, nevertheless, might truly stand out as memorable ones. In face of such recent overabundance, we’re thrilled to present a selection of American indies that stand out …"}, {"slug": "oscars", "title": "And the Oscar Goes to...", "subtitle": "", "items": "44", "img": "https://images.mubicdn.net/images/film_group/114/cache-661125-1773252490/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/290798/cache-290798-1621574935/images-original.png", "color": "#000000", "synopsis": "Star-studded and Oscar®-nominated—some winners, some losers—the films here are among the choicest cuts from the Night of a Thousand Stars. It’s the perfect opportunity to brush up on your Oscar® trivia, fill some viewing gaps, or convince yourself again that a certain film or performance was robbed."}, {"slug": "first-films-first", "title": "First Films First", "subtitle": "", "items": "15", "img": "https://images.mubicdn.net/images/film_group/106/cache-547094-1764851440/image-original.png", "treatment": "https://images.mubicdn.net/images/artworks/508329/cache-508329-1671820315/images-original.png", "color": "#3A6C7F", "synopsis": "A director’s first film can provide the roadmap for an entire oeuvre. Our series of directorial debuts revisits the films that launched the careers of some of cinema’s finest auteurs."}, {"slug": "lavdiaz", "title": "It's About Time:", "subtitle": "The Cinema of Lav Diaz", "items": "7", "img": "https://images.mubicdn.net/images/film_group/58/cache-546275-1727187183/image-original.png", "treatment": "", "color": "#292929", "synopsis": "This spotlight focuses on the visionary films of renowned Filipino auteur Lav Diaz. His sprawling sagas of the Philippines’ tumultuous recent history and beleaguered but strong-willed peoples are epic in scope but bracingly intimate and direct in style. No one makes movies quite like him."}, {"slug": "reichardt", "title": "American Outsider: ", "subtitle": "The Films of Kelly Reichardt", "items": "5", "img": "https://images.mubicdn.net/images/film_group/45/cache-684209-1759486416/image-original.jpg", "treatment": "https://images.mubicdn.net/images/artworks/868730/cache-868730-1759485591/images-original.png", "color": "#c2c2c2", "synopsis": "Kelly Reichardt is, quite simply, one of the most distinctive voices in independent cinema, often reframing how we see North America on film. Immersed in small gestures of ambivalence and resistance, her terrains of radical restlessness open up new ways of looking at time, space, and life itself."}];
+
+function fitCollTileText() {
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.coll-tile-left').forEach(left => {
+      const available = left.clientWidth - 28;
+      ['.coll-tile-subtitle', '.coll-tile-title--solo'].forEach(sel => {
+        const el = left.querySelector(sel);
+        if (!el) return;
+        el.style.fontSize = '';
+        let size = 22;
+        while (el.scrollWidth > available && size > 11) {
+          size -= 0.5;
+          el.style.fontSize = size + 'px';
+        }
+      });
+    });
+  });
+}
+
+let collectionsRendered = false;
+function renderCollections() {
+  if (collectionsRendered) return;
+  collectionsRendered = true;
+  document.getElementById('collectionsGrid').innerHTML = COLLECTIONS.map(col => {
+    const left = col.treatment
+      ? `<img class="coll-tile-treatment" src="${col.treatment}" alt="${col.title}" loading="lazy">`
+      : col.subtitle
+        ? `<div class="coll-tile-title">${col.title}<span class="coll-tile-subtitle">${col.subtitle}</span></div>`
+        : `<div class="coll-tile-title coll-tile-title--solo">${col.title}</div>`;
+    return `<a class="coll-tile" href="#" aria-label="${col.title}">
+      <div class="coll-tile-left" style="background:${col.color}">
+        <div>${left}</div>
+        <div class="coll-tile-count"><svg width="24" height="18" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.4121 0C21.0432 0 21.5546 0.511527 21.5547 1.14258V14.4248C21.5546 15.0559 21.0432 15.5674 20.4121 15.5674H1.14258C0.511562 15.5673 5.76033e-05 15.0558 0 14.4248V1.14258C0.00013309 0.511609 0.511609 0.00013335 1.14258 0H20.4121ZM8.38281 11.1768L15.3682 7.68359L8.38281 4.19141V11.1768Z" fill="white"/><mask id="ci-mask" fill="white"><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282"/></mask><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282" stroke="white" stroke-width="2.395" mask="url(#ci-mask)"/></svg>${col.items}</div>
+      </div>
+      <div class="coll-tile-right"><img class="coll-tile-img" src="${col.img}" alt="${col.title}" loading="lazy"></div>
+    </a>`;
+  }).join('');
+  fitCollTileText();
+}
+
+const LANGUAGE_INDEX = {"Japanese": [0, 22, 144, 182, 191, 202], "Korean": [1, 37, 100], "Persian": [2, 91, 92, 93, 95, 97, 98, 108, 224], "Norwegian": [3, 48, 131, 163], "English": [4, 5, 6, 7, 12, 15, 16, 17, 19, 21, 24, 27, 28, 36, 40], "Spanish": [8, 20, 23, 35, 39, 50, 60, 68, 115, 118, 123, 138, 155, 175, 185], "Danish": [9, 13, 34, 38, 152], "Portuguese": [10, 69, 101, 102, 103, 104, 110, 111, 174, 218], "French": [11, 14, 26, 29, 30, 32, 33, 45, 46, 51, 53, 57, 72, 73, 80], "Swedish": [18, 47, 119], "Finnish": [25, 41, 83], "Russian": [31, 74], "Chinese": [42, 70, 79, 170, 178], "Italian": [43, 64, 186, 205, 207], "German": [49, 56, 77, 87, 105, 113, 156, 169, 179, 206, 212, 219, 225, 226, 231], "Vietnamese": [54, 167], "Romanian": [78, 199]};
+const DUBBED_LANGS = ["English","French","German","Spanish","Portuguese","Italian","Polish","Turkish","Arabic","Russian","Hindi","Japanese","Korean","Chinese"];
+const SUBTITLE_LANGS = ["English","French","German","Spanish","Italian","Portuguese","Polish","Dutch","Arabic","Turkish","Russian","Japanese","Korean","Chinese","Norwegian","Swedish","Danish","Finnish","Romanian","Ukrainian","Czech","Hungarian","Greek","Hebrew"];
+
+const DIRECTOR_IMAGES = {"Abbas Kiarostami": "https://images.mubicdn.net/images/cast_member/1794/cache-24-1582543121/image-w856.jpg", "Adina Pintilie": "https://images.mubicdn.net/images/cast_member/121743/cache-6628-1478101707/image-w856.jpg", "Agnès Varda": "https://images.mubicdn.net/images/cast_member/1807/cache-28-1542006576/image-w856.jpg", "Akinola Davies Jr.": "https://images.mubicdn.net/images/cast_member/747511/cache-964184-1714186845/image-w856.jpg", "Alain Gomis": "https://images.mubicdn.net/images/cast_member/350935/cache-56726-1656674692/image-w856.jpg", "Alfred Hitchcock": "https://images.mubicdn.net/images/cast_member/1163/cache-3-1337541407/image-w856.jpg", "Ali Abbasi": "https://images.mubicdn.net/images/cast_member/331424/cache-164238-1669118897/image-w856.jpg", "Ali Cherri": "https://images.mubicdn.net/images/cast_member/376679/cache-421065-1553091963/image-w856.jpg", "Alice Diop": "https://images.mubicdn.net/images/cast_member/528772/cache-391642-1542853813/image-w856.jpg", "Amalia Ulman": "https://images.mubicdn.net/images/cast_member/836687/cache-757600-1748623005/image-w856.jpg", "Andrea Arnold": "https://images.mubicdn.net/images/cast_member/11292/cache-467075-1620804696/image-w856.jpg", "Andreas Fontana": "https://images.mubicdn.net/images/cast_member/853829/cache-653852-1615219758/image-w856.jpg", "Andrew Haigh": "https://images.mubicdn.net/images/cast_member/147063/cache-5593-1761733035/image-w856.jpg", "Angela Schanelec": "https://images.mubicdn.net/images/cast_member/68037/cache-426-1478101707/image-w856.jpg", "Annemarie Jacir": "https://images.mubicdn.net/images/cast_member/20900/cache-65694-1348067202/image-w856.jpg", "Apichatpong Weerasethakul": "https://images.mubicdn.net/images/cast_member/4553/cache-90045-1389722092/image-w856.jpg", "Ariane Labed": "https://images.mubicdn.net/images/cast_member/138417/cache-74038-1367262993/image-w856.jpg", "Ariane Louis-Seize": "https://images.mubicdn.net/images/cast_member/520924/cache-953862-1711243687/image-w856.jpg", "Athina Rachel Tsangari": "https://images.mubicdn.net/images/cast_member/71644/cache-3522-1478101707/image-w856.jpg", "Ben Sharrock": "https://images.mubicdn.net/images/cast_member/475462/cache-487624-1599135866/image-w856.jpg", "Bernardo Bertolucci": "https://images.mubicdn.net/images/cast_member/1865/cache-48-1608668505/image-w856.jpg", "Bertrand Bonello": "https://images.mubicdn.net/images/cast_member/12260/cache-2131-1478101707/image-w856.jpg", "Billy Wilder": "https://images.mubicdn.net/images/cast_member/1309/cache-37-1478101707/image-w856.jpg", "Bo Wang": "https://images.mubicdn.net/images/cast_member/135279/cache-351788-1530492155/image-w856.jpg", "Bong Joon Ho": "https://images.mubicdn.net/images/cast_member/4836/cache-617588-1607417988/image-w856.jpg", "Brett Haley": "https://images.mubicdn.net/images/cast_member/137281/cache-187992-1482451629/image-w856.jpg", "Bruno Barreto": "https://images.mubicdn.net/images/cast_member/38660/cache-61130-1337275502/image-w856.jpg", "Bruno Dumont": "https://images.mubicdn.net/images/cast_member/4423/cache-87790-1384192594/image-w856.jpg", "Buster Keaton": "https://images.mubicdn.net/images/cast_member/46/cache-5452-1517134149/image-w856.jpg", "Carl Theodor Dreyer": "https://images.mubicdn.net/images/cast_member/1716/cache-5306-1337260807/image-w856.jpg", "Carol Reed": "https://images.mubicdn.net/images/cast_member/1762/cache-55-1338577124/image-w856.jpg", "Chantal Akerman": "https://images.mubicdn.net/images/cast_member/2681/cache-1102812-1765526056/image-w856.jpg", "Charlie Chaplin": "https://images.mubicdn.net/images/cast_member/1357/cache-5-1337510346/image-w856.jpg", "Charlotte Wells": "https://images.mubicdn.net/images/cast_member/540594/cache-389164-1668002162/image-w856.jpg", "Cheryl Dunye": "https://images.mubicdn.net/images/cast_member/51320/cache-597976-1602713197/image-w856.jpg", "Coralie Fargeat": "https://images.mubicdn.net/images/cast_member/519528/cache-258310-1715094388/image-w856.jpg", "David Lynch": "https://images.mubicdn.net/images/cast_member/832/cache-8-1530086177/image-w856.jpg", "Debra Granik": "https://images.mubicdn.net/images/cast_member/71684/cache-699734-1627337840/image-w856.jpg", "Djibril Diop Mambéty": "https://images.mubicdn.net/images/cast_member/17787/cache-96366-1408845803/image-w856.jpg", "Emma Seligman": "https://images.mubicdn.net/images/cast_member/613190/cache-602945-1695376843/image-w856.jpg", "François Truffaut": "https://images.mubicdn.net/images/cast_member/1187/cache-9-1426177895/image-w856.jpg", "Fritz Lang": "https://images.mubicdn.net/images/cast_member/1322/cache-3618-1344219772/image-w856.jpg", "Gregg Araki": "https://images.mubicdn.net/images/cast_member/4301/cache-89727-1387930541/image-w856.jpg", "Ingmar Bergman": "https://images.mubicdn.net/images/cast_member/1350/cache-11-1544999407/image-w856.jpg", "Ira Sachs": "https://images.mubicdn.net/images/cast_member/11850/cache-1128250-1776961532/image-w856.jpg", "Jafar Panahi": "https://images.mubicdn.net/images/cast_member/11454/cache-215833-1757977469/image-w856.jpg", "Jean-Luc Godard": "https://images.mubicdn.net/images/cast_member/783/cache-29-1669297970/image-w856.jpg", "Joachim Trier": "https://images.mubicdn.net/images/cast_member/22905/cache-456135-1565208739/image-w856.jpg", "Kelly Reichardt": "https://images.mubicdn.net/images/cast_member/4769/cache-696287-1626312371/image-w856.jpg", "Kleber Mendonça Filho": "https://images.mubicdn.net/images/cast_member/349350/cache-86999-1581685588/image-w856.jpg", "Krzysztof Kieślowski": "https://images.mubicdn.net/images/cast_member/1617/cache-100-1478101707/image-w856.jpg", "Leos Carax": "https://images.mubicdn.net/images/cast_member/101/cache-135-1634811584/image-w856.jpg", "Lynne Ramsay": "https://images.mubicdn.net/images/cast_member/7903/cache-4821-1567405185/image-w856.jpg", "Magnus von Horn": "https://images.mubicdn.net/images/cast_member/135873/cache-167118-1617129051/image-w856.jpg", "Mahamat-Saleh Haroun": "https://images.mubicdn.net/images/cast_member/22955/cache-89762-1388536092/image-w856.jpg", "Mati Diop": "https://images.mubicdn.net/images/cast_member/16489/cache-104218-1627312803/image-w856.jpg", "Mia Hansen-Løve": "https://images.mubicdn.net/images/cast_member/19519/cache-6084-1605152900/image-w856.jpg", "Michael Curtiz": "https://images.mubicdn.net/images/cast_member/1287/cache-1205-1478101707/image-w856.jpg", "Michel Franco": "https://images.mubicdn.net/images/cast_member/21354/cache-135640-1463070505/image-w856.jpg", "Michel Gondry": "https://images.mubicdn.net/images/cast_member/539/cache-89755-1388535763/image-w856.jpg", "Miguel Gomes": "https://images.mubicdn.net/images/cast_member/85272/cache-6044-1740074885/image-w856.jpg", "Mike Nichols": "https://images.mubicdn.net/images/cast_member/1482/cache-116-1647977598/image-w856.jpg", "Mona Fastvold": "https://images.mubicdn.net/images/cast_member/429012/cache-245736-1502436348/image-w856.jpg", "Nelson Carlo de los Santos Arias": "https://images.mubicdn.net/images/cast_member/474381/cache-182435-1734631691/image-w856.jpg", "Ninja Thyberg": "https://images.mubicdn.net/images/cast_member/398902/cache-124789-1563181462/image-w856.jpg", "Norman Jewison": "https://images.mubicdn.net/images/cast_member/28056/cache-2549-1478101707/image-w856.jpg", "Olivier Assayas": "https://images.mubicdn.net/images/cast_member/871/cache-4801-1574119709/image-w856.jpg", "Olivier Meyrou": "https://images.mubicdn.net/images/cast_member/166554/cache-379658-1539478342/image-w856.jpg", "Orson Welles": "https://images.mubicdn.net/images/cast_member/2089/cache-1451-1337541337/image-w856.jpg", "Otto Preminger": "https://images.mubicdn.net/images/cast_member/7799/cache-304-1714316051/image-w856.jpg", "Park Chan-wook": "https://images.mubicdn.net/images/cast_member/933/cache-30-1607464891/image-w856.jpg", "Paul Thomas Anderson": "https://images.mubicdn.net/images/cast_member/665/cache-455459-1707534078/image-w856.jpg", "Paul Verhoeven": "https://images.mubicdn.net/images/cast_member/5303/cache-2622-1683833515/image-w856.jpg", "Pedro Almodóvar": "https://images.mubicdn.net/images/cast_member/996/cache-16-1596917034/image-w856.jpg", "Quentin Dupieux": "https://images.mubicdn.net/images/cast_member/115721/cache-61826-1677876372/image-w856.jpg", "RaMell Ross": "https://images.mubicdn.net/images/cast_member/603032/cache-379051-1539337443/image-w856.jpg", "Rahul Jain": "https://images.mubicdn.net/images/cast_member/529767/cache-258859-1659020562/image-w856.jpg", "Rebecca Lenkiewicz": "https://images.mubicdn.net/images/cast_member/418857/cache-200258-1628032399/image-w856.jpg", "Reha Erdem": "https://images.mubicdn.net/images/cast_member/14199/cache-296-1613750563/image-w856.jpg", "Ridley Scott": "https://images.mubicdn.net/images/cast_member/1435/cache-35-1624647142/image-w856.jpg", "Ritesh Batra": "https://images.mubicdn.net/images/cast_member/356170/cache-164343-1471307791/image-w856.jpg", "Rob Reiner": "https://images.mubicdn.net/images/cast_member/3581/cache-2000-1478101707/image-w856.jpg", "Robert Wiene": "https://images.mubicdn.net/images/cast_member/15075/cache-3792-1478101707/image-w856.jpg", "Rodrigo Moreno": "https://images.mubicdn.net/images/cast_member/40714/cache-188076-1697765798/image-w856.jpg", "Rodrigo Sorogoyen": "https://images.mubicdn.net/images/cast_member/216870/cache-128914-1618140322/image-w856.jpg", "Ron Mann": "https://images.mubicdn.net/images/cast_member/23075/cache-180342-1729669378/image-w856.jpg", "Ryusuke Hamaguchi": "https://images.mubicdn.net/images/cast_member/373860/cache-128353-1454441506/image-w856.jpg", "Sally Potter": "https://images.mubicdn.net/images/cast_member/20675/cache-247-1478101707/image-w856.jpg", "Sarah Maldoror": "https://images.mubicdn.net/images/cast_member/195041/cache-4256-1339526804/image-w856.jpg", "Wong Kar-wai": "https://images.mubicdn.net/images/cast_member/1700/cache-215438-1567405016/image-w856.jpg", "Xavier Dolan": "https://images.mubicdn.net/images/cast_member/21523/cache-89490-1598368871/image-w856.jpg", "Yasujiro Ozu": "https://images.mubicdn.net/images/cast_member/2075/cache-5428-1337450354/image-w856.jpg"};
+
+let directorsRendered = false;
+function renderDirectors() {
+  if (directorsRendered) return;
+  directorsRendered = true;
+  const map = {};
+  ALL_FILMS.forEach(f => {
+    if (!map[f.director]) map[f.director] = { name: f.director, count: 0, image: f.image, fX: f.fX, fY: f.fY };
+    map[f.director].count++;
+  });
+  const dirs = Object.values(map)
+    .filter(d => DIRECTOR_IMAGES[d.name])
+    .sort((a, b) => b.count - a.count);
+  document.getElementById('directorsGrid').innerHTML = dirs.map(d => {
+    return `
+    <a class="director-card" href="#" data-director="${d.name}" aria-label="${d.name}">
+      <div class="director-img-wrap">
+        <img class="card-img" src="${DIRECTOR_IMAGES[d.name]}" alt="${d.name}" loading="lazy" style="object-position:50% 15%">
+      </div>
+      <div class="director-info">
+        <div class="director-name">${d.name}</div>
+        <div class="director-count">${d.count} film${d.count !== 1 ? 's' : ''}</div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+document.getElementById('directorsGrid').addEventListener('click', e => {
+  e.preventDefault();
+  const card = e.target.closest('[data-director]');
+  if (!card) return;
+  const name = card.dataset.director;
+  selectDirector(name);
+});
+
+function selectDirector(name) {
+  const dg = document.getElementById('directorsGrid');
+  const section = document.getElementById('directorFilterSection');
+  const row = document.getElementById('directorTagsRow');
+
+  // Build tag
+  row.innerHTML = '';
+  const tag = document.createElement('span');
+  tag.className = 'director-tag';
+  tag.dataset.director = name;
+  const btn = document.createElement('button');
+  btn.className = 'director-tag-x';
+  btn.textContent = '×';
+  btn.addEventListener('click', () => {
+    section.style.display = 'none';
+    row.innerHTML = '';
+    dg.style.display = '';
+  });
+  tag.appendChild(document.createTextNode(name + ' '));
+  tag.appendChild(btn);
+  row.appendChild(tag);
+
+  // Show films, hide director grid
+  const films = ALL_FILMS.filter(f => f.director === name);
+  document.getElementById('directorFilmsGrid').innerHTML = films.map(filmCard).join('');
+  dg.style.display = 'none';
+  section.style.display = '';
+}
+
+document.querySelectorAll('.page-tab').forEach(tab => {
+  tab.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('is-active'));
+    tab.classList.add('is-active');
+    const label = tab.textContent.trim().toLowerCase();
+    document.getElementById('filmGrid').style.display = label === 'films' ? '' : 'none';
+    document.getElementById('filterBar').style.display = label === 'films' ? '' : 'none';
+    if (label !== 'films' && label !== 'series') closeFilterPanel();
+    document.getElementById('filterActionBar').style.display = label === 'series' ? 'flex' : 'none';
+    const sg = document.getElementById('seriesGrid');
+    if (label === 'series') { sg.style.display = ''; renderSeries(); }
+    else { sg.style.display = 'none'; }
+    const cg = document.getElementById('collectionsGrid');
+    const cf = document.getElementById('collFilterBar');
+    if (label === 'collections') { cg.style.display = ''; cf.style.display = ''; renderCollections(); }
+    else { cg.style.display = 'none'; cf.style.display = 'none'; }
+    const dg = document.getElementById('directorsGrid');
+    if (label === 'directors') { dg.style.display = ''; renderDirectors(); }
+    else {
+      dg.style.display = 'none';
+      document.getElementById('directorFilterSection').style.display = 'none';
+      document.getElementById('directorTagsRow').innerHTML = '';
+    }
+  });
+});
+
+document.querySelectorAll('#filterBar .genre-pill').forEach(pill => {
+  pill.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('#filterBar .genre-pill').forEach(p => p.classList.remove('is-active'));
+    pill.classList.add('is-active');
+    const genre = pill.textContent.trim();
+    renderGrid(genre === 'All' ? 'all' : genre);
+  });
+});
+
+const sortEl = document.getElementById('sortDropdown-sort');
+if (sortEl) sortEl.addEventListener('change', () => {
+  const activePill = document.querySelector('#filterBar .genre-pill.is-active');
+  const genre = activePill ? activePill.textContent.trim() : 'All';
+  renderGrid(genre === 'All' ? 'all' : genre);
+});
+
+function openFilterPanel(anchorBtn) {
+  const panel = document.getElementById('filterPanel');
+  const rect = anchorBtn.getBoundingClientRect();
+  panel.style.top  = (rect.bottom + 8) + 'px';
+  panel.style.left = Math.max(0, rect.right - 360) + 'px';
+  panel.classList.add('is-open');
+  document.getElementById('filterOverlay').classList.add('is-open');
+  anchorBtn.classList.add('is-active');
+  panel._anchor = anchorBtn;
+}
+function closeFilterPanel() {
+  const panel = document.getElementById('filterPanel');
+  panel.classList.remove('is-open');
+  document.getElementById('filterOverlay').classList.remove('is-open');
+  ['filterBtn','filterBtnSeries'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.classList.remove('is-active');
+  });
+  panel._anchor = null;
+}
+document.getElementById('filterBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const panel = document.getElementById('filterPanel');
+  panel.classList.contains('is-open') && panel._anchor === e.currentTarget ? closeFilterPanel() : openFilterPanel(e.currentTarget);
+});
+document.getElementById('filterBtnSeries').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const panel = document.getElementById('filterPanel');
+  panel.classList.contains('is-open') && panel._anchor === e.currentTarget ? closeFilterPanel() : openFilterPanel(e.currentTarget);
+});
+document.getElementById('filterPanelClose').addEventListener('click', closeFilterPanel);
+document.getElementById('filterOverlay').addEventListener('click', closeFilterPanel);
+
+let activeLangType = 'original';
+
+function setFilterBtnLabel(type, lang) {
+  const text = lang === 'all'
+    ? 'Language filters'
+    : `${type.charAt(0).toUpperCase() + type.slice(1)}: ${lang}`;
+  ['filterBtnLabel', 'filterBtnSeriesLabel'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  });
+}
+
+function buildLangPills(type) {
+  const pills = document.getElementById('langPills');
+  let langs = type === 'original'
+    ? Object.keys(LANGUAGE_INDEX).sort()
+    : type === 'dubbed' ? DUBBED_LANGS : SUBTITLE_LANGS;
+  pills.innerHTML = `<a href="#" class="genre-pill is-active" data-lang="all">All</a>` +
+    langs.map(l => `<a href="#" class="genre-pill" data-lang="${l}">${l}</a>`).join('');
+  pills.querySelectorAll('.genre-pill').forEach(pill => {
+    pill.addEventListener('click', e => {
+      e.preventDefault();
+      pills.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('is-active'));
+      pill.classList.add('is-active');
+      const lang = pill.dataset.lang;
+      setFilterBtnLabel(activeLangType, lang);
+      if (activeLangType === 'original' && lang !== 'all') {
+        const idxs = LANGUAGE_INDEX[lang] || [];
+        document.getElementById('filmGrid').innerHTML =
+          idxs.map(i => ALL_FILMS[i]).filter(Boolean).map(filmCard).join('');
+      } else {
+        renderGrid('all');
+      }
+    });
+  });
+}
+document.querySelectorAll('.lang-type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-type-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    activeLangType = btn.dataset.langType;
+    buildLangPills(activeLangType);
+    setFilterBtnLabel(activeLangType, 'all');
+    renderGrid('all');
+  });
+});
+buildLangPills('original');
+
+document.querySelectorAll('#collFilterBar .genre-pills .genre-pill').forEach(pill => {
+  pill.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('#collFilterBar .genre-pill').forEach(p => p.classList.remove('is-active'));
+    pill.classList.add('is-active');
+  });
+});
+
+function toggleDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('navDropdown');
+  const open = dd.classList.toggle('open');
+  document.getElementById('navHamburger').setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('navDropdown');
+  if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', false); }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const dd = document.getElementById('navDropdown');
+    if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', false); }
+    closeSearch();
+  }
+});
+
+function openSearch() {
+  document.getElementById('searchTakeover').classList.add('is-open');
+  document.getElementById('searchBackdrop').classList.add('is-open');
+  setTimeout(() => document.getElementById('searchTakeoverInput').focus(), 50);
+}
+function closeSearch() {
+  document.getElementById('searchTakeover').classList.remove('is-open');
+  document.getElementById('searchBackdrop').classList.remove('is-open');
+  document.getElementById('searchTakeoverInput').value = '';
+}
+document.getElementById('searchOpenBtn').addEventListener('click', openSearch);
+document.getElementById('searchCloseBtn').addEventListener('click', closeSearch);
+document.getElementById('searchBackdrop').addEventListener('click', closeSearch);
+
+/* ─── GENRE PILLS SCROLL ARROWS ─── */
+(function() {
+  const pills = document.getElementById('genrePills');
+  const wrap  = document.getElementById('genrePillsWrap');
+  const btnL  = document.getElementById('genreScrollLeft');
+  const btnR  = document.getElementById('genreScrollRight');
+  const STEP  = 240;
+
+  function updateState() {
+    const atStart = pills.scrollLeft <= 2;
+    const atEnd   = pills.scrollLeft + pills.clientWidth >= pills.scrollWidth - 2;
+    wrap.classList.toggle('has-scroll-left', !atStart);
+    btnR.style.opacity = atEnd ? '0.2' : '';
+    btnR.style.pointerEvents = atEnd ? 'none' : '';
+  }
+
+  btnR.addEventListener('click', () => {
+    pills.scrollBy({ left: STEP, behavior: 'smooth' });
+  });
+  btnL.addEventListener('click', () => {
+    pills.scrollBy({ left: -STEP, behavior: 'smooth' });
+  });
+  pills.addEventListener('scroll', updateState, { passive: true });
+  updateState();
+})();
+</script>
+</body>
+</html>
