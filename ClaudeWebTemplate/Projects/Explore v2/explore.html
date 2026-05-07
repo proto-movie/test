@@ -343,7 +343,7 @@
       right: 0;
       top: 0;
       bottom: 0;
-      width: 64px;
+      width: 16px;
       background: linear-gradient(to right, transparent, #fff 75%);
       pointer-events: none;
       z-index: 1;
@@ -364,7 +364,7 @@
     .pills-wrap--overflow.has-scroll-left::before { opacity: 1; }
     .pills-chevron {
       position: absolute;
-      right: 5px;
+      right: -20px;
       top: 50%;
       transform: translateY(-50%) translateY(-1px);
       z-index: 2;
@@ -374,23 +374,23 @@
       border: none;
       padding: 4px;
       cursor: pointer;
-      opacity: 0.5;
+      opacity: 1;
+      color: #000;
       transition: opacity 0.15s;
     }
-    .pills-chevron:hover { opacity: 1; }
     .pills-chevron--left {
       position: absolute;
       left: 5px;
       right: auto;
       opacity: 0;
+      color: #000;
       transition: opacity 0.15s;
       pointer-events: none;
     }
     .pills-wrap--overflow.has-scroll-left .pills-chevron--left {
-      opacity: 0.5;
+      opacity: 1;
       pointer-events: auto;
     }
-    .pills-wrap--overflow.has-scroll-left .pills-chevron--left:hover { opacity: 1; }
     .genre-pills {
       display: flex;
       gap: 6px;
@@ -447,6 +447,7 @@
       color: #323232;
       cursor: pointer;
       white-space: nowrap;
+      margin-left: 4px;
       transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
     .filter-btn:hover { background: #323232; color: #fff; border-color: #323232; }
@@ -791,7 +792,7 @@
     <div class="filter-bar" id="filterBar">
       <div class="pills-wrap pills-wrap--overflow" id="genrePillsWrap">
         <button class="pills-chevron pills-chevron--left" id="genreScrollLeft" aria-label="Scroll left">
-          <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 1L1 5L5 9" stroke="#323232" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 1L1 5L5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="genre-pills" id="genrePills">
           <a href="#" class="genre-pill is-active">All</a>
@@ -823,7 +824,7 @@
           <a href="#" class="genre-pill">Family</a>
         </div>
         <button class="pills-chevron" id="genreScrollRight" aria-label="Scroll right">
-          <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="#323232" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
       <div class="filter-sort">
