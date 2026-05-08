@@ -370,7 +370,17 @@
       margin: 0 auto;
     }
     @media (min-width: 1186px) { .search-takeover-nav { height: 50px; } }
-    .search-takeover-logo { display: flex; align-items: center; flex: 1; }
+    .search-takeover-logo { display: flex; align-items: center; flex: 1; align-self: stretch; }
+    .search-film-db {
+      transform: translateX(65px);
+      opacity: 0;
+      transition: transform 0.28s ease, opacity 0.2s ease;
+    }
+    .search-takeover.is-open .search-film-db {
+      transform: translateX(0);
+      opacity: 1;
+      transition-delay: 0.04s;
+    }
     .search-takeover-inner {
       display: flex;
       align-items: center;
@@ -655,6 +665,7 @@
           </g>
         </svg>
       </a>
+      <span class="search-film-db" style="font-size:13px;font-weight:500;letter-spacing:0.4px;text-transform:uppercase;line-height:24px;color:#000;padding-left:15px;align-self:flex-end;margin-bottom:7px;">Film Database</span>
     </div>
     <button class="search-close-btn" id="searchCloseBtn" aria-label="Close search">
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 10L30 30M30 10L10 30" stroke="#323232" stroke-width="2" stroke-linecap="round"/></svg>
@@ -662,7 +673,7 @@
   </div>
   <div class="search-takeover-inner">
     <svg width="40" height="40" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M57.8497 52.1132C60.6668 48.1454 62.319 43.2855 62.319 38.021C62.319 24.6571 51.4953 13.8334 38.021 13.8334C24.657 13.8334 13.8333 24.6571 13.8333 38.021C13.8333 51.4954 24.657 62.3191 38.021 62.3191C43.2855 62.3191 48.1454 60.6668 52.1132 57.8498L63.5339 69.1667L69.1667 63.534L57.8497 52.1132ZM38.021 54.2565C29.1853 54.2565 21.8959 46.9671 21.8959 38.021C21.8959 29.1853 29.1853 21.8959 38.021 21.8959C46.9671 21.8959 54.2565 29.1853 54.2565 38.021C54.2565 46.9671 46.9671 54.2565 38.021 54.2565Z" fill="#323232"/></svg>
-    <input class="search-takeover-input" id="searchTakeoverInput" type="text" placeholder="Research any film, director, cast &amp; crew in MUBI's extensive industry library with over 1 million films" autocomplete="off">
+    <input class="search-takeover-input" id="searchTakeoverInput" type="text" placeholder="Research any film, director, cast or crew in MUBI's comprehensive film database" autocomplete="off">
   </div>
 </div>
 
@@ -678,6 +689,7 @@
     <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/445675/image-w1280.jpg" alt="Lee Cronin's The Mummy"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
     <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/406622/image-w1280.jpg" alt="Deep Water"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
     <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/467450/image-w1280.jpg" alt="That Time I Got Reincarnated as a Slime the Movie"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/420475/image-w1280.jpg" alt="The Drama"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
   </div>
 
   <div class="hero-info">
@@ -704,7 +716,7 @@
           <button class="hero-nav-btn" onclick="heroPrev()" aria-label="Previous">
             <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,1 2,6 6,11"/></svg>
           </button>
-          <span class="hero-nav-counter"><span id="heroCurrent">1</span> / 9</span>
+          <span class="hero-nav-counter"><span id="heroCurrent">1</span> / 10</span>
           <button class="hero-nav-btn" onclick="heroNext()" aria-label="Next">
             <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,1 6,6 2,11"/></svg>
           </button>
@@ -941,6 +953,7 @@ const CAROUSEL_FILMS = [
   { rank:'07', title:"Lee Cronin's The Mummy",                              director:'Lee Cronin',                     meta:'United States · 2026 · Horror',      synopsis:'Director Lee Cronin delivers a visceral, horror-focused reimagining of the classic monster — a terrifying and ancient story stripped of adventure-film gloss, returning to the creature\'s genuinely nightmarish roots.' },
   { rank:'08', title:'Deep Water',                                           director:'Renny Harlin',                   meta:'United States · 2026 · Action',      synopsis:'An eclectic group of international passengers whose plane, en route from Los Angeles to Shanghai, is forced to make an emergency landing in shark-infested waters.' },
   { rank:'09', title:'That Time I Got Reincarnated as a Slime the Movie: Tears of the Azure Sea', director:'Yasuhito Kikuchi', meta:'Japan · 2026 · Animation',    synopsis:'Rimuru and friends visit Celestial Emperor Hermesia\'s resort island after Tempest\'s opening ceremony. During their vacation, they encounter a mysterious woman named Yura, leading to a new incident by the azure sea.' },
+  { rank:'10', title:'The Drama',                                               director:'Kristoffer Borgli',              meta:'United States · 2026 · Romance',     synopsis:'Robert Pattinson and Zendaya star in Kristoffer Borgli\'s provocative romantic comedy about performance, desire, and the theatrics of modern love.' },
 ];
 
 let heroIndex = 0;
