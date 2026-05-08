@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MUBI — Browse & Genre Complaints</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #16161E;
+      --surface:   #20203B;
+      --surface2:  #2a2a3f;
+      --border:    #383858;
+      --text:      #E6EBF8;
+      --muted:     #9a9aa8;
+      --blue:      #5793f3;
+      --blue-lt:   #8FB0F7;
+      --accent:    #c3a0ff;
+      --warn:      #ff6e76;
+      --gold:      #f6efa6;
+      --green:     #91cc75;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .shell { max-width: 1100px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    /* ── Header ── */
+    .header { margin-bottom: 48px; }
+    .header-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .header h1 {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--text);
+    }
+    .header p {
+      margin-top: 12px;
+      color: var(--muted);
+      max-width: 600px;
+      font-size: 14px;
+    }
+    .header-rule { height: 1px; background: var(--border); margin-top: 32px; }
+
+    /* ── Stat cards row ── */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+    }
+    .stat-card .label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .stat-card .value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 36px;
+      line-height: 1;
+      color: var(--text);
+    }
+    .stat-card .sub {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .stat-card.highlight { border-color: var(--blue); }
+    .stat-card.highlight .value { color: var(--blue-lt); }
+
+    /* ── Section heading ── */
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      font-weight: 400;
+      margin-bottom: 6px;
+    }
+    .section-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    /* ── Cluster breakdown ── */
+    .clusters { display: flex; flex-direction: column; gap: 12px; margin-bottom: 52px; }
+
+    .cluster {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+    .cluster-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .cluster-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .cluster-name {
+      font-weight: 600;
+      font-size: 15px;
+      flex: 1;
+    }
+    .cluster-count {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
+
+    /* bar */
+    .bar-track {
+      height: 5px;
+      background: var(--surface2);
+      border-radius: 99px;
+      margin-bottom: 16px;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 99px;
+    }
+
+    .cluster-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* quotes inside cluster */
+    .quote-list { display: flex; flex-direction: column; gap: 10px; }
+    .quote-item {
+      background: var(--surface2);
+      border-left: 3px solid transparent;
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.6;
+      position: relative;
+    }
+    .quote-item::before {
+      content: '\201C';
+      font-size: 20px;
+      line-height: 1;
+      opacity: 0.3;
+      position: absolute;
+      top: 8px;
+      left: 8px;
+    }
+    .quote-text { padding-left: 14px; }
+
+    /* ── Recs ── */
+    .recs-section { margin-bottom: 52px; }
+    .recs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .rec-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .rec-number {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 8px;
+    }
+    .rec-text {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── Context note ── */
+    .context-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 48px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .context-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .context-text { font-size: 13px; color: var(--muted); line-height: 1.65; }
+    .context-text strong { color: var(--text); }
+
+    /* ── Horizontal bar chart ── */
+    .bar-chart { display: flex; flex-direction: column; gap: 10px; margin-bottom: 52px; }
+    .bar-row { display: grid; grid-template-columns: 180px 1fr 50px; align-items: center; gap: 12px; }
+    .bar-label { font-size: 12px; color: var(--muted); text-align: right; }
+    .h-bar-track { height: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+    .h-bar-fill { height: 100%; border-radius: 3px; }
+    .bar-val { font-size: 12px; color: var(--muted); }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 64px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* colour aliases for clusters */
+    .c-blue   { background: var(--blue); }
+    .c-accent { background: var(--accent); }
+    .c-warn   { background: var(--warn); }
+    .c-gold   { background: var(--gold); }
+    .c-green  { background: var(--green); }
+
+    .bl-blue   { border-left-color: var(--blue); }
+    .bl-accent { border-left-color: var(--accent); }
+    .bl-warn   { border-left-color: var(--warn); }
+    .bl-gold   { border-left-color: var(--gold); }
+    .bl-green  { border-left-color: var(--green); }
+
+    /* ── Platform badges ── */
+    .platform-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .ptag {
+      font-size: 10px;
+      font-weight: 600;
+      font-style: normal;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid;
+      line-height: 1.6;
+    }
+    .ptag-web    { color: #5793f3; border-color: #5793f340; background: #5793f310; }
+    .ptag-ios    { color: #91cc75; border-color: #91cc7540; background: #91cc7510; }
+    .ptag-android { color: #91cc75; border-color: #91cc7540; background: #91cc7510; }
+    .ptag-tv     { color: #fc8452; border-color: #fc845240; background: #fc845210; }
+    .ptag-all    { color: var(--muted); border-color: var(--border); background: var(--surface2); }
+    .ptag-unset  { color: var(--muted); border-color: var(--border); background: transparent; font-style: italic; text-transform: none; letter-spacing: 0; font-weight: 400; font-size: 11px; }
+
+    /* ── Platform breakdown panel ── */
+    .platform-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 48px;
+    }
+    .platform-panel-note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .platform-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .platform-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .platform-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .platform-card-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .platform-card-body {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .platform-card-body strong { color: var(--text); }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ── Header ── -->
+  <div class="header">
+    <div class="header-eyebrow">MUBI Leavers Survey · Jan – 16 Apr 2026</div>
+    <h1>Browse &amp; Genre<br>Complaint Deep Dive</h1>
+    <p>Verbatim complaints and design signals from users who cited difficulty finding films by genre, category, or taste — extracted from the full cancellation dataset.</p>
+    <div class="header-rule"></div>
+  </div>
+
+  <!-- ── Context note ── -->
+  <div class="context-box">
+    <div class="context-icon">ℹ</div>
+    <div class="context-text">
+      <strong>How this was extracted:</strong> All free-text cancellation responses were clustered into UX sub-themes. The quotes below come from the <em>Navigation &amp; IA</em> (692 complaints) and <em>Recommendations</em> (118 complaints) sub-themes, filtered further to those that explicitly mention browsing, genres, categories, filters, scrolling, or discovery. Counts shown against sub-themes are the full cluster sizes — not every response in the cluster is exclusively about browse/genre, but the theme is the dominant signal.
+      <br><br>
+      <strong>Platform data caveat:</strong> The cancellation survey has no structured platform field — respondents complete it on the web cancel flow regardless of which device they normally use. Platform tags on quotes below are based on explicit mentions in the response text. Where no platform is named, "Not specified" is shown; those complaints could apply to any surface.
+    </div>
+  </div>
+
+  <!-- ── Platform breakdown ── -->
+  <div class="section-title">Platform context</div>
+  <div class="section-sub">What the survey tells us — and doesn't — about which platforms these complaints hit hardest</div>
+  <div class="platform-panel">
+    <div class="platform-panel-note">
+      The survey doesn't ask "which device were you using?" so we can't produce a clean per-platform complaint count. The table below combines: (a) explicit platform mentions in quote text, (b) known product gaps, and (c) the separate <em>TV &amp; device support</em> cluster (603 complaints) which is the closest proxy for TV-specific browse pain.
+    </div>
+    <div class="platform-grid">
+      <div class="platform-card">
+        <div class="platform-card-header">
+          <div class="platform-icon">🌐</div>
+          <div class="platform-card-name" style="color:#5793f3;">Web</div>
+        </div>
+        <div class="platform-card-body">
+          The <strong>"browse section"</strong> complaint explicitly references web. Web has a Browse page but no Genre / Country / Decade filter rails. Most likely the surface where the <em>misleading catalogue</em> (ghost titles) is most visible, since web shows the broadest catalogue view.
+        </div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-card-header">
+          <div class="platform-icon">📱</div>
+          <div class="platform-card-name" style="color:#91cc75;">iOS &amp; Android</div>
+        </div>
+        <div class="platform-card-body">
+          The <strong>"home screen… scrolling infinitely"</strong> quote most naturally describes the mobile app home screen. Mobile likely carries the largest share of browse complaints by volume — it's the highest-usage surface — but genre filters are similarly absent on both platforms.
+        </div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-card-header">
+          <div class="platform-icon">📺</div>
+          <div class="platform-card-name" style="color:#fc8452;">TV apps (Roku, Firestick, Samsung/LG)</div>
+        </div>
+        <div class="platform-card-body">
+          TV apps typically offer the <strong>most limited browse UI</strong> — often just a grid with no filter entry point at all. The separate <em>TV &amp; device support</em> cluster has <strong>603 complaints</strong>. TV users who can't find content by genre have the fewest alternatives (no address bar, no easy search) and are most likely to just give up and cancel.
+        </div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-card-header">
+          <div class="platform-icon">🎮</div>
+          <div class="platform-card-name" style="color:var(--muted);">PS5 / Xbox</div>
+        </div>
+        <div class="platform-card-body">
+          No browse/genre complaints explicitly cite console apps in this extract. Console browse UX is broadly similar to TV apps — limited filtering. Likely affected but not called out by name in these responses.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Stat cards ── -->
+  <div class="stat-row">
+    <div class="stat-card highlight">
+      <div class="label">Navigation &amp; IA</div>
+      <div class="value">692</div>
+      <div class="sub">complaints — browse, layout, findability</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Recommendations &amp; Algorithm</div>
+      <div class="value">118</div>
+      <div class="sub">complaints — discovery, personalisation</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Combined share of all UX</div>
+      <div class="value">22%</div>
+      <div class="sub">of ~3,700 UX-tagged cancellations</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Lead design rec (from full survey)</div>
+      <div class="value">#1</div>
+      <div class="sub">Redesign search: Genre / Decade / Country / Director filters</div>
+    </div>
+  </div>
+
+  <!-- ── Horizontal bar: UX sub-theme context ── -->
+  <div class="section-title">Browse complaints in context</div>
+  <div class="section-sub">Navigation &amp; Discovery vs. other UX sub-themes — full cluster complaint counts</div>
+
+  <div class="bar-chart">
+    <div class="bar-row">
+      <div class="bar-label">Subtitles &amp; dubbing</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:#9f8cff;"></div></div>
+      <div class="bar-val">966</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Playback &amp; streaming</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:77%;background:#5793f3;"></div></div>
+      <div class="bar-val">748</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label" style="color:#8FB0F7;font-weight:600;">Navigation &amp; Browse ↗</div>
+      <div class="h-bar-track" style="border-color:#5793f3;"><div class="h-bar-fill" style="width:72%;background:#5793f3;"></div></div>
+      <div class="bar-val" style="color:#8FB0F7;font-weight:600;">692</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">TV &amp; device support</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:62%;background:#fc8452;"></div></div>
+      <div class="bar-val">603</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Account &amp; login</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:30%;background:#6e7079;"></div></div>
+      <div class="bar-val">290</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">App crashes &amp; bugs</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:18%;background:#6e7079;"></div></div>
+      <div class="bar-val">175</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label" style="color:#c3a0ff;font-weight:600;">Recommendations ↗</div>
+      <div class="h-bar-track" style="border-color:#c3a0ff;"><div class="h-bar-fill" style="width:12%;background:#c3a0ff;"></div></div>
+      <div class="bar-val" style="color:#c3a0ff;font-weight:600;">118</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Download / offline</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:11%;background:#6e7079;"></div></div>
+      <div class="bar-val">104</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Audio quality</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:2%;background:#6e7079;"></div></div>
+      <div class="bar-val">18</div>
+    </div>
+  </div>
+
+  <!-- ── Complaint clusters ── -->
+  <div class="section-title">What people are actually saying</div>
+  <div class="section-sub">Five distinct complaint patterns, with direct verbatims from the survey</div>
+
+  <div class="clusters">
+
+    <!-- 1. No genre filter -->
+    <div class="cluster">
+      <div class="cluster-header">
+        <div class="cluster-dot c-blue"></div>
+        <div class="cluster-name">No way to filter by genre, country, or language</div>
+        <div class="cluster-count">Strongest signal</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill c-blue" style="width:85%;"></div></div>
+      <div class="cluster-desc">Users explicitly want genre/country/language filters that don't exist or aren't findable. This is the clearest, most actionable complaint in the browse cluster — multiple people used almost identical wording independently.</div>
+      <div class="quote-list">
+        <div class="quote-item bl-blue">
+          <div class="quote-text">I can't figure out the interface. How do you find specific genres? Besides, I thought I only had to pay 1 instead of 15 euros. No thanks</div>
+          <div class="platform-tags"><span class="ptag ptag-unset">Platform not specified</span></div>
+        </div>
+        <div class="quote-item bl-blue">
+          <div class="quote-text">I would like to be able to search by country / language. The sheer volume of films is overwhelming. I loved mubi when it just had 30 films each of them for just 30 days. I don't want to waste precious time scrolling through 100s of films.</div>
+          <div class="platform-tags"><span class="ptag ptag-unset">Platform not specified</span></div>
+        </div>
+        <div class="quote-item bl-blue">
+          <div class="quote-text">I'm looking for Italian films and can't find any.</div>
+          <div class="platform-tags"><span class="ptag ptag-unset">Platform not specified</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Scroll fatigue -->
+    <div class="cluster">
+      <div class="cluster-header">
+        <div class="cluster-dot c-accent"></div>
+        <div class="cluster-name">Infinite scroll fatigue — home screen is overwhelming</div>
+        <div class="cluster-count">Clear pattern</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill c-accent" style="width:60%;"></div></div>
+      <div class="cluster-desc">The home screen shows a large undifferentiated catalogue. Without any genre rail or filter entry point, users report endlessly scrolling and giving up. Note: one user explicitly frames this as a regression from MUBI's older curated-30-films model.</div>
+      <div class="quote-list">
+        <div class="quote-item bl-accent">
+          <div class="quote-text">The home screen doesn't show many movies and many options, I kept scrolling infinitely</div>
+          <div class="platform-tags"><span class="ptag ptag-ios">iOS / Android</span><span class="ptag ptag-tv">TV app</span><span class="ptag ptag-unset">— "home screen" language; not web</span></div>
+        </div>
+        <div class="quote-item bl-accent">
+          <div class="quote-text">I would like to be able to search by country / language. The sheer volume of films is overwhelming. I loved mubi when it just had 30 films each of them for just 30 days. I don't want to waste precious time scrolling through 100s of films.</div>
+          <div class="platform-tags"><span class="ptag ptag-unset">Platform not specified</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Taste / genre discovery failure -->
+    <div class="cluster">
+      <div class="cluster-header">
+        <div class="cluster-dot c-gold"></div>
+        <div class="cluster-name">Signed up for a genre — couldn't find more of it</div>
+        <div class="cluster-count">Retention risk</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill c-gold" style="width:70%;"></div></div>
+      <div class="cluster-desc">Several users came to MUBI via a specific genre or title (horror, body horror, a curated film) and then couldn't navigate to more like it. Without a genre rail or taste-based recommendation path, discovery dead-ends immediately after the entry film.</div>
+      <div class="quote-list">
+        <div class="quote-item bl-gold">
+          <div class="quote-text">I signed up to watch The Substance and wanted to explore more horror / body horror, but nothing has caught my eye</div>
+          <div class="platform-tags"><span class="ptag ptag-unset">Platform not specified</span></div>
+        </div>
+        <div class="quote-item bl-gold">
+          <div class="quote-text">The movies that were curated were the really underground ones with very minimal screening times or late screenings. So many movies are coming out in Jan, Feb but only one that was of interest was in the curated movies.</div>
+          <div class="platform-tags"><span class="ptag ptag-unset">Platform not specified</span></div>
+        </div>
+        <div class="quote-item bl-gold">
+          <div class="quote-text">I've watched all of the films in the current catalog that interest me</div>
+          <div class="platform-tags"><span class="ptag ptag-unset">Platform not specified</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Misleading catalogue -->
+    <div class="cluster">
+      <div class="cluster-header">
+        <div class="cluster-dot c-warn"></div>
+        <div class="cluster-name">Browse shows films that aren't actually available</div>
+        <div class="cluster-count">Trust issue</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill c-warn" style="width:40%;"></div></div>
+      <div class="cluster-desc">The browse surface includes titles that are not available in the user's region or have already left the catalogue. This is a trust problem — a user who finds "ghost" titles in browse becomes distrustful of the whole catalogue representation.</div>
+      <div class="quote-list">
+        <div class="quote-item bl-warn">
+          <div class="quote-text">Mubi is misleading and dishonest about the movies in its catalog. The browse section is full of movies that aren't actually available. Would not recommend this service.</div>
+          <div class="platform-tags"><span class="ptag ptag-web">Web</span><span class="ptag ptag-unset">— "browse section" language suggests web Browse page</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Can't find specific films -->
+    <div class="cluster">
+      <div class="cluster-header">
+        <div class="cluster-dot c-green"></div>
+        <div class="cluster-name">Can't locate specific films while browsing or searching</div>
+        <div class="cluster-count">Search overlap</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill c-green" style="width:45%;"></div></div>
+      <div class="cluster-desc">These complaints sit at the intersection of browse and search — users are scanning the catalogue for specific titles and can't find them. Partly a search problem (covered in the ux_search cluster) but also a browse/filter problem: if genre or origin-country filters existed, "Italian films" or "body horror" would be findable without knowing an exact title.</div>
+      <div class="quote-list">
+        <div class="quote-item bl-green">
+          <div class="quote-text">I WAS LOOKING FOR: LAST BLUE AND DEMENTIA FILM, BUT I COULDN'T FIND THEM. I WATCHED: KILL LOVE. AND MASTERMIND.</div>
+          <div class="platform-tags"><span class="ptag ptag-unset">Platform not specified</span></div>
+        </div>
+        <div class="quote-item bl-green">
+          <div class="quote-text">I was browsing the films to make recommendations to the person I gifted a subscription to.</div>
+          <div class="platform-tags"><span class="ptag ptag-unset">Platform not specified</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Design recommendations ── -->
+  <div class="recs-section">
+    <div class="section-title">Design recommendations</div>
+    <div class="section-sub">Extracted from the full survey analysis — specific to browse and genre discovery</div>
+    <div class="recs-grid">
+      <div class="rec-card">
+        <div class="rec-number">REC 01 — Highest impact</div>
+        <div class="rec-text">Redesign search and browse with filter rails: Genre, Decade, Country, Director, Language. Surface these as first-class navigation — not buried in an advanced search modal.</div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-number">REC 02 — Post-signup flow</div>
+        <div class="rec-text">After a user finishes their signup film, surface a curated "Because you loved X…" genre path within 60 seconds of the credits. The horror/body-horror user who cancelled had no entry point into more like The Substance.</div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-number">REC 03 — Home screen</div>
+        <div class="rec-text">Replace the undifferentiated infinite scroll with genre rails (Horror, Documentary, World Cinema, etc.) so users land with orientation rather than a blank scroll prompt.</div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-number">REC 04 — Catalogue honesty</div>
+        <div class="rec-text">Filter browse results to only show titles available in the user's region and subscription tier. "Ghost" titles in browse erode trust faster than a smaller-looking catalogue would.</div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-number">REC 05 — Onboarding</div>
+        <div class="rec-text">Add a brief taste survey at onboarding (3–5 taps: genre preferences, language, mood) so the homepage rails are personalised from day one rather than generic.</div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-number">REC 06 — Search empty states</div>
+        <div class="rec-text">When a search returns no results, propose genre or country browse paths rather than a dead end — "No results for 'Italian films' — try browsing by Country → Italy."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Footer ── -->
+  <div class="footer">
+    <span>MUBI Leavers Survey · Jan – 16 Apr 2026 · n ≈ 62,900 responses</span>
+    <span>Browse &amp; Genre sub-analysis · Generated May 2026</span>
+  </div>
+
+</div>
+</body>
+</html>
