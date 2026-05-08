@@ -234,6 +234,30 @@
       padding: 0;
     }
     .hero-nav-btn:hover { border-color: #fff; color: #fff; }
+    .hero-next-wrap {
+      position: relative;
+      width: 28px; height: 28px;
+      flex-shrink: 0;
+    }
+    .hero-next-wrap .hero-nav-btn {
+      position: absolute;
+      inset: 0;
+    }
+    .countdown-ring {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      transform: rotate(-90deg);
+      overflow: visible;
+    }
+    .countdown-ring circle {
+      fill: none;
+      stroke: rgba(255,255,255,0.9);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-dasharray: 81.68;
+      stroke-dashoffset: 81.68;
+    }
     .hero-nav-counter {
       font-size: 12px;
       color: rgba(255,255,255,0.8);
@@ -579,6 +603,40 @@
       font-size: 12px; font-weight: 400;
       text-transform: uppercase; color: rgba(0,0,0,0.45);
     }
+
+    /* ── Trailer Modal ── */
+    .trailer-modal {
+      position: fixed; inset: 0; z-index: 300;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .trailer-modal.is-open { opacity: 1; pointer-events: auto; }
+    .trailer-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.92);
+      cursor: pointer;
+    }
+    .trailer-container {
+      position: relative;
+      width: 85vw; max-width: 1200px;
+      aspect-ratio: 16/9;
+    }
+    .trailer-video {
+      width: 100%; height: 100%;
+      display: block; background: #000;
+    }
+    .trailer-close {
+      position: absolute; top: -42px; right: 0;
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.7); padding: 4px;
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 500;
+      letter-spacing: 0.4px; text-transform: uppercase;
+      transition: color 0.15s;
+    }
+    .trailer-close:hover { color: #fff; }
   </style>
 </head>
 <body>
@@ -681,7 +739,7 @@
 <div class="carousel-outer" id="heroCarousel" aria-label="Top 10 at the box office">
   <div class="carousel-track" id="carouselTrack">
     <div class="carousel-slide is-active"><img class="hero-still" src="https://assets.mubicdn.net/images/film/449352/image-w1280.jpg" alt="The Devil Wears Prada 2" fetchpriority="high"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
-    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/400478/image-w1280.jpg" alt="Michael"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://www.mjworld.net/wp-content/uploads/michael-poster-2026.jpg" alt="Michael"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
     <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/455148/image-w1280.jpg" alt="The Super Mario Galaxy Movie"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
     <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/418273/image-w1280.jpg" alt="Project Hail Mary"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
     <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/435835/image-w1280.jpg" alt="Hokum"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
@@ -689,7 +747,7 @@
     <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/445675/image-w1280.jpg" alt="Lee Cronin's The Mummy"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
     <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/406622/image-w1280.jpg" alt="Deep Water"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
     <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/467450/image-w1280.jpg" alt="That Time I Got Reincarnated as a Slime the Movie"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
-    <div class="carousel-slide"><img class="hero-still" src="https://assets.mubicdn.net/images/film/420475/image-w1280.jpg" alt="The Drama"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
+    <div class="carousel-slide"><img class="hero-still" src="https://atwenty-four.transforms.svdcdn.com/production/images/DRAMA_16x9_Trailer_ThubmnailTextless-1.jpg?w=2000&auto=compress%2Cformat&fit=crop&dm=1770142907&s=c3a8606ffcf037e23fd3fc89dda0c1a1" alt="The Drama"><div class="hero-grad-1"></div><div class="hero-grad-2"></div></div>
   </div>
 
   <div class="hero-info">
@@ -706,10 +764,10 @@
       </div>
       <div class="hero-bottom-row">
         <div class="hero-actions">
-          <a href="#" class="btn-primary">
+          <button onclick="openTrailer()" class="btn-primary" style="border:none;cursor:pointer;">
             <svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor" aria-hidden="true"><path d="M0 0L10 6L0 12V0Z"/></svg>
             Trailer
-          </a>
+          </button>
         </div>
         <p class="hero-our-take" id="heroSynopsis">As Miranda Priestly nears retirement, she reluctantly reunites with Andy Sachs to face off against a formidable new rival — Emily Charlton. Fashion, power and old grudges collide in this long-awaited sequel.</p>
         <div class="hero-nav" style="margin-left:auto; flex-shrink:0;">
@@ -717,9 +775,14 @@
             <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,1 2,6 6,11"/></svg>
           </button>
           <span class="hero-nav-counter"><span id="heroCurrent">1</span> / 10</span>
-          <button class="hero-nav-btn" onclick="heroNext()" aria-label="Next">
-            <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,1 6,6 2,11"/></svg>
-          </button>
+          <div class="hero-next-wrap">
+            <button class="hero-nav-btn" onclick="heroNext()" aria-label="Next">
+              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,1 6,6 2,11"/></svg>
+            </button>
+            <svg class="countdown-ring" viewBox="0 0 28 28" width="28" height="28" aria-hidden="true">
+              <circle id="countdownRing" cx="14" cy="14" r="13"/>
+            </svg>
+          </div>
         </div>
       </div>
     </div>
@@ -944,20 +1007,20 @@
 <script>
 /* ─── TOP 10 CAROUSEL ─── */
 const CAROUSEL_FILMS = [
-  { rank:'01', title:'The Devil Wears Prada 2',                             director:'David Frankel',                  meta:'United States · 2026 · Comedy',     synopsis:'As Miranda Priestly nears retirement, she reluctantly reunites with Andy Sachs to face off against a formidable new rival — Emily Charlton. Fashion, power and old grudges collide in this long-awaited sequel.' },
-  { rank:'02', title:'Michael',                                              director:'Antoine Fuqua',                  meta:'United States · 2026 · Biography',   synopsis:'An in-depth portrait of Michael Jackson, the complicated man who became the King of Pop. The film traces his rise from child star to global icon, from his days with the Jackson 5 through the legendary Bad tour.' },
-  { rank:'03', title:'The Super Mario Galaxy Movie',                         director:'Aaron Horvath, Michael Jelenic', meta:'United States · 2026 · Animation',   synopsis:'Mario ventures into space, exploring cosmic worlds and tackling galactic challenges far from the familiar Mushroom Kingdom.' },
-  { rank:'04', title:'Project Hail Mary',                                    director:'Phil Lord, Christopher Miller',  meta:'United States · 2026 · Sci-Fi',      synopsis:'Ryland Grace wakes alone aboard an interstellar spacecraft with no memory of how he got there. A school teacher turned reluctant astronaut, he must piece together his mission — and save Earth from extinction.' },
-  { rank:'05', title:'Hokum',                                                director:'Damian McCarthy',                meta:'Ireland · 2026 · Horror',            synopsis:'When novelist Ohm Bauman retreats to a remote inn to scatter his parents\'s ashes, he is consumed by tales of a witch haunting the honeymoon suite. Disturbing visions and a shocking disappearance force him to confront dark corners of his past.' },
-  { rank:'06', title:'Animal Farm',                                          director:'Andy Serkis',                    meta:'United Kingdom · 2025 · Animation',   synopsis:'An animated adaptation of George Orwell\'s allegorical novella. When the farm animals overthrow their human farmer, their revolutionary dream of equality slowly curdles into a new and equally brutal tyranny.' },
-  { rank:'07', title:"Lee Cronin's The Mummy",                              director:'Lee Cronin',                     meta:'United States · 2026 · Horror',      synopsis:'Director Lee Cronin delivers a visceral, horror-focused reimagining of the classic monster — a terrifying and ancient story stripped of adventure-film gloss, returning to the creature\'s genuinely nightmarish roots.' },
-  { rank:'08', title:'Deep Water',                                           director:'Renny Harlin',                   meta:'United States · 2026 · Action',      synopsis:'An eclectic group of international passengers whose plane, en route from Los Angeles to Shanghai, is forced to make an emergency landing in shark-infested waters.' },
-  { rank:'09', title:'That Time I Got Reincarnated as a Slime the Movie: Tears of the Azure Sea', director:'Yasuhito Kikuchi', meta:'Japan · 2026 · Animation',    synopsis:'Rimuru and friends visit Celestial Emperor Hermesia\'s resort island after Tempest\'s opening ceremony. During their vacation, they encounter a mysterious woman named Yura, leading to a new incident by the azure sea.' },
-  { rank:'10', title:'The Drama',                                               director:'Kristoffer Borgli',              meta:'United States · 2026 · Romance',     synopsis:'Robert Pattinson and Zendaya star in Kristoffer Borgli\'s provocative romantic comedy about performance, desire, and the theatrics of modern love.' },
+  { rank:'01', title:'The Devil Wears Prada 2',                             director:'David Frankel',                  meta:'United States · 2026 · Comedy',     synopsis:'As Miranda Priestly nears retirement, she reluctantly reunites with Andy Sachs to face off against a formidable new rival — Emily Charlton. Fashion, power and old grudges collide in this long-awaited sequel.',                                                                                    trailer:'https://trailers.mubicdn.net/449352/optimised/1080p-t-the-devil-wears-prada-2_en_us_2874.603_3840_2160_1770007894.mp4' },
+  { rank:'02', title:'Michael',                                              director:'Antoine Fuqua',                  meta:'United States · 2026 · Biography',   synopsis:'An in-depth portrait of Michael Jackson, the complicated man who became the King of Pop. The film traces his rise from child star to global icon, from his days with the Jackson 5 through the legendary Bad tour.',                                                                                     trailer:'https://trailers.mubicdn.net/400478/optimised/1080p-t-michael-2025_en_us_1067.667_1920_1080_1770072824.mp4' },
+  { rank:'03', title:'The Super Mario Galaxy Movie',                         director:'Aaron Horvath, Michael Jelenic', meta:'United States · 2026 · Animation',   synopsis:'Mario ventures into space, exploring cosmic worlds and tackling galactic challenges far from the familiar Mushroom Kingdom.',                                                                                                                                                                      trailer:'https://trailers.mubicdn.net/455148/optimised/1080p-t-the-super-mario-galaxy-movie_en_us_4691.09_1920_1080_1763023454.mp4' },
+  { rank:'04', title:'Project Hail Mary',                                    director:'Phil Lord, Christopher Miller',  meta:'United States · 2026 · Sci-Fi',      synopsis:'Ryland Grace wakes alone aboard an interstellar spacecraft with no memory of how he got there. A school teacher turned reluctant astronaut, he must piece together his mission — and save Earth from extinction.',                                                                                      trailer:'https://trailers.mubicdn.net/418273/optimised/1080p-t-project-hail-mary_en_us_765.7349999999999_1920_1080_1751305226.mp4' },
+  { rank:'05', title:'Hokum',                                                director:'Damian McCarthy',                meta:'Ireland · 2026 · Horror',            synopsis:'When novelist Ohm Bauman retreats to a remote inn to scatter his parents\'s ashes, he is consumed by tales of a witch haunting the honeymoon suite. Disturbing visions and a shocking disappearance force him to confront dark corners of his past.',                                                       trailer:'https://trailers.mubicdn.net/435835/optimised/240p-t-hokum-2026_en_us_261.769_640_360_1773246825.mp4' },
+  { rank:'06', title:'Animal Farm',                                          director:'Andy Serkis',                    meta:'United Kingdom · 2025 · Animation',  synopsis:'An animated adaptation of George Orwell\'s allegorical novella. When the farm animals overthrow their human farmer, their revolutionary dream of equality slowly curdles into a new and equally brutal tyranny.',                                                                                        trailer:'https://trailers.mubicdn.net/340298/optimised/1080p-t-animal-farm-2023_en_us_3817.888_3840_1608_1765786670.mp4' },
+  { rank:'07', title:"Lee Cronin's The Mummy",                              director:'Lee Cronin',                     meta:'United States · 2026 · Horror',      synopsis:'Director Lee Cronin delivers a visceral, horror-focused reimagining of the classic monster — a terrifying and ancient story stripped of adventure-film gloss, returning to the creature\'s genuinely nightmarish roots.',                                                                                  trailer:'https://trailers.mubicdn.net/445675/optimised/1080p-t-lee-cronin-s-the-mummy_en_us_1642.3519999999999_3840_2160_1771479192.mp4' },
+  { rank:'08', title:'Deep Water',                                           director:'Renny Harlin',                   meta:'United States · 2026 · Action',      synopsis:'An eclectic group of international passengers whose plane, en route from Los Angeles to Shanghai, is forced to make an emergency landing in shark-infested waters.',                                                                                                                                    trailer:'https://trailers.mubicdn.net/406622/optimised/1080p-t-deep-water-2024_en_us_974.348_1920_1080_1774770032.mp4' },
+  { rank:'09', title:'That Time I Got Reincarnated as a Slime the Movie: Tears of the Azure Sea', director:'Yasuhito Kikuchi', meta:'Japan · 2026 · Animation',   synopsis:'Rimuru and friends visit Celestial Emperor Hermesia\'s resort island after Tempest\'s opening ceremony. During their vacation, they encounter a mysterious woman named Yura, leading to a new incident by the azure sea.',                                                                      trailer:'https://trailers.mubicdn.net/467450/optimised/1080p-t-that-time-i-got-reincarnated-as-a-slime-the-movie-tears-of-the-azure-sea_en_us_3527.16_1920_1080_1772075505.mp4' },
+  { rank:'10', title:'The Drama',                                            director:'Kristoffer Borgli',              meta:'United States · 2026 · Romance',     synopsis:'Robert Pattinson and Zendaya star in Kristoffer Borgli\'s provocative romantic comedy about performance, desire, and the theatrics of modern love.',                                                                                                                                                    trailer:'https://trailers.mubicdn.net/420475/optimised/1080p-t-the-drama_en_us_841.951_1920_1080_1770149542.mp4' },
 ];
 
 let heroIndex = 0;
-let heroTimer;
+
 
 function heroGoTo(idx) {
   const slides = document.querySelectorAll('.carousel-slide');
@@ -978,11 +1041,30 @@ function heroGoTo(idx) {
   document.getElementById('heroMeta').textContent      = f.meta;
   document.getElementById('heroSynopsis').textContent  = f.synopsis;
   document.getElementById('heroCurrent').textContent   = heroIndex + 1;
+  startCountdown();
 }
+
+let cdRaf, cdStart;
+function startCountdown() {
+  cancelAnimationFrame(cdRaf);
+  cdStart = null;
+  const ring = document.getElementById('countdownRing');
+  ring.style.strokeDashoffset = 81.68;
+  function tick(ts) {
+    if (!cdStart) cdStart = ts;
+    const p = Math.min((ts - cdStart) / 6000, 1);
+    ring.style.strokeDashoffset = 81.68 * (1 - p);
+    if (p < 1) cdRaf = requestAnimationFrame(tick);
+  }
+  cdRaf = requestAnimationFrame(tick);
+}
+
+let heroTimer;
 function heroNext() { clearInterval(heroTimer); heroGoTo(heroIndex + 1); heroStartAuto(); }
 function heroPrev() { clearInterval(heroTimer); heroGoTo(heroIndex - 1); heroStartAuto(); }
 function heroStartAuto() { heroTimer = setInterval(() => heroGoTo(heroIndex + 1), 6000); }
 heroStartAuto();
+startCountdown();
 
 const ALL_FILMS = [
   { title:"1917", director:"Sam Mendes", year:2019, country:"United Kingdom, United States", image:"https://assets.mubicdn.net/images/film/209597/image-w448.jpg", fX:0.50, fY:0.30 },
@@ -3156,6 +3238,41 @@ function closeSearch() {
 document.getElementById('searchOpenBtn').addEventListener('click', openSearch);
 document.getElementById('searchCloseBtn').addEventListener('click', closeSearch);
 document.getElementById('searchBackdrop').addEventListener('click', closeSearch);
+
+/* ── Trailer Modal ── */
+function openTrailer() {
+  const f = CAROUSEL_FILMS[heroIndex];
+  if (!f.trailer) return;
+  clearInterval(heroTimer);
+  cancelAnimationFrame(cdRaf);
+  const modal = document.getElementById('trailerModal');
+  const video = document.getElementById('trailerVideo');
+  video.src = f.trailer;
+  modal.classList.add('is-open');
+  video.play().catch(() => {});
+}
+function closeTrailer() {
+  const modal = document.getElementById('trailerModal');
+  const video = document.getElementById('trailerVideo');
+  video.pause();
+  modal.classList.remove('is-open');
+  setTimeout(() => { video.src = ''; }, 300);
+  heroStartAuto();
+  startCountdown();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTrailer(); });
 </script>
+
+<div id="trailerModal" class="trailer-modal">
+  <div class="trailer-backdrop" onclick="closeTrailer()"></div>
+  <div class="trailer-container">
+    <button class="trailer-close" onclick="closeTrailer()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Close
+    </button>
+    <video id="trailerVideo" class="trailer-video" controls playsinline></video>
+  </div>
+</div>
+
 </body>
 </html>
