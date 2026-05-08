@@ -3353,7 +3353,7 @@ function renderSearchResults(q) {
   const n = matches.length;
   label.textContent = n + ' result' + (n !== 1 ? 's' : '') + ' for "' + q + '"';
   grid.innerHTML = matches.map(f =>
-    '<a class="film-card" href="' + (f.url || '#') + '" target="' + (f.url ? '_blank' : '_self') + '">' +
+    '<a class="film-card" href="' + (f.url || '#') + '">' +
       '<div class="card-img-wrap">' +
         '<img class="card-img" src="' + f.img + '" alt="' + f.t.replace(/"/g,'&quot;') + '" loading="lazy" onerror="this.style.opacity=\'0\'">' +
         '<div class="card-overlay">' +
