@@ -604,6 +604,35 @@
       text-transform: uppercase; color: rgba(0,0,0,0.45);
     }
 
+    /* ── Notebook cards ── */
+    .notebook-row .row-grid { background: transparent; border: none; column-gap: 4px; row-gap: 0; }
+    .notebook-card-body { padding: 10px 0 12px; }
+    .notebook-type {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.7px; text-transform: uppercase;
+      color: rgba(0,0,0,0.45);
+      margin-bottom: 5px;
+    }
+    .notebook-card .card-title {
+      font-size: 16px; font-weight: 500;
+      text-transform: none; letter-spacing: 0;
+      line-height: 1.3; color: #111;
+      -webkit-line-clamp: 3;
+    }
+    .notebook-card-excerpt {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 400;
+      color: rgba(0,0,0,0.55);
+      line-height: 1.45;
+      margin-bottom: 6px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .notebook-card .card-meta {
+      color: rgba(0,0,0,0.45);
+      white-space: normal;
+    }
+
     /* ── Trailer Modal ── */
     .trailer-modal {
       position: fixed; inset: 0; z-index: 300;
@@ -682,6 +711,7 @@
           <a href="#">Earn 1 month free</a>
           <div class="nav-dropdown-sep"></div>
           <a href="mubi-showing.html">Now Showing</a>
+          <a href="#">Notebook</a>
           <a href="#">Notebook Magazine</a>
           <a href="#">MUBI Editions</a>
           <a href="#">SHOP</a>
@@ -997,6 +1027,61 @@
             <div class="director-count">It Was Just an Accident</div>
           </div>
         </a>
+      </div>
+    </div>
+
+    <div class="row-section notebook-row">
+      <div class="row-header"><span class="row-title">Latest from Notebook</span></div>
+      <div class="row-grid">
+
+        <a class="film-card notebook-card" href="https://mubi.com/notebook/posts/building-a-future-cinema-james-n-kienitz-wilkins-on-the-misconceived">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.mubicdn.net/images/notebook/post_spotlight_images/11556/cache-11556-1777305399/images-w1280.jpg" alt="Building a Future Cinema" loading="lazy">
+          </div>
+          <div class="notebook-card-body">
+            <div class="notebook-type">Interview</div>
+            <div class="card-title">Building a Future Cinema: James N. Kienitz Wilkins on "The Misconceived"</div>
+            <div class="notebook-card-excerpt">The unpredictable artist discusses his metacomedic, motion captured, Unreal Engine-powered follow-up to the acclaimed 'The Plagiarists.'</div>
+            <div class="card-meta">Jordan Cronk &nbsp;·&nbsp; May 7, 2026</div>
+          </div>
+        </a>
+
+        <a class="film-card notebook-card" href="https://mubi.com/notebook/posts/rushes-major-oscar-changes-letterboxd-looking-to-sell-film-comment-returns">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.mubicdn.net/images/notebook/post_spotlight_images/11562/cache-11562-1778015003/images-w1280.jpg" alt="Rushes" loading="lazy">
+          </div>
+          <div class="notebook-card-body">
+            <div class="notebook-type">News</div>
+            <div class="card-title">Rushes | Major Oscar Changes, Letterboxd Looking to Sell, Film Comment Returns</div>
+            <div class="notebook-card-excerpt">This week's essential news, articles, sounds, videos, and more from the film world.</div>
+            <div class="card-meta">Notebook &nbsp;·&nbsp; May 6, 2026</div>
+          </div>
+        </a>
+
+        <a class="film-card notebook-card" href="https://mubi.com/notebook/posts/tony-leung-chiu-wai-in-one-shot">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.mubicdn.net/images/notebook/post_spotlight_images/11559/cache-11559-1777902607/images-w1280.jpg" alt="Tony Leung Chiu-wai in One Shot" loading="lazy">
+          </div>
+          <div class="notebook-card-body">
+            <div class="notebook-type">Column</div>
+            <div class="card-title">Tony Leung Chiu-wai in One Shot</div>
+            <div class="notebook-card-excerpt">An iconic contradiction: At once vulnerable and mysterious.</div>
+            <div class="card-meta">Gladys Lou &nbsp;·&nbsp; May 5, 2026</div>
+          </div>
+        </a>
+
+        <a class="film-card notebook-card" href="https://mubi.com/notebook/posts/deeper-and-darker-than-mere-hokum-the-new-generation-of-irish-horror">
+          <div class="card-img-wrap">
+            <img class="card-img" src="https://images.mubicdn.net/images/notebook/post_spotlight_images/11557/cache-11557-1777471499/images-w1280.jpg" alt="The New Generation of Irish Horror" loading="lazy">
+          </div>
+          <div class="notebook-card-body">
+            <div class="notebook-type">Feature</div>
+            <div class="card-title">Deeper and Darker than Mere Hokum: The New Generation of Irish Horror</div>
+            <div class="notebook-card-excerpt">In recent years, young Irish filmmakers, spearheaded by Damian McCarthy ('Hokum'), have created a distinctly Irish strain of horror cinema.</div>
+            <div class="card-meta">Robert Rubsam &nbsp;·&nbsp; May 4, 2026</div>
+          </div>
+        </a>
+
       </div>
     </div>
 
