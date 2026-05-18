@@ -90,7 +90,7 @@
       }
     }
 
-    .nav-logo { flex-shrink: 0; padding-right: 21px; display: flex; align-items: center; }
+    .nav-logo { flex-shrink: 0; padding-right: 6px; display: flex; align-items: center; }
 
     /* Search bar */
     .nav-search-wrap {
@@ -684,6 +684,98 @@
       padding: 4px 8px;
       border-radius: 2px;
     }
+    /* ─── SEARCH TAKEOVER ─── */
+    .search-backdrop {
+      position: fixed; inset: 0;
+      background: #fff; z-index: 149;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .search-backdrop.is-open { opacity: 1; pointer-events: auto; }
+    .search-takeover {
+      position: fixed; top: 0; bottom: 0; left: 0; right: 0;
+      background: #fff; z-index: 150;
+      opacity: 0; pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      overflow-y: auto;
+    }
+    .search-takeover.is-open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .search-takeover-inner {
+      display: flex; align-items: center; gap: 20px;
+      max-width: 1500px; margin: 0 auto; padding: 20px 22px;
+    }
+    .search-results-body {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 0 22px 60px;
+    }
+    .search-results-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: #323232;
+      margin-bottom: 16px;
+    }
+    .search-results-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      column-gap: 4px;
+      row-gap: 40px;
+    }
+    .search-trending {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 40px 22px 60px;
+    }
+    .search-trending-row { margin-bottom: 40px; }
+    .search-trending-row .row-header { padding: 0 0 10px; }
+    .search-trending-row .row-title {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: #323232;
+    }
+    .search-trending-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      column-gap: 4px;
+    }
+    .search-dir-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      column-gap: 4px;
+    }
+    .coll-tile { display:flex; aspect-ratio:371/209; overflow:hidden; cursor:pointer; text-decoration:none; }
+    .coll-tile-left { flex:1; padding:14px; display:flex; flex-direction:column; align-items:flex-start; justify-content:space-between; overflow:hidden; }
+    .coll-tile-count { display:flex; align-items:center; gap:4px; color:#fff; font-family:Riforma,sans-serif; font-size:13px; font-weight:700; }
+    .coll-tile-count svg { flex-shrink:0; }
+    .coll-tile-treatment { display:block; max-width:90%; max-height:82px; object-fit:contain; object-position:left top; }
+    .coll-tile-title { font-family:Riforma,sans-serif; font-size:13px; font-weight:500; text-transform:uppercase; letter-spacing:-0.2px; line-height:1.2; color:#fff; }
+    .coll-tile-title--solo { font-size:22px; }
+    .coll-tile-subtitle { display:block; font-size:22px; font-weight:500; margin-top:2px; }
+    .coll-tile-right { width:185px; flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+    .coll-tile-img { display:block; width:100%; height:100%; object-fit:cover; }
+    .director-card { display:block; cursor:pointer; text-decoration:none; }
+    .director-img-wrap { aspect-ratio:1/1; position:relative; overflow:hidden; background:#d0d0d0; }
+    .director-img-wrap .card-img { filter:grayscale(100%); transition:transform 0.45s ease; }
+    .director-card:hover .card-img { transform:scale(1.03); }
+    .director-info { background:#fff; padding:8px 0 4px; }
+    .director-name { font-family:Riforma,sans-serif; font-size:13px; font-weight:500; text-transform:uppercase; letter-spacing:0.1px; line-height:1.3; color:#323232; margin-bottom:2px; }
+    .director-count { font-family:Riforma,sans-serif; font-size:12px; font-weight:400; text-transform:uppercase; color:rgba(0,0,0,0.45); }
+    .search-takeover-input {
+      flex: 1; font-family: Riforma, sans-serif;
+      font-size: 26px; font-weight: 400; line-height: 1;
+      border: none; outline: none; background: transparent; color: #323232;
+    }
+    .search-takeover-input::placeholder { color: rgba(0,0,0,0.25); }
+    .search-close-btn {
+      display: flex; align-items: center;
+      background: none; border: none; cursor: pointer;
+      padding: 0; flex-shrink: 0; opacity: 0.5; transition: opacity 0.15s;
+    }
+    .search-close-btn:hover { opacity: 1; }
   </style>
 </head>
 <body>
@@ -774,6 +866,9 @@
           </g>
         </svg>
       </a>
+      <button id="searchOpenBtn" style="background:none;border:none;cursor:pointer;padding:0 0 0 28px;display:flex;align-items:flex-end;align-self:flex-end;margin-bottom:-2px;color:rgba(255,255,255,0.7);transition:color 0.15s;" aria-label="Search">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
     </div>
 
     <nav class="nav-links" aria-label="Main navigation">
@@ -817,6 +912,39 @@
     </nav>
   </div>
 </header>
+
+<div class="search-backdrop" id="searchBackdrop"></div>
+<div class="search-takeover" id="searchTakeover" role="search">
+  <div class="search-takeover-inner">
+    <svg width="40" height="40" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M57.8497 52.1132C60.6668 48.1454 62.319 43.2855 62.319 38.021C62.319 24.6571 51.4953 13.8334 38.021 13.8334C24.657 13.8334 13.8333 24.6571 13.8333 38.021C13.8333 51.4954 24.657 62.3191 38.021 62.3191C43.2855 62.3191 48.1454 60.6668 52.1132 57.8498L63.5339 69.1667L69.1667 63.534L57.8497 52.1132ZM38.021 54.2565C29.1853 54.2565 21.8959 46.9671 21.8959 38.021C21.8959 29.1853 29.1853 21.8959 38.021 21.8959C46.9671 21.8959 54.2565 29.1853 54.2565 38.021C54.2565 46.9671 46.9671 54.2565 38.021 54.2565Z" fill="#323232"/></svg>
+    <input class="search-takeover-input" id="searchTakeoverInput" type="text" placeholder="Search films, series, collections and directors now showing on MUBI" autocomplete="off">
+    <button class="search-close-btn" id="searchCloseBtn" aria-label="Close search">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 10L30 30M30 10L10 30" stroke="#323232" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="search-trending" id="searchTrending" style="display:none;">
+    <div class="search-trending-row">
+      <div class="row-header"><span class="row-title">Trending Films</span></div>
+      <div class="search-trending-grid" id="trendingFilmsGrid"></div>
+    </div>
+    <div class="search-trending-row">
+      <div class="row-header"><span class="row-title">Trending Series</span></div>
+      <div class="search-trending-grid" id="trendingSeriesGrid"></div>
+    </div>
+    <div class="search-trending-row">
+      <div class="row-header"><span class="row-title">Trending Collections</span></div>
+      <div class="search-trending-grid" id="trendingCollGrid"></div>
+    </div>
+    <div class="search-trending-row">
+      <div class="row-header"><span class="row-title">Trending Directors</span></div>
+      <div class="search-dir-grid" id="trendingDirGrid"></div>
+    </div>
+  </div>
+  <div class="search-results-body" id="searchResultsBody" style="display:none;">
+    <div class="search-results-label" id="searchResultsLabel"></div>
+    <div class="search-results-grid" id="searchResultsGrid"></div>
+  </div>
+</div>
 
 <!-- ─── HERO: Film of the Day ─── -->
 <!-- hero outer: sets page-space. bg container extends up behind header -->
@@ -1099,6 +1227,181 @@ function closeDrawer() {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
 
 renderGrid();
+
+const SEARCH_SERIES = [
+  { title:"Hal & Harper", director:"Cooper Raiff", year:2025, country:"United States", image:"https://images.mubicdn.net/images/film/448206/cache-1082712-1757432851/image-w1280.jpg", fX:0.70, fY:0.30 },
+  { title:"The New Year", director:"Rodrigo Sorogoyen", year:2024, country:"Spain, France", image:"https://images.mubicdn.net/images/film/448214/cache-1088377-1760109597/image-w1280.jpg", fX:0.52, fY:0.38 },
+  { title:"Twin Peaks: A Limited Event Series", director:"David Lynch", year:2017, country:"United States", image:"https://images.mubicdn.net/images/film/433459/cache-1036225-1747696370/image-w1280.jpg", fX:0.60, fY:0.25 },
+  { title:"Blossoms Shanghai", director:"Wong Kar Wai", year:2023, country:"China, Hong Kong", image:"https://images.mubicdn.net/images/film/442900/cache-1109912-1769020624/image-w1280.jpg", fX:0.58, fY:0.38 },
+];
+const SEARCH_COLLS = [
+  {"slug":"stories-from-home","title":"Stories from Home","subtitle":"","items":"8","img":"https://images.mubicdn.net/images/film_group/2427/cache-1123199-1774976126/image-original.jpg","treatment":"https://images.mubicdn.net/images/artworks/965622/cache-965622-1774976211/images-original.png","color":"#1f2822"},
+  {"slug":"akinola-davies-jr","title":"A Tender Age:","subtitle":"Two by Akinola Davies Jr.","items":"2","img":"https://images.mubicdn.net/images/film/280320/cache-1118619-1773167098/image-w1280.jpg","treatment":"","color":"#5C524A"},
+  {"slug":"my-undesirable-friends","title":"My Undesirable Friends:","subtitle":"Part I — Last Air in Moscow","items":"2","img":"https://images.mubicdn.net/images/film_group/2372/cache-1113941-1774540230/image-original.jpg","treatment":"https://images.mubicdn.net/images/artworks/962089/cache-962089-1774539298/images-original.png","color":"#000e57"},
+  {"slug":"jonathan-demme","title":"Windows to the Soul:","subtitle":"Three by Jonathan Demme","items":"3","img":"https://images.mubicdn.net/images/film_group/2343/cache-1122122-1774544993/image-original.jpg","treatment":"","color":"#000000"},
+];
+const SEARCH_DIRS = [
+  ["Jafar Panahi","https://images.mubicdn.net/images/cast_member/11454/cache-215833-1757977469/image-w856.jpg"],
+  ["Park Chan-wook","https://images.mubicdn.net/images/cast_member/933/cache-30-1607464891/image-w856.jpg"],
+  ["Kelly Reichardt","https://images.mubicdn.net/images/cast_member/4769/cache-696287-1626312371/image-w856.jpg"],
+  ["Coralie Fargeat","https://images.mubicdn.net/images/cast_member/519528/cache-258310-1715094388/image-w856.jpg"],
+];
+
+function fitCollText() {
+  requestAnimationFrame(() => {
+    document.querySelectorAll('#trendingCollGrid .coll-tile-left').forEach(left => {
+      const available = left.clientWidth - 28;
+      ['.coll-tile-subtitle', '.coll-tile-title--solo'].forEach(sel => {
+        const el = left.querySelector(sel);
+        if (!el) return;
+        el.style.fontSize = '';
+        let size = 22;
+        while (el.scrollWidth > available && size > 11) { size -= 0.5; el.style.fontSize = size + 'px'; }
+      });
+    });
+  });
+}
+
+function collTileHTML(col) {
+  const left = col.treatment
+    ? `<img class="coll-tile-treatment" src="${col.treatment}" alt="${col.title}" loading="lazy">`
+    : col.subtitle
+      ? `<div class="coll-tile-title">${col.title}<span class="coll-tile-subtitle">${col.subtitle}</span></div>`
+      : `<div class="coll-tile-title coll-tile-title--solo">${col.title}</div>`;
+  return `<a class="coll-tile" href="#" aria-label="${col.title}">
+    <div class="coll-tile-left" style="background:${col.color}">
+      <div>${left}</div>
+      <div class="coll-tile-count"><svg width="24" height="18" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.4121 0C21.0432 0 21.5546 0.511527 21.5547 1.14258V14.4248C21.5546 15.0559 21.0432 15.5674 20.4121 15.5674H1.14258C0.511562 15.5673 5.76033e-05 15.0558 0 14.4248V1.14258C0.00013309 0.511609 0.511609 0.00013335 1.14258 0H20.4121ZM8.38281 11.1768L15.3682 7.68359L8.38281 4.19141V11.1768Z" fill="white"/><mask id="ci-mask" fill="white"><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282"/></mask><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282" stroke="white" stroke-width="2.395" mask="url(#ci-mask)"/></svg>${col.items}</div>
+    </div>
+    <div class="coll-tile-right"><img class="coll-tile-img" src="${col.img}" alt="${col.title}" loading="lazy"></div>
+  </a>`;
+}
+
+let trendingRendered = false;
+function renderTrending() {
+  if (trendingRendered) return;
+  trendingRendered = true;
+
+  // Films
+  document.getElementById('trendingFilmsGrid').innerHTML =
+    FILMS.slice(0, 4).map(f => {
+      const posX = Math.round(f.fX * 100), posY = Math.round(f.fY * 100);
+      return `<a class="film-card" href="#" aria-label="${f.title}">
+        <div class="card-img-wrap">
+          <img class="card-img" src="${f.image}" alt="${f.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
+          <div class="card-overlay">
+            <div class="card-title">${f.title}</div>
+            <div class="card-meta"><span class="card-meta-director">${f.director}</span> ${f.country} ${f.year}</div>
+          </div>
+        </div>
+      </a>`;
+    }).join('');
+
+  // Series
+  document.getElementById('trendingSeriesGrid').innerHTML =
+    SEARCH_SERIES.map(f => {
+      const posX = Math.round(f.fX * 100), posY = Math.round(f.fY * 100);
+      return `<a class="film-card" href="#" aria-label="${f.title}">
+        <div class="card-img-wrap">
+          <img class="card-img" src="${f.image}" alt="${f.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
+          <div class="card-overlay">
+            <div class="card-eyebrow">Series</div>
+            <div class="card-title">${f.title}</div>
+            <div class="card-meta"><span class="card-meta-director">${f.director}</span> ${f.country} ${f.year}</div>
+          </div>
+        </div>
+      </a>`;
+    }).join('');
+
+  // Collections
+  document.getElementById('trendingCollGrid').innerHTML = SEARCH_COLLS.map(collTileHTML).join('');
+  fitCollText();
+
+  // Directors
+  const dirCounts = {};
+  FILMS.forEach(f => { dirCounts[f.director] = (dirCounts[f.director] || 0) + 1; });
+  document.getElementById('trendingDirGrid').innerHTML =
+    SEARCH_DIRS.map(([name, img]) => {
+      const count = dirCounts[name] || 0;
+      return `<a class="director-card" href="#" aria-label="${name}">
+        <div class="director-img-wrap">
+          <img class="card-img" src="${img}" alt="${name}" loading="lazy" style="object-position:50% 15%">
+        </div>
+        <div class="director-info">
+          <div class="director-name">${name}</div>
+          ${count ? `<div class="director-count">${count} film${count !== 1 ? 's' : ''}</div>` : ''}
+        </div>
+      </a>`;
+    }).join('');
+}
+
+function openSearch() {
+  document.getElementById('searchTakeover').classList.add('is-open');
+  document.getElementById('searchBackdrop').classList.add('is-open');
+  document.getElementById('searchTrending').style.display = 'block';
+  renderTrending();
+  setTimeout(() => document.getElementById('searchTakeoverInput').focus(), 50);
+}
+function closeSearch() {
+  document.getElementById('searchTakeover').classList.remove('is-open');
+  document.getElementById('searchBackdrop').classList.remove('is-open');
+  document.getElementById('searchTakeoverInput').value = '';
+  document.getElementById('searchResultsBody').style.display = 'none';
+  document.getElementById('searchResultsGrid').innerHTML = '';
+  document.getElementById('searchTrending').style.display = 'none';
+}
+document.getElementById('searchOpenBtn').addEventListener('click', openSearch);
+document.getElementById('searchCloseBtn').addEventListener('click', closeSearch);
+document.getElementById('searchBackdrop').addEventListener('click', closeSearch);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
+
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderSearchResults(q) {
+  const body     = document.getElementById('searchResultsBody');
+  const grid     = document.getElementById('searchResultsGrid');
+  const label    = document.getElementById('searchResultsLabel');
+  const trending = document.getElementById('searchTrending');
+  if (!q) {
+    body.style.display = 'none';
+    grid.innerHTML = '';
+    trending.style.display = 'block';
+    return;
+  }
+  trending.style.display = 'none';
+  const ql = q.toLowerCase();
+  let matches = FILMS.filter(f =>
+    f.title.toLowerCase().includes(ql) || f.director.toLowerCase().includes(ql)
+  );
+  matches = shuffleArr(matches).slice(0, 12);
+  if (!matches.length) { body.style.display = 'none'; grid.innerHTML = ''; return; }
+  body.style.display = 'block';
+  label.textContent = matches.length + ' result' + (matches.length !== 1 ? 's' : '') + ' for "' + q + '"';
+  grid.innerHTML = matches.map(f => {
+    const posX = Math.round(f.fX * 100);
+    const posY = Math.round(f.fY * 100);
+    return `<a class="film-card" href="#" aria-label="${f.title}">
+      <div class="card-img-wrap">
+        <img class="card-img" src="${f.image}" alt="${f.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
+        <div class="card-overlay">
+          <div class="card-title">${f.title}</div>
+          <div class="card-meta"><span class="card-meta-director">${f.director}</span> ${f.country} ${f.year}</div>
+        </div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+document.getElementById('searchTakeoverInput').addEventListener('input', e => {
+  renderSearchResults(e.target.value.trim());
+});
 </script>
 </body>
 </html>

@@ -60,7 +60,7 @@
     }
     @media (min-width: 1562px) { .nav-desktop { max-width: 1500px; } }
 
-    .nav-logo { flex-shrink: 0; padding-right: 21px; display: flex; align-items: center; }
+    .nav-logo { flex-shrink: 0; padding-right: 6px; display: flex; align-items: center; }
 
     .nav-links {
       display: flex;
@@ -149,7 +149,6 @@
     .search-backdrop {
       position: fixed;
       inset: 0;
-      top: 50px;
       background: #fff;
       z-index: 149;
       opacity: 0;
@@ -159,7 +158,7 @@
     .search-backdrop.is-open { opacity: 1; pointer-events: auto; }
     .search-takeover {
       position: fixed;
-      top: 65px;
+      top: 0; bottom: 0;
       left: 0; right: 0;
       background: #fff;
       z-index: 150;
@@ -167,6 +166,7 @@
       pointer-events: none;
       transform: translateY(-6px);
       transition: opacity 0.22s ease, transform 0.22s ease;
+      overflow-y: auto;
     }
     .search-takeover.is-open { opacity: 1; pointer-events: auto; transform: translateY(0); }
     .search-takeover-inner {
@@ -176,6 +176,48 @@
       max-width: 1500px;
       margin: 0 auto;
       padding: 20px 22px;
+    }
+    .search-results-body {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 0 22px 60px;
+    }
+    .search-results-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: #323232;
+      margin-bottom: 16px;
+    }
+    .search-results-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      column-gap: 4px;
+      row-gap: 40px;
+    }
+    .search-trending {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 40px 22px 60px;
+    }
+    .search-trending-row { margin-bottom: 40px; }
+    .search-trending-row .row-header { padding: 0 0 10px; }
+    .search-trending-row .row-title {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: #323232;
+    }
+    .search-trending-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      column-gap: 4px;
+    }
+    .search-dir-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      column-gap: 4px;
     }
     .search-takeover-input {
       flex: 1;
@@ -721,6 +763,9 @@
           </g>
         </svg>
       </a>
+      <button id="searchOpenBtn" style="background:none;border:none;cursor:pointer;padding:0 0 0 28px;display:flex;align-items:flex-end;align-self:flex-end;margin-bottom:-2px;color:rgba(0,0,0,0.55);transition:color 0.15s;" aria-label="Search">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
     </div>
 
     <nav class="nav-links" aria-label="Main navigation">
@@ -769,9 +814,6 @@
   <div class="wrap">
     <div class="page-hero">
       <h1 class="page-title">Browse</h1>
-      <button class="hero-search-btn" id="searchOpenBtn" aria-label="Open search">
-        <svg width="40" height="40" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M57.8497 52.1132C60.6668 48.1454 62.319 43.2855 62.319 38.021C62.319 24.6571 51.4953 13.8334 38.021 13.8334C24.657 13.8334 13.8333 24.6571 13.8333 38.021C13.8333 51.4954 24.657 62.3191 38.021 62.3191C43.2855 62.3191 48.1454 60.6668 52.1132 57.8498L63.5339 69.1667L69.1667 63.534L57.8497 52.1132ZM38.021 54.2565C29.1853 54.2565 21.8959 46.9671 21.8959 38.021C21.8959 29.1853 29.1853 21.8959 38.021 21.8959C46.9671 21.8959 54.2565 29.1853 54.2565 38.021C54.2565 46.9671 46.9671 54.2565 38.021 54.2565Z" fill="#323232"/></svg>
-      </button>
     </div>
 
     <div class="search-backdrop" id="searchBackdrop"></div>
@@ -783,6 +825,28 @@
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 10L30 30M30 10L10 30" stroke="#323232" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
+      <div class="search-trending" id="searchTrending" style="display:none;">
+        <div class="search-trending-row">
+          <div class="row-header"><span class="row-title">Trending Films</span></div>
+          <div class="search-trending-grid" id="trendingFilmsGrid"></div>
+        </div>
+        <div class="search-trending-row">
+          <div class="row-header"><span class="row-title">Trending Series</span></div>
+          <div class="search-trending-grid" id="trendingSeriesGrid"></div>
+        </div>
+        <div class="search-trending-row">
+          <div class="row-header"><span class="row-title">Trending Collections</span></div>
+          <div class="search-trending-grid" id="trendingCollGrid"></div>
+        </div>
+        <div class="search-trending-row">
+          <div class="row-header"><span class="row-title">Trending Directors</span></div>
+          <div class="search-dir-grid" id="trendingDirGrid"></div>
+        </div>
+      </div>
+      <div class="search-results-body" id="searchResultsBody" style="display:none;">
+        <div class="search-results-label" id="searchResultsLabel"></div>
+        <div class="search-results-grid" id="searchResultsGrid"></div>
+      </div>
     </div>
     <div class="page-tabs">
       <a href="#" class="page-tab is-active">Films</a>
@@ -791,68 +855,82 @@
       <a href="#" class="page-tab">Directors</a>
     </div>
     <div class="filter-bar" id="filterBar">
-      <div class="pills-wrap pills-wrap--overflow" id="genrePillsWrap">
-        <button class="pills-chevron pills-chevron--left" id="genreScrollLeft" aria-label="Scroll left">
-          <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 1L1 5L5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="genre-pills" id="genrePills">
-          <a href="#" class="genre-pill is-active">All</a>
-          <a href="#" class="genre-pill">Drama</a>
-          <a href="#" class="genre-pill">Comedy</a>
-          <a href="#" class="genre-pill">Thriller</a>
-          <a href="#" class="genre-pill">Crime</a>
-          <a href="#" class="genre-pill">Romance</a>
-          <a href="#" class="genre-pill">Documentary</a>
-          <a href="#" class="genre-pill">LGBTQ+</a>
-          <a href="#" class="genre-pill">Mystery</a>
-          <a href="#" class="genre-pill">Fantasy</a>
-          <a href="#" class="genre-pill">Horror</a>
-          <a href="#" class="genre-pill">Sci-Fi</a>
-          <a href="#" class="genre-pill">History</a>
-          <a href="#" class="genre-pill">Animation</a>
-          <a href="#" class="genre-pill">Biography</a>
-          <a href="#" class="genre-pill">Musical</a>
-          <a href="#" class="genre-pill">Film noir</a>
-          <a href="#" class="genre-pill">Avant-Garde</a>
-          <a href="#" class="genre-pill">Short</a>
-          <a href="#" class="genre-pill">Adventure</a>
-          <a href="#" class="genre-pill">Western</a>
-          <a href="#" class="genre-pill">War</a>
-          <a href="#" class="genre-pill">Sport</a>
-          <a href="#" class="genre-pill">Cult</a>
-          <a href="#" class="genre-pill">Music</a>
-          <a href="#" class="genre-pill">Action</a>
-          <a href="#" class="genre-pill">Family</a>
-        </div>
-        <button class="pills-chevron" id="genreScrollRight" aria-label="Scroll right">
-          <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+      <div class="filter-sort" style="margin-left:0;">
+        <select class="filter-select" id="genreDropdown" name="genre" style="font-weight:500;">
+          <option value="">Genre</option>
+          <option value="Drama">Drama</option>
+          <option value="Comedy">Comedy</option>
+          <option value="Thriller">Thriller</option>
+          <option value="Crime">Crime</option>
+          <option value="Romance">Romance</option>
+          <option value="Documentary">Documentary</option>
+          <option value="LGBTQ+">LGBTQ+</option>
+          <option value="Mystery">Mystery</option>
+          <option value="Fantasy">Fantasy</option>
+          <option value="Horror">Horror</option>
+          <option value="Sci-Fi">Sci-Fi</option>
+          <option value="History">History</option>
+          <option value="Animation">Animation</option>
+          <option value="Biography">Biography</option>
+          <option value="Musical">Musical</option>
+          <option value="Film noir">Film noir</option>
+          <option value="Avant-Garde">Avant-Garde</option>
+          <option value="Short">Short</option>
+          <option value="Adventure">Adventure</option>
+          <option value="Western">Western</option>
+          <option value="War">War</option>
+          <option value="Sport">Sport</option>
+          <option value="Cult">Cult</option>
+          <option value="Music">Music</option>
+          <option value="Action">Action</option>
+          <option value="Family">Family</option>
+        </select>
       </div>
-      <div class="filter-sort">
+      <div class="filter-sort" style="margin-left:4px;">
+        <select class="filter-select" id="countryDropdown" name="country" style="font-weight:500;">
+          <option value="">Country</option>
+        </select>
+      </div>
+      <div class="filter-sort" style="margin-left:4px;">
+        <select class="filter-select" id="decadeDropdown" name="decade" style="font-weight:500;">
+          <option value="">Decade</option>
+          <option value="2020s">2020s</option>
+          <option value="2010s">2010s</option>
+          <option value="2000s">2000s</option>
+          <option value="1990s">1990s</option>
+          <option value="1980s">1980s</option>
+          <option value="1970s">1970s</option>
+          <option value="1960s">1960s</option>
+          <option value="1950s">1950s</option>
+          <option value="1940s">1940s</option>
+          <option value="1930s">1930s</option>
+          <option value="pre-1930">Pre-1930s</option>
+        </select>
+      </div>
+      <button class="filter-btn" id="filterBtn" style="margin-left:4px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span id="filterBtnLabel">Language</span>
+      </button>
+      <div class="filter-sort" style="margin-left:auto;">
         <span class="material-icons" style="font-size:14px; line-height:1; color:#323232;">sort</span>
         <select class="filter-select" id="sortDropdown-sort" name="sort">
           <option value="trending">Trending</option>
           <option value="popularity_quality_score">Most Popular</option>
-          <option value="average_rating">Top Rated</option>
           <option value="year">Most Recent</option>
           <option value="title">Title (A-Z)</option>
         </select>
       </div>
-      <button class="filter-btn" id="filterBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        <span id="filterBtnLabel">Language filters</span>
-      </button>
     </div>
     <div class="filter-action-bar" id="filterActionBar" style="display:none; justify-content:flex-end; padding: 8px 0 0;">
       <button class="filter-btn" id="filterBtnSeries">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        <span id="filterBtnSeriesLabel">Language filters</span>
+        <span id="filterBtnSeriesLabel">Language</span>
       </button>
     </div>
     <div class="filter-overlay" id="filterOverlay"></div>
     <div class="filter-panel" id="filterPanel">
       <div class="filter-panel-head">
-        <span class="filter-panel-title">Language filters</span>
+        <span class="filter-panel-title">Language</span>
         <button class="filter-panel-close" id="filterPanelClose" aria-label="Close filters">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         </button>
@@ -1191,14 +1269,32 @@ function filmCard(film) {
   </a>`;
 }
 
+function getActiveGenre() {
+  return (document.getElementById('genreDropdown') || {}).value || '';
+}
+
 function renderGrid(genre) {
+  if (genre === undefined) genre = getActiveGenre();
   const sortVal = (document.getElementById('sortDropdown-sort') || {}).value || 'trending';
+  const decadeVal = (document.getElementById('decadeDropdown') || {}).value || '';
   let films;
-  if (!genre || genre === 'all') {
+  if (!genre) {
     films = [...ALL_FILMS];
   } else {
     const idxs = GENRE_INDEX[genre] || [];
     films = idxs.map(i => ALL_FILMS[i]).filter(Boolean);
+  }
+  if (decadeVal) {
+    films = films.filter(f => {
+      const y = Number(f.year);
+      if (decadeVal === 'pre-1930') return y < 1930;
+      const start = parseInt(decadeVal);
+      return y >= start && y < start + 10;
+    });
+  }
+  const countryVal = (document.getElementById('countryDropdown') || {}).value || '';
+  if (countryVal) {
+    films = films.filter(f => f.country.split(', ').includes(countryVal));
   }
   if (sortVal === 'trending') {
     films = shuffle(films).slice(0, 100);
@@ -1383,22 +1479,29 @@ document.querySelectorAll('.page-tab').forEach(tab => {
   });
 });
 
-document.querySelectorAll('#filterBar .genre-pill').forEach(pill => {
-  pill.addEventListener('click', e => {
-    e.preventDefault();
-    document.querySelectorAll('#filterBar .genre-pill').forEach(p => p.classList.remove('is-active'));
-    pill.classList.add('is-active');
-    const genre = pill.textContent.trim();
-    renderGrid(genre === 'All' ? 'all' : genre);
-  });
-});
+const genreEl = document.getElementById('genreDropdown');
+if (genreEl) genreEl.addEventListener('change', () => renderGrid());
 
 const sortEl = document.getElementById('sortDropdown-sort');
-if (sortEl) sortEl.addEventListener('change', () => {
-  const activePill = document.querySelector('#filterBar .genre-pill.is-active');
-  const genre = activePill ? activePill.textContent.trim() : 'All';
-  renderGrid(genre === 'All' ? 'all' : genre);
-});
+if (sortEl) sortEl.addEventListener('change', () => renderGrid());
+
+const decadeEl = document.getElementById('decadeDropdown');
+if (decadeEl) decadeEl.addEventListener('change', () => renderGrid());
+
+(function populateCountries() {
+  const countries = new Set();
+  ALL_FILMS.forEach(f => f.country.split(', ').forEach(c => countries.add(c.trim())));
+  const sorted = [...countries].sort((a, b) => a.localeCompare(b));
+  const sel = document.getElementById('countryDropdown');
+  sorted.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    sel.appendChild(opt);
+  });
+})();
+
+const countryEl = document.getElementById('countryDropdown');
+if (countryEl) countryEl.addEventListener('change', () => renderGrid());
 
 function openFilterPanel(anchorBtn) {
   const panel = document.getElementById('filterPanel');
@@ -1437,7 +1540,7 @@ let activeLangType = 'original';
 
 function setFilterBtnLabel(type, lang) {
   const text = lang === 'all'
-    ? 'Language filters'
+    ? 'Language'
     : `${type.charAt(0).toUpperCase() + type.slice(1)}: ${lang}`;
   ['filterBtnLabel', 'filterBtnSeriesLabel'].forEach(id => {
     const el = document.getElementById(id);
@@ -1507,45 +1610,114 @@ document.addEventListener('keydown', e => {
   }
 });
 
+let trendingRendered = false;
+function renderTrending() {
+  if (trendingRendered) return;
+  trendingRendered = true;
+
+  // Films: first 4 from ALL_FILMS
+  document.getElementById('trendingFilmsGrid').innerHTML =
+    ALL_FILMS.slice(0, 4).map(filmCard).join('');
+
+  // Series: first 4 from ALL_SERIES
+  document.getElementById('trendingSeriesGrid').innerHTML =
+    ALL_SERIES.slice(0, 4).map(f => {
+      const posX = Math.round(f.fX * 100), posY = Math.round(f.fY * 100);
+      return `<a class="film-card" href="#" aria-label="${f.title}">
+        <div class="card-img-wrap">
+          <img class="card-img" src="${f.image}" alt="${f.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
+          <div class="card-overlay">
+            <div class="card-eyebrow">Series</div>
+            <div class="card-title">${f.title}</div>
+            <div class="card-meta"><span class="card-meta-director">${f.director}</span> ${f.country} ${f.year}</div>
+          </div>
+        </div>
+      </a>`;
+    }).join('');
+
+  // Collections: first 4 using coll-tile markup
+  document.getElementById('trendingCollGrid').innerHTML =
+    COLLECTIONS.slice(0, 4).map(col => {
+      const left = col.treatment
+        ? `<img class="coll-tile-treatment" src="${col.treatment}" alt="${col.title}" loading="lazy">`
+        : col.subtitle
+          ? `<div class="coll-tile-title">${col.title}<span class="coll-tile-subtitle">${col.subtitle}</span></div>`
+          : `<div class="coll-tile-title coll-tile-title--solo">${col.title}</div>`;
+      return `<a class="coll-tile" href="#" aria-label="${col.title}">
+        <div class="coll-tile-left" style="background:${col.color}">
+          <div>${left}</div>
+          <div class="coll-tile-count"><svg width="24" height="18" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.4121 0C21.0432 0 21.5546 0.511527 21.5547 1.14258V14.4248C21.5546 15.0559 21.0432 15.5674 20.4121 15.5674H1.14258C0.511562 15.5673 5.76033e-05 15.0558 0 14.4248V1.14258C0.00013309 0.511609 0.511609 0.00013335 1.14258 0H20.4121ZM8.38281 11.1768L15.3682 7.68359L8.38281 4.19141V11.1768Z" fill="white"/><mask id="ci-mask" fill="white"><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282"/></mask><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282" stroke="white" stroke-width="2.395" mask="url(#ci-mask)"/></svg>${col.items}</div>
+        </div>
+        <div class="coll-tile-right"><img class="coll-tile-img" src="${col.img}" alt="${col.title}" loading="lazy"></div>
+      </a>`;
+    }).join('');
+  fitCollTileText();
+
+  // Directors: first 4 using director-card markup, with film counts
+  const dirCounts = {};
+  ALL_FILMS.forEach(f => { dirCounts[f.director] = (dirCounts[f.director] || 0) + 1; });
+  const dirs = Object.entries(DIRECTOR_IMAGES).slice(0, 4);
+  document.getElementById('trendingDirGrid').innerHTML =
+    dirs.map(([name, img]) => {
+      const count = dirCounts[name] || 0;
+      return `<a class="director-card" href="#" aria-label="${name}">
+        <div class="director-img-wrap">
+          <img class="card-img" src="${img}" alt="${name}" loading="lazy" style="object-position:50% 15%">
+        </div>
+        <div class="director-info">
+          <div class="director-name">${name}</div>
+          <div class="director-count">${count} film${count !== 1 ? 's' : ''}</div>
+        </div>
+      </a>`;
+    }).join('');
+}
+
 function openSearch() {
   document.getElementById('searchTakeover').classList.add('is-open');
   document.getElementById('searchBackdrop').classList.add('is-open');
+  document.getElementById('searchTrending').style.display = 'block';
+  renderTrending();
   setTimeout(() => document.getElementById('searchTakeoverInput').focus(), 50);
 }
 function closeSearch() {
   document.getElementById('searchTakeover').classList.remove('is-open');
   document.getElementById('searchBackdrop').classList.remove('is-open');
   document.getElementById('searchTakeoverInput').value = '';
+  document.getElementById('searchResultsBody').style.display = 'none';
+  document.getElementById('searchResultsGrid').innerHTML = '';
+  document.getElementById('searchTrending').style.display = 'none';
 }
 document.getElementById('searchOpenBtn').addEventListener('click', openSearch);
 document.getElementById('searchCloseBtn').addEventListener('click', closeSearch);
 document.getElementById('searchBackdrop').addEventListener('click', closeSearch);
 
-/* ─── GENRE PILLS SCROLL ARROWS ─── */
-(function() {
-  const pills = document.getElementById('genrePills');
-  const wrap  = document.getElementById('genrePillsWrap');
-  const btnL  = document.getElementById('genreScrollLeft');
-  const btnR  = document.getElementById('genreScrollRight');
-  const STEP  = 240;
-
-  function updateState() {
-    const atStart = pills.scrollLeft <= 2;
-    const atEnd   = pills.scrollLeft + pills.clientWidth >= pills.scrollWidth - 2;
-    wrap.classList.toggle('has-scroll-left', !atStart);
-    btnR.style.opacity = atEnd ? '0.2' : '';
-    btnR.style.pointerEvents = atEnd ? 'none' : '';
+function renderSearchResults(q) {
+  const body     = document.getElementById('searchResultsBody');
+  const grid     = document.getElementById('searchResultsGrid');
+  const label    = document.getElementById('searchResultsLabel');
+  const trending = document.getElementById('searchTrending');
+  if (!q) {
+    body.style.display = 'none';
+    grid.innerHTML = '';
+    trending.style.display = 'block';
+    return;
   }
+  trending.style.display = 'none';
+  const ql = q.toLowerCase();
+  let matches = ALL_FILMS.filter(f =>
+    f.title.toLowerCase().includes(ql) || f.director.toLowerCase().includes(ql)
+  );
+  matches = shuffle(matches).slice(0, 12);
+  if (!matches.length) { body.style.display = 'none'; grid.innerHTML = ''; return; }
+  body.style.display = 'block';
+  label.textContent = matches.length + ' result' + (matches.length !== 1 ? 's' : '') + ' for "' + q + '"';
+  grid.innerHTML = matches.map(filmCard).join('');
+}
 
-  btnR.addEventListener('click', () => {
-    pills.scrollBy({ left: STEP, behavior: 'smooth' });
-  });
-  btnL.addEventListener('click', () => {
-    pills.scrollBy({ left: -STEP, behavior: 'smooth' });
-  });
-  pills.addEventListener('scroll', updateState, { passive: true });
-  updateState();
-})();
+document.getElementById('searchTakeoverInput').addEventListener('input', e => {
+  renderSearchResults(e.target.value.trim());
+});
+
 </script>
 </body>
 </html>
