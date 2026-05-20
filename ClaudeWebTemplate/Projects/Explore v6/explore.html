@@ -1118,9 +1118,9 @@
         <hr style="border:none;border-top:1px solid #EAEAEA;margin:20px 0 16px;">
         <div class="filter-panel-label">Language</div>
         <div class="genre-pills" style="margin-bottom: 16px; flex-wrap:wrap; gap:6px;">
-          <button class="genre-pill lang-type-pill is-active" data-lang-type="original">Original language</button>
-          <button class="genre-pill lang-type-pill" data-lang-type="dubbed">Dubbed in:</button>
-          <button class="genre-pill lang-type-pill" data-lang-type="subtitles">Subtitles in:</button>
+          <button class="genre-pill lang-type-pill is-active" data-lang-type="original">Original</button>
+          <button class="genre-pill lang-type-pill" data-lang-type="dubbed">Dubbed</button>
+          <button class="genre-pill lang-type-pill" data-lang-type="subtitles">Subtitles</button>
         </div>
         <div class="genre-pills" id="langPills"></div>
       </div>
@@ -2120,7 +2120,12 @@ function updateFilterBtnLabel() {
   const langVal = langPill && langPill.dataset.lang !== 'all' ? langPill.textContent.trim() : null;
   let parts = [];
   if (ratingVal) parts.push(`Rating: ${ratingVal}`);
-  if (langVal) parts.push(`${activeLangType.charAt(0).toUpperCase() + activeLangType.slice(1)}: ${langVal}`);
+  if (langVal) {
+    const langLabel = activeLangType === 'original' ? `Original language: ${langVal}`
+      : activeLangType === 'dubbed' ? `Dubbed in: ${langVal}`
+      : `Subtitled in: ${langVal}`;
+    parts.push(langLabel);
+  }
   const el = document.getElementById('filterBtnLabel');
   if (el) el.textContent = parts.length ? parts.join(' & ') : 'Filters';
 }
