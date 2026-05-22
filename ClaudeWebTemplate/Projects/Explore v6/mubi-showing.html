@@ -16,6 +16,7 @@
       src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2'); }
 
     /* ─── RESET ─── */
+    html { overflow-y: scroll; }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: Riforma, Helvetica, Arial, "Lucida Grande", sans-serif;
@@ -39,14 +40,21 @@
     @media (min-width: 1562px) { .wrap { max-width: 1500px; } }
 
     /* ─── Centred content containers ─── */
+    @media (min-width: 810px) {
+      .now-showing { max-width: 836px; }
+      .browse-cta  { max-width: 836px; }
+      .site-footer { max-width: 836px; }
+    }
     @media (min-width: 1186px) {
       .nav-desktop { max-width: 1124px; margin: 0 auto; }
       .now-showing { max-width: 1124px; margin: 0 auto; }
+      .browse-cta  { max-width: 1124px; margin: 0 auto; }
       .site-footer { max-width: 1124px; margin: 0 auto; }
     }
     @media (min-width: 1562px) {
       .nav-desktop { max-width: 1500px; }
       .now-showing { max-width: 1500px; }
+      .browse-cta  { max-width: 1500px; }
       .site-footer { max-width: 1500px; }
     }
 
@@ -92,37 +100,6 @@
 
     .nav-logo { flex-shrink: 0; padding-right: 40px; display: flex; align-items: center; }
 
-    /* Search bar */
-    .nav-search-wrap {
-      flex-grow: 1.3; flex-shrink: 1; flex-basis: 0;
-      display: flex;
-      margin-right: 21px;
-    }
-    .nav-search-form {
-      position: relative;
-      width: 270px;
-      height: 50px;
-    }
-    @media (min-width: 1562px) { .nav-search-form { width: 350px; } }
-    .nav-search-icon {
-      position: absolute;
-      left: 21px; top: 50%;
-      transform: translateY(-50%);
-      width: 16px; height: 16px;
-    }
-    .nav-search-input {
-      display: block;
-      width: 100%; height: 100%;
-      background: transparent;
-      border: none; outline: none;
-      padding: 0 15px 0 42px;
-      font-family: Riforma, sans-serif;
-      font-weight: 500;
-      font-size: 14px;
-      color: #fff;
-    }
-    .nav-search-input::placeholder { color: rgba(255,255,255,0.6); }
-
     /* Right nav links */
     .nav-links {
       display: flex;
@@ -149,13 +126,13 @@
     .nav-hamburger {
       display: flex;
       align-items: center;
-      padding: 0 8px 0 15px;
+      padding: 0 8px 0 8px;
       color: rgba(255,255,255,0.7);
       transition: color 0.15s;
       cursor: pointer;
     }
     .nav-hamburger:hover { color: #fff; }
-    .nav-hamburger .material-icons { font-size: 22px; }
+    .nav-hamburger .material-icons { font-size: 20px; }
     .nav-cta {
       margin-left: 14px;
       padding: 7px 14px;
@@ -430,7 +407,8 @@
     .browse-cta-link:hover { background: #323232; color: #fff; }
 
     /* ─── NOW SHOWING SECTION ─── */
-    .now-showing { padding-bottom: 80px; }
+    .now-showing { padding: 0 20px 80px; width: 100%; margin: 0 auto; }
+    @media (min-width: 810px) { .now-showing { padding: 0 22px 80px; } }
 
     .now-showing-header {
       padding: 0 0 22px;
@@ -699,7 +677,7 @@
     .nav-avatar {
       display: flex;
       align-items: center;
-      padding: 0 6px 0 15px;
+      padding: 0 8px 0 15px;
       flex-shrink: 0;
     }
     .nav-avatar img {
@@ -787,69 +765,6 @@
       padding: 4px 8px;
       border-radius: 2px;
     }
-    /* ─── SEARCH TAKEOVER ─── */
-    .search-backdrop {
-      position: fixed; inset: 0;
-      background: #fff; z-index: 149;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.22s ease;
-    }
-    .search-backdrop.is-open { opacity: 1; pointer-events: auto; }
-    .search-takeover {
-      position: fixed; top: 0; bottom: 0; left: 0; right: 0;
-      background: #fff; z-index: 150;
-      opacity: 0; pointer-events: none;
-      transform: translateY(-6px);
-      transition: opacity 0.22s ease, transform 0.22s ease;
-      overflow-y: auto;
-    }
-    .search-takeover.is-open { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    .search-takeover-inner {
-      display: flex; align-items: center; gap: 20px;
-      max-width: 1500px; margin: 0 auto; padding: 20px 22px;
-    }
-    .search-results-body {
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 0 22px 60px;
-    }
-    .search-results-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 22px;
-      font-weight: 500;
-      color: #323232;
-      margin-bottom: 16px;
-    }
-    .search-results-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      column-gap: 4px;
-      row-gap: 40px;
-    }
-    .search-trending {
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 40px 22px 60px;
-    }
-    .search-trending-row { margin-bottom: 40px; }
-    .search-trending-row .row-header { padding: 0 0 10px; }
-    .search-trending-row .row-title {
-      font-family: Riforma, sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      text-transform: uppercase;
-      color: #323232;
-    }
-    .search-trending-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      column-gap: 4px;
-    }
-    .search-dir-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      column-gap: 4px;
-    }
     .coll-tile { display:flex; aspect-ratio:371/209; overflow:hidden; cursor:pointer; text-decoration:none; }
     .coll-tile-left { flex:1; padding:14px; display:flex; flex-direction:column; align-items:flex-start; justify-content:space-between; overflow:hidden; }
     .coll-tile-count { display:flex; align-items:center; gap:4px; color:#fff; font-family:Riforma,sans-serif; font-size:13px; font-weight:700; }
@@ -867,18 +782,137 @@
     .director-info { background:#fff; padding:8px 0 4px; }
     .director-name { font-family:Riforma,sans-serif; font-size:13px; font-weight:500; text-transform:uppercase; letter-spacing:0.1px; line-height:1.3; color:#323232; margin-bottom:2px; }
     .director-count { font-family:Riforma,sans-serif; font-size:12px; font-weight:400; text-transform:uppercase; color:rgba(0,0,0,0.45); }
-    .search-takeover-input {
-      flex: 1; font-family: Riforma, sans-serif;
-      font-size: 26px; font-weight: 400; line-height: 1;
-      border: none; outline: none; background: transparent; color: #323232;
+
+    /* ─── INLINE SEARCH ─── */
+    .search-inline {
+      display: flex;
+      align-items: center;
+      position: relative;
+      border-radius: 4px;
+      transition: background 0.2s;
     }
-    .search-takeover-input::placeholder { color: rgba(0,0,0,0.25); }
-    .search-close-btn {
-      display: flex; align-items: center;
-      background: none; border: none; cursor: pointer;
-      padding: 0; flex-shrink: 0; opacity: 0.5; transition: opacity 0.15s;
+    .search-inline.is-open { padding: 0 6px; }
+    #searchNavBg {
+      position: fixed; top: 0;
+      display: none; pointer-events: none;
+      z-index: 9;
+      background: rgba(255,255,255,0.8);
+      border-radius: 0;
     }
-    .search-close-btn:hover { opacity: 1; }
+    .search-inline-input {
+      width: 0;
+      min-width: 0;
+      opacity: 0;
+      border: none;
+      outline: none;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #323232;
+      background: transparent;
+      padding: 0;
+      transition: width 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s;
+      pointer-events: none;
+    }
+    .search-inline-input::placeholder { color: rgba(0,0,0,0.45); }
+    .search-inline.is-open .search-inline-input {
+      width: 320px;
+      opacity: 1;
+      padding: 0 0 0 8px;
+      pointer-events: auto;
+    }
+    .search-icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      color: rgba(255,255,255,0.7);
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+    .search-icon-btn:hover { color: #fff; }
+    .search-inline.is-open .search-icon-btn { color: rgba(0,0,0,0.55); }
+
+    /* ─── SEARCH DROPDOWN ─── */
+    .search-dropdown {
+      position: fixed;
+      top: 50px;
+      width: 350px;
+      height: 448px;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+      z-index: 300;
+      display: none;
+      overflow: hidden;
+      padding-bottom: 5px;
+    }
+    .search-dropdown.is-open { display: block; }
+    .search-drop-label {
+      font-family: Riforma, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(0,0,0,0.4);
+      padding: 10px 12px 6px;
+    }
+    .search-drop-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 2px 12px;
+      text-decoration: none;
+      transition: background 0.1s;
+      cursor: pointer;
+    }
+    .search-drop-item:hover { background: #F4F4F4; }
+    .search-drop-thumb {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      background: #D8D8D8;
+    }
+    .search-drop-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .search-drop-play {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .search-drop-play svg { filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4)); }
+    .search-drop-info { min-width: 0; flex: 1; }
+    .search-drop-title {
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #323232;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .search-drop-director {
+      font-family: Riforma, sans-serif;
+      font-size: 12px;
+      color: rgba(0,0,0,0.45);
+    }
+    .search-drop-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 299;
+    }
+    .search-drop-backdrop.is-open { display: block; }
   </style>
 </head>
 <body>
@@ -980,9 +1014,12 @@
     <div style="flex: 1;"></div>
 
     <nav class="nav-links" aria-label="Secondary navigation">
-      <button id="searchOpenBtn" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;color:rgba(255,255,255,0.7);transition:color 0.15s;" aria-label="Search">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </button>
+      <div class="search-inline" id="searchInline">
+        <button class="search-icon-btn" id="searchOpenBtn" aria-label="Search">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <input class="search-inline-input" id="searchInput" type="text" placeholder="Search" autocomplete="off">
+      </div>
       <a href="#" class="nav-avatar" aria-label="Profile">
         <img src="../../brand_assets/avatar.png" alt="Profile">
       </a>
@@ -994,7 +1031,6 @@
           <a href="#">Viewing History</a>
           <a href="#">Earn 1 month free</a>
           <div class="nav-dropdown-sep"></div>
-          <a href="film-database.html">Film Database</a>
           <a href="#">Notebook</a>
           <a href="#">Notebook Magazine</a>
           <a href="#">MUBI Editions</a>
@@ -1016,38 +1052,12 @@
   </div>
 </header>
 
-<div class="search-backdrop" id="searchBackdrop"></div>
-<div class="search-takeover" id="searchTakeover" role="search">
-  <div class="search-takeover-inner">
-    <svg width="40" height="40" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M57.8497 52.1132C60.6668 48.1454 62.319 43.2855 62.319 38.021C62.319 24.6571 51.4953 13.8334 38.021 13.8334C24.657 13.8334 13.8333 24.6571 13.8333 38.021C13.8333 51.4954 24.657 62.3191 38.021 62.3191C43.2855 62.3191 48.1454 60.6668 52.1132 57.8498L63.5339 69.1667L69.1667 63.534L57.8497 52.1132ZM38.021 54.2565C29.1853 54.2565 21.8959 46.9671 21.8959 38.021C21.8959 29.1853 29.1853 21.8959 38.021 21.8959C46.9671 21.8959 54.2565 29.1853 54.2565 38.021C54.2565 46.9671 46.9671 54.2565 38.021 54.2565Z" fill="#323232"/></svg>
-    <input class="search-takeover-input" id="searchTakeoverInput" type="text" placeholder="Search films, series, collections and directors now showing on MUBI" autocomplete="off">
-    <button class="search-close-btn" id="searchCloseBtn" aria-label="Close search">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 10L30 30M30 10L10 30" stroke="#323232" stroke-width="2" stroke-linecap="round"/></svg>
-    </button>
-  </div>
-  <div class="search-trending" id="searchTrending" style="display:none;">
-    <div class="search-trending-row">
-      <div class="row-header"><span class="row-title">Trending Films</span></div>
-      <div class="search-trending-grid" id="trendingFilmsGrid"></div>
-    </div>
-    <div class="search-trending-row">
-      <div class="row-header"><span class="row-title">Trending Series</span></div>
-      <div class="search-trending-grid" id="trendingSeriesGrid"></div>
-    </div>
-    <div class="search-trending-row">
-      <div class="row-header"><span class="row-title">Trending Collections</span></div>
-      <div class="search-trending-grid" id="trendingCollGrid"></div>
-    </div>
-    <div class="search-trending-row">
-      <div class="row-header"><span class="row-title">Trending Directors</span></div>
-      <div class="search-dir-grid" id="trendingDirGrid"></div>
-    </div>
-  </div>
-  <div class="search-results-body" id="searchResultsBody" style="display:none;">
-    <div class="search-results-label" id="searchResultsLabel"></div>
-    <div class="search-results-grid" id="searchResultsGrid"></div>
-  </div>
+<div id="searchNavBg"></div>
+<div id="searchDropdown" class="search-dropdown">
+  <div class="search-drop-label" id="searchDropLabel">Suggested</div>
+  <div id="searchDropList"></div>
 </div>
+<div id="searchDropBackdrop" class="search-drop-backdrop"></div>
 
 <!-- ─── HERO: Film of the Day ─── -->
 <!-- hero outer: sets page-space. bg container extends up behind header -->
@@ -1441,73 +1451,97 @@ function renderTrending() {
     }).join('');
 }
 
+// ─── INLINE SEARCH ───
+const SEARCH_SUGGESTED = FILMS.slice().sort((a,b) => (b.rating||0)-(a.rating||0)).slice(0,8);
+
+function searchDropItem(f) {
+  return `<a class="search-drop-item" href="#">
+    <div class="search-drop-thumb">
+      <img src="${f.image}" alt="${f.title}" loading="lazy" style="object-position:${Math.round((f.fX||0.5)*100)}% ${Math.round((f.fY||0.3)*100)}%">
+      <div class="search-drop-play">
+        <svg width="28" height="28" viewBox="0 0 44 44"><g transform="translate(1 1)" fill-rule="evenodd"><circle cx="21" cy="21" r="21" fill="none" stroke="#fff" stroke-width="1.5"/><path fill="#fff" d="M30 21.5L15 29V14z"/></g></svg>
+      </div>
+    </div>
+    <div class="search-drop-info">
+      <div class="search-drop-title">${f.title}</div>
+      <div class="search-drop-director">${f.director}</div>
+    </div>
+  </a>`;
+}
+
+function positionSearchDropdown() {
+  const el = document.getElementById('searchInline');
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  const dropTop = r.bottom + 8;
+  const dd = document.getElementById('searchDropdown');
+  dd.style.left = r.left + 'px';
+  dd.style.right = 'auto';
+  dd.style.top = dropTop + 'px';
+  const bg = document.getElementById('searchNavBg');
+  if (bg) { bg.style.left = r.left + 'px'; bg.style.width = (r.width - 4) + 'px'; bg.style.height = dropTop + 'px'; bg.style.display = 'block'; }
+}
+
 function openSearch() {
-  document.getElementById('searchTakeover').classList.add('is-open');
-  document.getElementById('searchBackdrop').classList.add('is-open');
-  document.getElementById('searchTrending').style.display = 'block';
-  renderTrending();
-  setTimeout(() => document.getElementById('searchTakeoverInput').focus(), 50);
-}
-function closeSearch() {
-  document.getElementById('searchTakeover').classList.remove('is-open');
-  document.getElementById('searchBackdrop').classList.remove('is-open');
-  document.getElementById('searchTakeoverInput').value = '';
-  document.getElementById('searchResultsBody').style.display = 'none';
-  document.getElementById('searchResultsGrid').innerHTML = '';
-  document.getElementById('searchTrending').style.display = 'none';
-}
-document.getElementById('searchOpenBtn').addEventListener('click', openSearch);
-document.getElementById('searchCloseBtn').addEventListener('click', closeSearch);
-document.getElementById('searchBackdrop').addEventListener('click', closeSearch);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
-
-function shuffleArr(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+  const dd = document.getElementById('navDropdown');
+  if (dd && dd.classList.contains('open')) {
+    dd.classList.remove('open');
+    document.getElementById('navHamburger').setAttribute('aria-expanded', false);
   }
-  return a;
+  const inline = document.getElementById('searchInline');
+  inline.classList.add('is-open');
+  setTimeout(() => document.getElementById('searchInput').focus(), 50);
+  const list = document.getElementById('searchDropList');
+  document.getElementById('searchDropLabel').textContent = 'Suggested';
+  list.innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
+  document.getElementById('searchDropBackdrop').classList.add('is-open');
+  document.getElementById('searchInput').addEventListener('transitionend', function handler(e) {
+    if (e.propertyName === 'width') {
+      positionSearchDropdown();
+      document.getElementById('searchDropdown').classList.add('is-open');
+      this.removeEventListener('transitionend', handler);
+    }
+  });
 }
 
-function renderSearchResults(q) {
-  const body     = document.getElementById('searchResultsBody');
-  const grid     = document.getElementById('searchResultsGrid');
-  const label    = document.getElementById('searchResultsLabel');
-  const trending = document.getElementById('searchTrending');
+function closeSearch() {
+  document.getElementById('searchInline').classList.remove('is-open');
+  document.getElementById('searchDropdown').classList.remove('is-open');
+  document.getElementById('searchDropBackdrop').classList.remove('is-open');
+  document.getElementById('searchInput').value = '';
+  const bg = document.getElementById('searchNavBg');
+  if (bg) bg.style.display = 'none';
+}
+
+document.getElementById('searchOpenBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  const inline = document.getElementById('searchInline');
+  inline.classList.contains('is-open') ? closeSearch() : openSearch();
+});
+
+document.getElementById('searchDropBackdrop').addEventListener('click', closeSearch);
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  const q = e.target.value.trim();
+  const list = document.getElementById('searchDropList');
+  const label = document.getElementById('searchDropLabel');
   if (!q) {
-    body.style.display = 'none';
-    grid.innerHTML = '';
-    trending.style.display = 'block';
+    label.textContent = 'Suggested';
+    list.innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
     return;
   }
-  trending.style.display = 'none';
   const ql = q.toLowerCase();
-  let matches = FILMS.filter(f =>
+  const matches = FILMS.filter(f =>
     f.title.toLowerCase().includes(ql) || f.director.toLowerCase().includes(ql)
-  );
-  matches = shuffleArr(matches).slice(0, 12);
-  if (!matches.length) { body.style.display = 'none'; grid.innerHTML = ''; return; }
-  body.style.display = 'block';
-  label.textContent = matches.length + ' result' + (matches.length !== 1 ? 's' : '') + ' for "' + q + '"';
-  grid.innerHTML = matches.map(f => {
-    const posX = Math.round(f.fX * 100);
-    const posY = Math.round(f.fY * 100);
-    return `<a class="film-card" href="#" aria-label="${f.title}">
-      <div class="card-img-wrap">
-        <img class="card-img" src="${f.image}" alt="${f.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
-        <div class="card-overlay">
-          <div class="card-title">${f.title}</div>
-          <div class="card-meta"><span class="card-meta-director">${f.director}</span> ${f.country} ${f.year}</div>
-        </div>
-      </div>
-      <div class="card-synopsis-block"><div class="card-actions"><button class="card-watch-btn"><span class="material-icons" style="font-size:18px;line-height:1;">play_arrow</span>Watch</button><button class="card-icon-btn"><span class="material-icons" style="font-size:18px;">add</span></button><button class="card-icon-btn"><span class="material-icons" style="font-size:18px;">star_border</span></button></div><p class="card-synopsis">${f.ourTake || ''}</p><div class="card-meta-icons"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.0801 5C21.5881 5.00004 22 5.41188 22 5.91992V18.0801C22 18.5881 21.5881 19 21.0801 19H2.91992C2.41188 19 2.00004 18.5881 2 18.0801V5.91992C2.00004 5.41188 2.41188 5.00004 2.91992 5H21.0801ZM6.76953 8L6.11035 12.4004H7.46289C7.56556 12.1584 7.73847 11.9563 7.98047 11.7949C8.22237 11.6338 8.5081 11.5528 8.83789 11.5527C9.23382 11.5527 9.56195 11.6887 9.82227 11.96C10.0825 12.2312 10.2128 12.5978 10.2129 13.0596C10.2129 13.5069 10.0825 13.881 9.82227 14.1816C9.56202 14.4822 9.22689 14.6327 8.81641 14.6328C8.43514 14.6328 8.11602 14.5283 7.85938 14.3193C7.60276 14.1104 7.44103 13.8484 7.375 13.5332H6C6.03669 13.9731 6.1704 14.3675 6.40137 14.7158C6.63235 15.0641 6.95147 15.3372 7.3584 15.5352C7.7654 15.7332 8.25174 15.832 8.81641 15.832C9.35891 15.832 9.83772 15.7107 10.252 15.4688C10.6661 15.2268 10.9888 14.8964 11.2197 14.4785C11.4506 14.0606 11.5664 13.584 11.5664 13.0488C11.5664 12.5796 11.4709 12.1447 11.2803 11.7451C11.0896 11.3456 10.8109 11.023 10.4443 10.7773C10.0777 10.5317 9.61919 10.4092 9.06934 10.4092C8.72467 10.4092 8.41246 10.4654 8.13379 10.5791C7.85514 10.6928 7.63496 10.8377 7.47363 11.0137L7.82617 9.23242H11.0381V8H6.76953ZM13.4473 14.1162C13.1906 14.1162 12.9795 14.1971 12.8145 14.3584C12.6496 14.5197 12.5674 14.7176 12.5674 14.9521C12.5674 15.1794 12.6495 15.3739 12.8145 15.5352C12.9794 15.6965 13.1906 15.7773 13.4473 15.7773C13.7037 15.7773 13.9142 15.6962 14.0791 15.5352C14.2441 15.3739 14.3271 15.1794 14.3271 14.9521C14.3271 14.7175 14.2441 14.5197 14.0791 14.3584C13.9142 14.1971 13.7038 14.1163 13.4473 14.1162ZM16.6035 8L14.7451 8.8252V9.90332L16.0098 9.60645V15.7002H17.4727V8H16.6035Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.0801 5C21.5881 5.00004 22 5.41188 22 5.91992V18.0801C22 18.5881 21.5881 19 21.0801 19H2.91992C2.41188 19 2.00004 18.5881 2 18.0801V5.91992C2.00004 5.41188 2.41188 5.00004 2.91992 5H21.0801ZM5.67969 8.33105V15.7656H6.95996V12.5264H10.0996V15.7656H11.3799V8.33105H10.0996V11.4219H6.95996V8.33105H5.67969ZM12.7393 8.33105V15.7656H15.1299C15.9495 15.7656 16.6244 15.6115 17.1543 15.3037C17.6843 14.9957 18.0783 14.5636 18.335 14.0078C18.5916 13.452 18.7197 12.7983 18.7197 12.0479C18.7197 11.2976 18.5915 10.6445 18.335 10.0889C18.0783 9.5331 17.6843 9.10095 17.1543 8.79297C16.6244 8.48521 15.9495 8.33108 15.1299 8.33105H12.7393ZM15.0693 9.48828C15.6559 9.48828 16.12 9.59163 16.46 9.79688C16.7998 10.0022 17.0428 10.2965 17.1895 10.6787C17.336 11.0609 17.4101 11.5172 17.4102 12.0479C17.4102 12.586 17.3361 13.045 17.1895 13.4238C17.0428 13.8025 16.7998 14.0932 16.46 14.2949C16.12 14.4966 15.6559 14.5977 15.0693 14.5977H14.0195V9.48828H15.0693Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4C7.6 4 4 7.6 4 12C4 16.4 7.6 20 12 20C16.4 20 20 16.4 20 12C20 7.6 16.4 4 12 4ZM14.9857 14.9108L11.4195 12.9397C11.1573 12.7983 11 12.547 11 12.2721V8.58899C11.0087 8.26701 11.3059 8 11.6643 8C12.0227 8 12.3198 8.26701 12.3198 8.58899V12.0837L15.6762 13.8977C15.9909 14.0705 16.0958 14.4396 15.9035 14.7223C15.7112 14.9972 15.3004 15.0836 14.9857 14.9108Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.8691 5.13105C18.1495 4.9411 18.5209 4.95926 18.7822 5.17499C20.8605 7.07374 22 9.50664 22 12.0441C21.9503 14.6405 20.8208 17.0972 18.8867 18.8166C18.7564 18.9389 18.574 19.0001 18.3916 19.0002C18.2438 19.0002 18.0954 18.9656 17.9736 18.8781C17.7041 18.6856 17.6696 18.3528 17.9043 18.1428C19.6452 16.5942 20.6608 14.3819 20.7041 12.0441C20.6586 9.66556 19.6089 7.41878 17.8174 5.8664C17.5827 5.65642 17.6084 5.32355 17.8691 5.13105ZM11.5303 5.08808C11.7042 4.98308 11.9396 4.97421 12.1309 5.06171C12.3132 5.14928 12.4346 5.32445 12.4346 5.51679V18.4748C12.4346 18.6671 12.3132 18.8423 12.1309 18.9299C12.044 18.9736 11.9567 18.9914 11.8525 18.9914L11.7676 18.9953C11.6841 18.9843 11.6033 18.9557 11.5303 18.9123L6.86914 14.8H2.58301C2.26143 14.8 2.00027 14.5729 2 14.2844V9.12128C2.0001 8.84135 2.26133 8.60566 2.58301 8.60566H6.86914L11.5303 5.08808ZM15.2002 7.76484C15.4037 7.57658 15.719 7.5843 15.9131 7.78242C18.1927 10.1112 18.235 13.8374 16.0088 16.218C15.9045 16.3229 15.7739 16.3752 15.6348 16.3752C15.5131 16.3752 15.3914 16.3317 15.2871 16.2443C15.0871 16.0519 15.0783 15.7366 15.2695 15.5266C17.1385 13.538 17.1 10.4151 15.1826 8.47382C15.091 8.37796 15.0408 8.24932 15.0439 8.1164C15.0472 7.98327 15.1039 7.85615 15.2002 7.76484Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.56208 22C3.46596 22 3.36929 21.9747 3.28329 21.9242C3.10792 21.8254 3 21.6401 3 21.4385V4.56208C3 4.25212 3.25294 4 3.56208 4H20.4379C20.7499 4 21 4.25212 21 4.56208V18.0087C21 18.3204 20.7499 18.5714 20.4379 18.5714H9.43973L3.84537 21.9231C3.75768 21.9747 3.661 22 3.56208 22ZM17.0621 11.6411C17.3729 11.6411 17.6253 11.3901 17.6253 11.0785C17.6253 10.7697 17.3729 10.517 17.0621 10.517H6.9368C6.62765 10.517 6.37472 10.7697 6.37472 11.0785C6.37472 11.3901 6.62765 11.6411 6.9368 11.6411H17.0621ZM17.0621 14.7411C17.3752 14.7411 17.6253 14.4901 17.6253 14.1791C17.6253 13.8702 17.3752 13.617 17.0621 13.617H6.9368C6.62765 13.617 6.37472 13.8702 6.37472 14.1791C6.37472 14.4901 6.62765 14.7411 6.9368 14.7411H17.0621Z" fill="#323232"/></svg></div></div>
-    </a>`;
-  }).join('');
-}
+  ).slice(0, 8);
+  label.textContent = matches.length ? `${matches.length} result${matches.length !== 1 ? 's' : ''} for "${q}"` : `No results for "${q}"`;
+  list.innerHTML = matches.map(searchDropItem).join('');
+});
 
-document.getElementById('searchTakeoverInput').addEventListener('input', e => {
-  renderSearchResults(e.target.value.trim());
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
+
+window.addEventListener('resize', () => {
+  if (document.getElementById('searchInline').classList.contains('is-open')) positionSearchDropdown();
 });
 </script>
 </body>

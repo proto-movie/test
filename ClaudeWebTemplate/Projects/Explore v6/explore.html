@@ -16,6 +16,7 @@
     @font-face { font-family: 'Riforma'; font-style: italic; font-display: swap;
       src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2'); }
 
+    html { overflow-y: scroll; }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: Riforma, Helvetica, Arial, sans-serif;
@@ -145,104 +146,136 @@
     }
     .hero-search-btn:hover { opacity: 1; }
 
-    /* ─── SEARCH TAKEOVER ─── */
-    .search-backdrop {
-      position: fixed;
-      inset: 0;
-      background: #fff;
-      z-index: 149;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.22s ease;
-    }
-    .search-backdrop.is-open { opacity: 1; pointer-events: auto; }
-    .search-takeover {
-      position: fixed;
-      top: 0; bottom: 0;
-      left: 0; right: 0;
-      background: #fff;
-      z-index: 150;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(-6px);
-      transition: opacity 0.22s ease, transform 0.22s ease;
-      overflow-y: auto;
-    }
-    .search-takeover.is-open { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    .search-takeover-inner {
+    /* ─── INLINE SEARCH ─── */
+    .search-inline {
       display: flex;
       align-items: center;
-      gap: 20px;
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 20px 22px;
+      position: relative;
+      border-radius: 4px;
+      transition: background 0.2s;
     }
-    .search-results-body {
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 0 22px 60px;
+    .search-inline.is-open { padding: 0 6px; }
+    #searchNavBg {
+      position: fixed; top: 0;
+      display: none; pointer-events: none;
+      z-index: 99;
+      background: rgba(255,255,255,0.97);
+      border-radius: 0 0 4px 4px;
     }
-    .search-results-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 22px;
-      font-weight: 500;
-      color: #323232;
-      margin-bottom: 16px;
-    }
-    .search-results-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      column-gap: 4px;
-      row-gap: 40px;
-    }
-    .search-trending {
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 40px 22px 60px;
-    }
-    .search-trending-row { margin-bottom: 40px; }
-    .search-trending-row .row-header { padding: 0 0 10px; }
-    .search-trending-row .row-title {
-      font-family: Riforma, sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      text-transform: uppercase;
-      color: #323232;
-    }
-    .search-trending-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      column-gap: 4px;
-    }
-    .search-dir-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      column-gap: 4px;
-    }
-    .search-takeover-input {
-      flex: 1;
-      font-family: Riforma, sans-serif;
-      font-size: 26px;
-      font-weight: 400;
-      line-height: 1;
+    .search-inline-input {
+      width: 0;
+      min-width: 0;
+      opacity: 0;
       border: none;
       outline: none;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(0,0,0,0.65);
       background: transparent;
-      color: #323232;
+      padding: 0;
+      transition: width 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s;
+      pointer-events: none;
     }
-    .search-takeover-input::placeholder { color: rgba(0,0,0,0.25); }
-    .search-close-btn {
-      display: flex;
-      align-items: center;
+    .search-inline.is-open .search-inline-input {
+      width: 320px;
+      opacity: 1;
+      padding: 0 0 0 8px;
+      pointer-events: auto;
+    }
+    .search-icon-btn {
       background: none;
       border: none;
       cursor: pointer;
       padding: 0;
+      display: flex;
+      align-items: center;
+      color: rgba(0,0,0,0.55);
+      transition: color 0.15s;
       flex-shrink: 0;
-      opacity: 0.5;
-      transition: opacity 0.15s;
     }
-    .search-close-btn:hover { opacity: 1; }
+    .search-icon-btn:hover { color: rgba(0,0,0,0.55); }
+    .search-inline.is-open .search-icon-btn { color: rgba(0,0,0,0.55); }
+
+    /* ─── SEARCH DROPDOWN ─── */
+    .search-dropdown {
+      position: fixed;
+      top: 50px;
+      width: 350px;
+      height: 448px;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+      z-index: 300;
+      display: none;
+      overflow: hidden;
+      padding-bottom: 5px;
+    }
+    @media (min-width: 1186px) { .search-dropdown { top: 50px; } }
+    .search-dropdown.is-open { display: block; }
+    .search-drop-label {
+      font-family: Riforma, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(0,0,0,0.4);
+      padding: 10px 12px 6px;
+    }
+    .search-drop-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 2px 12px;
+      text-decoration: none;
+      transition: background 0.1s;
+      cursor: pointer;
+    }
+    .search-drop-item:hover { background: #F4F4F4; }
+    .search-drop-thumb {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      background: #D8D8D8;
+    }
+    .search-drop-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .search-drop-play {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .search-drop-play svg { filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4)); }
+    .search-drop-info { min-width: 0; flex: 1; }
+    .search-drop-title {
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #323232;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .search-drop-director {
+      font-family: Riforma, sans-serif;
+      font-size: 12px;
+      color: rgba(0,0,0,0.45);
+    }
+    .search-drop-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 299;
+    }
+    .search-drop-backdrop.is-open { display: block; }
     .page-tabs {
       display: flex;
       border-bottom: 1px solid #EAEAEA;
@@ -607,6 +640,10 @@
       opacity: 1;
       pointer-events: auto;
     }
+    @media (min-width: 1562px) {
+      .pills-chevron { display: none; }
+      .pills-wrap--overflow::before, .pills-wrap--overflow::after { display: none; }
+    }
     .genre-pills {
       display: flex;
       flex-wrap: wrap;
@@ -642,7 +679,7 @@
       font-size: 12px;
       font-weight: 500;
       color: #323232;
-      border: 1px solid #C8C8C8;
+      border: 1px solid #888888;
       border-radius: 50px;
       padding: 5px 13px;
       cursor: pointer;
@@ -658,9 +695,9 @@
       display: flex; align-items: center; gap: 5px;
       flex-shrink: 0;
       padding: 5px 12px 5px 8px;
-      border: 1px solid #ABABAB;
+      border: none;
       border-radius: 3px;
-      background: #fff;
+      background: transparent;
       font-family: Riforma, sans-serif;
       font-size: 12px; font-weight: 500;
       color: #323232;
@@ -669,11 +706,14 @@
       margin-left: 0;
       transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
-    .filter-btn:hover { background: #323232; color: #fff; border-color: #323232; }
-    .filter-btn.is-active { background: #323232; color: #fff; border-color: #000; }
-    .filter-btn .filter-icon circle { fill: #fff; }
-    .filter-btn.is-active .filter-icon circle { fill: #323232; }
-    .filter-btn:hover .filter-icon circle { fill: #323232; }
+    .filter-btn:hover { color: #323232; }
+    .filter-btn.is-active { background: transparent; color: #323232; border: none; }
+    .filter-btn .filter-icon circle { fill: #fff; transition: transform 0.22s cubic-bezier(0.4,0,0.2,1); }
+    .filter-btn.is-active .filter-icon circle { fill: #fff; }
+    .filter-btn:hover .filter-icon circle:nth-child(3),
+    .filter-btn.is-active .filter-icon circle:nth-child(3) { transform: translateY(6px); }
+    .filter-btn:hover .filter-icon circle:nth-child(4),
+    .filter-btn.is-active .filter-icon circle:nth-child(4) { transform: translateY(-6px); }
     .filter-sort:hover .filter-select { opacity: 0.6; }
     .filter-sort:hover .material-icons { opacity: 0.6; }
     .filter-overlay {
@@ -737,7 +777,7 @@
     .lang-type-toggle {
       display: flex;
       gap: 0;
-      border: 1px solid #C8C8C8;
+      border: 1px solid #888888;
       border-radius: 50px;
       overflow: hidden;
       background: #fff;
@@ -770,23 +810,23 @@
       font-family: Riforma, sans-serif;
       font-size: 13px; font-weight: 500;
       text-transform: uppercase; letter-spacing: 0.4px;
-      color: rgba(0,0,0,0.45);
-      background: none; border: 1px solid #DADADA; border-radius: 4px;
+      color: #001489;
+      background: none; border: 1px solid #001489; border-radius: 4px;
       cursor: pointer; padding: 9px 16px;
       flex: 1; text-align: center;
-      transition: color 0.15s, border-color 0.15s;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
     }
-    .filter-footer-clear:hover { color: #323232; border-color: #323232; }
+    .filter-footer-clear:hover { background: #001489; color: #fff; border-color: #001489; }
     .filter-footer-apply {
       font-family: Riforma, sans-serif;
       font-size: 13px; font-weight: 500;
       text-transform: uppercase; letter-spacing: 0.4px;
-      color: #fff; background: #323232; border: 1px solid #323232; border-radius: 4px;
+      color: #fff; background: #001489; border: 1px solid #001489; border-radius: 4px;
       cursor: pointer; padding: 9px 16px;
       flex: 2; text-align: center;
       transition: background 0.15s;
     }
-    .filter-footer-apply:hover { background: #000; border-color: #000; }
+    .filter-footer-apply:hover { background: #00106b; border-color: #00106b; }
     .filter-select {
       appearance: none;
       -webkit-appearance: none;
@@ -795,7 +835,7 @@
       font-weight: 500;
       color: #323232;
       background: #fff url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23323232' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
-      border: 1px solid #C8C8C8;
+      border: 1px solid #888888;
       border-radius: 2px;
       padding: 7px 30px 7px 12px;
       cursor: pointer;
@@ -877,8 +917,18 @@
     }
 
     /* ─── DIRECTOR CARDS ─── */
-    #directorsGrid { grid-template-columns: repeat(8, 1fr); row-gap: 20px; }
-    .director-card { display: block; cursor: pointer; text-decoration: none; }
+    #directorsGrid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      column-gap: 4px;
+      row-gap: 20px;
+      width: 100%;
+    }
+    @media (min-width: 650px)  { #directorsGrid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 810px)  { #directorsGrid { grid-template-columns: repeat(5, 1fr); } }
+    @media (min-width: 1186px) { #directorsGrid { grid-template-columns: repeat(6, 1fr); } }
+    @media (min-width: 1562px) { #directorsGrid { grid-template-columns: repeat(8, 1fr); } }
+    .director-card { display: block; cursor: pointer; text-decoration: none; min-width: 0; }
     .director-img-wrap {
       aspect-ratio: 1 / 1;
       position: relative;
@@ -897,11 +947,12 @@
       text-transform: uppercase; letter-spacing: 0.1px;
       line-height: 1.3; color: #323232;
       margin-bottom: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .director-count {
       font-family: Riforma, sans-serif;
-      font-size: 14px; font-weight: 500;
-      text-transform: uppercase; color: rgba(0,0,0,0.45);
+      font-size: 13px; font-weight: 500;
+      text-transform: uppercase; color: rgba(0,0,0,0.55);
     }
 
     .director-card.is-selected .card-img { filter: grayscale(0%); }
@@ -984,9 +1035,12 @@
     <div style="flex: 1;"></div>
 
     <nav class="nav-links" aria-label="Secondary navigation">
-      <button id="searchOpenBtn" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;color:rgba(0,0,0,0.55);transition:color 0.15s;" aria-label="Search">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </button>
+      <div class="search-inline" id="searchInline">
+        <button class="search-icon-btn" id="searchOpenBtn" aria-label="Search">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <input class="search-inline-input" id="searchInput" type="text" placeholder="Search" autocomplete="off">
+      </div>
       <a href="#" class="nav-avatar" aria-label="Profile">
         <img src="../../brand_assets/avatar.png" alt="Profile">
       </a>
@@ -998,7 +1052,6 @@
           <a href="#">Viewing History</a>
           <a href="#">Earn 1 month free</a>
           <div class="nav-dropdown-sep"></div>
-          <a href="film-database.html">Film Database</a>
           <a href="#">Notebook</a>
           <a href="#">Notebook Magazine</a>
           <a href="#">MUBI Editions</a>
@@ -1020,78 +1073,64 @@
   </div>
 </header>
 
+<div id="searchNavBg"></div>
+<div id="searchDropdown" class="search-dropdown">
+  <div class="search-drop-label" id="searchDropLabel">Suggested</div>
+  <div id="searchDropList"></div>
+</div>
+<div id="searchDropBackdrop" class="search-drop-backdrop"></div>
+
 <main>
   <div class="wrap">
     <div class="page-hero">
       <h1 class="page-title">Browse</h1>
     </div>
 
-    <div class="search-backdrop" id="searchBackdrop"></div>
-    <div class="search-takeover" id="searchTakeover" role="search">
-      <div class="search-takeover-inner">
-        <svg width="40" height="40" viewBox="0 0 83 83" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M57.8497 52.1132C60.6668 48.1454 62.319 43.2855 62.319 38.021C62.319 24.6571 51.4953 13.8334 38.021 13.8334C24.657 13.8334 13.8333 24.6571 13.8333 38.021C13.8333 51.4954 24.657 62.3191 38.021 62.3191C43.2855 62.3191 48.1454 60.6668 52.1132 57.8498L63.5339 69.1667L69.1667 63.534L57.8497 52.1132ZM38.021 54.2565C29.1853 54.2565 21.8959 46.9671 21.8959 38.021C21.8959 29.1853 29.1853 21.8959 38.021 21.8959C46.9671 21.8959 54.2565 29.1853 54.2565 38.021C54.2565 46.9671 46.9671 54.2565 38.021 54.2565Z" fill="#323232"/></svg>
-        <input class="search-takeover-input" id="searchTakeoverInput" type="text" placeholder="Search films, series, collections and directors now showing on MUBI" autocomplete="off">
-        <button class="search-close-btn" id="searchCloseBtn" aria-label="Close search">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 10L30 30M30 10L10 30" stroke="#323232" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
-      </div>
-      <div class="search-trending" id="searchTrending" style="display:none;">
-        <div class="search-trending-row">
-          <div class="row-header"><span class="row-title">Trending Films</span></div>
-          <div class="search-trending-grid" id="trendingFilmsGrid"></div>
-        </div>
-        <div class="search-trending-row">
-          <div class="row-header"><span class="row-title">Trending Collections</span></div>
-          <div class="search-trending-grid" id="trendingCollGrid"></div>
-        </div>
-        <div class="search-trending-row">
-          <div class="row-header"><span class="row-title">Trending Directors</span></div>
-          <div class="search-dir-grid" id="trendingDirGrid"></div>
-        </div>
-      </div>
-      <div class="search-results-body" id="searchResultsBody" style="display:none;">
-        <div class="search-results-label" id="searchResultsLabel"></div>
-        <div class="search-results-grid" id="searchResultsGrid"></div>
-      </div>
-    </div>
     <div class="page-tabs">
-      <a href="#" class="page-tab is-active" data-tab="films & series">Films &amp; Series<span class="tab-count"></span></a>
-      <a href="#" class="page-tab" data-tab="collections">Collections<span class="tab-count"></span></a>
-      <a href="#" class="page-tab" data-tab="directors">Directors<span class="tab-count"></span></a>
+      <a href="#" class="page-tab is-active" data-tab="films & series">Films &amp; Series</a>
+      <a href="#" class="page-tab" data-tab="collections">Collections</a>
+      <a href="#" class="page-tab" data-tab="directors">Directors</a>
     </div>
     <div class="filter-bar" id="filterBar">
-      <div class="genre-pills" id="genrePills">
-        <a href="#" class="genre-pill is-active" data-genre="">All</a>
-        <a href="#" class="genre-pill" data-genre="Animation">Animation</a>
-        <a href="#" class="genre-pill" data-genre="Avant-Garde">Avant-Garde</a>
-        <a href="#" class="genre-pill" data-genre="Comedy">Comedy</a>
-        <a href="#" class="genre-pill" data-genre="Crime">Crime</a>
-        <a href="#" class="genre-pill" data-genre="Cult">Cult</a>
-        <a href="#" class="genre-pill" data-genre="Documentary">Documentary</a>
-        <a href="#" class="genre-pill" data-genre="Drama">Drama</a>
-        <a href="#" class="genre-pill" data-genre="Fantasy">Fantasy</a>
-        <a href="#" class="genre-pill" data-genre="Horror">Horror</a>
-        <a href="#" class="genre-pill" data-genre="LGBTQ+">LGBTQ+</a>
-        <a href="#" class="genre-pill" data-genre="Mystery">Mystery</a>
-        <a href="#" class="genre-pill" data-genre="Romance">Romance</a>
-        <a href="#" class="genre-pill" data-genre="Sci-Fi">Sci-Fi</a>
-        <a href="#" class="genre-pill" data-genre="Series">Series</a>
-        <a href="#" class="genre-pill" data-genre="Short">Short</a>
-        <a href="#" class="genre-pill" data-genre="Sport">Sport</a>
-        <a href="#" class="genre-pill" data-genre="Thriller">Thriller</a>
+      <div class="pills-wrap pills-wrap--overflow" id="pillsWrap">
+        <button class="pills-chevron pills-chevron--left" id="pillsLeft" aria-label="Scroll genres left">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,1 1,6 6,11"/></svg>
+        </button>
+        <div class="genre-pills" id="genrePills">
+          <a href="#" class="genre-pill is-active" data-genre="">All</a>
+          <a href="#" class="genre-pill" data-genre="Animation">Animation</a>
+          <a href="#" class="genre-pill" data-genre="Avant-Garde">Avant-Garde</a>
+          <a href="#" class="genre-pill" data-genre="Comedy">Comedy</a>
+          <a href="#" class="genre-pill" data-genre="Crime">Crime</a>
+          <a href="#" class="genre-pill" data-genre="Cult">Cult</a>
+          <a href="#" class="genre-pill" data-genre="Documentary">Documentary</a>
+          <a href="#" class="genre-pill" data-genre="Drama">Drama</a>
+          <a href="#" class="genre-pill" data-genre="Fantasy">Fantasy</a>
+          <a href="#" class="genre-pill" data-genre="Horror">Horror</a>
+          <a href="#" class="genre-pill" data-genre="LGBTQ+">LGBTQ+</a>
+          <a href="#" class="genre-pill" data-genre="Mystery">Mystery</a>
+          <a href="#" class="genre-pill" data-genre="Romance">Romance</a>
+          <a href="#" class="genre-pill" data-genre="Sci-Fi">Sci-Fi</a>
+          <a href="#" class="genre-pill" data-genre="Series">Series</a>
+          <a href="#" class="genre-pill" data-genre="Short">Short</a>
+          <a href="#" class="genre-pill" data-genre="Thriller">Thriller</a>
+        </div>
+        <button class="pills-chevron pills-chevron--right" id="pillsRight" aria-label="Scroll genres right">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,1 6,6 1,11"/></svg>
+        </button>
       </div>
       <div class="filter-controls">
         <button class="filter-btn" id="filterBtn">
-          <svg width="14" height="14" viewBox="4 2 16 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="filter-icon" style="flex-shrink:0"><line x1="8" y1="3" x2="8" y2="6"/><circle cx="8" cy="9" r="3"/><line x1="8" y1="12" x2="8" y2="21"/><line x1="16" y1="3" x2="16" y2="12"/><circle cx="16" cy="15" r="3"/><line x1="16" y1="18" x2="16" y2="21"/></svg>
+          <svg width="14" height="14" viewBox="4 2 16 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="filter-icon" style="flex-shrink:0"><line x1="8" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="16" y2="21"/><circle cx="8" cy="9" r="3"/><circle cx="16" cy="15" r="3"/></svg>
           <span id="filterBtnLabel" style="font-family:Riforma,sans-serif;font-weight:500;">Filters</span>
         </button>
         <div class="filter-sort">
           <span style="font-family:Riforma,sans-serif;font-size:12px;font-weight:500;color:#323232;">Sort by:</span>
           <select class="filter-select" id="sortDropdown-sort" name="sort">
-            <option value="trending">Trending</option>
-            <option value="popularity_quality_score">Most Popular</option>
-            <option value="year">Most Recent</option>
-            <option value="title">Title (A-Z)</option>
+            <option value="popularity_quality_score" selected>Most Popular</option>
+            <option value="year">Release Date</option>
+            <option value="rating">Rating</option>
+            <option value="title">A-Z</option>
           </select>
         </div>
       </div>
@@ -1105,17 +1144,6 @@
         </button>
       </div>
       <div class="filter-panel-body">
-        <div class="filter-panel-label">Rating</div>
-        <div class="genre-pills" id="ratingPills">
-          <a href="#" class="genre-pill is-active" data-rating="">All</a>
-          <a href="#" class="genre-pill" data-rating="9:10">9 – 10</a>
-          <a href="#" class="genre-pill" data-rating="8:9">8 – 9</a>
-          <a href="#" class="genre-pill" data-rating="7:8">7 – 8</a>
-          <a href="#" class="genre-pill" data-rating="6:7">6 – 7</a>
-          <a href="#" class="genre-pill" data-rating="5:6">5 – 6</a>
-          <a href="#" class="genre-pill" data-rating="0:5">Below 5</a>
-        </div>
-        <hr style="border:none;border-top:1px solid #EAEAEA;margin:20px 0 16px;">
         <div class="filter-panel-label">Language</div>
         <div class="genre-pills" style="margin-bottom: 16px; flex-wrap:wrap; gap:6px;">
           <button class="genre-pill lang-type-pill is-active" data-lang-type="original">Original</button>
@@ -1123,6 +1151,16 @@
           <button class="genre-pill lang-type-pill" data-lang-type="subtitles">Subtitles</button>
         </div>
         <div class="genre-pills" id="langPills"></div>
+        <hr style="border:none;border-top:1px solid #EAEAEA;margin:20px 0 16px;">
+        <div class="filter-panel-label">Video Quality</div>
+        <div class="genre-pills" id="qualityPills" style="flex-wrap:wrap; gap:6px;">
+          <button class="genre-pill quality-pill is-active" data-quality="">All</button>
+          <button class="genre-pill quality-pill" data-quality="4k">4K</button>
+          <button class="genre-pill quality-pill" data-quality="uhd">UHD</button>
+          <button class="genre-pill quality-pill" data-quality="hd">HD</button>
+          <button class="genre-pill quality-pill" data-quality="hdr">HDR</button>
+          <button class="genre-pill quality-pill" data-quality="dolby">Dolby Vision</button>
+        </div>
       </div>
       <div class="filter-panel-footer">
         <button class="filter-footer-clear" id="filterFooterClear">Clear</button>
@@ -1153,7 +1191,7 @@
           </select>
         </div>
       </div>
-      <div class="film-grid" id="directorsGrid" style="display:none"></div>
+      <div id="directorsGrid" style="display:none"></div>
       <div class="director-filter-section" id="directorFilterSection" style="display:none">
         <div class="director-tags-row" id="directorTagsRow"></div>
         <div class="film-grid" id="directorFilmsGrid"></div>
@@ -1693,6 +1731,17 @@ ALL_FILMS.forEach((film, i) => {
   });
 });
 
+// Assign video quality pseudo-randomly based on year
+ALL_FILMS.forEach((film, i) => {
+  const year = Number(film.year);
+  let pool;
+  if (year >= 2022)      pool = ['4k', 'uhd', 'hdr', 'dolby', '4k', 'uhd'];
+  else if (year >= 2018) pool = ['hd', '4k', 'uhd', 'hd', '4k'];
+  else if (year >= 2010) pool = ['hd', 'hd', '4k', 'hd'];
+  else                   pool = ['hd', 'hd', 'hd'];
+  film.quality = pool[i % pool.length];
+});
+
 
 function shuffle(arr) {
   const a = [...arr];
@@ -1762,14 +1811,9 @@ function getActiveGenre() {
 
 function renderGrid(genre) {
   if (genre === undefined) genre = getActiveGenre();
-  const sortVal = (document.getElementById('sortDropdown-sort') || {}).value || 'trending';
-  const activeRatingPill = document.querySelector('#ratingPills .genre-pill.is-active');
-  const ratingVal = (activeRatingPill && activeRatingPill.dataset.rating) || '';
-  let ratingMin = 0, ratingMax = Infinity;
-  if (ratingVal) {
-    const parts = ratingVal.split(':').map(Number);
-    ratingMin = parts[0]; ratingMax = parts[1];
-  }
+  const sortVal = (document.getElementById('sortDropdown-sort') || {}).value || 'popularity_quality_score';
+  const qualityPill = document.querySelector('#qualityPills .quality-pill.is-active');
+  const qualityVal = (qualityPill && qualityPill.dataset.quality) || '';
   let films;
   if (genre === 'Series') {
     films = [...ALL_SERIES];
@@ -1779,11 +1823,9 @@ function renderGrid(genre) {
     const idxs = GENRE_INDEX[genre] || [];
     films = idxs.map(i => ALL_FILMS[i]).filter(Boolean);
   }
-  if (ratingVal) films = films.filter(f => f.rating !== undefined && f.rating >= ratingMin && f.rating < ratingMax);
-  if (ratingVal) {
+  if (qualityVal) films = films.filter(f => f.quality === qualityVal);
+  if (sortVal === 'rating') {
     films = films.slice().sort((a, b) => (b.rating || 0) - (a.rating || 0) || a.title.localeCompare(b.title));
-  } else if (sortVal === 'trending') {
-    films = shuffle(films);
   } else if (sortVal === 'year') {
     films = films.slice().sort((a, b) => Number(b.year) - Number(a.year));
   } else if (sortVal === 'title') {
@@ -1796,7 +1838,7 @@ function renderGrid(genre) {
   const grid = document.getElementById('filmGrid');
   const cardFn = (genre === 'Series') ? seriesCard : filmCard;
   grid.innerHTML = films.map(cardFn).join('');
-  grid.classList.toggle('rating-active', !!ratingVal);
+  grid.classList.toggle('rating-active', sortVal === 'rating');
 }
 renderGrid();
 
@@ -1929,7 +1971,11 @@ function renderDirectors() {
   });
   const dirs = Object.values(dirMap);
   if (directorSortMode === 'az') {
-    dirs.sort((a, b) => a.name.localeCompare(b.name));
+    dirs.sort((a, b) => {
+      const surnameA = a.name.split(' ').pop();
+      const surnameB = b.name.split(' ').pop();
+      return surnameA.localeCompare(surnameB);
+    });
   } else {
     dirs.sort((a, b) => b.count - a.count);
   }
@@ -1943,7 +1989,7 @@ function renderDirectors() {
       </div>
       <div class="director-info">
         <div class="director-name">${d.name}</div>
-        <div class="director-count">${d.count} film${d.count !== 1 ? 's' : ''}</div>
+        ${directorSortMode !== 'az' ? `<div class="director-count">${d.count} film${d.count !== 1 ? 's' : ''}</div>` : ''}
       </div>
     </a>`;
   }).join('');
@@ -2026,48 +2072,42 @@ document.querySelectorAll('#genrePills .genre-pill').forEach(pill => {
   });
 });
 
+(function() {
+  const wrap = document.getElementById('pillsWrap');
+  const pills = document.getElementById('genrePills');
+  function update() {
+    if (!pills || !wrap) return;
+    wrap.classList.toggle('has-scroll-left', pills.scrollLeft > 0);
+    wrap.classList.toggle('has-scroll-right', pills.scrollLeft < pills.scrollWidth - pills.clientWidth - 1);
+  }
+  pills.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  document.getElementById('pillsLeft').addEventListener('click', () => pills.scrollBy({ left: -200, behavior: 'smooth' }));
+  document.getElementById('pillsRight').addEventListener('click', () => pills.scrollBy({ left: 200, behavior: 'smooth' }));
+  update();
+})();
+
 const sortEl = document.getElementById('sortDropdown-sort');
 if (sortEl) sortEl.addEventListener('change', () => renderGrid());
 
 function updateClearBtn() {
-  const ratingActive = document.querySelector('#ratingPills .genre-pill.is-active');
-  const ratingApplied = ratingActive && ratingActive.dataset.rating !== '';
   const langActive = document.querySelector('#langPills .genre-pill.is-active');
   const langApplied = langActive && langActive.dataset.lang !== 'all';
-  const filtersOn = ratingApplied || langApplied;
-  document.getElementById('filterBtn').classList.toggle('is-active', filtersOn);
-  const lbl = document.getElementById('ratingSelectedLabel');
-  if (lbl) {
-    if (ratingApplied) {
-      lbl.textContent = ratingActive.textContent.trim();
-      lbl.style.display = 'inline';
-    } else {
-      lbl.style.display = 'none';
-    }
-  }
+  const qualityActive = document.querySelector('#qualityPills .quality-pill.is-active');
+  const qualityApplied = qualityActive && qualityActive.dataset.quality !== '';
+  document.getElementById('filterBtn').classList.toggle('is-active', langApplied || qualityApplied);
 }
 
-// rating pills
-document.querySelectorAll('#ratingPills .genre-pill').forEach(pill => {
-  pill.addEventListener('click', e => {
-    e.preventDefault();
-    document.querySelectorAll('#ratingPills .genre-pill').forEach(p => p.classList.remove('is-active'));
-    pill.classList.add('is-active');
-    updateClearBtn();
-    updateFilterBtnLabel();
-    renderGrid();
-  });
-});
 
 function clearFilters() {
-  document.querySelectorAll('#ratingPills .genre-pill').forEach(p => p.classList.remove('is-active'));
-  const allRating = document.querySelector('#ratingPills .genre-pill[data-rating=""]');
-  if (allRating) allRating.classList.add('is-active');
   const allLang = document.querySelector('#langPills .genre-pill[data-lang="all"]');
   if (allLang) {
     document.querySelectorAll('#langPills .genre-pill').forEach(p => p.classList.remove('is-active'));
     allLang.classList.add('is-active');
   }
+  document.querySelectorAll('#qualityPills .quality-pill').forEach(p => p.classList.remove('is-active'));
+  const allQuality = document.querySelector('#qualityPills .quality-pill[data-quality=""]');
+  if (allQuality) allQuality.classList.add('is-active');
   updateClearBtn();
   updateFilterBtnLabel();
   renderGrid('');
@@ -2114,17 +2154,16 @@ function setFilterBtnLabel(type, lang) {
 }
 
 function updateFilterBtnLabel() {
-  const ratingPill = document.querySelector('#ratingPills .genre-pill.is-active');
-  const ratingVal = ratingPill && ratingPill.dataset.rating !== '' ? ratingPill.textContent.trim() : null;
   const langPill = document.querySelector('#langPills .genre-pill.is-active');
   const langVal = langPill && langPill.dataset.lang !== 'all' ? langPill.textContent.trim() : null;
-  let parts = [];
-  if (ratingVal) parts.push(`Rating: ${ratingVal}`);
+  const qualityPill = document.querySelector('#qualityPills .quality-pill.is-active');
+  const qualityVal = qualityPill && qualityPill.dataset.quality ? qualityPill.textContent.trim() : null;
+  const parts = [];
+  if (qualityVal) parts.push(`Video quality: ${qualityVal}`);
   if (langVal) {
-    const langLabel = activeLangType === 'original' ? `Original language: ${langVal}`
+    parts.push(activeLangType === 'original' ? `Original language: ${langVal}`
       : activeLangType === 'dubbed' ? `Dubbed in: ${langVal}`
-      : `Subtitled in: ${langVal}`;
-    parts.push(langLabel);
+      : `Subtitled in: ${langVal}`);
   }
   const el = document.getElementById('filterBtnLabel');
   if (el) el.textContent = parts.length ? parts.join(' & ') : 'Filters';
@@ -2147,11 +2186,10 @@ function buildLangPills(type) {
       updateClearBtn();
       if (activeLangType === 'original' && lang !== 'all') {
         const idxs = LANGUAGE_INDEX[lang] || [];
-        const activeRP = document.querySelector('#ratingPills .genre-pill.is-active');
-        const ratingVal2 = (activeRP && activeRP.dataset.rating) || '';
+        const sortVal = (document.getElementById('sortDropdown-sort') || {}).value || 'popularity_quality_score';
         document.getElementById('filmGrid').innerHTML =
           idxs.map(i => ALL_FILMS[i]).filter(Boolean).map(filmCard).join('');
-        document.getElementById('filmGrid').classList.toggle('rating-active', !!ratingVal2);
+        document.getElementById('filmGrid').classList.toggle('rating-active', sortVal === 'rating');
       } else {
         renderGrid('');
       }
@@ -2171,6 +2209,16 @@ document.querySelectorAll('.lang-type-pill[data-lang-type]').forEach(btn => {
 });
 buildLangPills('original');
 updateClearBtn();
+
+document.querySelectorAll('#qualityPills .quality-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('#qualityPills .quality-pill').forEach(p => p.classList.remove('is-active'));
+    pill.classList.add('is-active');
+    updateClearBtn();
+    updateFilterBtnLabel();
+    renderGrid();
+  });
+});
 
 document.querySelectorAll('#collFilterBar .genre-pills .genre-pill').forEach(pill => {
   pill.addEventListener('click', e => {
@@ -2198,97 +2246,95 @@ document.addEventListener('keydown', e => {
   }
 });
 
-let trendingRendered = false;
-function renderTrending() {
-  if (trendingRendered) return;
-  trendingRendered = true;
+// ─── INLINE SEARCH ───
+const SEARCH_SUGGESTED = ALL_FILMS.slice().sort((a,b) => (b.rating||0)-(a.rating||0)).slice(0,8);
 
-  // Films: first 4 from ALL_FILMS
-  document.getElementById('trendingFilmsGrid').innerHTML =
-    ALL_FILMS.slice(0, 4).map(filmCard).join('');
+function searchDropItem(f) {
+  return `<a class="search-drop-item" href="#">
+    <div class="search-drop-thumb">
+      <img src="${f.image}" alt="${f.title}" loading="lazy" style="object-position:${Math.round((f.fX||0.5)*100)}% ${Math.round((f.fY||0.3)*100)}%">
+      <div class="search-drop-play">
+        <svg width="28" height="28" viewBox="0 0 44 44"><g transform="translate(1 1)" fill-rule="evenodd"><circle cx="21" cy="21" r="21" fill="none" stroke="#fff" stroke-width="1.5"/><path fill="#fff" d="M30 21.5L15 29V14z"/></g></svg>
+      </div>
+    </div>
+    <div class="search-drop-info">
+      <div class="search-drop-title">${f.title}</div>
+      <div class="search-drop-director">${f.director}</div>
+    </div>
+  </a>`;
+}
 
-
-  // Collections: first 4 using coll-tile markup
-  document.getElementById('trendingCollGrid').innerHTML =
-    COLLECTIONS.slice(0, 4).map(col => {
-      const left = col.treatment
-        ? `<img class="coll-tile-treatment" src="${col.treatment}" alt="${col.title}" loading="lazy">`
-        : col.subtitle
-          ? `<div class="coll-tile-title">${col.title}<span class="coll-tile-subtitle">${col.subtitle}</span></div>`
-          : `<div class="coll-tile-title coll-tile-title--solo">${col.title}</div>`;
-      return `<a class="coll-tile" href="#" aria-label="${col.title}">
-        <div class="coll-tile-left" style="background:${col.color}">
-          <div>${left}</div>
-          <div class="coll-tile-count"><svg width="24" height="18" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.4121 0C21.0432 0 21.5546 0.511527 21.5547 1.14258V14.4248C21.5546 15.0559 21.0432 15.5674 20.4121 15.5674H1.14258C0.511562 15.5673 5.76033e-05 15.0558 0 14.4248V1.14258C0.00013309 0.511609 0.511609 0.00013335 1.14258 0H20.4121ZM8.38281 11.1768L15.3682 7.68359L8.38281 4.19141V11.1768Z" fill="white"/><mask id="ci-mask" fill="white"><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282"/></mask><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282" stroke="white" stroke-width="2.395" mask="url(#ci-mask)"/></svg>${col.items}</div>
-        </div>
-        <div class="coll-tile-right"><img class="coll-tile-img" src="${col.img}" alt="${col.title}" loading="lazy"></div>
-      </a>`;
-    }).join('');
-  fitCollTileText();
-
-  // Directors: first 4 using director-card markup, with film counts
-  const dirCounts = {};
-  ALL_FILMS.forEach(f => { dirCounts[f.director] = (dirCounts[f.director] || 0) + 1; });
-  const dirs = Object.entries(DIRECTOR_IMAGES).slice(0, 4);
-  document.getElementById('trendingDirGrid').innerHTML =
-    dirs.map(([name, img]) => {
-      const count = dirCounts[name] || 0;
-      return `<a class="director-card" href="#" aria-label="${name}">
-        <div class="director-img-wrap">
-          <img class="card-img" src="${img}" alt="${name}" loading="lazy" style="object-position:50% 15%">
-        </div>
-        <div class="director-info">
-          <div class="director-name">${name}</div>
-          <div class="director-count">${count} film${count !== 1 ? 's' : ''}</div>
-        </div>
-      </a>`;
-    }).join('');
+function positionSearchDropdown() {
+  const el = document.getElementById('searchInline');
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  const dropTop = r.bottom + 8;
+  const dd = document.getElementById('searchDropdown');
+  dd.style.left = r.left + 'px';
+  dd.style.right = 'auto';
+  dd.style.top = dropTop + 'px';
+  const bg = document.getElementById('searchNavBg');
+  if (bg) { bg.style.left = r.left + 'px'; bg.style.width = (r.width - 4) + 'px'; bg.style.height = dropTop + 'px'; bg.style.display = 'block'; }
 }
 
 function openSearch() {
-  document.getElementById('searchTakeover').classList.add('is-open');
-  document.getElementById('searchBackdrop').classList.add('is-open');
-  document.getElementById('searchTrending').style.display = 'block';
-  renderTrending();
-  setTimeout(() => document.getElementById('searchTakeoverInput').focus(), 50);
+  const dd = document.getElementById('navDropdown');
+  if (dd && dd.classList.contains('open')) {
+    dd.classList.remove('open');
+    document.getElementById('navHamburger').setAttribute('aria-expanded', false);
+  }
+  const inline = document.getElementById('searchInline');
+  inline.classList.add('is-open');
+  setTimeout(() => document.getElementById('searchInput').focus(), 50);
+  const list = document.getElementById('searchDropList');
+  document.getElementById('searchDropLabel').textContent = 'Suggested';
+  list.innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
+  document.getElementById('searchDropBackdrop').classList.add('is-open');
+  document.getElementById('searchInput').addEventListener('transitionend', function handler(e) {
+    if (e.propertyName === 'width') {
+      positionSearchDropdown();
+      document.getElementById('searchDropdown').classList.add('is-open');
+      this.removeEventListener('transitionend', handler);
+    }
+  });
 }
-function closeSearch() {
-  document.getElementById('searchTakeover').classList.remove('is-open');
-  document.getElementById('searchBackdrop').classList.remove('is-open');
-  document.getElementById('searchTakeoverInput').value = '';
-  document.getElementById('searchResultsBody').style.display = 'none';
-  document.getElementById('searchResultsGrid').innerHTML = '';
-  document.getElementById('searchTrending').style.display = 'none';
-}
-document.getElementById('searchOpenBtn').addEventListener('click', openSearch);
-document.getElementById('searchCloseBtn').addEventListener('click', closeSearch);
-document.getElementById('searchBackdrop').addEventListener('click', closeSearch);
 
-function renderSearchResults(q) {
-  const body     = document.getElementById('searchResultsBody');
-  const grid     = document.getElementById('searchResultsGrid');
-  const label    = document.getElementById('searchResultsLabel');
-  const trending = document.getElementById('searchTrending');
+function closeSearch() {
+  document.getElementById('searchInline').classList.remove('is-open');
+  document.getElementById('searchDropdown').classList.remove('is-open');
+  document.getElementById('searchDropBackdrop').classList.remove('is-open');
+  document.getElementById('searchInput').value = '';
+  const bg = document.getElementById('searchNavBg');
+  if (bg) bg.style.display = 'none';
+}
+
+document.getElementById('searchOpenBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  const inline = document.getElementById('searchInline');
+  inline.classList.contains('is-open') ? closeSearch() : openSearch();
+});
+
+document.getElementById('searchDropBackdrop').addEventListener('click', closeSearch);
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  const q = e.target.value.trim();
+  const list = document.getElementById('searchDropList');
+  const label = document.getElementById('searchDropLabel');
   if (!q) {
-    body.style.display = 'none';
-    grid.innerHTML = '';
-    trending.style.display = 'block';
+    label.textContent = 'Suggested';
+    list.innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
     return;
   }
-  trending.style.display = 'none';
   const ql = q.toLowerCase();
-  let matches = ALL_FILMS.filter(f =>
+  const matches = ALL_FILMS.filter(f =>
     f.title.toLowerCase().includes(ql) || f.director.toLowerCase().includes(ql)
-  );
-  matches = shuffle(matches).slice(0, 12);
-  if (!matches.length) { body.style.display = 'none'; grid.innerHTML = ''; return; }
-  body.style.display = 'block';
-  label.textContent = matches.length + ' result' + (matches.length !== 1 ? 's' : '') + ' for "' + q + '"';
-  grid.innerHTML = matches.map(filmCard).join('');
-}
+  ).slice(0, 8);
+  label.textContent = matches.length ? `${matches.length} result${matches.length !== 1 ? 's' : ''} for "${q}"` : `No results for "${q}"`;
+  list.innerHTML = matches.map(searchDropItem).join('');
+});
 
-document.getElementById('searchTakeoverInput').addEventListener('input', e => {
-  renderSearchResults(e.target.value.trim());
+window.addEventListener('resize', () => {
+  if (document.getElementById('searchInline').classList.contains('is-open')) positionSearchDropdown();
 });
 
 </script>
