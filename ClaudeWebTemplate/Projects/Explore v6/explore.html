@@ -114,6 +114,17 @@
       min-width: 200px;
       z-index: 200;
     }
+    .nav-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      right: 16px;
+      width: 12px; height: 12px;
+      background: #fff;
+      transform: rotate(45deg);
+      border-left: 1px solid #E0E0E0;
+      border-top: 1px solid #E0E0E0;
+    }
     .nav-dropdown.open { display: block; }
     .nav-dropdown a {
       display: block;
@@ -535,6 +546,98 @@
       transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .rating-active .film-card:hover .card-img-wrap::after { transform: scale(1.08); }
+
+    /* ─── SERIES EPISODE DROPDOWN ─── */
+    .series-ep-drop {
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.3s cubic-bezier(0.22,1,0.36,1), transform 0.3s cubic-bezier(0.22,1,0.36,1);
+      padding: 12px 12px 12px;
+    }
+    .film-card:hover .series-ep-drop { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .series-ep-head {
+      display: flex; align-items: baseline; gap: 8px;
+      margin-bottom: 8px;
+    }
+    .series-ep-label {
+      font-family: Riforma, sans-serif; font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.7px; color: rgba(0,0,0,0.38);
+    }
+    .series-ep-count { font-family: Riforma, sans-serif; font-size: 10px; color: rgba(0,0,0,0.3); }
+    .series-ep-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+      margin: 0 -12px; padding: 0 12px;
+    }
+    .series-ep-tile {
+      position: relative;
+      text-decoration: none; cursor: pointer;
+    }
+    .series-ep-thumb {
+      position: relative; aspect-ratio: 371/209;
+      overflow: hidden; background: #d0d0d0;
+    }
+    .series-ep-thumb img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.35s ease;
+    }
+    .series-ep-tile:hover .series-ep-thumb img { transform: scale(1.06); }
+    .series-ep-thumb::before {
+      content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.1) 55%, transparent 100%);
+    }
+    .series-ep-overlay {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 6px 8px;
+    }
+    .series-ep-num {
+      font-family: Riforma, sans-serif; font-size: 9px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.4px; color: rgba(255,255,255,0.65);
+      margin-bottom: 1px;
+    }
+    .series-ep-title {
+      font-family: Riforma, sans-serif; font-size: 11px; font-weight: 500;
+      text-transform: uppercase; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .series-ep-dur {
+      font-family: Riforma, sans-serif; font-size: 10px; color: rgba(255,255,255,0.55);
+      margin-top: 2px;
+    }
+    .series-ep-body {
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: #fff;
+      padding: 12px 14px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+      z-index: 30; pointer-events: none;
+      opacity: 0; transform: scaleX(1);
+      transition: opacity 0.35s cubic-bezier(0.22,1,0.36,1), transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .series-ep-tile:hover .series-ep-body { opacity: 1; transform: scaleX(1.08); pointer-events: auto; }
+    .series-ep-body .card-actions,
+    .series-ep-body .series-ep-synopsis-text,
+    .series-ep-body .series-ep-body-meta {
+      transform: translateY(8px);
+      transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .series-ep-tile:hover .series-ep-body .card-actions,
+    .series-ep-tile:hover .series-ep-body .series-ep-synopsis-text,
+    .series-ep-tile:hover .series-ep-body .series-ep-body-meta { transform: translateY(0); }
+    .series-ep-synopsis-text {
+      font-family: Riforma, sans-serif; font-size: 12px; line-height: 140%;
+      color: #323232; margin: 0;
+      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .series-ep-body-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .series-ep-body-meta svg { width: 20px; height: 20px; flex-shrink: 0; }
+
     .coll-filter-bar {
       padding: 12px 0 0;
       display: flex;
@@ -737,6 +840,17 @@
       display: flex;
       flex-direction: column;
       max-height: calc(100vh - 120px);
+    }
+    .filter-panel::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 20px;
+      width: 12px; height: 12px;
+      background: #fff;
+      transform: rotate(45deg);
+      border-left: 1px solid #E0E0E0;
+      border-top: 1px solid #E0E0E0;
     }
     .filter-panel.is-open {
       opacity: 1;
@@ -964,8 +1078,9 @@
     .director-tags-row {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
       gap: 8px;
-      padding: 0 0 20px;
+      padding: 0;
     }
     .director-tag {
       display: inline-flex;
@@ -1155,11 +1270,10 @@
         <div class="filter-panel-label">Video Quality</div>
         <div class="genre-pills" id="qualityPills" style="flex-wrap:wrap; gap:6px;">
           <button class="genre-pill quality-pill is-active" data-quality="">All</button>
-          <button class="genre-pill quality-pill" data-quality="4k">4K</button>
-          <button class="genre-pill quality-pill" data-quality="uhd">UHD</button>
+          <button class="genre-pill quality-pill" data-quality="4k">4K Ultra HD</button>
+          <button class="genre-pill quality-pill" data-quality="fhd">Full HD</button>
           <button class="genre-pill quality-pill" data-quality="hd">HD</button>
-          <button class="genre-pill quality-pill" data-quality="hdr">HDR</button>
-          <button class="genre-pill quality-pill" data-quality="dolby">Dolby Vision</button>
+          <button class="genre-pill quality-pill" data-quality="sd">SD</button>
         </div>
       </div>
       <div class="filter-panel-footer">
@@ -1182,8 +1296,9 @@
     <div class="page-body">
       <div class="film-grid" id="filmGrid"></div>
       <div class="film-grid" id="collectionsGrid" style="display:none"></div>
-      <div id="directorSortRow" style="display:none; justify-content:flex-end; margin-bottom:12px;">
-        <div class="filter-sort" style="cursor:pointer;">
+      <div id="directorSortRow" style="display:none; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px;">
+        <div class="director-tags-row" id="directorTagsRow" style="flex:1; min-width:0; padding:0;"></div>
+        <div class="filter-sort" style="cursor:pointer; flex-shrink:0;">
           <span style="font-family:Riforma,sans-serif;font-size:12px;font-weight:500;color:#323232;">Sort by:</span>
           <select class="filter-select" id="directorSortSelect" style="cursor:pointer; font-family:Riforma,sans-serif; font-weight:500; appearance:none; -webkit-appearance:none; outline:none;">
             <option value="films">No. of Films</option>
@@ -1193,7 +1308,6 @@
       </div>
       <div id="directorsGrid" style="display:none"></div>
       <div class="director-filter-section" id="directorFilterSection" style="display:none">
-        <div class="director-tags-row" id="directorTagsRow"></div>
         <div class="film-grid" id="directorFilmsGrid"></div>
       </div>
     </div>
@@ -1206,15 +1320,15 @@ const ALL_FILMS = [
   {title:"Close",director:"Lukas Dhont",year:"2022",country:"Belgium, Netherlands",image:"https://assets.mubicdn.net/images/film/339480/image-w448.jpg?1745499781",fX:0.25766,fY:0.405941,genres:["Drama"],synopsis:"Thirteen-year-olds Leo and Remi are inseparable; they spend every waking moment together, playing in the flower fields and sleeping at each other’s houses. However as they start a new school year, the pressures of early adolescence challenge their bond with unexpected and far-reaching consequences.",ourTake:"Both a Cannes prizewinner and Oscar® nominee for Best International Film, the exquisitely acted Close evokes the fragile beauty of boyhood. Set among the flower fields of the Belgian countryside, Lukas Dhont’s profoundly empathetic look at adolescent intimacy reveals the trappings of masculinity.",rating:9.3,previewURL:"https://trailers.mubicdn.net/339480/optimised/240p-t-close-2022_en_us_1701473251.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/536079/cache-536079-1681983432/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/517047/cache-517047-1679045241/images-original.jpg"},
   {title:"Aftersun",director:"Charlotte Wells",year:"2022",country:"United Kingdom, United States",image:"https://assets.mubicdn.net/images/film/340287/image-w448.jpg?1745499810",fX:0.639276,fY:0.685644,genres:["Drama"],synopsis:"At a fading vacation resort, 11-year-old Sophie treasures rare time together with her loving and idealistic father, Calum. Twenty years later, Sophie’s tender recollections of their last holiday become a powerful and heartrending portrait of their relationship.",ourTake:"Oscar®-nominated Paul Mescal and newcomer Frankie Corio are unforgettable as a dad and daughter abroad in Charlotte Wells’s moving debut. Revealing the laughs, heartache and tenderness of a trip that means more with each passing moment, Aftersun captures a family snapshot of astonishing poignancy.",rating:9.0,previewURL:"https://trailers.mubicdn.net/340287/optimised/240p-t-aftersun_en_us_1672966507.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/877643/cache-877643-1761157128/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/495207/cache-495207-1675425957/images-original.jpg"},
   {title:"Portrait of a Lady on Fire",director:"Céline Sciamma",year:"2019",country:"France",image:"https://assets.mubicdn.net/images/film/224497/image-w448.jpg?1745495788",fX:0.506964,fY:0.44802,genres:["Drama", "LGBTQ+", "Romance"],synopsis:"In late 18th century France, painter Marianne is commissioned by a countess to paint the wedding portrait of her daughter Héloïse. While posing as her hired companion, Marianne is instructed to complete the portrait in secret. However, intimacy and attraction begin to blossom between both women.",ourTake:"Céline Sciamma turns the male gaze over its head to present its female version: a feminist tale of lesbian desire, aching romanticism, and creative collaboration. The result is an instant classic, glistening with sumptuous images and an unforgettable duo: Adèle Haenel and Noémie Merlant.",rating:9.3,previewURL:"https://trailers.mubicdn.net/224497/optimised/240p-t-portrait-de-la-jeune-fille-en-feu_en_us_1625475138.mp4",artwork:"https://images.mubicdn.net/images/artworks/154398/cache-154398-1621558067/images-original.png"},
-  {title:"Northwest Passage",director:"David Lynch",year:"1990",country:"United States",image:"https://assets.mubicdn.net/images/film/433422/image-w448.jpg?1747141083",fX:0.377437,fY:0.561881,genres:["Drama", "Thriller", "Crime", "Mystery", "TV Series", "Cult"],synopsis:"The small northwest town of Twin Peaks, Washington, is shaken up when the body of the Homecoming Queen, Laura Palmer, is discovered washed up on a riverbank, wrapped in plastic.",ourTake:"",rating:9.5,artwork:"https://images.mubicdn.net/images/artworks/776757/cache-776757-1747141136/images-original.png"},
+  {title:"Twin Peaks",series:true,director:"David Lynch",year:"1990",country:"United States",image:"https://assets.mubicdn.net/images/film/433422/image-w448.jpg?1747141083",fX:0.377437,fY:0.561881,genres:["Drama", "Thriller", "Crime", "Mystery", "TV Series", "Cult"],synopsis:"The small northwest town of Twin Peaks, Washington, is shaken up when the body of the Homecoming Queen, Laura Palmer, is discovered washed up on a riverbank, wrapped in plastic.",ourTake:"One of the most influential works in television history, David Lynch and Mark Frost's landmark mystery transformed what the medium could aspire to. Swirling with surrealist dread, deadpan humor, and an unforgettable score by Angelo Badalamenti, Twin Peaks remains a singular, hypnotic vision of small-town darkness and the ancient evil lurking beneath its surface.",rating:9.5,artwork:"https://images.mubicdn.net/images/artworks/776757/cache-776757-1747141136/images-original.png"},
   {title:"Paris Is Burning",director:"Jennie Livingston",year:"1990",country:"United States",image:"https://assets.mubicdn.net/images/film/21477/image-w448.jpg?1745489723",fX:0.541783,fY:0.29703,genres:["Documentary", "LGBTQ+", "History"],synopsis:"New York City, 1980. In Harlem’s African American and Latinx drag-ball scene, rival houses compete in fierce contests for trophies. Meanwhile, legendary voguers, drag queens, and trans women—including Willi Ninja, Pepper LaBeija, and Venus Xtravaganza—reveal the rules and traditions of the scene.",ourTake:"Full of iconic quotes that have shaped the queer lexicon, Jennie Livingston’s seminal documentary captures the ballroom scene of 1980s New York in all its vivacious joy and heartbreaking precarity. Carved out of sequins and solidarity, its safe havens are where fantasies become gloriously real.",rating:9.4,previewURL:"https://trailers.mubicdn.net/21477/optimised/240p-t-paris-is-burning_en_us_3128.754_1920_1080_1716473873.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/689171/cache-689171-1716467965/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/688808/cache-688808-1716374149/images-original.png"},
   {title:"Paris, Texas",director:"Wim Wenders",year:"1984",country:"West Germany, France",image:"https://assets.mubicdn.net/images/film/1502/image-w448.jpg?1745500656",fX:0.583565,fY:0.324257,genres:["Drama"],synopsis:"Travis walks out of the Texas desert after disappearing for four years. He is picked up by his brother Walt, who has been looking after Travis’ son Hunter. After slowly reconnecting with Hunter, Travis tries to bring his family back together by traveling to Houston in search of his estranged wife.",ourTake:"In 1984, German New Wave icon Wim Wenders swept up at Cannes with his dreamy tale of the American southwest. Powered by an eloquent script from playwright Sam Shepard—and starring Harry Dean Stanton, Dean Stockwell & Nastassja Kinski—it casts a doleful, poetic eye on America as only an outsider can.",rating:9.1,previewURL:"https://trailers.mubicdn.net/1502/optimised/240p-t-paris-texas_en_us_1723661184.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/677866/cache-677866-1712832643/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/677896/cache-677896-1712832884/images-original.png"},
   {title:"Sentimental Value",director:"Joachim Trier",year:"2025",country:"Norway, Germany",image:"https://assets.mubicdn.net/images/film/400360/image-w448.jpg?1757575671",fX:0.77,fY:0.4,genres:["Drama"],synopsis:"Nora, a successful stage actress, reunites with her estranged father, Gustav Borg—a once-renowned film director planning a comeback with a script based on their family. When Gustav offers Nora the lead role, which she promptly declines, he turns his attention to a rising Hollywood starlet instead.",ourTake:"Eskil Vogt and Joachim Trier—the writer-director dream team behind The Worst Person in the World—return with this stunningly observed family drama. Winner of the Best International Feature Oscar®, and featuring an all-star cast, Sentimental Value traces the fault lines between vanity, art, and life.",rating:9.2,previewURL:"https://trailers.mubicdn.net/400360/optimised/240p-t-sentimental-value_en_us_1773933105.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/920723/cache-920723-1770742695/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/885865/cache-885865-1765220772/images-original.png"},
   {title:"The Fall",director:"Tarsem Singh",year:"2006",country:"United States, India",image:"https://assets.mubicdn.net/images/film/8696/image-w448.jpg?1745489624",fX:0.681058,fY:0.678218,genres:["Drama", "Fantasy", "Cult"],synopsis:"In silent-era Hollywood, stuntman Roy Walker is brought to a hospital after an on-set accident. There, he befriends a young girl and tells her a fantastical tale of epic heroes taking revenge on an evil ruler. The story transports her from the hospital into the exotic landscapes of her imagination.",ourTake:"In this inimitable cult classic starring a magnetic Lee Pace, singular filmmaker Tarsem crafts a magical love letter to the power of storytelling and the human imagination. Now restored in spectacular 4K, this visual feast of magnificent costumes and stunning locations rivals the wildest of dreams.",rating:9.2,previewURL:"https://trailers.mubicdn.net/8696/optimised/240p-t-the-fall_en_us_1727363290.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/703004/cache-703004-1727363594/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/704242/cache-704242-1738878294/images-original.png"},
   {title:"The Girl with the Needle",director:"Magnus von Horn",year:"2024",country:"Denmark, Poland",image:"https://assets.mubicdn.net/images/film/401325/image-w448.jpg?1745502562",fX:0.495822,fY:0.537129,genres:["Drama"],synopsis:"Struggling to survive in post-WWI Copenhagen, a newly unemployed and pregnant young woman is taken in by a charismatic elder to help run an underground adoption agency. The two form an unexpected bond, until a sudden discovery changes everything.",ourTake:"An Oscar®-nominated marvel of exquisite empathy, Magnus von Horn’s masterful vision of early 20th-century Denmark searches for tenderness and morality under fraught circumstances. Drawing on chilling true events that continue to resonate, this gothic parable is a visceral reckoning from the past.",rating:9.0,previewURL:"https://trailers.mubicdn.net/401325/optimised/240p-t-the-girl-with-the-needle_en_us_1737727549.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/751317/cache-751317-1737373622/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/742373/cache-742373-1732795308/images-original.png"},
-  {title:"2015",director:"Rodrigo Sorogoyen",year:"2024",country:"Spain, France",image:"https://assets.mubicdn.net/images/film/448214/image-w448.jpg?1760109597",fX:0.52,fY:0.38,genres:["Drama", "TV Mini-series"],synopsis:"It’s the early morning of January 1st, 2016. Óscar is feeling down: he’s gone to a nightclub with his ex-girlfriend, Vero, thinking he still has a chance with her. But he’s wrong. It’s the same nightclub where Ana works as a waitress. When the club closes, Ana and Óscar meet at a bar.",ourTake:"",rating:9.4,artwork:"https://images.mubicdn.net/images/artworks/871371/cache-871371-1760112258/images-original.png"},
+  {title:"The New Year",series:true,director:"Rodrigo Sorogoyen",year:"2024",country:"Spain, France",image:"https://assets.mubicdn.net/images/film/448214/image-w448.jpg?1760109597",fX:0.52,fY:0.38,genres:["Drama", "TV Mini-series"],synopsis:"It’s the early morning of January 1st, 2016. Óscar is feeling down: he’s gone to a nightclub with his ex-girlfriend, Vero, thinking he still has a chance with her. But he’s wrong. It’s the same nightclub where Ana works as a waitress. When the club closes, Ana and Óscar meet at a bar.",ourTake:"Rodrigo Sorogoyen—the Spanish master of slow-burn intensity behind Mother and The Beasts—turns his luminous attention to the passage of time and the ache of brief encounters. Anchored by two magnetic performances and an almost unbearably precise emotional detail, The New Year traces a love story across five New Year’s Days.",rating:9.4,artwork:"https://images.mubicdn.net/images/artworks/871371/cache-871371-1760112258/images-original.png"},
   {title:"Crossing",director:"Levan Akin",year:"2024",country:"Sweden, Turkey",image:"https://assets.mubicdn.net/images/film/374529/image-w448.jpg?1745502259",fX:0.536857,fY:0.353086,genres:["Drama", "LGBTQ+"],synopsis:"Lia, a retired teacher from Georgia, learns from her young neighbor, Achi, that her long-lost transgender niece, Tekla, has crossed the border into Turkey. In search of Tekla, Lia travels to Istanbul with the unpredictable Achi, where they explore the hidden depths of the city.",ourTake:"Director Levan Akin centers the vital spirit of Istanbul’s trans community in this poignant story of unlikely connection. With three exquisite performances that vividly transcend generational divides, Crossing is a defiant city symphony and a compassionate tale of hope, identity, and forgiveness.",rating:9.2,previewURL:"https://trailers.mubicdn.net/374529/optimised/240p-t-crossing-2023-levan-akin_en_us_1725006017.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/702731/cache-702731-1724061240/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/682775/cache-682775-1717521428/images-original.jpg"},
-  {title:"Part 1",director:"David Lynch",year:"2017",country:"United States",image:"https://assets.mubicdn.net/images/film/433459/image-w448.jpg?1747696370",fX:0.5961,fY:0.247525,genres:["Drama", "Fantasy", "Thriller", "Crime", "Mystery", "TV Mini-series"],synopsis:"My log has a message for you.",ourTake:"",rating:9.4,artwork:"https://images.mubicdn.net/images/artworks/777937/cache-777937-1747696451/images-original.png"},
+  {title:"Twin Peaks: A Limited Event Series",series:true,director:"David Lynch",year:"2017",country:"United States",image:"https://assets.mubicdn.net/images/film/433459/image-w448.jpg?1747696370",fX:0.5961,fY:0.247525,genres:["Drama", "Fantasy", "Thriller", "Crime", "Mystery", "TV Mini-series"],synopsis:"My log has a message for you.",ourTake:"Twenty-five years after the original series ended, David Lynch and Mark Frost returned to deliver one of the most audacious and formally radical works in the history of television. Haunting, disorienting, and profoundly moving, the Limited Event Series rewards patience with images and sequences that seem to exist entirely outside of time itself.",rating:9.4,artwork:"https://images.mubicdn.net/images/artworks/777937/cache-777937-1747696451/images-original.png"},
   {title:"Parasite",director:"Bong Joon Ho",year:"2019",country:"South Korea",image:"https://assets.mubicdn.net/images/film/172930/image-w448.jpg?1745495498",fX:0.713663,fY:0.503876,genres:["Drama", "Comedy", "Thriller"],synopsis:"Meet the Park Family, the picture of aspirational wealth. And the Kim Family, rich in street smarts but not much else. Masterminded by Ki-Woo, the Kim children scam their way as tutors into the wealthy household—and it’s not long before the Parks are obliviously bankrolling the whole Kim clan…",ourTake:"A huge international sensation, Bong Joon Ho’s social thriller won the Palme d’Or as well as four Academy Awards®, including Best Picture! As an unemployed family cleverly integrates itself into an unsuspecting wealthy household, this darkly comic film serves up surprise after nail-biting surprise.",rating:9.1,previewURL:"https://trailers.mubicdn.net/172930/optimised/240p-t-parasite-2018_en_us_738.1089999999999_1920_1080_1770136288.mp4",artwork:"https://images.mubicdn.net/images/artworks/221822/cache-221822-1621566641/images-original.png"},
   {title:"Festen",director:"Thomas Vinterberg",year:"1998",country:"Denmark, Sweden",image:"https://assets.mubicdn.net/images/film/199/image-w448.jpg?1745489494",fX:0.727019,fY:0.259901,genres:["Drama"],synopsis:"At a countryside manor, a lavish 60th birthday celebration is being held for revered family patriarch, Helge. Everyone has been invited—most importantly, his wife and three grown-up children, Christian, Michael and Helene. That night, Christian makes a speech nobody will ever forget.",ourTake:"Arguably portraying one of cinema’s most messed-up families ever, Festen is considered the first film made under the rules of the radical Dogme 95 movement. Thomas Vinterberg’s madcap time-bomb of latent secrets and repressed grudges makes any family dinner seem like a piece of cake.",rating:9.0,previewURL:"https://trailers.mubicdn.net/199/optimised/240p-t-the-celebration_dk_en_640_447_199.mp4",artwork:"https://images.mubicdn.net/images/artworks/634484/cache-634484-1695312468/images-original.png"},
   {title:"The Worst Person in the World",director:"Joachim Trier",year:"2021",country:"Norway, France",image:"https://assets.mubicdn.net/images/film/235851/image-w448.jpg?1745498543",fX:0.612813,fY:0.497525,genres:["Drama", "Comedy", "Romance"],synopsis:"On the verge of turning thirty, Julie is faced with a series of choices that force her to pursue new perspectives on her life in contemporary Oslo. Over the course of four years, she navigates love affairs and existential uncertainty as she starts deciding who she wants to become.",ourTake:"Formally playful and humorously observant, Joachim Trier’s Oscar®-nominated gem embraces with open arms the messiness of life at a crossroad. Winner of Cannes’ Best Actress Award for her star-making turn, the effervescent Renate Reinsve commands the screen–and our hearts–with her ravishing vivacity.",rating:8.8,previewURL:"https://trailers.mubicdn.net/235851/optimised/240p-t-the-worst-person-in-the-world_en_us_1652398328.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/465225/cache-465225-1652279882/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/466151/cache-466151-1652952839/images-original.jpeg"},
@@ -1239,7 +1353,7 @@ const ALL_FILMS = [
   {title:"Shiva Baby",director:"Emma Seligman",year:"2020",country:"United States",image:"https://assets.mubicdn.net/images/film/254618/image-w448.jpg?1745496747",fX:0.344011,fY:0.457921,genres:["Comedy", "Drama", "LGBTQ+"],synopsis:"College student Danielle is faced with a series of awkward encounters at a day-long shiva, a Jewish gathering during a time of mourning. Amongst overbearing relatives, she is rattled by the appearance of an ex-girlfriend and of her secret sugar daddy, who unexpectedly arrives with his wife and baby.",ourTake:"A truly unforgettable debut, Emma Seligman’s acclaimed Shiva Baby finds the sweet spot between distress and hilarity. Led by a commanding performance from Rachel Sennott, the film’s masterful formal construction heightens its darkly comedic, sex positive take on family, religion, and sugar daddies.",rating:8.2,previewURL:"https://trailers.mubicdn.net/254618/optimised/240p-t-shiva-baby-2020_en_us_1622116122.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/321420/cache-321420-1623316730/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/217550/cache-217550-1622040381/images-original.jpg"},
   {title:"Sherlock Jr.",director:"Buster Keaton",year:"1924",country:"United States",image:"https://assets.mubicdn.net/images/film/1527/image-w448.jpg?1745490247",fX:0.48,fY:0.26,genres:["Silent", "Comedy", "Action"],synopsis:"A film projectionist longs to be a detective, and puts his meager skills to work when he is framed by a rival for stealing his girlfriend’s father’s pocketwatch.",ourTake:"With mathematical precision and more than a dash of visionary genius, Buster Keaton created one of the most indelible images in film history when he stepped inside a cinema screen in Sherlock Jr. and clowned around in its images. A century has done nothing to dim its flickering magic.",rating:9.1,previewURL:"https://trailers.mubicdn.net/1527/optimised/240p-t-sherlock-jr_en_us_1948.474_1280_720_1588904482.mp4",artwork:"https://images.mubicdn.net/images/artworks/915431/cache-915431-1770204410/images-original.png"},
   {title:"It Was Just an Accident",director:"Jafar Panahi",year:"2025",country:"Iran, France",image:"https://assets.mubicdn.net/images/film/441162/image-w448.jpg?1747995632",fX:0.522284,fY:0.420792,genres:["Crime", "Thriller", "Drama", "Mystery"],synopsis:"When an auto mechanic encounters the man who may have been his torturer in prison, he kidnaps him to exact vengeance. But since the sole clue to Eghbal’s identity is the squeak of his prosthetic leg, Vahid turns to other now-freed victims for confirmation. And the danger only escalates.",ourTake:"Jafar Panahi won the Palme d’Or for this tour-de-force morality tale, which ignites the pursuit of truth with dark comedy and impassioned urgency. Driving through obstinate barriers of authoritarianism and censorship, this is a defining work of political cinema from one of Iran’s great auteurs.",rating:8.7,previewURL:"https://trailers.mubicdn.net/441162/optimised/240p-t-it-was-just-an-accident_en_us_1772767374.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/941331/cache-941331-1772793963/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/779408/cache-779408-1762811339/images-original.png"},
-  {title:"A Natural History of the Studio",director:"William Kentridge",year:"2024",country:"South Africa, United States",image:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",fX:0.961003,fY:0.725248,genres:["Documentary", "TV Mini-series"],synopsis:"South African artist William Kentridge investigates life in the studio. He imagines his studio as an enlarged head, where multiple dialogues occur between the artist and himself. Kentridge begins interviewing his double. Soon, the whole studio is populated by Kentridge’s many selves.",ourTake:"Step inside the roving creative imagination of William Kentridge with this exclusive nine-part series. An ode to procrastination, pacing, and messy desks, this playful first episode sees the South African artist invoke a doppelgänger with whom to squabble over the intangible seeds of inspiration.",rating:9.2,previewURL:"https://trailers.mubicdn.net/419520/optimised/240p-t-self-portrait-as-a-coffee-pot-episode-1_en_us_1729185407.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/723159/cache-723159-1729210212/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/764420/cache-764420-1742912614/images-original.png"},
+  {title:"Self-Portrait as a Coffee-Pot",series:true,director:"William Kentridge",year:"2024",country:"South Africa, United States",image:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",fX:0.961003,fY:0.725248,genres:["Documentary", "TV Mini-series"],synopsis:"South African artist William Kentridge investigates life in the studio. He imagines his studio as an enlarged head, where multiple dialogues occur between the artist and himself. Kentridge begins interviewing his double. Soon, the whole studio is populated by Kentridge’s many selves.",ourTake:"Step inside the roving creative imagination of William Kentridge with this exclusive nine-part series. An ode to procrastination, pacing, and messy desks, this playful first episode sees the South African artist invoke a doppelgänger with whom to squabble over the intangible seeds of inspiration.",rating:9.2,previewURL:"https://trailers.mubicdn.net/419520/optimised/240p-t-self-portrait-as-a-coffee-pot-episode-1_en_us_1729185407.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/723159/cache-723159-1729210212/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/764420/cache-764420-1742912614/images-original.png"},
   {title:"Don't Let Them Shoot the Kite",director:"Tunç Başaran",year:"1989",country:"Turkey",image:"https://assets.mubicdn.net/images/film/90703/image-w448.jpg?1745503277",fX:0.543175,fY:0.433168,genres:["Drama"],synopsis:"Barış, a five-year-old boy, lives in prison with his detained mother. Within the high security walls, he forms an unexpected bond with İnci, a young political prisoner. Their special relationship opens up a new world for Barış and impacts the lives of other women prisoners.",ourTake:"Camaraderie and fleeting joys soften harsh realities in Don’t Let Them Shoot the Kite, which reemerges as a Turkish classic in this fresh 4K restoration. Capturing the profound resilience of its characters through a child’s tender gaze, Tunç Başaran’s prizewinner is a testament to enduring spirit.",rating:9.1,previewURL:"https://trailers.mubicdn.net/90703/optimised/240p-t-ucurtmayi-vurmasinlar_en_us_1732364100.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/743404/cache-743404-1732012188/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/744787/cache-744787-1732296789/images-original.png"},
   {title:"High & Low - John Galliano",director:"Kevin Macdonald",year:"2023",country:"United Kingdom",image:"https://assets.mubicdn.net/images/film/380148/image-w448.jpg?1745501368",fX:0.518106,fY:0.363861,genres:["Documentary", "Biography", "LGBTQ+"],synopsis:"Fashion designer John Galliano was widely recognized as one of the most influential names in 1990s and 2000s couture until his career abruptly ended in 2011. Candid footage—plus conversations with Naomi Campbell, Kate Moss, Anna Wintour and more—trace Galliano’s turbulent career through the decades.",ourTake:"Reliving triumphs and controversies, fashion designer John Galliano takes center stage in this grippingly nuanced portrait from Oscar®-winner Kevin Macdonald. Star-studded interviews and rare archival footage reveal the toxicity behind exquisite glamor and spectacle, both on and off the runway.",rating:8.7,previewURL:"https://trailers.mubicdn.net/380148/optimised/240p-t-high-low-john-galliano_en_us_1714126241.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/682249/cache-682249-1713881270/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/635851/cache-635851-1709570115/images-original.jpg"},
   {title:"Malcolm X",director:"Spike Lee",year:"1992",country:"United States",image:"https://assets.mubicdn.net/images/film/9913/image-w448.jpg?1745500867",fX:0.469359,fY:0.282178,genres:["Drama", "Biography", "History"],synopsis:"Biographical epic of the controversial and influential Black Nationalist leader, from his early life and career as a small-time gangster, to his ministry as a member of the Nation of Islam and his eventual assassination.",ourTake:"A bravura biopic from writer-director Spike Lee (Do the Right Thing, BlacKkKansman), this insightful, engrossing epic does full justice to its subject: civil rights leader Malcolm X. A nuanced exploration of the man and the myth, anchored by a rousing performance from Denzel Washington.",rating:8.9,previewURL:"https://trailers.mubicdn.net/9913/optimised/240p-t-malcolm-x_en_us_1729057946.mp4",artwork:"https://images.mubicdn.net/images/artworks/737879/cache-737879-1731370214/images-original.png"},
@@ -1341,7 +1455,7 @@ const ALL_FILMS = [
   {title:"Perfumed Nightmare",director:"Kidlat Tahimik",year:"1977",country:"Philippines",image:"https://assets.mubicdn.net/images/film/24201/image-w448.jpg?1745490240",fX:0.67,fY:1.0,genres:["Comedy", "Drama"],synopsis:"Young Kidlat is a jeepney driver in the Philippines, but his dream is to leave his village and travel to Europe, the embodiment of the technological advancement he idolizes. Instead, he discovers inhumane modernity no better than what he left behind.",ourTake:"In a surreal style entwining dream and documentary, Filipino actor-director Kidlat Tahimik’s debut creatively catches its disillusioned protagonist between the “First” and “Third” Worlds. A milestone film in post-colonial cinema, later championed stateside by Werner Herzog and Francis Ford Coppola.",rating:8.4,artwork:"https://images.mubicdn.net/images/artworks/902149/cache-902149-1767803862/images-original.png"},
   {title:"Seven Chances",director:"Buster Keaton",year:"1925",country:"United States",image:"https://assets.mubicdn.net/images/film/3772/image-w448.jpg?1760627222",fX:0.47,fY:0.38,genres:["Silent", "Comedy"],synopsis:"Struggling stockbroker Jimmie Shannon learns that, if he gets married by 7 p.m. on his 27th birthday—which is today—he’ll inherit $7 million from an eccentric relative. But, after Mary Jones, whom he’s mooned over for years, turns him down, he has only hours to find a woman who’ll marry him.",ourTake:"It may not be as well known, but this high-concept gem is every bit as packed with ingenuity as Buster Keaton’s most iconic treasures. In a climax that sees hundreds of brick-wielding brides chase our forlorn hero through the streets, Seven Chances serves up a masterclass in comic escalation.",rating:8.6,previewURL:"https://trailers.mubicdn.net/3772/optimised/240p-t-seven-chances_en_us_1876.561_1280_720_1588904294.mp4",artwork:"https://images.mubicdn.net/images/artworks/886114/cache-886114-1764065977/images-original.png"},
   {title:"Pictures of Ghosts",director:"Kleber Mendonça Filho",year:"2023",country:"Brazil",image:"https://assets.mubicdn.net/images/film/376310/image-w448.jpg?1745501345",fX:0.53,fY:0.37,genres:["Documentary"],synopsis:"In the Brazilian city of Recife, director Kleber Mendonça Filho moves through the city’s grand movie theaters, once vital spaces of collective imagination and social life. Archival material, film excerpts, and memories trace a century of dreams, ruptures, and transformations.",ourTake:"Interweaving private and collective memories, Kleber Mendonça Filho crafts a playful yet profound ode to his hometown. Imbued with the resilient spirit of an iconic city, this inventive essay film revives the urban legends and charismatic figures that also inspired The Secret Agent.",rating:8.7,previewURL:"https://trailers.mubicdn.net/376310/optimised/240p-t-pictures-of-ghosts_en_us_1692249802.mp4",artwork:"https://images.mubicdn.net/images/artworks/908069/cache-908069-1769021933/images-original.png"},
-  {title:"The Unheavenly Host",director:"Lars von Trier",year:"1994",country:"Denmark, Sweden",image:"https://assets.mubicdn.net/images/film/30673/image-w448.jpg?1745489980",fX:0.526462,fY:0.601485,genres:["Comedy", "Drama", "TV Series"],synopsis:"Spiritualist Mrs. Drusse tricks the doctors into admitting her into the neurosurgery ward of the Kingdom hospital, where she discovers the sounds of a weeping child in the elevator shaft. Swedish consultant Dr. Helmer is confronted by the results of his sloppy work treating a brain-damaged patient.",ourTake:"Strange things are happening in the underbelly of a Danish hospital in Lars von Trier’s long unavailable cult TV phenomenon. Stunningly restored in never-before-seen versions, The Kingdom I is a wickedly funny supernatural mystery. Let the battle between good and evil commence!",rating:8.4,previewURL:"https://trailers.mubicdn.net/30673/optimised/240p-t-the-unheavenly-host_en_us_1668292027.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/494581/cache-494581-1668427705/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/493346/cache-493346-1667829551/images-original.png"},
+  {title:"The Kingdom",series:true,director:"Lars von Trier",year:"1994",country:"Denmark, Sweden",image:"https://assets.mubicdn.net/images/film/30673/image-w448.jpg?1745489980",fX:0.526462,fY:0.601485,genres:["Comedy", "Drama", "TV Series"],synopsis:"Spiritualist Mrs. Drusse tricks the doctors into admitting her into the neurosurgery ward of the Kingdom hospital, where she discovers the sounds of a weeping child in the elevator shaft. Swedish consultant Dr. Helmer is confronted by the results of his sloppy work treating a brain-damaged patient.",ourTake:"Strange things are happening in the underbelly of a Danish hospital in Lars von Trier’s long unavailable cult TV phenomenon. Stunningly restored in never-before-seen versions, The Kingdom I is a wickedly funny supernatural mystery. Let the battle between good and evil commence!",rating:8.4,previewURL:"https://trailers.mubicdn.net/30673/optimised/240p-t-the-unheavenly-host_en_us_1668292027.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/494581/cache-494581-1668427705/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/493346/cache-493346-1667829551/images-original.png"},
   {title:"Faya Dayi",director:"Jessica Beshir",year:"2021",country:"Ethiopia, United States",image:"https://assets.mubicdn.net/images/film/288622/image-w448.jpg?1745497878",fX:0.803621,fY:0.190594,genres:["Documentary", "Drama"],synopsis:"Ethiopian legends say khat, a stimulant leaf, was found by Sufi Imams in search of eternity. Through a spiritual journey into the khat trade, stories of government repression, mystical fantasies, and risky journeys beyond borders are told, showing the dreams of a youth longing for a better life.",ourTake:"Emulating the intoxicating potency of the khat plant, Jessica Beshir’s documentary on the herbal drug trade in Ethiopia is pure poetry in motion. Casting a spell on the landscape, the gauzy black-and-white cinematography evokes the hazy line between the hardship of harvest and the stupor of bliss.",rating:8.5,previewURL:"https://trailers.mubicdn.net/288622/optimised/240p-t-faya-dayi_en_us_1655750565.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/477238/cache-477238-1659454294/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/470817/cache-470817-1655719473/images-original.png"},
   {title:"Whores' Glory",director:"Michael Glawogger",year:"2011",country:"Austria, Germany",image:"https://assets.mubicdn.net/images/film/87313/image-w448.jpg?1745490991",fX:0.509749,fY:0.00446429,genres:["Documentary"],synopsis:"In Bangkok, Thailand, women punch a clock and wait for clients in a brightly lit glass box; in the red-light district of Faridpur, Bangladesh, a madam haggles over the price of a teenage girl; and in the border town of Reynosa, Mexico, crack-addicted women pray to a deity named Lady Death.",ourTake:"This beautiful, unsettling documentary from the adventurous maverick Michael Glawogger travels from Thailand to Bangladesh to Mexico to view how the oldest profession differs across cultures. The candid, intimate experiences of sex workers form the empathetic center of this remarkable film.",rating:8.3,previewURL:"https://trailers.mubicdn.net/87313/optimised/240p-t-whores-glory_en_us_1280_720_1473606324.mp4",artwork:"https://images.mubicdn.net/images/artworks/521538/cache-521538-1676391262/images-original.png"},
   {title:"Eletrodoméstica",director:"Kleber Mendonça Filho",year:"2005",country:"Brazil",image:"https://assets.mubicdn.net/images/film/163018/image-w448.jpg?1745493438",fX:0.618915,fY:0.224691,genres:["Drama", "Short"],synopsis:"1990s, post-urban Recife, without maracatu, with lots of buildings and traffic. A middle-class family, made up of a mother and her two children, lives in a house that is full of superfluous appliances capable of making a lot of noise.",ourTake:"Kleber Mendonça Filho’s arresting short carries the spirit of his later debut feature Neighboring Sounds: an apartment’s cacophonous noises lend this eccentric comedy a sinister air. Building to an unforgettable climax, this look at our symbiotic bonds with appliances is a hypnotizing treat.",rating:8.4,artwork:"https://images.mubicdn.net/images/artworks/653170/cache-653170-1702003591/images-original.png"},
@@ -1715,14 +1829,104 @@ const ALL_FILMS = [
 ];
 
 const ALL_SERIES = [
-  { title:"Hal & Harper", director:"Cooper Raiff", year:2025, country:"United States", image:"https://images.mubicdn.net/images/film/448206/cache-1082712-1757432851/image-w1280.jpg", fX:0.70, fY:0.30 },
+  { title:"Hal & Harper", director:"Cooper Raiff", year:2025, country:"United States", image:"https://images.mubicdn.net/images/film/448206/cache-1082712-1757432851/image-w1280.jpg", fX:0.70, fY:0.30, ourTake:"Cooper Raiff—whose debut Shithouse and breakthrough Cha Cha Real Smooth established him as the most naturally gifted chronicler of millennial longing—returns with this tender, precisely observed account of a new relationship finding its footing. Genuinely funny and almost unbearably sweet, Hal & Harper captures the specific texture of early love with warmth and disarming precision." },
   { title:"The New Year", director:"Rodrigo Sorogoyen", year:2024, country:"Spain, France", image:"https://images.mubicdn.net/images/film/448214/cache-1088377-1760109597/image-w1280.jpg", fX:0.52, fY:0.38 },
   { title:"Twin Peaks: A Limited Event Series", director:"David Lynch", year:2017, country:"United States", image:"https://images.mubicdn.net/images/film/433459/cache-1036225-1747696370/image-w1280.jpg", fX:0.60, fY:0.25 },
   { title:"Self-Portrait as a Coffee-Pot", director:"William Kentridge", year:2024, country:"South Africa, United States", image:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006", fX:0.96, fY:0.73 },
-  { title:"Blossoms Shanghai", director:"Wong Kar Wai", year:2023, country:"China, Hong Kong", image:"https://images.mubicdn.net/images/film/442900/cache-1109912-1769020624/image-w1280.jpg", fX:0.58, fY:0.38 },
+  { title:"Blossoms Shanghai", director:"Wong Kar Wai", year:2023, country:"China, Hong Kong", image:"https://images.mubicdn.net/images/film/442900/cache-1109912-1769020624/image-w1280.jpg", fX:0.58, fY:0.38, ourTake:"Wong Kar Wai makes his long-awaited return to long-form storytelling with this lush, memory-steeped portrait of 1990s Shanghai—and the men and women transformed by an era of unprecedented possibility. Drenched in nostalgia and the director's signature sense of time slipping past, Blossoms Shanghai is an extraordinary late work from one of cinema's great romantics." },
   { title:"Twin Peaks", director:"David Lynch", year:1990, country:"United States", image:"https://images.mubicdn.net/images/film/433422/cache-1035490-1747141083/image-w1280.jpg", fX:0.38, fY:0.56 },
   { title:"The Kingdom", director:"Lars von Trier", year:1994, country:"Denmark, Sweden", image:"https://assets.mubicdn.net/images/film/30673/image-w448.jpg?1745489980", fX:0.53, fY:0.60 },
 ];
+const SERIES_EPISODES = {
+  "Twin Peaks": [
+    {ep:"Ep 1",title:"Pilot",dur:"1h 31m",img:"https://assets.mubicdn.net/images/film/433422/image-w448.jpg?1747141083",synopsis:"The idyllic Pacific Northwest town of Twin Peaks is shaken when homecoming queen Laura Palmer is found dead, wrapped in plastic, on the riverbank."},
+    {ep:"Ep 2",title:"Traces to Nowhere",dur:"47m",img:"https://assets.mubicdn.net/images/film/433422/image-w448.jpg?1747141083",synopsis:"Agent Cooper and Sheriff Truman dig into Laura's hidden double life as the town's buried secrets begin to surface."},
+    {ep:"Ep 3",title:"Zen, or the Skill to Catch a Killer",dur:"48m",img:"https://assets.mubicdn.net/images/film/433422/image-w448.jpg?1747141083",synopsis:"Cooper employs an unconventional dream ritual to narrow the suspect list, pointing toward a profound and unsettling mystery."},
+    {ep:"Ep 4",title:"Rest in Pain",dur:"46m",img:"https://assets.mubicdn.net/images/film/433422/image-w448.jpg?1747141083",synopsis:"The town gathers to mourn Laura Palmer as grief, guilt, and long-suppressed tensions come to the surface."},
+    {ep:"Ep 5",title:"The One-Armed Man",dur:"47m",img:"https://assets.mubicdn.net/images/film/433422/image-w448.jpg?1747141083",synopsis:"A mysterious one-armed man becomes a key figure in the investigation as Cooper pursues a lead involving Bob and Mike."},
+    {ep:"Ep 6",title:"Cooper's Dreams",dur:"48m",img:"https://assets.mubicdn.net/images/film/433422/image-w448.jpg?1747141083",synopsis:"A recurring dream yields cryptic symbols and a terrifying revelation that reshapes the course of the entire investigation."},
+  ],
+  "Twin Peaks: A Limited Event Series": [
+    {ep:"Ep 1",title:"My log has a message for you.",dur:"59m",img:"https://assets.mubicdn.net/images/film/433459/image-w448.jpg?1747696370",synopsis:"Cooper's doppelganger walks free in the real world as the real Cooper remains lost, comatose, in the limbo of the Black Lodge."},
+    {ep:"Ep 2",title:"The stars turn and a time presents itself",dur:"46m",img:"https://assets.mubicdn.net/images/film/433459/image-w448.jpg?1747696370",synopsis:"New and familiar faces navigate a fractured world as twenty-five years of silence begin to break open."},
+    {ep:"Ep 3",title:"Call for help",dur:"59m",img:"https://assets.mubicdn.net/images/film/433459/image-w448.jpg?1747696370",synopsis:"Cooper awakens in an impossible glass box in New York as the forces of the Black Lodge close in around him."},
+    {ep:"Ep 4",title:"...Brings back some memories",dur:"48m",img:"https://assets.mubicdn.net/images/film/433459/image-w448.jpg?1747696370",synopsis:"A trail of violence and amnesia spreads across the American heartland as Cooper's double continues his destructive path."},
+    {ep:"Ep 5",title:"Case files",dur:"55m",img:"https://assets.mubicdn.net/images/film/433459/image-w448.jpg?1747696370",synopsis:"The curtain lifts on the mystery as Cooper inches toward finding his way back to the world he left behind."},
+    {ep:"Ep 6",title:"Don't die",dur:"59m",img:"https://assets.mubicdn.net/images/film/433459/image-w448.jpg?1747696370",synopsis:"Tragedy and revelation collide as the Black Lodge's hold on Twin Peaks tightens and lives hang in the balance."},
+  ],
+  "The New Year": [
+    {ep:"Ep 1",title:"2015",dur:"55m",img:"https://assets.mubicdn.net/images/film/448214/image-w448.jpg?1760109597",synopsis:"On New Year's morning 2015, a lonely Óscar and a tired Ana meet at a bar after the night club empties out."},
+    {ep:"Ep 2",title:"2016",dur:"57m",img:"https://assets.mubicdn.net/images/film/448214/image-w448.jpg?1760109597",synopsis:"A year later, their paths cross again under different circumstances, bringing with it both comfort and complication."},
+    {ep:"Ep 3",title:"2017",dur:"54m",img:"https://assets.mubicdn.net/images/film/448214/image-w448.jpg?1760109597",synopsis:"Time has changed both Ana and Óscar in ways neither expected, and a new New Year's Eve forces the question."},
+    {ep:"Ep 4",title:"2018",dur:"58m",img:"https://assets.mubicdn.net/images/film/448214/image-w448.jpg?1760109597",synopsis:"Three years of unresolved feeling deepen and fracture under the weight of a relationship that resists definition."},
+    {ep:"Ep 5",title:"2019",dur:"52m",img:"https://assets.mubicdn.net/images/film/448214/image-w448.jpg?1760109597",synopsis:"The final chapter of their story arrives on a New Year's Eve that neither could have predicted or prepared for."},
+  ],
+  "Self-Portrait as a Coffee-Pot": [
+    {ep:"Ep 1",title:"A Natural History of the Studio",dur:"25m",img:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",synopsis:"Kentridge opens his studio as a theatre of thought, drawing and unmaking images in a continuous, meditative loop."},
+    {ep:"Ep 2",title:"Vertical Thinking",dur:"23m",img:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",synopsis:"Lines ascend and collapse as Kentridge explores the vertical axis of imagination and the weight of what is made."},
+    {ep:"Ep 3",title:"Second-hand Reading",dur:"24m",img:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",synopsis:"Books, pages, and marginalia become the material for a meditation on reading as an act of co-authorship."},
+    {ep:"Ep 4",title:"Drawings for Projection",dur:"22m",img:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",synopsis:"The artist revisits his earliest animated films, tracing the tension between the hand, the mark, and erasure."},
+    {ep:"Ep 5",title:"Anything is Possible",dur:"26m",img:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",synopsis:"Kentridge interrogates the euphoria and disillusionment of possibility, drawing on South African political memory."},
+    {ep:"Ep 6",title:"Self-Portrait as a Coffee-Pot",dur:"28m",img:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",synopsis:"The self is turned inside out — refracted through objects, shadows, and the absurdity of self-representation."},
+    {ep:"Ep 7",title:"Tango for Page Turning",dur:"24m",img:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",synopsis:"A choreography of paper and gesture transforms the act of reading into something sensual, rhythmic, and strange."},
+    {ep:"Ep 8",title:"A Poem",dur:"21m",img:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",synopsis:"Language dissolves into image as Kentridge pursues the moment where a poem escapes the page entirely."},
+    {ep:"Ep 9",title:"More Sweetly Play the Dance",dur:"30m",img:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",synopsis:"A vast procession of figures — living and dead — moves across eight screens in a meditation on history, loss, and endurance."},
+  ],
+  "The Kingdom": [
+    {ep:"Ep 1",title:"The Visitors",dur:"1h 4m",img:"https://assets.mubicdn.net/images/film/30673/image-w448.jpg?1745489980",synopsis:"Strange sounds in the night and unexplained phenomena announce an unseen presence in Copenhagen's most prestigious hospital."},
+    {ep:"Ep 2",title:"The Unheavenly Host",dur:"58m",img:"https://assets.mubicdn.net/images/film/30673/image-w448.jpg?1745489980",synopsis:"A malevolent force begins to make itself known as the hospital's dark and suppressed past resurfaces violently."},
+    {ep:"Ep 3",title:"A Miracle Happened Here",dur:"59m",img:"https://assets.mubicdn.net/images/film/30673/image-w448.jpg?1745489980",synopsis:"An apparent medical miracle divides the hospital between true believers and those committed to rational explanation."},
+    {ep:"Ep 4",title:"Contagion",dur:"1h 2m",img:"https://assets.mubicdn.net/images/film/30673/image-w448.jpg?1745489980",synopsis:"The supernatural forces at work in the Kingdom spread beyond anyone's ability to contain or comprehend them."},
+  ],
+  "Blossoms Shanghai": [
+    {ep:"Ep 1",title:"Blossoms Shanghai",dur:"52m",img:"https://images.mubicdn.net/images/film/442900/cache-1109912-1769020624/image-w1280.jpg",synopsis:"In 1990s Shanghai, a young man arrives in the city with nothing and begins his long, unlikely rise toward prosperity."},
+    {ep:"Ep 2",title:"The Gold Rush",dur:"48m",img:"https://images.mubicdn.net/images/film/442900/cache-1109912-1769020624/image-w1280.jpg",synopsis:"New wealth brings new temptations as old bonds are tested by ambition, opportunity, and the city's relentless momentum."},
+    {ep:"Ep 3",title:"Night Market",dur:"50m",img:"https://images.mubicdn.net/images/film/442900/cache-1109912-1769020624/image-w1280.jpg",synopsis:"The hidden pulse of Shanghai's nightlife reveals shifting loyalties and the unspoken codes of survival."},
+    {ep:"Ep 4",title:"Reunion",dur:"55m",img:"https://images.mubicdn.net/images/film/442900/cache-1109912-1769020624/image-w1280.jpg",synopsis:"Figures from the past resurface to complicate the present as secrets long kept quietly begin to unravel."},
+    {ep:"Ep 5",title:"The Bund at Night",dur:"49m",img:"https://images.mubicdn.net/images/film/442900/cache-1109912-1769020624/image-w1280.jpg",synopsis:"A night along the Bund brings the characters to a turning point — between the world they came from and what they've become."},
+  ],
+  "Hal & Harper": [
+    {ep:"Ep 1",title:"Pilot",dur:"35m",img:"https://images.mubicdn.net/images/film/448206/cache-1082712-1757432851/image-w1280.jpg",synopsis:"Hal and Harper navigate the first tentative days of their new relationship with equal parts charm and self-conscious awkwardness."},
+    {ep:"Ep 2",title:"Date Night",dur:"32m",img:"https://images.mubicdn.net/images/film/448206/cache-1082712-1757432851/image-w1280.jpg",synopsis:"A planned evening out takes an unexpected turn, testing how well Hal and Harper actually know each other."},
+    {ep:"Ep 3",title:"The Party",dur:"34m",img:"https://images.mubicdn.net/images/film/448206/cache-1082712-1757432851/image-w1280.jpg",synopsis:"A friend's party forces Hal and Harper to define their relationship publicly for the first time."},
+    {ep:"Ep 4",title:"Aftermath",dur:"31m",img:"https://images.mubicdn.net/images/film/448206/cache-1082712-1757432851/image-w1280.jpg",synopsis:"The morning after brings honesty and vulnerability as the couple confronts what they have been carefully avoiding."},
+  ],
+};
+
+const META_ICONS_SM = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.0801 5C21.5881 5.00004 22 5.41188 22 5.91992V18.0801C22 18.5881 21.5881 19 21.0801 19H2.91992C2.41188 19 2.00004 18.5881 2 18.0801V5.91992C2.00004 5.41188 2.41188 5.00004 2.91992 5H21.0801ZM6.76953 8L6.11035 12.4004H7.46289C7.56556 12.1584 7.73847 11.9563 7.98047 11.7949C8.22237 11.6338 8.5081 11.5528 8.83789 11.5527C9.23382 11.5527 9.56195 11.6887 9.82227 11.96C10.0825 12.2312 10.2128 12.5978 10.2129 13.0596C10.2129 13.5069 10.0825 13.881 9.82227 14.1816C9.56202 14.4822 9.22689 14.6327 8.81641 14.6328C8.43514 14.6328 8.11602 14.5283 7.85938 14.3193C7.60276 14.1104 7.44103 13.8484 7.375 13.5332H6C6.03669 13.9731 6.1704 14.3675 6.40137 14.7158C6.63235 15.0641 6.95147 15.3372 7.3584 15.5352C7.7654 15.7332 8.25174 15.832 8.81641 15.832C9.35891 15.832 9.83772 15.7107 10.252 15.4688C10.6661 15.2268 10.9888 14.8964 11.2197 14.4785C11.4506 14.0606 11.5664 13.584 11.5664 13.0488C11.5664 12.5796 11.4709 12.1447 11.2803 11.7451C11.0896 11.3456 10.8109 11.023 10.4443 10.7773C10.0777 10.5317 9.61919 10.4092 9.06934 10.4092C8.72467 10.4092 8.41246 10.4654 8.13379 10.5791C7.85514 10.6928 7.63496 10.8377 7.47363 11.0137L7.82617 9.23242H11.0381V8H6.76953ZM13.4473 14.1162C13.1906 14.1162 12.9795 14.1971 12.8145 14.3584C12.6496 14.5197 12.5674 14.7176 12.5674 14.9521C12.5674 15.1794 12.6495 15.3739 12.8145 15.5352C12.9794 15.6965 13.1906 15.7773 13.4473 15.7773C13.7037 15.7773 13.9142 15.6962 14.0791 15.5352C14.2441 15.3739 14.3271 15.1794 14.3271 14.9521C14.3271 14.7175 14.2441 14.5197 14.0791 14.3584C13.9142 14.1971 13.7038 14.1163 13.4473 14.1162ZM16.6035 8L14.7451 8.8252V9.90332L16.0098 9.60645V15.7002H17.4727V8H16.6035Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4C7.6 4 4 7.6 4 12C4 16.4 7.6 20 12 20C16.4 20 20 16.4 20 12C20 7.6 16.4 4 12 4ZM14.9857 14.9108L11.4195 12.9397C11.1573 12.7983 11 12.547 11 12.2721V8.58899C11.0087 8.26701 11.3059 8 11.6643 8C12.0227 8 12.3198 8.26701 12.3198 8.58899V12.0837L15.6762 13.8977C15.9909 14.0705 16.0958 14.4396 15.9035 14.7223C15.7112 14.9972 15.3004 15.0836 14.9857 14.9108Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.8691 5.13105C18.1495 4.9411 18.5209 4.95926 18.7822 5.17499C20.8605 7.07374 22 9.50664 22 12.0441C21.9503 14.6405 20.8208 17.0972 18.8867 18.8166C18.7564 18.9389 18.574 19.0001 18.3916 19.0002C18.2438 19.0002 18.0954 18.9656 17.9736 18.8781C17.7041 18.6856 17.6696 18.3528 17.9043 18.1428C19.6452 16.5942 20.6608 14.3819 20.7041 12.0441C20.6586 9.66556 19.6089 7.41878 17.8174 5.8664C17.5827 5.65642 17.6084 5.32355 17.8691 5.13105ZM11.5303 5.08808C11.7042 4.98308 11.9396 4.97421 12.1309 5.06171C12.3132 5.14928 12.4346 5.32445 12.4346 5.51679V18.4748C12.4346 18.6671 12.3132 18.8423 12.1309 18.9299C12.044 18.9736 11.9567 18.9914 11.8525 18.9914L11.7676 18.9953C11.6841 18.9843 11.6033 18.9557 11.5303 18.9123L6.86914 14.8H2.58301C2.26143 14.8 2.00027 14.5729 2 14.2844V9.12128C2.0001 8.84135 2.26133 8.60566 2.58301 8.60566H6.86914L11.5303 5.08808ZM15.2002 7.76484C15.4037 7.57658 15.719 7.5843 15.9131 7.78242C18.1927 10.1112 18.235 13.8374 16.0088 16.218C15.9045 16.3229 15.7739 16.3752 15.6348 16.3752C15.5131 16.3752 15.3914 16.3317 15.2871 16.2443C15.0871 16.0519 15.0783 15.7366 15.2695 15.5266C17.1385 13.538 17.1 10.4151 15.1826 8.47382C15.091 8.37796 15.0408 8.24932 15.0439 8.1164C15.0472 7.98327 15.1039 7.85615 15.2002 7.76484Z" fill="#323232"/></svg>`;
+
+function seriesDropHtml(title) {
+  const eps = SERIES_EPISODES[title] || [];
+  if (!eps.length) return '';
+  return `<div class="series-ep-drop">
+    <div class="series-ep-head">
+      <span class="series-ep-label">Episodes</span>
+      <span class="series-ep-count">${eps.length} episodes</span>
+    </div>
+    <div class="series-ep-row">
+      ${eps.slice(0, 4).map(ep => `<a class="series-ep-tile" href="#">
+        <div class="series-ep-thumb">
+          <img src="${ep.img}" alt="${ep.title}" loading="lazy">
+          <div class="series-ep-overlay">
+            <div class="series-ep-num">${ep.ep}</div>
+            <div class="series-ep-title">${ep.title}</div>
+            <div class="series-ep-dur">${ep.dur}</div>
+          </div>
+        </div>
+        <div class="series-ep-body">
+          <div class="card-actions" style="margin-bottom:8px;">
+            <button class="card-watch-btn"><span class="material-icons" style="font-size:18px;line-height:1;">play_arrow</span>Watch</button>
+            <button class="card-icon-btn"><span class="material-icons" style="font-size:18px;">add</span></button>
+            <button class="card-icon-btn"><span class="material-icons" style="font-size:18px;">star_border</span></button>
+          </div>
+          <p class="series-ep-synopsis-text">${ep.synopsis || ''}</p>
+          <div class="series-ep-body-meta">${META_ICONS_SM}</div>
+        </div>
+      </a>`).join('')}
+    </div>
+  </div>`;
+}
+
 const GENRE_INDEX = {};
 ALL_FILMS.forEach((film, i) => {
   (film.genres || []).forEach(g => {
@@ -1735,10 +1939,10 @@ ALL_FILMS.forEach((film, i) => {
 ALL_FILMS.forEach((film, i) => {
   const year = Number(film.year);
   let pool;
-  if (year >= 2022)      pool = ['4k', 'uhd', 'hdr', 'dolby', '4k', 'uhd'];
-  else if (year >= 2018) pool = ['hd', '4k', 'uhd', 'hd', '4k'];
-  else if (year >= 2010) pool = ['hd', 'hd', '4k', 'hd'];
-  else                   pool = ['hd', 'hd', 'hd'];
+  if (year >= 2022)      pool = ['4k', '4k', 'fhd', '4k', 'fhd'];
+  else if (year >= 2015) pool = ['fhd', '4k', 'fhd', 'hd', 'fhd'];
+  else if (year >= 2000) pool = ['hd', 'fhd', 'hd', 'hd'];
+  else                   pool = ['hd', 'sd', 'hd', 'sd'];
   film.quality = pool[i % pool.length];
 });
 
@@ -1753,19 +1957,15 @@ function shuffle(arr) {
 }
 
 function seriesCard(film) {
-  const posX = Math.round((film.fX || 0.5) * 100);
-  const posY = Math.round((film.fY || 0.5) * 100);
-  return `
-    <a class="film-card" href="#" aria-label="${film.title}">
-      <div class="card-img-wrap">
-        <img class="card-img" src="${film.image}" alt="${film.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
-        <div class="card-overlay">
-          <div class="card-eyebrow">Series</div>
-          <div class="card-title">${film.title}</div>
-          <div class="card-meta"><span class="card-meta-director">${film.director}</span> · ${film.country} · ${film.year}</div>
-        </div>
-      </div>
-    </a>`;
+  const filmData = ALL_FILMS.find(f => f.title === film.title) || {};
+  return filmCard({
+    ...filmData,
+    image: film.image,
+    fX: film.fX || 0.5,
+    fY: film.fY || 0.5,
+    ourTake: filmData.ourTake || film.ourTake || '',
+    series: true,
+  });
 }
 
 function filmCard(film) {
