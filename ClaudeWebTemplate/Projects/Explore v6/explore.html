@@ -813,10 +813,16 @@
     .filter-btn.is-active { background: transparent; color: #323232; border: none; }
     .filter-btn .filter-icon circle { fill: #fff; transition: transform 0.22s cubic-bezier(0.4,0,0.2,1); }
     .filter-btn.is-active .filter-icon circle { fill: #fff; }
-    .filter-btn:hover .filter-icon circle:nth-child(3),
     .filter-btn.is-active .filter-icon circle:nth-child(3) { transform: translateY(6px); }
-    .filter-btn:hover .filter-icon circle:nth-child(4),
     .filter-btn.is-active .filter-icon circle:nth-child(4) { transform: translateY(-6px); }
+    .filter-btn:not(.is-active):hover .filter-icon circle:nth-child(3) { transform: translateY(6px); }
+    .filter-btn:not(.is-active):hover .filter-icon circle:nth-child(4) { transform: translateY(-6px); }
+    .filter-btn.is-active:hover .filter-icon circle:nth-child(3) { transform: translateY(0px); }
+    .filter-btn.is-active:hover .filter-icon circle:nth-child(4) { transform: translateY(0px); }
+    .filter-btn.is-active.is-open .filter-icon circle:nth-child(3),
+    .filter-btn.is-active.is-open:hover .filter-icon circle:nth-child(3) { transform: translateY(6px); }
+    .filter-btn.is-active.is-open .filter-icon circle:nth-child(4),
+    .filter-btn.is-active.is-open:hover .filter-icon circle:nth-child(4) { transform: translateY(-6px); }
     .filter-sort:hover .filter-select { opacity: 0.6; }
     .filter-sort:hover .material-icons { opacity: 0.6; }
     .filter-overlay {
@@ -2325,13 +2331,14 @@ function openFilterPanel(anchorBtn) {
   panel.style.left = rect.left + 'px';
   panel.classList.add('is-open');
   document.getElementById('filterOverlay').classList.add('is-open');
-  anchorBtn.classList.add('is-active');
+  anchorBtn.classList.add('is-active', 'is-open');
   panel._anchor = anchorBtn;
 }
 function closeFilterPanel() {
   const panel = document.getElementById('filterPanel');
   panel.classList.remove('is-open');
   document.getElementById('filterOverlay').classList.remove('is-open');
+  document.getElementById('filterBtn').classList.remove('is-open');
   panel._anchor = null;
   updateClearBtn();
 }
