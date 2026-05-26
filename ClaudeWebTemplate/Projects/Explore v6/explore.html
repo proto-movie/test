@@ -1295,8 +1295,8 @@
         <div class="filter-sort" style="cursor:pointer; flex-shrink:0;">
           <span style="font-family:Riforma,sans-serif;font-size:12px;font-weight:500;color:#323232;">Sort by:</span>
           <select class="filter-select" id="directorSortSelect" style="cursor:pointer; font-family:Riforma,sans-serif; font-weight:500; appearance:none; -webkit-appearance:none; outline:none;">
-            <option value="films">No. of Films</option>
             <option value="az">A–Z</option>
+            <option value="films">No. of Films</option>
           </select>
         </div>
       </div>
@@ -2151,7 +2151,7 @@ const DIRECTOR_COUNTS = {"Frederick Wiseman": 8, "Jafar Panahi": 7, "Kleber Mend
 })();
 
 let directorsRendered = false;
-let directorSortMode = 'films';
+let directorSortMode = 'az';
 
 function renderDirectors() {
   directorsRendered = true;
