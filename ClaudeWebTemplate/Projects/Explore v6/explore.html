@@ -1342,7 +1342,7 @@
       </div>
     </div>
     <div id="directorsGrid" style="display:none; padding-top:8px; padding-bottom:80px;"></div>
-    <div class="director-filter-section" id="directorFilterSection" style="display:none; padding-bottom:80px;">
+    <div class="director-filter-section" id="directorFilterSection" style="display:none; padding-top:16px; padding-bottom:80px;">
       <div class="film-grid" id="directorFilmsGrid"></div>
     </div>
     <div class="page-body">
@@ -2318,16 +2318,20 @@ function selectDirector(name) {
     section.style.display = 'none';
     row.innerHTML = '';
     dg.style.display = '';
+    document.getElementById('directorCatPills').style.display = '';
+    document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = '';
   });
   tag.appendChild(document.createTextNode(name + ' '));
   tag.appendChild(btn);
   row.appendChild(tag);
 
-  // Show films, hide director grid
+  // Show films, hide director grid and controls
   const films = ALL_FILMS.filter(f => f.director === name);
   document.getElementById('directorFilmsGrid').innerHTML = films.map(filmCard).join('');
   dg.style.display = 'none';
   section.style.display = '';
+  document.getElementById('directorCatPills').style.display = 'none';
+  document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = 'none';
 }
 
 document.querySelectorAll('.page-tab[data-tab]').forEach(tab => {

@@ -286,7 +286,7 @@
     .page-tab.is-active::after {
       content: '';
       position: absolute;
-      bottom: -18px;
+      bottom: -12px;
       left: 50%;
       transform: translateX(-50%);
       width: 0; height: 0;
@@ -353,11 +353,12 @@
       background: #fff;
       border: 1px solid #D8D8D8;
       padding: 6px 30px 6px 12px;
-      cursor: pointer;
+      cursor: default;
       outline: none;
       min-width: 130px;
+      pointer-events: none;
     }
-    .filter-select:hover { border-color: #aaa; }
+    .filter-select:hover { border-color: #D8D8D8; }
     .sort-label {
       font-family: Riforma, sans-serif;
       font-size: 12px;
