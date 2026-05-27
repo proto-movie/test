@@ -645,8 +645,14 @@
     .coll-filter-bar {
       padding: 12px 0 0;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       position: relative;
+    }
+    .coll-filter-sort-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 16px;
     }
     .coll-filter-icon {
       margin-left: auto;
@@ -808,7 +814,7 @@
     .filter-btn {
       display: flex; align-items: center; gap: 5px;
       flex-shrink: 0;
-      padding: 5px 12px 5px 8px;
+      padding: 4px 12px 4px 8px;
       border: none;
       border-radius: 3px;
       background: transparent;
@@ -964,7 +970,8 @@
       background: #fff url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23323232' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
       border: 1px solid #888888;
       border-radius: 2px;
-      padding: 7px 30px 7px 12px;
+      padding: 3px 30px 3px 12px;
+      height: 24px;
       cursor: pointer;
       outline: none;
     }
@@ -1087,7 +1094,7 @@
 
     /* ─── DIRECTOR FILTER SECTION ─── */
     .director-filter-section { margin-top: 0; }
-    #directorsGrid { margin-top: 20px; }
+    #directorsGrid { margin-top: 0; }
     .director-tags-row {
       display: flex;
       flex-wrap: wrap;
@@ -1126,7 +1133,7 @@
 
     /* ─── CONTENT PLACEHOLDER ─── */
     .page-body {
-      padding: 12px 0 80px;
+      padding: 8px 0 80px;
     }
   </style>
 </head>
@@ -1177,10 +1184,8 @@
           <span class="material-icons" style="font-size:20px;">menu</span>
         </button>
         <div class="nav-dropdown" id="navDropdown">
-          <a href="#">Viewing History</a>
-          <a href="#">Earn 1 month free</a>
-          <div class="nav-dropdown-sep"></div>
           <a href="#">Notebook</a>
+          <a href="film-database.html">Film Database</a>
           <a href="#">Notebook Magazine</a>
           <a href="#">MUBI Editions</a>
           <a href="#">SHOP</a>
@@ -1192,6 +1197,8 @@
           <a href="#">Jobs</a>
           <a href="#">Terms &amp; Privacy</a>
           <div class="nav-dropdown-sep"></div>
+          <a href="#">Earn 1 month free</a>
+          <a href="#">Viewing History</a>
           <a href="#">Settings</a>
           <a href="#">Help</a>
           <a href="#">Log Out</a>
@@ -1293,7 +1300,7 @@
       </div>
     </div>
     <div class="coll-filter-bar" id="collFilterBar" style="display:none">
-      <div class="pills-wrap" style="flex:1; min-width:0;">
+      <div class="pills-wrap" style="min-width:0;">
         <div class="genre-pills">
           <a href="#" class="genre-pill is-active" data-coll-cat="">All</a>
           <a href="#" class="genre-pill" data-coll-cat="spotlight">Spotlight</a>
@@ -1303,31 +1310,44 @@
           <a href="#" class="genre-pill" data-coll-cat="region">Region</a>
         </div>
       </div>
-      <div class="filter-sort" style="cursor:pointer; flex-shrink:0; margin-left:12px;">
-        <span style="font-family:Riforma,sans-serif;font-size:12px;font-weight:500;color:#323232;">Sort by:</span>
-        <select class="filter-select" id="collSortSelect" style="cursor:pointer; font-family:Riforma,sans-serif; font-weight:500; appearance:none; -webkit-appearance:none; outline:none;">
-          <option value="recent">Recently Added</option>
-          <option value="az">A–Z</option>
-        </select>
+      <div class="coll-filter-sort-row">
+        <div class="filter-sort" style="cursor:pointer;">
+          <span style="font-family:Riforma,sans-serif;font-size:12px;font-weight:500;color:#323232;">Sort by:</span>
+          <select class="filter-select" id="collSortSelect" style="cursor:pointer; font-family:Riforma,sans-serif; font-weight:500; appearance:none; -webkit-appearance:none; outline:none;">
+            <option value="recent">Recently Added</option>
+            <option value="az">A–Z</option>
+          </select>
+        </div>
       </div>
+    </div>
+    <div id="directorSortRow" style="display:none; flex-direction:column; padding:12px 0 0;">
+      <div class="genre-pills" id="directorCatPills" style="flex-wrap:wrap;">
+        <a href="#" class="genre-pill is-active" data-dir-cat="">All</a>
+        <a href="#" class="genre-pill" data-dir-cat="Emerging Directors">Emerging Directors</a>
+        <a href="#" class="genre-pill" data-dir-cat="Female Directors">Female Directors</a>
+        <a href="#" class="genre-pill" data-dir-cat="Classic Auteurs">Classic Auteurs</a>
+        <a href="#" class="genre-pill" data-dir-cat="Award Winning">Award Winning</a>
+      </div>
+      <div style="min-width:0; display:flex; align-items:center;">
+        <div class="director-tags-row" id="directorTagsRow" style="flex:1; min-width:0; padding:0;"></div>
+      </div>
+      <div class="coll-filter-sort-row">
+        <div class="filter-sort" style="cursor:pointer;">
+          <span style="font-family:Riforma,sans-serif;font-size:12px;font-weight:500;color:#323232;">Sort by:</span>
+          <select class="filter-select" id="directorSortSelect" style="cursor:pointer; font-family:Riforma,sans-serif; font-weight:500; appearance:none; -webkit-appearance:none; outline:none;">
+            <option value="az">A–Z</option>
+            <option value="films" selected>no. of films</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="directorsGrid" style="display:none; padding-top:8px; padding-bottom:80px;"></div>
+    <div class="director-filter-section" id="directorFilterSection" style="display:none; padding-bottom:80px;">
+      <div class="film-grid" id="directorFilmsGrid"></div>
     </div>
     <div class="page-body">
       <div class="film-grid" id="filmGrid"></div>
       <div class="film-grid" id="collectionsGrid" style="display:none"></div>
-      <div id="directorSortRow" style="display:none; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px;">
-        <div class="director-tags-row" id="directorTagsRow" style="flex:1; min-width:0; padding:0;"></div>
-        <div class="filter-sort" style="cursor:pointer; flex-shrink:0;">
-          <span style="font-family:Riforma,sans-serif;font-size:12px;font-weight:500;color:#323232;">Sort by:</span>
-          <select class="filter-select" id="directorSortSelect" style="cursor:pointer; font-family:Riforma,sans-serif; font-weight:500; appearance:none; -webkit-appearance:none; outline:none;">
-            <option value="az">A–Z</option>
-            <option value="films">No. of Films</option>
-          </select>
-        </div>
-      </div>
-      <div id="directorsGrid" style="display:none"></div>
-      <div class="director-filter-section" id="directorFilterSection" style="display:none">
-        <div class="film-grid" id="directorFilmsGrid"></div>
-      </div>
     </div>
   </div>
 </main>
@@ -2185,7 +2205,54 @@ const DIRECTOR_COUNTS = {"Frederick Wiseman": 8, "Jafar Panahi": 7, "Kleber Mend
 })();
 
 let directorsRendered = false;
-let directorSortMode = 'az';
+let directorSortMode = 'films';
+let directorCatMode = '';
+
+const DIRECTOR_CATS = {
+  'Emerging Directors': new Set([
+    'Lukas Dhont','Charlotte Wells','Magnus von Horn','Levan Akin','Elizabeth Sankey',
+    'Luna Carmoon','Celine Song','India Donaldson','Eva Victor','Saulė Bliuvaitė',
+    'Mascha Schilinski','Kit Zauhar','Kantemir Balagov','Justine Triet','Felipe Gálvez',
+    'Davy Chou','Jonas Carpignano','RaMell Ross','Emma Seligman','Mati Diop','Alice Diop',
+    'Kira Kovalenko','Dea Kulumbegashvili','Akinola Davies Jr.','László Nemes',
+    'Lee Isaac Chung','Amalia Ulman','Rachel Lang','P.S. Vinothraj','Rodrigo Sorogoyen',
+    'Cord Jefferson','Andrew Haigh','Ariane Louis-Seize','Tatiana Huezo'
+  ]),
+  'Female Directors': new Set([
+    'Céline Sciamma','Charlotte Wells','Joanna Hogg','Kelly Reichardt','Lucrecia Martel',
+    'Mia Hansen-Løve','Sarah Polley','Coralie Fargeat','Andrea Arnold','Lynne Ramsay',
+    'Sally Potter','Sofia Coppola','Alice Diop','Justine Triet','Tatiana Huezo',
+    'Amalia Ulman','Julia Loktev','Laura Huertas Millán','Athina Rachel Tsangari',
+    'Kit Zauhar','Luna Carmoon','Rachel Lang','Elizabeth Sankey','Jennie Livingston',
+    'Mati Diop','Cheryl Dunye','Lizzie Borden','India Donaldson','Eva Victor',
+    'Saulė Bliuvaitė','Debra Granik','Josephine Decker','Angela Schanelec','Helke Sander',
+    'Alice Winocour','Clio Barnard','Carla Simón','Haifaa Al-Mansour','Ninja Thyberg',
+    'Adina Pintilie','Dea Kulumbegashvili','Mona Fastvold','Monia Chokri','Kira Kovalenko',
+    'Mascha Schilinski','Annemarie Jacir','Kurdwin Ayub','Martika Ramirez Escobar',
+    'Sophie Hyde','Martine Syms','Amanda Kramer','Gia Coppola','Chika Anadu','Amy Seimetz',
+    'Daphne Xu','Sarah Maldoror','Susanne Deeken','Camila José Donoso','Phoebe Jane Hart',
+    'Valeria Hofmann','Christina Hornisher','Heta Jäälinoja'
+  ]),
+  'Classic Auteurs': new Set([
+    'Billy Wilder','Jean-Luc Godard','Luis Buñuel','Fritz Lang','Éric Rohmer',
+    'Buster Keaton','Douglas Sirk','Nicholas Ray','Stanley Donen','Bernardo Bertolucci',
+    'Louis Malle','David Lynch','Martin Scorsese','Francis Ford Coppola','Marco Bellocchio',
+    'Joris Ivens','Djibril Diop Mambéty','Youssef Chahine','Oscar Micheaux',
+    'Pedro Almodóvar','Dario Argento','George A. Romero','Shûji Terayama'
+  ]),
+  'Award Winning': new Set([
+    'Bong Joon Ho','Park Chan-wook','Céline Sciamma','Joachim Trier','Apichatpong Weerasethakul',
+    'Yorgos Lanthimos','Lucrecia Martel','Lars von Trier','Michael Haneke','Martin Scorsese',
+    'Hayao Miyazaki','Pablo Larraín','Paweł Pawlikowski','Wim Wenders','Coralie Fargeat',
+    'Justine Triet','Luca Guadagnino','Jean-Luc Godard','Francis Ford Coppola','Billy Wilder',
+    'David Lynch','Kelly Reichardt','Andrea Arnold','Lukas Dhont','László Nemes',
+    'Aki Kaurismäki','Ken Loach','Spike Lee','Abderrahmane Sissako','Fatih Akın',
+    'Sofia Coppola','Gianfranco Rosi','Joshua Oppenheimer','Frederick Wiseman',
+    'Alice Diop','Mati Diop','Charlotte Wells','Nicolas Winding Refn','Nuri Bilge Ceylan',
+    'Steve McQueen','Bertrand Bonello','Jafar Panahi','Thomas Vinterberg',
+    'Bernardo Bertolucci','Pedro Almodóvar','Sarah Polley','Alice Rohrwacher'
+  ])
+};
 
 function renderDirectors() {
   directorsRendered = true;
@@ -2197,7 +2264,10 @@ function renderDirectors() {
     }
     dirMap[firstName].count += count;
   });
-  const dirs = Object.values(dirMap);
+  let dirs = Object.values(dirMap);
+  if (directorCatMode && DIRECTOR_CATS[directorCatMode]) {
+    dirs = dirs.filter(d => DIRECTOR_CATS[directorCatMode].has(d.name));
+  }
   if (directorSortMode === 'az') {
     dirs.sort((a, b) => {
       const surnameA = a.name.split(' ').pop();
@@ -2275,7 +2345,7 @@ document.querySelectorAll('.page-tab[data-tab]').forEach(tab => {
     else { cg.style.display = 'none'; cf.style.display = 'none'; }
     const dg = document.getElementById('directorsGrid');
     const dsr = document.getElementById('directorSortRow');
-    if (label === 'directors') { dg.style.display = ''; dsr.style.display = 'flex'; renderDirectors(); }
+    if (label === 'directors') { dg.style.display = ''; dsr.style.display = 'flex'; dsr.style.flexDirection = 'column'; renderDirectors(); }
     else {
       dg.style.display = 'none';
       dsr.style.display = 'none';
@@ -2289,6 +2359,17 @@ document.getElementById('directorSortSelect').addEventListener('change', e => {
   directorSortMode = e.target.value;
   directorsRendered = false;
   renderDirectors();
+});
+
+document.querySelectorAll('#directorCatPills .genre-pill').forEach(pill => {
+  pill.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('#directorCatPills .genre-pill').forEach(p => p.classList.remove('is-active'));
+    pill.classList.add('is-active');
+    directorCatMode = pill.dataset.dirCat;
+    directorsRendered = false;
+    renderDirectors();
+  });
 });
 
 document.querySelectorAll('#genrePills .genre-pill').forEach(pill => {
