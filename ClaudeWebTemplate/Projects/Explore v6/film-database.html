@@ -1180,6 +1180,7 @@ const ALL_FILMS = [
 ];
 
 const SEARCH_FILMS = ALL_FILMS;
+const SEARCH_SUGGESTED = ALL_FILMS.slice().sort((a,b) => (b.rating||0)-(a.rating||0)).slice(0,8);
 
 function filmCard(film) {
   const posX = Math.round((film.fX||0.5) * 100);
@@ -1281,7 +1282,7 @@ function openSearch() {
   inline.classList.add('is-open');
   setTimeout(() => document.getElementById('searchInput').focus(), 50);
   document.getElementById('searchDropLabel').textContent = 'Suggested';
-  document.getElementById('searchDropList').innerHTML = '';
+  document.getElementById('searchDropList').innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
   document.getElementById('searchDropBackdrop').classList.add('is-open');
   document.getElementById('searchInput').addEventListener('transitionend', function handler(e) {
     if (e.propertyName === 'width') {
@@ -1315,7 +1316,7 @@ document.getElementById('searchInput').addEventListener('input', e => {
   const label = document.getElementById('searchDropLabel');
   if (!q) {
     label.textContent = 'Suggested';
-    list.innerHTML = '';
+    list.innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
     return;
   }
   const ql = q.toLowerCase();
