@@ -906,15 +906,44 @@
     }
     .lang-type-toggle {
       display: flex;
-      gap: 0;
-      border: 1px solid #888888;
+      border: 1.5px solid #888888;
       border-radius: 50px;
-      overflow: hidden;
       background: #fff;
       margin-bottom: 16px;
       width: 100%;
+      position: relative;
+      padding: 3px;
+      box-sizing: border-box;
     }
-    .lang-type-pill { border-radius: 6px; padding: 8px 13px; }
+    .lang-slider {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: calc((100% - 6px) / 3);
+      height: calc(100% - 6px);
+      background: #323232;
+      border-radius: 50px;
+      transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .lang-type-seg {
+      flex: 1;
+      font-family: Riforma, sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: #666666;
+      background: transparent;
+      border: none;
+      padding: 6px 8px;
+      cursor: pointer;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      border-radius: 50px;
+      transition: color 0.22s;
+    }
+    .lang-type-seg.is-active { color: #fff; }
     #langPills { flex-wrap: wrap; overflow: visible; gap: 6px; }
     #langPills .genre-pill { margin: 0; }
     .lang-pill-count { font-size: 11px; margin-left: 4px; color: #666; }
@@ -1281,12 +1310,19 @@
       </div>
       <div class="filter-panel-body">
         <div class="filter-panel-label">Language</div>
-        <div class="genre-pills" style="margin-bottom: 16px; flex-wrap:wrap; gap:6px;">
-          <button class="genre-pill lang-type-pill is-active" data-lang-type="original">Original</button>
-          <button class="genre-pill lang-type-pill" data-lang-type="dubbed">Dubbed</button>
-          <button class="genre-pill lang-type-pill" data-lang-type="subtitles">Subtitles</button>
+        <div class="lang-type-toggle">
+          <div class="lang-slider" id="langSlider"></div>
+          <button class="lang-type-seg is-active" data-lang-type="original" data-idx="0">Original</button>
+          <button class="lang-type-seg" data-lang-type="dubbed" data-idx="1">Dubbed in</button>
+          <button class="lang-type-seg" data-lang-type="subtitles" data-idx="2">Subtitled in</button>
         </div>
         <div class="genre-pills" id="langPills"></div>
+        <hr style="border:none;border-top:1px solid #EAEAEA;margin:20px 0 16px;">
+        <div class="filter-panel-label">Audio</div>
+        <div class="genre-pills" id="audioPills" style="flex-wrap:wrap; gap:6px; margin-bottom:16px;">
+          <button class="genre-pill audio-pill is-active" data-audio="">All</button>
+          <button class="genre-pill audio-pill" data-audio="ad">AD</button>
+        </div>
         <hr style="border:none;border-top:1px solid #EAEAEA;margin:20px 0 16px;">
         <div class="filter-panel-label">Video Quality</div>
         <div class="genre-pills" id="qualityPills" style="flex-wrap:wrap; gap:6px;">
@@ -2421,6 +2457,9 @@ function clearFilters() {
   document.querySelectorAll('#qualityPills .quality-pill').forEach(p => p.classList.remove('is-active'));
   const allQuality = document.querySelector('#qualityPills .quality-pill[data-quality=""]');
   if (allQuality) allQuality.classList.add('is-active');
+  document.querySelectorAll('#audioPills .audio-pill').forEach(p => p.classList.remove('is-active'));
+  const allAudio = document.querySelector('#audioPills .audio-pill[data-audio=""]');
+  if (allAudio) allAudio.classList.add('is-active');
   updateClearBtn();
   updateFilterBtnLabel();
   renderGrid('');
@@ -2464,13 +2503,23 @@ function setFilterBtnLabel(type, lang) {
   updateFilterBtnLabel();
 }
 
+const AD_FILMS = new Set([
+  "Perfect Days","Aftersun","Close","Parasite","Portrait of a Lady on Fire",
+  "The Worst Person in the World","Crossing","Festen","Sentimental Value",
+  "Paris Is Burning","Witches","The Girl with the Needle","Anatomy of a Fall",
+  "Past Lives","All of Us Strangers","Tár","Decision to Leave","EO"
+]);
+
 function updateFilterBtnLabel() {
   const langPill = document.querySelector('#langPills .genre-pill.is-active');
   const langVal = langPill && langPill.dataset.lang !== 'all' ? (langPill.firstChild && langPill.firstChild.textContent.trim()) || langPill.dataset.lang : null;
   const qualityPill = document.querySelector('#qualityPills .quality-pill.is-active');
   const qualityVal = qualityPill && qualityPill.dataset.quality ? qualityPill.textContent.trim() : null;
+  const audioPill = document.querySelector('#audioPills .audio-pill.is-active');
+  const audioVal = audioPill && audioPill.dataset.audio === 'ad' ? 'AD' : null;
   const parts = [];
   if (qualityVal) parts.push(`Video quality: ${qualityVal}`);
+  if (audioVal) parts.push(`Audio: ${audioVal}`);
   if (langVal) {
     parts.push(activeLangType === 'original' ? `Original language: ${langVal}`
       : activeLangType === 'dubbed' ? `Dubbed in: ${langVal}`
@@ -2482,7 +2531,7 @@ function updateFilterBtnLabel() {
 
 function buildLangPills(type) {
   const pills = document.getElementById('langPills');
-  const VISIBLE = 8;
+  const VISIBLE = type === 'original' ? 7 : 8;
 
   let langs;
   if (type === 'original') {
@@ -2542,15 +2591,16 @@ function buildLangPills(type) {
     });
   });
 }
-document.querySelectorAll('.lang-type-pill[data-lang-type]').forEach(btn => {
+document.querySelectorAll('.lang-type-seg[data-lang-type]').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.lang-type-pill[data-lang-type]').forEach(b => b.classList.remove('is-active'));
+    document.querySelectorAll('.lang-type-seg[data-lang-type]').forEach(b => b.classList.remove('is-active'));
     btn.classList.add('is-active');
+    const idx = parseInt(btn.dataset.idx || 0);
+    document.getElementById('langSlider').style.transform = `translateX(${idx * 100}%)`;
     activeLangType = btn.dataset.langType;
     buildLangPills(activeLangType);
     setFilterBtnLabel(activeLangType, 'all');
     updateClearBtn();
-    renderGrid('');
   });
 });
 buildLangPills('original');
@@ -2563,6 +2613,21 @@ document.querySelectorAll('#qualityPills .quality-pill').forEach(pill => {
     updateClearBtn();
     updateFilterBtnLabel();
     renderGrid();
+  });
+});
+
+document.querySelectorAll('#audioPills .audio-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('#audioPills .audio-pill').forEach(p => p.classList.remove('is-active'));
+    pill.classList.add('is-active');
+    updateClearBtn();
+    updateFilterBtnLabel();
+    if (pill.dataset.audio === 'ad') {
+      const films = ALL_FILMS.filter(f => AD_FILMS.has(f.title));
+      document.getElementById('filmGrid').innerHTML = films.map(filmCard).join('');
+    } else {
+      renderGrid('');
+    }
   });
 });
 
