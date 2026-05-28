@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
-  <title>Explore — MUBI</title>
+  <title>Browse — MUBI</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
   <style>
@@ -512,7 +512,7 @@
       align-items: center;
       gap: 5px;
       line-height: 1;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+      text-shadow: none;
       transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .rating-active .rating-badge { display: flex; }
@@ -1192,7 +1192,7 @@
 
     <nav class="nav-links" aria-label="Main navigation">
       <a href="mubi-showing.html" class="nav-link">Now Showing</a>
-      <a href="explore.html" class="nav-link is-active">Explore</a>
+      <a href="explore.html" class="nav-link is-active">Browse</a>
       <a href="#" class="nav-link">Watchlist</a>
     </nav>
 
@@ -1247,7 +1247,7 @@
 <main>
   <div class="wrap">
     <div class="page-hero">
-      <h1 class="page-title">Explore</h1>
+      <h1 class="page-title">Browse</h1>
     </div>
 
     <div class="page-tabs">
@@ -2537,9 +2537,7 @@ function buildLangPills(type) {
   }
 
   function makePill(l, hidden) {
-    const count = type === 'original' ? (LANGUAGE_INDEX[l] || []).length : null;
-    const countHtml = count !== null ? `<span class="lang-pill-count">${count}</span>` : '';
-    return `<a href="#" class="genre-pill${hidden ? ' lang-pill-hidden' : ''}" data-lang="${l}">${l}${countHtml}</a>`;
+    return `<a href="#" class="genre-pill${hidden ? ' lang-pill-hidden' : ''}" data-lang="${l}">${l}</a>`;
   }
 
   const visibleLangs = langs.slice(0, VISIBLE);
