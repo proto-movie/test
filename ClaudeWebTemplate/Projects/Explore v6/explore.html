@@ -1572,13 +1572,19 @@
         </div>
       </div>
     </div>
-    <div id="directorsGrid" style="display:none; padding-top:8px; padding-bottom:80px;"></div>
+    <div id="directorsGrid" style="display:none; padding-top:8px;"></div>
+    <div id="loadMoreDirsWrap" style="display:none; text-align:center; padding: 32px 0 16px; padding-bottom:80px;">
+      <button id="loadMoreDirsBtn" style="font-family:Riforma,sans-serif;font-size:13px;font-weight:500;letter-spacing:0.4px;text-transform:uppercase;padding:10px 28px;border:1px solid #323232;background:none;cursor:pointer;color:#323232;">Load More</button>
+    </div>
     <div class="director-filter-section" id="directorFilterSection" style="display:none; padding-top:16px; padding-bottom:80px;">
       <div class="film-grid" id="directorFilmsGrid"></div>
     </div>
     <div class="page-body">
       <div class="film-grid" id="filmGrid"></div>
       <div class="film-grid" id="collectionsGrid" style="display:none"></div>
+      <div id="loadMoreCollsWrap" style="display:none; text-align:center; padding: 32px 0 16px;">
+        <button id="loadMoreCollsBtn" style="font-family:Riforma,sans-serif;font-size:13px;font-weight:500;letter-spacing:0.4px;text-transform:uppercase;padding:10px 28px;border:1px solid #323232;background:none;cursor:pointer;color:#323232;">Load More</button>
+      </div>
       <div id="loadMoreWrap" style="display:none; text-align:center; padding: 32px 0 16px;">
         <button id="loadMoreBtn" style="font-family:Riforma,sans-serif;font-size:13px;font-weight:500;letter-spacing:0.4px;text-transform:uppercase;padding:10px 28px;border:1px solid #323232;background:none;cursor:pointer;color:#323232;">Load More</button>
       </div>
@@ -2423,17 +2429,12 @@ function fitCollTileText() {
 
 let collSortMode = 'recent';
 
-function renderCollections() {
-  const activePill = document.querySelector('#collFilterBar .genre-pills .genre-pill.is-active');
-  const activeCat = activePill ? activePill.dataset.collCat : '';
-  let cols = activeCat ? COLLECTIONS.filter(c => c.category === activeCat) : COLLECTIONS.slice();
-  if (collSortMode === 'az') {
-    cols.sort((a, b) => a.title.localeCompare(b.title));
-  } else if (activeCat === 'decade') {
-    const decadeOf = c => { const m = c.slug.match(/^(\d{4})/); return m ? parseInt(m[1]) : 9999; };
-    cols.sort((a, b) => decadeOf(a) - decadeOf(b));
-  }
-  document.getElementById('collectionsGrid').innerHTML = cols.map(col => {
+let currentCols = [], visibleCollsCount = PAGE_SIZE;
+
+function flushCollections() {
+  const grid = document.getElementById('collectionsGrid');
+  const items = isMobile() ? currentCols.slice(0, visibleCollsCount) : currentCols;
+  grid.innerHTML = items.map(col => {
     const left = col.treatment
       ? `<img class="coll-tile-treatment" src="${col.treatment}" alt="${col.title}" loading="lazy">`
       : col.subtitle
@@ -2448,7 +2449,46 @@ function renderCollections() {
     </a>`;
   }).join('');
   fitCollTileText();
+  const wrap = document.getElementById('loadMoreCollsWrap');
+  wrap.style.display = isMobile() && visibleCollsCount < currentCols.length ? '' : 'none';
 }
+
+function renderCollections() {
+  const activePill = document.querySelector('#collFilterBar .genre-pills .genre-pill.is-active');
+  const activeCat = activePill ? activePill.dataset.collCat : '';
+  let cols = activeCat ? COLLECTIONS.filter(c => c.category === activeCat) : COLLECTIONS.slice();
+  if (collSortMode === 'az') {
+    cols.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (activeCat === 'decade') {
+    const decadeOf = c => { const m = c.slug.match(/^(\d{4})/); return m ? parseInt(m[1]) : 9999; };
+    cols.sort((a, b) => decadeOf(a) - decadeOf(b));
+  }
+  currentCols = cols;
+  visibleCollsCount = PAGE_SIZE;
+  flushCollections();
+}
+
+document.getElementById('loadMoreCollsBtn').addEventListener('click', () => {
+  visibleCollsCount += PAGE_SIZE;
+  const grid = document.getElementById('collectionsGrid');
+  const newItems = currentCols.slice(visibleCollsCount - PAGE_SIZE, visibleCollsCount);
+  newItems.forEach(col => {
+    const left = col.treatment
+      ? `<img class="coll-tile-treatment" src="${col.treatment}" alt="${col.title}" loading="lazy">`
+      : col.subtitle
+        ? `<div class="coll-tile-title">${col.title}<span class="coll-tile-subtitle">${col.subtitle}</span></div>`
+        : `<div class="coll-tile-title coll-tile-title--solo">${col.title}</div>`;
+    grid.insertAdjacentHTML('beforeend', `<a class="coll-tile" href="#" aria-label="${col.title}">
+      <div class="coll-tile-left" style="background:${col.color}">
+        <div>${left}</div>
+        <div class="coll-tile-count"><svg width="24" height="18" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.4121 0C21.0432 0 21.5546 0.511527 21.5547 1.14258V14.4248C21.5546 15.0559 21.0432 15.5674 20.4121 15.5674H1.14258C0.511562 15.5673 5.76033e-05 15.0558 0 14.4248V1.14258C0.00013309 0.511609 0.511609 0.00013335 1.14258 0H20.4121ZM8.38281 11.1768L15.3682 7.68359L8.38281 4.19141V11.1768Z" fill="white"/><mask id="ci-mask" fill="white"><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282"/></mask><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282" stroke="white" stroke-width="2.395" mask="url(#ci-mask)"/></svg>${col.items}</div>
+      </div>
+      <div class="coll-tile-right"><img class="coll-tile-img" src="${col.img}" alt="${col.title}" loading="lazy"></div>
+    </a>`);
+  });
+  fitCollTileText();
+  document.getElementById('loadMoreCollsWrap').style.display = visibleCollsCount < currentCols.length ? '' : 'none';
+});
 
 const LANGUAGE_INDEX = {"Amharic": [140], "Arabic": [332, 479], "Chinese": [161, 177, 207, 209, 223, 323, 380, 381, 382, 392, 399, 411, 471], "Danish": [9, 14, 21, 116, 139, 183, 389, 429], "Dutch": [1, 214, 351, 376, 444, 451], "English": [2, 4, 5, 8, 12, 16, 17, 24, 25, 26, 30, 31, 33, 34, 35, 37, 39, 40, 44, 47, 50, 52, 54, 61, 62, 63, 68, 69, 70, 72, 76, 78, 81, 82, 84, 87, 88, 95, 96, 97, 98, 99, 100, 105, 106, 107, 118, 119, 120, 121, 122, 123, 127, 129, 131, 135, 137, 143, 146, 149, 150, 154, 159, 163, 164, 168, 169, 170, 172, 176, 178, 179, 186, 187, 191, 194, 196, 199, 202, 203, 204, 212, 213, 215, 216, 220, 222, 224, 228, 230, 235, 238, 245, 248, 250, 251, 257, 258, 259, 263, 267, 268, 269, 270, 271, 272, 273, 275, 276, 277, 278, 279, 281, 282, 284, 285, 286, 288, 290, 295, 302, 303, 304, 305, 307, 309, 311, 312, 313, 317, 318, 319, 325, 327, 328, 329, 330, 335, 336, 338, 341, 342, 343, 344, 345, 346, 347, 348, 352, 354, 359, 360, 362, 364, 365, 369, 372, 385, 386, 390, 396, 397, 404, 407, 412, 419, 422, 428, 434, 435, 436, 439, 442, 445, 447, 448, 454, 455, 456, 457, 459, 461, 462, 463, 464, 465, 466, 469, 470, 472, 474, 475, 478, 481, 482, 485, 488, 489, 491, 492, 493, 495, 497, 499, 500, 501, 502, 504, 505, 506, 507, 508, 509], "Filipino": [136, 160, 234, 314, 357, 433, 441, 467, 487], "Finnish": [27, 67, 83, 132, 261], "French": [3, 22, 45, 46, 53, 64, 65, 66, 77, 79, 80, 86, 89, 91, 102, 103, 111, 114, 115, 124, 128, 130, 152, 156, 157, 174, 175, 184, 189, 190, 197, 198, 200, 205, 218, 225, 227, 229, 247, 253, 254, 262, 274, 292, 297, 298, 306, 321, 333, 334, 353, 355, 361, 366, 368, 370, 374, 401, 405, 406, 413, 425, 427, 446, 473, 480, 483, 484, 486, 503], "Georgian": [252], "German": [6, 19, 20, 32, 49, 56, 90, 94, 104, 113, 133, 141, 145, 147, 151, 181, 182, 188, 201, 211, 226, 236, 240, 243, 255, 260, 293, 294, 296, 320, 331, 340, 377, 379, 410, 415, 432, 477], "Greek": [358, 437], "Hindi": [18, 108, 300], "Hungarian": [75, 158, 498], "Icelandic": [195], "Indonesian": [388, 460, 496], "Italian": [41, 42, 55, 110, 126, 162, 171, 206, 210, 299, 322, 324, 339, 356, 367, 378, 394, 403, 452, 476], "Japanese": [0, 217, 242, 375, 383, 402], "Khmer": [494], "Korean": [13, 23, 28, 29, 180, 416], "Norwegian": [7, 15, 48, 85], "Persian": [36, 93, 101, 134, 185, 193, 208, 219, 393], "Polish": [231, 232, 291, 315, 373], "Portuguese": [73, 74, 92, 138, 142, 165, 167, 233, 239, 289, 391, 420], "Romanian": [371, 418, 458], "Russian": [58, 283, 453], "Spanish": [10, 43, 57, 59, 109, 112, 117, 155, 173, 192, 237, 246, 249, 264, 265, 301, 308, 310, 316, 326, 349, 363, 384, 395, 400, 408, 409, 414, 421, 423, 426, 431, 440, 443, 449, 450, 468, 490], "Swedish": [11, 144, 166, 221, 287], "Thai": [153, 350, 398, 417, 438], "Turkish": [38, 71, 125, 266], "Ukrainian": [337], "Vietnamese": [280, 430]};
 const DUBBED_LANGS = ["English","Portuguese","French","German","Spanish"];
@@ -2516,6 +2556,23 @@ const DIRECTOR_CATS = {
   ])
 };
 
+let currentDirs = [], visibleDirsCount = PAGE_SIZE;
+
+function dirCardHTML(d) {
+  return `
+  <a class="director-card" href="#" data-director="${d.name}" aria-label="${d.name}">
+    <div class="director-img-wrap">
+      ${d.image
+        ? `<img class="card-img" src="${d.image}" alt="${d.name}" loading="lazy" style="object-position:50% 15%">`
+        : `<div class="card-img" style="background:#D8D8D8;width:100%;height:100%"></div>`}
+    </div>
+    <div class="director-info">
+      <div class="director-name">${d.name}</div>
+      ${directorSortMode !== 'az' ? `<div class="director-count">${d.count} film${d.count !== 1 ? 's' : ''}</div>` : ''}
+    </div>
+  </a>`;
+}
+
 function renderDirectors() {
   directorsRendered = true;
   const dirMap = {};
@@ -2539,21 +2596,20 @@ function renderDirectors() {
   } else {
     dirs.sort((a, b) => b.count - a.count);
   }
-  document.getElementById('directorsGrid').innerHTML = dirs.map(d => {
-    return `
-    <a class="director-card" href="#" data-director="${d.name}" aria-label="${d.name}">
-      <div class="director-img-wrap">
-        ${d.image
-          ? `<img class="card-img" src="${d.image}" alt="${d.name}" loading="lazy" style="object-position:50% 15%">`
-          : `<div class="card-img" style="background:#D8D8D8;width:100%;height:100%"></div>`}
-      </div>
-      <div class="director-info">
-        <div class="director-name">${d.name}</div>
-        ${directorSortMode !== 'az' ? `<div class="director-count">${d.count} film${d.count !== 1 ? 's' : ''}</div>` : ''}
-      </div>
-    </a>`;
-  }).join('');
+  currentDirs = dirs;
+  visibleDirsCount = PAGE_SIZE;
+  const items = isMobile() ? currentDirs.slice(0, visibleDirsCount) : currentDirs;
+  document.getElementById('directorsGrid').innerHTML = items.map(dirCardHTML).join('');
+  const wrap = document.getElementById('loadMoreDirsWrap');
+  wrap.style.display = isMobile() && visibleDirsCount < currentDirs.length ? '' : 'none';
 }
+
+document.getElementById('loadMoreDirsBtn').addEventListener('click', () => {
+  visibleDirsCount += PAGE_SIZE;
+  const grid = document.getElementById('directorsGrid');
+  grid.insertAdjacentHTML('beforeend', currentDirs.slice(visibleDirsCount - PAGE_SIZE, visibleDirsCount).map(dirCardHTML).join(''));
+  document.getElementById('loadMoreDirsWrap').style.display = visibleDirsCount < currentDirs.length ? '' : 'none';
+});
 
 document.getElementById('directorsGrid').addEventListener('click', e => {
   e.preventDefault();
