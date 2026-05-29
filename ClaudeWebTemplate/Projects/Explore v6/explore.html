@@ -31,7 +31,7 @@
 
     /* ─── CONTAINER ─── */
     .wrap { width: 100%; padding: 0 20px; margin: 0 auto; }
-    @media (min-width: 810px)  { .wrap { padding: 0 22px; max-width: 836px; } }
+    @media (min-width: 381px)  { .wrap { padding: 0 22px; max-width: 836px; } }
     @media (min-width: 1186px) { .wrap { max-width: 1124px; } }
     @media (min-width: 1562px) { .wrap { max-width: 1500px; } }
 
@@ -62,6 +62,30 @@
     @media (min-width: 1562px) { .nav-desktop { max-width: 1500px; } }
 
     .nav-logo { flex-shrink: 0; padding-right: 40px; display: flex; align-items: center; }
+
+    /* ─── MOBILE NAV ─── */
+    .nav-mobile {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 12px;
+      position: relative;
+    }
+    @media (min-width: 1186px) { .nav-mobile { display: none; } }
+    .nav-mobile-left {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      z-index: 1;
+    }
+    .nav-mobile-logo {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+    }
+    .nav-mobile-right { margin-left: auto; }
 
     .nav-links {
       display: flex;
@@ -290,7 +314,12 @@
     .page-tabs {
       display: flex;
       border-bottom: 1px solid #EAEAEA;
+      white-space: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
+    .page-tabs::-webkit-scrollbar { display: none; }
     .page-tab {
       font-family: Riforma, sans-serif;
       font-size: 13px;
@@ -300,7 +329,7 @@
       color: rgba(0,0,0,0.45);
       padding: 10px 0;
       margin-right: 24px;
-      border-bottom: 2px solid transparent;
+      border-bottom: 3px solid transparent;
       margin-bottom: -1px;
       cursor: pointer;
       transition: color 0.15s;
@@ -336,16 +365,18 @@
       line-height: 1;
       color: #323232;
     }
+    @media (max-width: 380px) { .page-title { font-size: 24px; } }
 
     /* ─── FILM GRID ─── */
     .page-body { padding: 8px 0 80px; }
 
     .film-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
       column-gap: 4px;
-      row-gap: 36px;
+      row-gap: 20px;
     }
+    @media (min-width: 381px)  { .film-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (min-width: 650px)  { .film-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (min-width: 1562px) { .film-grid { grid-template-columns: repeat(4, 1fr); } }
 
@@ -860,7 +891,7 @@
       max-height: 80vh;
       background: #fff;
       box-shadow: 0 8px 48px rgba(0,0,0,0.22);
-      border-radius: 12px;
+      border-radius: 0;
       z-index: 201;
       pointer-events: none;
       opacity: 0;
@@ -1082,13 +1113,12 @@
     /* ─── DIRECTOR CARDS ─── */
     #directorsGrid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       column-gap: 4px;
       row-gap: 20px;
       width: 100%;
     }
     @media (min-width: 650px)  { #directorsGrid { grid-template-columns: repeat(4, 1fr); } }
-    @media (min-width: 810px)  { #directorsGrid { grid-template-columns: repeat(5, 1fr); } }
     @media (min-width: 1186px) { #directorsGrid { grid-template-columns: repeat(6, 1fr); } }
     @media (min-width: 1562px) { #directorsGrid { grid-template-columns: repeat(8, 1fr); } }
     .director-card { display: block; cursor: pointer; text-decoration: none; min-width: 0; }
@@ -1164,11 +1194,83 @@
     .page-body {
       padding: 8px 0 80px;
     }
+
+    /* ─── DISABLE HOVER ON TOUCH DEVICES ─── */
+    @media (hover: none) {
+      .film-card:hover { z-index: 0; }
+      .film-card:hover .card-img-wrap { box-shadow: none; }
+      .film-card:hover .card-img,
+      .film-card:hover .card-img-wrap::before,
+      .rating-active .film-card:hover .card-img-wrap::after { transform: none; }
+      .film-card:hover .card-preview { opacity: 0; transform: none; }
+      .film-card:hover .card-synopsis-block { opacity: 0; pointer-events: none; transform: scaleX(1); }
+      .film-card:hover .card-synopsis-block .card-actions,
+      .film-card:hover .card-synopsis-block .card-synopsis,
+      .film-card:hover .card-synopsis-block .card-meta-icons { transform: translateY(8px); }
+      .film-card:hover .card-eyebrow,
+      .film-card:hover .card-title,
+      .film-card:hover .card-meta { transform: none; }
+      .film-card:hover .rating-badge { transform: none; }
+      .film-card:hover .card-audio-btn,
+      #directorFilmsGrid .film-card:hover .card-audio-btn { opacity: 0; pointer-events: none; }
+      .film-card:hover .series-ep-drop { opacity: 0; pointer-events: none; transform: translateY(6px); }
+      .director-card:hover .card-img { transform: none; }
+    }
   </style>
 </head>
 <body>
 
 <header class="site-header">
+  <div class="nav-mobile">
+    <div class="nav-mobile-left">
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="toggleDropdownMob(event)" aria-label="More" aria-expanded="false" id="navHamburgerMob">
+          <span class="material-icons" style="font-size:20px;">menu</span>
+        </button>
+        <div class="nav-dropdown" id="navDropdownMob">
+          <a href="#">Notebook</a>
+          <a href="film-database.html">Film Database</a>
+          <a href="#">Notebook Magazine</a>
+          <a href="#">MUBI Editions</a>
+          <a href="#">SHOP</a>
+          <a href="#">Gift MUBI</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">About</a>
+          <a href="#">Students</a>
+          <a href="#">Contribute</a>
+          <a href="#">Jobs</a>
+          <a href="#">Terms &amp; Privacy</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">Earn 1 month free</a>
+          <a href="#">Viewing History</a>
+          <a href="#">Settings</a>
+          <a href="#">Help</a>
+          <a href="#">Log Out</a>
+        </div>
+      </div>
+      <button class="search-icon-btn" id="searchOpenBtnMob" aria-label="Search">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    <a href="mubi-showing.html" class="nav-mobile-logo" aria-label="MUBI">
+      <svg viewBox="0 0 800 240" width="65" style="vertical-align:top" aria-hidden="true">
+        <g fill="#000000">
+          <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+          <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+          <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+          <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+          <circle cx="766.5"  cy="118.11" r="33.13"/>
+          <circle cx="595.89" cy="118.11" r="33.13"/>
+          <circle cx="681.2"  cy="118.11" r="33.13"/>
+          <circle cx="595.89" cy="33.13"  r="33.13"/>
+          <circle cx="681.2"  cy="33.13"  r="33.13"/>
+          <circle cx="595.89" cy="203.1"  r="33.13"/>
+          <circle cx="681.2"  cy="203.1"  r="33.13"/>
+        </g>
+      </svg>
+    </a>
+    <div class="nav-mobile-right"></div>
+  </div>
   <div class="nav-desktop">
     <div class="nav-logo">
       <a href="mubi-showing.html" aria-label="MUBI">
@@ -1330,8 +1432,11 @@
       </div>
     </div>
     <div class="coll-filter-bar" id="collFilterBar" style="display:none">
-      <div class="pills-wrap" style="min-width:0;">
-        <div class="genre-pills">
+      <div class="pills-wrap pills-wrap--overflow" id="collPillsWrap">
+        <button class="pills-chevron pills-chevron--left" id="collPillsLeft" aria-label="Scroll left">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,1 1,6 6,11"/></svg>
+        </button>
+        <div class="genre-pills" id="collPills" style="flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;">
           <a href="#" class="genre-pill is-active" data-coll-cat="">All</a>
           <a href="#" class="genre-pill" data-coll-cat="spotlight">Spotlight</a>
           <a href="#" class="genre-pill" data-coll-cat="director">Director Focus</a>
@@ -1339,6 +1444,9 @@
           <a href="#" class="genre-pill" data-coll-cat="decade">Decade</a>
           <a href="#" class="genre-pill" data-coll-cat="region">Region</a>
         </div>
+        <button class="pills-chevron pills-chevron--right" id="collPillsRight" aria-label="Scroll right">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,1 6,6 1,11"/></svg>
+        </button>
       </div>
       <div class="coll-filter-sort-row">
         <div class="filter-sort" style="cursor:pointer;">
@@ -1351,12 +1459,20 @@
       </div>
     </div>
     <div id="directorSortRow" style="display:none; flex-direction:column; padding:12px 0 0;">
-      <div class="genre-pills" id="directorCatPills" style="flex-wrap:wrap;">
-        <a href="#" class="genre-pill is-active" data-dir-cat="">All</a>
-        <a href="#" class="genre-pill" data-dir-cat="Emerging Directors">Emerging Directors</a>
-        <a href="#" class="genre-pill" data-dir-cat="Female Directors">Female Directors</a>
-        <a href="#" class="genre-pill" data-dir-cat="Classic Auteurs">Classic Auteurs</a>
-        <a href="#" class="genre-pill" data-dir-cat="Award Winning">Award Winning</a>
+      <div class="pills-wrap pills-wrap--overflow" id="dirPillsWrap">
+        <button class="pills-chevron pills-chevron--left" id="dirPillsLeft" aria-label="Scroll left">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,1 1,6 6,11"/></svg>
+        </button>
+        <div class="genre-pills" id="directorCatPills" style="flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;">
+          <a href="#" class="genre-pill is-active" data-dir-cat="">All</a>
+          <a href="#" class="genre-pill" data-dir-cat="Emerging Directors">Emerging Directors</a>
+          <a href="#" class="genre-pill" data-dir-cat="Female Directors">Female Directors</a>
+          <a href="#" class="genre-pill" data-dir-cat="Classic Auteurs">Classic Auteurs</a>
+          <a href="#" class="genre-pill" data-dir-cat="Award Winning">Award Winning</a>
+        </div>
+        <button class="pills-chevron pills-chevron--right" id="dirPillsRight" aria-label="Scroll right">
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,1 6,6 1,11"/></svg>
+        </button>
       </div>
       <div style="min-width:0; display:flex; align-items:center;">
         <div class="director-tags-row" id="directorTagsRow" style="flex:1; min-width:0; padding:0;"></div>
@@ -2114,6 +2230,7 @@ function renderGrid(genre) {
 renderGrid();
 
 document.addEventListener('mouseover', e => {
+  if (!window.matchMedia('(hover: hover)').matches) return;
   const card = e.target.closest('#filmGrid .film-card, #directorFilmsGrid .film-card');
   if (!card) return;
   const v = card.querySelector('.card-preview');
@@ -2220,7 +2337,7 @@ function renderCollections() {
 }
 
 const LANGUAGE_INDEX = {"Amharic": [140], "Arabic": [332, 479], "Chinese": [161, 177, 207, 209, 223, 323, 380, 381, 382, 392, 399, 411, 471], "Danish": [9, 14, 21, 116, 139, 183, 389, 429], "Dutch": [1, 214, 351, 376, 444, 451], "English": [2, 4, 5, 8, 12, 16, 17, 24, 25, 26, 30, 31, 33, 34, 35, 37, 39, 40, 44, 47, 50, 52, 54, 61, 62, 63, 68, 69, 70, 72, 76, 78, 81, 82, 84, 87, 88, 95, 96, 97, 98, 99, 100, 105, 106, 107, 118, 119, 120, 121, 122, 123, 127, 129, 131, 135, 137, 143, 146, 149, 150, 154, 159, 163, 164, 168, 169, 170, 172, 176, 178, 179, 186, 187, 191, 194, 196, 199, 202, 203, 204, 212, 213, 215, 216, 220, 222, 224, 228, 230, 235, 238, 245, 248, 250, 251, 257, 258, 259, 263, 267, 268, 269, 270, 271, 272, 273, 275, 276, 277, 278, 279, 281, 282, 284, 285, 286, 288, 290, 295, 302, 303, 304, 305, 307, 309, 311, 312, 313, 317, 318, 319, 325, 327, 328, 329, 330, 335, 336, 338, 341, 342, 343, 344, 345, 346, 347, 348, 352, 354, 359, 360, 362, 364, 365, 369, 372, 385, 386, 390, 396, 397, 404, 407, 412, 419, 422, 428, 434, 435, 436, 439, 442, 445, 447, 448, 454, 455, 456, 457, 459, 461, 462, 463, 464, 465, 466, 469, 470, 472, 474, 475, 478, 481, 482, 485, 488, 489, 491, 492, 493, 495, 497, 499, 500, 501, 502, 504, 505, 506, 507, 508, 509], "Filipino": [136, 160, 234, 314, 357, 433, 441, 467, 487], "Finnish": [27, 67, 83, 132, 261], "French": [3, 22, 45, 46, 53, 64, 65, 66, 77, 79, 80, 86, 89, 91, 102, 103, 111, 114, 115, 124, 128, 130, 152, 156, 157, 174, 175, 184, 189, 190, 197, 198, 200, 205, 218, 225, 227, 229, 247, 253, 254, 262, 274, 292, 297, 298, 306, 321, 333, 334, 353, 355, 361, 366, 368, 370, 374, 401, 405, 406, 413, 425, 427, 446, 473, 480, 483, 484, 486, 503], "Georgian": [252], "German": [6, 19, 20, 32, 49, 56, 90, 94, 104, 113, 133, 141, 145, 147, 151, 181, 182, 188, 201, 211, 226, 236, 240, 243, 255, 260, 293, 294, 296, 320, 331, 340, 377, 379, 410, 415, 432, 477], "Greek": [358, 437], "Hindi": [18, 108, 300], "Hungarian": [75, 158, 498], "Icelandic": [195], "Indonesian": [388, 460, 496], "Italian": [41, 42, 55, 110, 126, 162, 171, 206, 210, 299, 322, 324, 339, 356, 367, 378, 394, 403, 452, 476], "Japanese": [0, 217, 242, 375, 383, 402], "Khmer": [494], "Korean": [13, 23, 28, 29, 180, 416], "Norwegian": [7, 15, 48, 85], "Persian": [36, 93, 101, 134, 185, 193, 208, 219, 393], "Polish": [231, 232, 291, 315, 373], "Portuguese": [73, 74, 92, 138, 142, 165, 167, 233, 239, 289, 391, 420], "Romanian": [371, 418, 458], "Russian": [58, 283, 453], "Spanish": [10, 43, 57, 59, 109, 112, 117, 155, 173, 192, 237, 246, 249, 264, 265, 301, 308, 310, 316, 326, 349, 363, 384, 395, 400, 408, 409, 414, 421, 423, 426, 431, 440, 443, 449, 450, 468, 490], "Swedish": [11, 144, 166, 221, 287], "Thai": [153, 350, 398, 417, 438], "Turkish": [38, 71, 125, 266], "Ukrainian": [337], "Vietnamese": [280, 430]};
-const DUBBED_LANGS = ["English","French","German","Spanish","Portuguese","Italian","Polish","Turkish","Arabic","Russian","Hindi","Japanese","Korean","Chinese"];
+const DUBBED_LANGS = ["English","Portuguese","French","German","Spanish"];
 const SUBTITLE_LANGS = ["English","French","German","Spanish","Italian","Portuguese","Polish","Dutch","Arabic","Turkish","Russian","Japanese","Korean","Chinese","Norwegian","Swedish","Danish","Finnish","Romanian","Ukrainian","Czech","Hungarian","Greek","Hebrew"];
 
 const DIRECTOR_IMAGES = {"Frederick Wiseman": "https://images.mubicdn.net/images/cast_member/25752/cache-327-1570566927/image-w856.jpg", "Jafar Panahi": "https://images.mubicdn.net/images/cast_member/11454/cache-215833-1757977469/image-w856.jpg", "Kleber Mendonça Filho": "https://images.mubicdn.net/images/cast_member/349350/cache-86999-1581685588/image-w856.jpg", "Peter Tscherkassky": "https://images.mubicdn.net/images/cast_member/68993/cache-382-1478101707/image-w856.jpg", "Lav Diaz": "https://images.mubicdn.net/images/cast_member/65721/cache-469049-1570566702/image-w856.jpg", "Fatih Akın": "https://images.mubicdn.net/images/cast_member/1028/cache-980881-1720104413/image-w856.jpg", "Christian Petzold": "https://images.mubicdn.net/images/cast_member/15861/cache-1045-1542575741/image-w856.jpg", "Martín Rejtman": "https://images.mubicdn.net/images/cast_member/82794/cache-4524-1370531348/image-w856.jpg", "David Lynch": "https://images.mubicdn.net/images/cast_member/832/cache-8-1530086177/image-w856.jpg", "Ira Sachs": "https://images.mubicdn.net/images/cast_member/11850/cache-1128250-1776961532/image-w856.jpg", "Eric Baudelaire": "https://images.mubicdn.net/images/cast_member/349551/cache-124258-1600356359/image-w856.jpg", "Joachim Trier": "https://images.mubicdn.net/images/cast_member/22905/cache-456135-1565208739/image-w856.jpg", "Paolo Sorrentino": "https://images.mubicdn.net/images/cast_member/19541/cache-456139-1564021631/image-w856.jpg", "Kelly Reichardt": "https://images.mubicdn.net/images/cast_member/4769/cache-696287-1626312371/image-w856.jpg", "Quentin Dupieux": "https://images.mubicdn.net/images/cast_member/115721/cache-61826-1677876372/image-w856.jpg", "Piotr Szulkin": "https://images.mubicdn.net/images/cast_member/156924/cache-65183-1346944849/image-w856.jpg", "Park Chan-wook": "https://images.mubicdn.net/images/cast_member/933/cache-30-1607464891/image-w856.jpg", "Coralie Fargeat": "https://images.mubicdn.net/images/cast_member/519528/cache-258310-1715094388/image-w856.jpg", "Billy Wilder": "https://images.mubicdn.net/images/cast_member/1309/cache-37-1478101707/image-w856.jpg", "Aki Kaurismäki": "https://images.mubicdn.net/images/cast_member/2214/cache-200-1564088971/image-w856.jpg", "Jonathan Demme": "https://images.mubicdn.net/images/cast_member/3660/cache-90361-1390436927/image-w856.jpg", "Julia Loktev": "https://images.mubicdn.net/images/cast_member/88669/cache-1112210-1770117516/image-w856.jpg", "Lucrecia Martel": "https://images.mubicdn.net/images/cast_member/1902/cache-476583-1570502285/image-w856.jpg", "Luca Guadagnino": "https://images.mubicdn.net/images/cast_member/27898/cache-5898-1612203794/image-w856.jpg", "Apichatpong Weerasethakul": "https://images.mubicdn.net/images/cast_member/4553/cache-90045-1389722092/image-w856.jpg", "Bertrand Bonello": "https://images.mubicdn.net/images/cast_member/12260/cache-2131-1478101707/image-w856.jpg", "Luna Carmoon": "https://images.mubicdn.net/images/cast_member/815966/cache-934888-1704428533/image-w856.jpg", "Joanna Hogg": "https://images.mubicdn.net/images/cast_member/18078/cache-634964-1611095300/image-w856.jpg", "Nicolas Winding Refn": "https://images.mubicdn.net/images/cast_member/24286/cache-2947-1373308209/image-w856.jpg", "Joseph P. Mawra": "https://images.mubicdn.net/images/cast_member/243053/cache-449714-1562196054/image-w856.jpg", "Ron Ormond": "https://images.mubicdn.net/images/cast_member/231762/cache-181667-1478785135/image-w856.jpg", "Wim Wenders": "https://images.mubicdn.net/images/cast_member/1528/cache-99-1707479920/image-w856.jpg", "Céline Sciamma": "https://images.mubicdn.net/images/cast_member/15198/cache-6506-1582023292/image-w856.jpg", "Magnus von Horn": "https://images.mubicdn.net/images/cast_member/135873/cache-167118-1617129051/image-w856.jpg", "Bong Joon Ho": "https://images.mubicdn.net/images/cast_member/4836/cache-617588-1607417988/image-w856.jpg", "Thomas Vinterberg": "https://images.mubicdn.net/images/cast_member/1522/cache-456132-1689017726/image-w856.jpg", "Lynne Ramsay": "https://images.mubicdn.net/images/cast_member/7903/cache-4821-1567405185/image-w856.jpg", "Emma Seligman": "https://images.mubicdn.net/images/cast_member/613190/cache-602945-1695376843/image-w856.jpg", "Buster Keaton": "https://images.mubicdn.net/images/cast_member/46/cache-5452-1517134149/image-w856.jpg", "Spike Lee": "https://images.mubicdn.net/images/cast_member/2103/cache-517181-1582770174/image-w856.jpg", "Mike Nichols": "https://images.mubicdn.net/images/cast_member/1482/cache-116-1647977598/image-w856.jpg", "Akinola Davies Jr.": "https://images.mubicdn.net/images/cast_member/747511/cache-964184-1714186845/image-w856.jpg", "Jim Jarmusch": "https://images.mubicdn.net/images/cast_member/1709/cache-1082401-1757329907/image-w856.jpg", "Mati Diop": "https://images.mubicdn.net/images/cast_member/16489/cache-104218-1627312803/image-w856.jpg", "Francis Ford Coppola": "https://images.mubicdn.net/images/cast_member/13091/cache-226-1337261074/image-w856.jpg", "Xavier Dolan": "https://images.mubicdn.net/images/cast_member/21523/cache-89490-1598368871/image-w856.jpg", "Mahamat-Saleh Haroun": "https://images.mubicdn.net/images/cast_member/22955/cache-89762-1388536092/image-w856.jpg", "Spike Jonze": "https://images.mubicdn.net/images/cast_member/1897/cache-608325-1628236463/image-w856.jpg", "Andrea Arnold": "https://images.mubicdn.net/images/cast_member/11292/cache-467075-1620804696/image-w856.jpg", "Gianfranco Rosi": "https://images.mubicdn.net/images/cast_member/83094/cache-90079-1389830568/image-w856.jpg", "Mia Hansen-Løve": "https://images.mubicdn.net/images/cast_member/19519/cache-6084-1605152900/image-w856.jpg", "Sarah Polley": "https://images.mubicdn.net/images/cast_member/4416/cache-1083-1478101707/image-w856.jpg", "Norman Jewison": "https://images.mubicdn.net/images/cast_member/28056/cache-2549-1478101707/image-w856.jpg", "Alain Gomis": "https://images.mubicdn.net/images/cast_member/350935/cache-56726-1656674692/image-w856.jpg", "Ken Loach": "https://images.mubicdn.net/images/cast_member/2217/cache-206-1609536785/image-w856.jpg", "Bill Ross IV, Turner Ross": "https://images.mubicdn.net/images/cast_member/65684/cache-225993-1495877714/image-w856.jpg", "Bertrand Mandico": "https://images.mubicdn.net/images/cast_member/219489/cache-111285-1545025185/image-w856.jpg", "Leos Carax": "https://images.mubicdn.net/images/cast_member/101/cache-135-1634811584/image-w856.jpg", "László Nemes": "https://images.mubicdn.net/images/cast_member/410073/cache-124253-1449670257/image-w856.jpg", "Marco Bellocchio": "https://images.mubicdn.net/images/cast_member/3839/cache-558-1626863430/image-w856.jpg", "Rodrigo Moreno": "https://images.mubicdn.net/images/cast_member/40714/cache-188076-1697765798/image-w856.jpg", "Fernand Melgar": "https://images.mubicdn.net/images/cast_member/235470/cache-124732-1450208637/image-w856.jpg", "Sarah Maldoror": "https://images.mubicdn.net/images/cast_member/195041/cache-4256-1339526804/image-w856.jpg", "Douglas Sirk": "https://images.mubicdn.net/images/cast_member/6766/cache-394-1606852832/image-w856.jpg", "Yorgos Lanthimos": "https://images.mubicdn.net/images/cast_member/20843/cache-516276-1582524125/image-w856.jpg", "Sergei Loznitsa": "https://images.mubicdn.net/images/cast_member/88552/cache-88489-1616604163/image-w856.jpg", "Eric Khoo": "https://images.mubicdn.net/images/cast_member/20391/cache-2060-1478101707/image-w856.jpg", "Gregg Araki": "https://images.mubicdn.net/images/cast_member/4301/cache-89727-1387930541/image-w856.jpg", "Amalia Ulman": "https://images.mubicdn.net/images/cast_member/836687/cache-757600-1748623005/image-w856.jpg", "Peter Strickland": "https://images.mubicdn.net/images/cast_member/67819/cache-62534-1593607511/image-w856.jpg", "Kit Zauhar": "https://images.mubicdn.net/images/cast_member/722294/cache-814254-1663205123/image-w856.jpg", "Laura Huertas Millán": "https://images.mubicdn.net/images/cast_member/530715/cache-371500-1536969596/image-w856.jpg", "Alex Ross Perry": "https://images.mubicdn.net/images/cast_member/94770/cache-68852-1443001000/image-w856.jpg", "Athina Rachel Tsangari": "https://images.mubicdn.net/images/cast_member/71644/cache-3522-1478101707/image-w856.jpg", "David Robert Mitchell": "https://images.mubicdn.net/images/cast_member/85297/cache-110326-1429676348/image-w856.jpg", "Jean-Luc Godard": "https://images.mubicdn.net/images/cast_member/783/cache-29-1669297970/image-w856.jpg", "Rachel Lang": "https://images.mubicdn.net/images/cast_member/495063/cache-172007-1484575848/image-w856.jpg", "Nawapol Thamrongrattanarit": "https://images.mubicdn.net/images/cast_member/391068/cache-726917-1635153161/image-w856.jpg", "Andrew Kötting": "https://images.mubicdn.net/images/cast_member/65565/cache-7034-1478101707/image-w856.jpg", "Lukas Dhont": "https://images.mubicdn.net/images/cast_member/408373/cache-195414-1669206863/image-w856.jpg", "Charlotte Wells": "https://images.mubicdn.net/images/cast_member/540594/cache-389164-1668002162/image-w856.jpg", "Jennie Livingston": "https://images.mubicdn.net/images/cast_member/69519/cache-97626-1410369817/image-w856.jpg", "Tarsem Singh": "https://images.mubicdn.net/images/cast_member/37237/cache-4797-1720099137/image-w856.jpg", "Rodrigo Sorogoyen": "https://images.mubicdn.net/images/cast_member/216870/cache-128914-1618140322/image-w856.jpg", "Levan Akin": "https://images.mubicdn.net/images/cast_member/341245/cache-469070-1705505688/image-w856.jpg", "Elizabeth Sankey": "https://images.mubicdn.net/images/cast_member/680447/cache-532907-1730757892/image-w856.jpg", "Ritesh Batra": "https://images.mubicdn.net/images/cast_member/356170/cache-164343-1471307791/image-w856.jpg", "Sebastian Meise": "https://images.mubicdn.net/images/cast_member/325041/cache-520889-1583565473/image-w856.jpg", "Ali Abbasi": "https://images.mubicdn.net/images/cast_member/331424/cache-164238-1669118897/image-w856.jpg", "Tom Prezman, Tzor Edery": "https://images.mubicdn.net/images/cast_member/742540/cache-950658-1716382402/image-w856.jpg", "Joel Coen": "https://images.mubicdn.net/images/cast_member/3197/cache-40-1478101707/image-w856.jpg", "Buster Keaton, Clyde Bruckman": "https://images.mubicdn.net/images/cast_member/46/cache-5452-1517134149/image-w856.jpg", "William Kentridge": "https://images.mubicdn.net/images/cast_member/278255/cache-57601-1339526765/image-w856.jpg", "Tunç Başaran": "https://images.mubicdn.net/images/cast_member/329047/cache-98992-1411997510/image-w856.jpg", "Kevin Macdonald": "https://images.mubicdn.net/images/cast_member/16209/cache-168-1707381475/image-w856.jpg", "Felix Van Groeningen, Charlotte Vandermeersch": "https://images.mubicdn.net/images/cast_member/101146/cache-94917-1406320621/image-w856.jpg", "Celine Song": "https://images.mubicdn.net/images/cast_member/756787/cache-849433-1726255599/image-w856.jpg", "Joris Ivens": "https://images.mubicdn.net/images/cast_member/25690/cache-570-1478101707/image-w856.jpg", "Sherry Hormann": "https://images.mubicdn.net/images/cast_member/426887/cache-160727-1470101730/image-w856.jpg", "Haifaa Al-Mansour": "https://images.mubicdn.net/images/cast_member/375173/cache-98207-1410877071/image-w856.jpg", "Ben Sharrock": "https://images.mubicdn.net/images/cast_member/475462/cache-487624-1599135866/image-w856.jpg", "Carla Simón": "https://images.mubicdn.net/images/cast_member/536065/cache-307274-1650309513/image-w856.jpg", "Kantemir Balagov": "https://images.mubicdn.net/images/cast_member/442882/cache-232055-1576013589/image-w856.jpg", "Tatiana Huezo": "https://images.mubicdn.net/images/cast_member/208608/cache-185240-1481004222/image-w856.jpg", "Gints Zilbalodis": "https://images.mubicdn.net/images/cast_member/557164/cache-973579-1717551729/image-w856.jpg", "Ridley Scott": "https://images.mubicdn.net/images/cast_member/1435/cache-35-1624647142/image-w856.jpg", "Nii Kwate Owoo": "https://images.mubicdn.net/images/cast_member/885188/cache-1015458-1732215111/image-w856.jpg", "Léa Mysius": "https://images.mubicdn.net/images/cast_member/402826/cache-170600-1473251425/image-w856.jpg", "Alice Rohrwacher, JR": "https://images.mubicdn.net/images/cast_member/213921/cache-106723-1619710173/image-w856.jpg", "Rahul Jain": "https://images.mubicdn.net/images/cast_member/529767/cache-258859-1659020562/image-w856.jpg", "Cheryl Dunye": "https://images.mubicdn.net/images/cast_member/51320/cache-597976-1602713197/image-w856.jpg", "Stanley Donen": "https://images.mubicdn.net/images/cast_member/6277/cache-366-1478101707/image-w856.jpg", "Metin Erksan": "https://images.mubicdn.net/images/cast_member/13434/cache-172-1535605649/image-w856.jpg", "Bruno Barreto": "https://images.mubicdn.net/images/cast_member/38660/cache-61130-1337275502/image-w856.jpg", "Ildikó Enyedi": "https://images.mubicdn.net/images/cast_member/66074/cache-5931-1487565593/image-w856.jpg", "Dave Fleischer": "https://images.mubicdn.net/images/cast_member/34989/cache-3791-1478101707/image-w856.jpg", "Rob Reiner": "https://images.mubicdn.net/images/cast_member/3581/cache-2000-1478101707/image-w856.jpg", "Koya Kamura": "https://images.mubicdn.net/images/cast_member/714488/cache-782721-1652767824/image-w856.jpg", "Heta Jäälinoja": "https://images.mubicdn.net/images/cast_member/545289/cache-1050008-1744637519/image-w856.jpg", "John Schlesinger": "https://images.mubicdn.net/images/cast_member/7347/cache-551-1478101707/image-w856.jpg", "Sebastián Silva": "https://images.mubicdn.net/images/cast_member/65963/cache-89970-1389475008/image-w856.jpg", "Bernardo Bertolucci": "https://images.mubicdn.net/images/cast_member/1865/cache-48-1608668505/image-w856.jpg", "Luis Buñuel": "https://images.mubicdn.net/images/cast_member/56/cache-117-1338567776/image-w856.jpg", "Kleber Mendonça Filho, Juliano Dornelles": "https://images.mubicdn.net/images/cast_member/349350/cache-86999-1581685588/image-w856.jpg", "Ariane Louis-Seize": "https://images.mubicdn.net/images/cast_member/520924/cache-953862-1711243687/image-w856.jpg", "Sally Potter": "https://images.mubicdn.net/images/cast_member/20675/cache-247-1478101707/image-w856.jpg", "George A. Romero": "https://images.mubicdn.net/images/cast_member/3590/cache-128-1536089869/image-w856.jpg", "Louis Malle": "https://images.mubicdn.net/images/cast_member/5298/cache-118-1364660110/image-w856.jpg", "Götz Spielmann": "https://images.mubicdn.net/images/cast_member/716/cache-175-1370617273/image-w856.jpg", "Pinny Grylls, Sam Crane": "https://images.mubicdn.net/images/cast_member/650685/cache-1004864-1734105727/image-w856.jpg", "Michael Powell": "https://images.mubicdn.net/images/cast_member/1754/cache-1079908-1756215493/image-w856.jpg", "Rob Epstein": "https://images.mubicdn.net/images/cast_member/15342/cache-6505-1478101707/image-w856.jpg", "Anmol Sidhu": "https://images.mubicdn.net/images/cast_member/775260/cache-948718-1714407788/image-w856.jpg", "Oliver Laxe": "https://images.mubicdn.net/images/cast_member/116169/cache-59740-1636749398/image-w856.jpg", "Pablo Larraín": "https://images.mubicdn.net/images/cast_member/96108/cache-5763-1611825732/image-w856.jpg", "Éric Rohmer": "https://images.mubicdn.net/images/cast_member/1057/cache-97-1478101707/image-w856.jpg", "Alonso Ruizpalacios": "https://images.mubicdn.net/images/cast_member/465650/cache-128281-1454436171/image-w856.jpg", "Suzan Pitt": "https://images.mubicdn.net/images/cast_member/76035/cache-1143-1478101707/image-w856.jpg", "Richard Benjamin": "https://images.mubicdn.net/images/cast_member/20704/cache-57801-1656675018/image-w856.jpg", "Lizzie Borden": "https://images.mubicdn.net/images/cast_member/49358/cache-60564-1656675755/image-w856.jpg", "Josh Safdie, Benny Safdie": "https://images.mubicdn.net/images/cast_member/21906/cache-1039-1509406381/image-w856.jpg", "Gaspar Noé": "https://images.mubicdn.net/images/cast_member/915/cache-293-1526883965/image-w856.jpg", "Nuri Bilge Ceylan": "https://images.mubicdn.net/images/cast_member/1231/cache-84-1625243460/image-w856.jpg", "Julie Ha, Eugene Yi": "https://images.mubicdn.net/images/cast_member/964823/cache-774159-1650304890/image-w856.jpg", "Eva Victor": "https://images.mubicdn.net/images/cast_member/887116/cache-1067634-1751012054/image-w856.jpg", "Gilles Lellouche": "https://images.mubicdn.net/images/cast_member/21149/cache-120235-1445044849/image-w856.jpg", "Kidlat Tahimik": "https://images.mubicdn.net/images/cast_member/87949/cache-86967-1382542251/image-w856.jpg", "Lars von Trier": "https://images.mubicdn.net/images/cast_member/1464/cache-31-1666090352/image-w856.jpg", "Jessica Beshir": "https://images.mubicdn.net/images/cast_member/270898/cache-720720-1633596333/image-w856.jpg", "Michael Glawogger": "https://images.mubicdn.net/images/cast_member/24833/cache-379-1478101707/image-w856.jpg", "Tarik Saleh": "https://images.mubicdn.net/images/cast_member/63742/cache-143282-1463184346/image-w856.jpg", "Chintis Lundgren, Draško Ivezić": "https://images.mubicdn.net/images/cast_member/498555/cache-442037-1559790616/image-w856.jpg", "Cord Jefferson": "https://images.mubicdn.net/images/cast_member/591462/cache-617740-1607496227/image-w856.jpg", "Shannon Murphy": "https://images.mubicdn.net/images/cast_member/613675/cache-605662-1604454415/image-w856.jpg", "Corinna Belz": "https://images.mubicdn.net/images/cast_member/320785/cache-170704-1473301984/image-w856.jpg", "Paul Thomas Anderson": "https://images.mubicdn.net/images/cast_member/665/cache-455459-1707534078/image-w856.jpg", "Esteban Sapir": "https://images.mubicdn.net/images/cast_member/131/cache-86211-1380917815/image-w856.jpg", "Phoebe Jane Hart": "https://images.mubicdn.net/images/cast_member/984719/cache-1046517-1743418944/image-w856.jpg", "Tsui Hark": "https://images.mubicdn.net/images/cast_member/2769/cache-215608-1659881375/image-w856.jpg", "Haley Elizabeth Anderson": "https://images.mubicdn.net/images/cast_member/747192/cache-604194-1745518096/image-w856.jpg", "Ernst De Geer": "https://images.mubicdn.net/images/cast_member/648385/cache-378621-1539246214/image-w856.jpg", "Aly Muritiba": "https://images.mubicdn.net/images/cast_member/155696/cache-145308-1463444644/image-w856.jpg", "Liv McNeil": "https://images.mubicdn.net/images/cast_member/1145479/cache-939301-1706005392/image-w856.jpg", "Christopher Kelly": "https://images.mubicdn.net/images/cast_member/647595/cache-362462-1534154790/image-w856.jpg", "Djiby Kebe": "https://images.mubicdn.net/images/cast_member/1200257/cache-1015765-1732334284/image-w856.jpg", "Michaela Pavlátová": "https://images.mubicdn.net/images/cast_member/140769/cache-196320-1486107818/image-w856.jpg", "Sean McAllister": "https://images.mubicdn.net/images/cast_member/352363/cache-131205-1457376867/image-w856.jpg", "Zhang Yimou": "https://images.mubicdn.net/images/cast_member/467526/cache-215347-1491956827/image-w856.jpg", "Joe Lawlor, Christine Molloy": "https://images.mubicdn.net/images/cast_member/26093/cache-171789-1693380992/image-w856.jpg", "Gabriel Axel": "https://images.mubicdn.net/images/cast_member/17233/cache-61562-1338313937/image-w856.jpg", "Andrew Haigh": "https://images.mubicdn.net/images/cast_member/147063/cache-5593-1761733035/image-w856.jpg", "Darren Aronofsky": "https://images.mubicdn.net/images/cast_member/1132/cache-88637-1613494024/image-w856.jpg", "Rob Epstein, Jeffrey Friedman": "https://images.mubicdn.net/images/cast_member/15342/cache-6505-1478101707/image-w856.jpg", "Davy Chou": "https://images.mubicdn.net/images/cast_member/349046/cache-162703-1470724386/image-w856.jpg", "Valdimar Jóhannsson": "https://images.mubicdn.net/images/cast_member/122667/cache-686800-1623750641/image-w856.jpg", "Alice Diop": "https://images.mubicdn.net/images/cast_member/528772/cache-391642-1542853813/image-w856.jpg", "Sofia Coppola": "https://images.mubicdn.net/images/cast_member/2728/cache-26-1719083218/image-w856.jpg", "François Ozon": "https://images.mubicdn.net/images/cast_member/3740/cache-72-1478101707/image-w856.jpg", "Dash Shaw": "https://images.mubicdn.net/images/cast_member/427916/cache-206574-1488965564/image-w856.jpg", "Lee Isaac Chung": "https://images.mubicdn.net/images/cast_member/21033/cache-84911-1378747092/image-w856.jpg", "Justine Triet": "https://images.mubicdn.net/images/cast_member/358125/cache-120110-1444960322/image-w856.jpg", "Jonas Carpignano": "https://images.mubicdn.net/images/cast_member/324177/cache-128328-1454439813/image-w856.jpg", "Yi'nan Diao": "https://images.mubicdn.net/images/cast_member/21058/cache-163024-1621879138/image-w856.jpg", "Benjamin Mullinkosson": "https://images.mubicdn.net/images/cast_member/660301/cache-900367-1692321157/image-w856.jpg", "Dario Argento": "https://images.mubicdn.net/images/cast_member/2996/cache-88466-1385145568/image-w856.jpg", "Martin Scorsese": "https://images.mubicdn.net/images/cast_member/646/cache-639072-1707927269/image-w856.jpg", "Zia Anger": "https://images.mubicdn.net/images/cast_member/472344/cache-128979-1723046399/image-w856.jpg", "Stephan Elliott": "https://images.mubicdn.net/images/cast_member/19798/cache-97759-1410462039/image-w856.jpg", "Kohei Igarashi": "https://images.mubicdn.net/images/cast_member/442852/cache-258311-1506030975/image-w856.jpg", "Mojtaba Mirtahasebi, Jafar Panahi": "https://images.mubicdn.net/images/cast_member/162892/cache-97635-1410370575/image-w856.jpg", "Debra Granik": "https://images.mubicdn.net/images/cast_member/71684/cache-699734-1627337840/image-w856.jpg", "Ninja Thyberg": "https://images.mubicdn.net/images/cast_member/398902/cache-124789-1563181462/image-w856.jpg", "Chinlin Hsieh": "https://images.mubicdn.net/images/cast_member/473046/cache-387997-1541809685/image-w856.jpg", "Thomas Hardiman": "https://images.mubicdn.net/images/cast_member/695198/cache-783349-1652873732/image-w856.jpg", "Djibril Diop Mambéty": "https://images.mubicdn.net/images/cast_member/17787/cache-96366-1408845803/image-w856.jpg", "Paul B. Preciado": "https://images.mubicdn.net/images/cast_member/1074406/cache-939602-1706082829/image-w856.jpg", "Rebecca Lenkiewicz": "https://images.mubicdn.net/images/cast_member/418857/cache-200258-1628032399/image-w856.jpg", "Paweł Pawlikowski": "https://images.mubicdn.net/images/cast_member/16304/cache-601892-1779111571/image-w856.jpg", "Miguel Gomes": "https://images.mubicdn.net/images/cast_member/85272/cache-6044-1740074885/image-w856.jpg", "Buster Keaton, John G. Blystone": "https://images.mubicdn.net/images/cast_member/46/cache-5452-1517134149/image-w856.jpg", "Alain Tanner": "https://images.mubicdn.net/images/cast_member/74887/cache-3593-1478101707/image-w856.jpg", "Saulė Bliuvaitė": "https://images.mubicdn.net/images/cast_member/528190/cache-420640-1738190027/image-w856.jpg", "Hayao Miyazaki": "https://images.mubicdn.net/images/cast_member/1419/cache-10-1535963981/image-w856.jpg", "Mascha Schilinski": "https://images.mubicdn.net/images/cast_member/536128/cache-1042014-1757979114/image-w856.jpg", "Annemarie Jacir": "https://images.mubicdn.net/images/cast_member/20900/cache-65694-1348067202/image-w856.jpg", "Albert Serra": "https://images.mubicdn.net/images/cast_member/4789/cache-333-1478101707/image-w856.jpg", "Paul Verhoeven": "https://images.mubicdn.net/images/cast_member/5303/cache-2622-1683833515/image-w856.jpg", "Seamus Murphy": "https://images.mubicdn.net/images/cast_member/201190/cache-208466-1489619188/image-w856.jpg", "Dea Kulumbegashvili": "https://images.mubicdn.net/images/cast_member/435467/cache-564072-1594193027/image-w856.jpg", "William Klein": "https://images.mubicdn.net/images/cast_member/10060/cache-542-1478101707/image-w856.jpg", "Andreas Fontana": "https://images.mubicdn.net/images/cast_member/853829/cache-653852-1615219758/image-w856.jpg", "Nelson Carlo de los Santos Arias": "https://images.mubicdn.net/images/cast_member/474381/cache-182435-1734631691/image-w856.jpg", "Christine Molloy, Joe Lawlor": "https://images.mubicdn.net/images/cast_member/26094/cache-171790-1693381003/image-w856.jpg", "Susanne Deeken": "https://images.mubicdn.net/images/cast_member/991611/cache-974097-1719236402/image-w856.jpg", "Lisa Crafts": "https://images.mubicdn.net/images/cast_member/175507/cache-443450-1560126335/image-w856.jpg", "Kurdwin Ayub": "https://images.mubicdn.net/images/cast_member/543539/cache-338898-1526502655/image-w856.jpg", "Juho Kuosmanen": "https://images.mubicdn.net/images/cast_member/21039/cache-171262-1489075752/image-w856.jpg", "Géla Babluani": "https://images.mubicdn.net/images/cast_member/62847/cache-6082-1478101707/image-w856.jpg", "Michael Mann": "https://images.mubicdn.net/images/cast_member/16175/cache-94500-1404388283/image-w856.jpg", "Lorenzo Vigas": "https://images.mubicdn.net/images/cast_member/474337/cache-161009-1594632591/image-w856.jpg", "Reha Erdem": "https://images.mubicdn.net/images/cast_member/14199/cache-296-1613750563/image-w856.jpg", "RaMell Ross": "https://images.mubicdn.net/images/cast_member/603032/cache-379051-1539337443/image-w856.jpg", "Kazik Radwanski": "https://images.mubicdn.net/images/cast_member/63666/cache-512831-1581548714/image-w856.jpg", "John Smith": "https://images.mubicdn.net/images/cast_member/51889/cache-1115355-1771595071/image-w856.jpg", "Joseph L. Anderson": "https://images.mubicdn.net/images/cast_member/478562/cache-370068-1536543525/image-w856.jpg", "Steve McQueen": "https://images.mubicdn.net/images/cast_member/4865/cache-814-1478101707/image-w856.jpg", "Minh Quý Trương": "https://images.mubicdn.net/images/cast_member/719463/cache-461075-1565582726/image-w856.jpg", "Fritz Lang": "https://images.mubicdn.net/images/cast_member/1322/cache-3618-1344219772/image-w856.jpg", "Kira Kovalenko": "https://images.mubicdn.net/images/cast_member/442888/cache-240195-1500823416/image-w856.jpg", "Monia Chokri": "https://images.mubicdn.net/images/cast_member/107734/cache-140070-1658418882/image-w856.jpg", "Mona Fastvold": "https://images.mubicdn.net/images/cast_member/429012/cache-245736-1502436348/image-w856.jpg", "Jorge Jácome": "https://images.mubicdn.net/images/cast_member/471752/cache-225457-1495605257/image-w856.jpg", "Seth Scriver, Peter Scriver": "https://images.mubicdn.net/images/cast_member/419465/cache-1101091-1764943672/image-w856.jpg", "Yann Mounir Demange": "https://images.mubicdn.net/images/cast_member/431459/cache-216362-1492469517/image-w856.jpg", "Giulio Bertelli": "https://images.mubicdn.net/images/cast_member/1245077/cache-1122101-1774536540/image-w856.jpg", "P.S. Vinothraj": "https://images.mubicdn.net/images/cast_member/838538/cache-753985-1643640676/image-w856.jpg", "Ron Mann": "https://images.mubicdn.net/images/cast_member/23075/cache-180342-1729669378/image-w856.jpg", "Martine Syms": "https://images.mubicdn.net/images/cast_member/670039/cache-803956-1664878687/image-w856.jpg", "Pedro Almodóvar": "https://images.mubicdn.net/images/cast_member/996/cache-16-1596917034/image-w856.jpg", "Amanda Kramer": "https://images.mubicdn.net/images/cast_member/634172/cache-756153-1644304598/image-w856.jpg", "Gia Coppola": "https://images.mubicdn.net/images/cast_member/340335/cache-126553-1452531382/image-w856.jpg", "Josephine Decker": "https://images.mubicdn.net/images/cast_member/167404/cache-116872-1441148125/image-w856.jpg", "Chika Anadu": "https://images.mubicdn.net/images/cast_member/423460/cache-145341-1612417920/image-w856.jpg", "India Donaldson": "https://images.mubicdn.net/images/cast_member/637790/cache-389108-1542099419/image-w856.jpg", "Helke Sander": "https://images.mubicdn.net/images/cast_member/74351/cache-86310-1381078613/image-w856.jpg", "Abderrahmane Sissako": "https://images.mubicdn.net/images/cast_member/11165/cache-181-1478101707/image-w856.jpg", "Ali Cherri": "https://images.mubicdn.net/images/cast_member/376679/cache-421065-1553091963/image-w856.jpg", "Bo Wang": "https://images.mubicdn.net/images/cast_member/135279/cache-351788-1530492155/image-w856.jpg", "William Vega": "https://images.mubicdn.net/images/cast_member/364568/cache-178046-1476669938/image-w856.jpg", "Curtis Harrington": "https://images.mubicdn.net/images/cast_member/42539/cache-1998-1719655059/image-w856.jpg", "John Hillcoat": "https://images.mubicdn.net/images/cast_member/22486/cache-6637-1570564398/image-w856.jpg", "Julian Radlmaier": "https://images.mubicdn.net/images/cast_member/432687/cache-196391-1486111822/image-w856.jpg", "Youssef Chahine": "https://images.mubicdn.net/images/cast_member/2205/cache-193-1478101707/image-w856.jpg", "Alice Winocour": "https://images.mubicdn.net/images/cast_member/70787/cache-120107-1444958841/image-w856.jpg", "Maksym Nakonechnyi": "https://images.mubicdn.net/images/cast_member/824479/cache-869681-1681440485/image-w856.jpg", "Walter Fasano": "https://images.mubicdn.net/images/cast_member/27905/cache-210037-1632222870/image-w856.jpg", "Sean Durkin": "https://images.mubicdn.net/images/cast_member/20923/cache-1720-1478101707/image-w856.jpg", "Simon Bird": "https://images.mubicdn.net/images/cast_member/347674/cache-473117-1569461897/image-w856.jpg", "Eddie Huang": "https://images.mubicdn.net/images/cast_member/576438/cache-1060423-1752147849/image-w856.jpg", "Andrea Pallaoro": "https://images.mubicdn.net/images/cast_member/415864/cache-181908-1478811613/image-w856.jpg", "Walter Salles": "https://images.mubicdn.net/images/cast_member/221/cache-42-1567405517/image-w856.jpg", "Clio Barnard": "https://images.mubicdn.net/images/cast_member/94543/cache-88828-1633518506/image-w856.jpg", "J.C. Chandor": "https://images.mubicdn.net/images/cast_member/166428/cache-104609-1421169527/image-w856.jpg", "Olivier Meyrou": "https://images.mubicdn.net/images/cast_member/166554/cache-379658-1539478342/image-w856.jpg", "Michel Franco": "https://images.mubicdn.net/images/cast_member/21354/cache-135640-1463070505/image-w856.jpg", "Nick Rowland": "https://images.mubicdn.net/images/cast_member/450361/cache-521145-1583622944/image-w856.jpg", "Roberto Minervini": "https://images.mubicdn.net/images/cast_member/375754/cache-124241-1449668702/image-w856.jpg", "Oscar Micheaux": "https://images.mubicdn.net/images/cast_member/9100/cache-5869-1478101707/image-w856.jpg", "Adina Pintilie": "https://images.mubicdn.net/images/cast_member/121743/cache-6628-1478101707/image-w856.jpg", "Cory Finley": "https://images.mubicdn.net/images/cast_member/517119/cache-198566-1486604233/image-w856.jpg", "Bruno Dumont": "https://images.mubicdn.net/images/cast_member/4423/cache-87790-1384192594/image-w856.jpg", "Kota Yoshida": "https://images.mubicdn.net/images/cast_member/183538/cache-191623-1484187464/image-w856.jpg", "Sine Özbilge, Imge Özbilge": "https://images.mubicdn.net/images/cast_member/728151/cache-1028329-1737010298/image-w856.jpg", "Michael Haneke": "https://images.mubicdn.net/images/cast_member/772/cache-244-1582543714/image-w856.jpg", "Damiano D'Innocenzo, Fabio D'Innocenzo": "https://images.mubicdn.net/images/cast_member/605602/cache-517655-1582871974/image-w856.jpg", "Angela Schanelec": "https://images.mubicdn.net/images/cast_member/68037/cache-426-1478101707/image-w856.jpg", "Huang Ya-li": "https://images.mubicdn.net/images/cast_member/496255/cache-229730-1497336197/image-w856.jpg", "Wei Shujun": "https://images.mubicdn.net/images/cast_member/532681/cache-849219-1674203178/image-w856.jpg", "Liu Jian": "https://images.mubicdn.net/images/cast_member/224597/cache-206802-1489038152/image-w856.jpg", "Camila José Donoso": "https://images.mubicdn.net/images/cast_member/476379/cache-208014-1585907073/image-w856.jpg", "Roger Gnoan M'Bala": "https://images.mubicdn.net/images/cast_member/12582/cache-5425-1478101707/image-w856.jpg", "Riar Rizaldi": "https://images.mubicdn.net/images/cast_member/719494/cache-909490-1696030370/image-w856.jpg", "Susan Ray": "https://images.mubicdn.net/images/cast_member/94209/cache-6953-1478101707/image-w856.jpg", "Simon Liu": "https://images.mubicdn.net/images/cast_member/395030/cache-197358-1486375727/image-w856.jpg", "Jafar Panahi, Kambuzia Partovi": "https://images.mubicdn.net/images/cast_member/11454/cache-215833-1757977469/image-w856.jpg", "Federico Lodoli, Carlo Gabriele Tribbioli": "https://images.mubicdn.net/images/cast_member/498459/cache-160974-1472562380/image-w856.jpg", "Joe Stephenson": "https://images.mubicdn.net/images/cast_member/516467/cache-158327-1468233061/image-w856.jpg", "Matt Spicer": "https://images.mubicdn.net/images/cast_member/149847/cache-196471-1486115507/image-w856.jpg", "Liu Jiayin": "https://images.mubicdn.net/images/cast_member/21809/cache-3385-1478101707/image-w856.jpg", "Takashi Miike": "https://images.mubicdn.net/images/cast_member/1014/cache-88225-1384627164/image-w856.jpg", "Sasie Sealy": "https://images.mubicdn.net/images/cast_member/192960/cache-1040412-1741052079/image-w856.jpg", "Shûji Terayama": "https://images.mubicdn.net/images/cast_member/51188/cache-2014-1478101707/image-w856.jpg", "Ricky D'Ambrose": "https://images.mubicdn.net/images/cast_member/569823/cache-320247-1523563610/image-w856.jpg", "Niles Atallah": "https://images.mubicdn.net/images/cast_member/157674/cache-126584-1517267391/image-w856.jpg", "David Wnendt": "https://images.mubicdn.net/images/cast_member/362286/cache-128425-1454509863/image-w856.jpg", "Chu Hsien-Che": "https://images.mubicdn.net/images/cast_member/530806/cache-256546-1505614740/image-w856.jpg", "Rick Schmidt": "https://images.mubicdn.net/images/cast_member/176511/cache-183718-1565255926/image-w856.jpg", "Antoine Barraud": "https://images.mubicdn.net/images/cast_member/217671/cache-128343-1454440968/image-w856.jpg", "Okhi Han": "https://images.mubicdn.net/images/cast_member/370118/cache-1091027-1761199964/image-w856.jpg", "Radu Jude, Christian Ferencz-Flatz": "https://images.mubicdn.net/images/cast_member/25538/cache-4374-1570564577/image-w856.jpg", "Daniel Soares": "https://images.mubicdn.net/images/cast_member/700945/cache-715642-1632330939/image-w856.jpg", "Gastón Solnicki": "https://images.mubicdn.net/images/cast_member/141511/cache-180281-1478061089/image-w856.jpg", "Billy Wilder, Alexander Esway": "https://images.mubicdn.net/images/cast_member/1309/cache-37-1478101707/image-w856.jpg", "Diego Céspedes": "https://images.mubicdn.net/images/cast_member/519397/cache-635060-1611116621/image-w856.jpg", "Małgorzata Szumowska": "https://images.mubicdn.net/images/cast_member/180509/cache-59697-1644678670/image-w856.jpg", "Joshua Oppenheimer": "https://images.mubicdn.net/images/cast_member/53555/cache-215234-1491900602/image-w856.jpg", "Le Bao": "https://images.mubicdn.net/images/cast_member/639403/cache-656738-1644001528/image-w856.jpg", "Valeria Hofmann": "https://images.mubicdn.net/images/cast_member/780095/cache-849138-1674190861/image-w856.jpg", "Christina Hornisher": "https://images.mubicdn.net/images/cast_member/520847/cache-1071658-1752635820/image-w856.jpg", "Joseph Lerner": "https://images.mubicdn.net/images/cast_member/45591/cache-512222-1581403071/image-w856.jpg", "Nicholas Ray": "https://images.mubicdn.net/images/cast_member/10669/cache-6825-1478101707/image-w856.jpg", "Leandro Listorti": "https://images.mubicdn.net/images/cast_member/471568/cache-923142-1700473213/image-w856.jpg", "Martika Ramirez Escobar": "https://images.mubicdn.net/images/cast_member/455065/cache-744317-1639926823/image-w856.jpg", "Sophie Hyde": "https://images.mubicdn.net/images/cast_member/135882/cache-142019-1603374828/image-w856.jpg", "Francisco Lezama": "https://images.mubicdn.net/images/cast_member/231889/cache-182475-1730990792/image-w856.jpg", "Caroline Poggi, Jonathan Vinel": "https://images.mubicdn.net/images/cast_member/448870/cache-99487-1412628595/image-w856.jpg", "David Mackenzie": "https://images.mubicdn.net/images/cast_member/16168/cache-4800-1478101707/image-w856.jpg", "Reggie Yates": "https://images.mubicdn.net/images/cast_member/845976/cache-1003142-1728524074/image-w856.jpg", "Nicolás Pereda, Lázaro Gabino Rodríguez": "https://images.mubicdn.net/images/cast_member/63656/cache-6867-1478101707/image-w856.jpg", "Marcelo Charras": "https://images.mubicdn.net/images/cast_member/468943/cache-148231-1465886763/image-w856.jpg", "Hélène Cattet, Bruno Forzani": "https://images.mubicdn.net/images/cast_member/67567/cache-92977-1398375657/image-w856.jpg", "Abel Ferrara": "https://images.mubicdn.net/images/cast_member/819/cache-89816-1388930781/image-w856.jpg", "Corneliu Porumboiu": "https://images.mubicdn.net/images/cast_member/13552/cache-288-1478101707/image-w856.jpg", "Edwin": "https://images.mubicdn.net/images/cast_member/64504/cache-2966-1478101707/image-w856.jpg", "Ray Dennis Steckler": "https://images.mubicdn.net/images/cast_member/35316/cache-84323-1564115717/image-w856.jpg", "Jim Hosking": "https://images.mubicdn.net/images/cast_member/449091/cache-178879-1477031191/image-w856.jpg", "Felipe Guerrero": "https://images.mubicdn.net/images/cast_member/10988/cache-112357-1675850069/image-w856.jpg", "Ned Hockman, Skip Homeier": "https://images.mubicdn.net/images/cast_member/556616/cache-494321-1575636611/image-w856.jpg", "Sek Kei": "https://images.mubicdn.net/images/cast_member/543092/cache-1096542-1762958350/image-w856.jpg", "Edward D. Wood Jr.": "https://images.mubicdn.net/images/cast_member/74874/cache-1292-1492471625/image-w856.jpg", "Debbie Tucker Green": "https://images.mubicdn.net/images/cast_member/325892/cache-966665-1714941054/image-w856.jpg", "Beeban Kidron": "https://images.mubicdn.net/images/cast_member/43507/cache-63255-1342199182/image-w856.jpg", "Lucio Fulci": "https://images.mubicdn.net/images/cast_member/35364/cache-354-1478101707/image-w856.jpg", "Mohamed Al-Daradji": "https://images.mubicdn.net/images/cast_member/71548/cache-191576-1484185972/image-w856.jpg", "Bert Williams": "https://images.mubicdn.net/images/cast_member/162651/cache-270725-1508990512/image-w856.jpg", "Gilles Deroo, Marianne Pistone": "https://images.mubicdn.net/images/cast_member/414357/cache-128944-1455041502/image-w856.jpg", "Bob Clark": "https://images.mubicdn.net/images/cast_member/28782/cache-2416-1478101707/image-w856.jpg", "Neïl Beloufa": "https://images.mubicdn.net/images/cast_member/324139/cache-182987-1479263483/image-w856.jpg", "Gary Walkow": "https://images.mubicdn.net/images/cast_member/122324/cache-206885-1489044414/image-w856.jpg", "Nicolás Pereda": "https://images.mubicdn.net/images/cast_member/63656/cache-6867-1478101707/image-w856.jpg", "Amy Seimetz": "https://images.mubicdn.net/images/cast_member/65610/cache-90576-1390854796/image-w856.jpg", "Ted V. Mikels": "https://images.mubicdn.net/images/cast_member/54296/cache-2468-1478101707/image-w856.jpg", "Daphne Xu": "https://images.mubicdn.net/images/cast_member/770353/cache-1086385-1767805433/image-w856.jpg", "Jac Zacha": "https://images.mubicdn.net/images/cast_member/295525/cache-448907-1561955422/image-w856.jpg", "Anggun Priambodo": "https://images.mubicdn.net/images/cast_member/83757/cache-145344-1463500640/image-w856.jpg", "Andy Milligan": "https://images.mubicdn.net/images/cast_member/96916/cache-3328-1478101707/image-w856.jpg", "Larry E. Jackson": "https://images.mubicdn.net/images/cast_member/422164/cache-218738-1493101015/image-w856.jpg", "Lee Frost": "https://images.mubicdn.net/images/cast_member/83541/cache-7070-1478101707/image-w856.jpg", "Stephen C. Apostolof": "https://images.mubicdn.net/images/cast_member/134026/cache-129130-1455131594/image-w856.jpg", "Dale Berry": "https://images.mubicdn.net/images/cast_member/545883/cache-218714-1493086246/image-w856.jpg", "Charlie Shackleton": "https://images.mubicdn.net/images/cast_member/829880/cache-610949-1696932091/image-w856.jpg", "Sean Robert Dunn": "https://images.mubicdn.net/images/cast_member/556435/cache-256305-1505553683/image-w856.jpg"};
@@ -2350,6 +2467,7 @@ function selectDirector(name) {
     row.innerHTML = '';
     dg.style.display = '';
     document.getElementById('directorCatPills').style.display = '';
+    document.getElementById('dirPillsWrap').style.display = '';
     document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = '';
   });
   tag.appendChild(document.createTextNode(name + ' '));
@@ -2362,6 +2480,7 @@ function selectDirector(name) {
   dg.style.display = 'none';
   section.style.display = '';
   document.getElementById('directorCatPills').style.display = 'none';
+  document.getElementById('dirPillsWrap').style.display = 'none';
   document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = 'none';
 }
 
@@ -2376,11 +2495,11 @@ document.querySelectorAll('.page-tab[data-tab]').forEach(tab => {
     if (label !== 'films & series') closeFilterPanel();
     const cg = document.getElementById('collectionsGrid');
     const cf = document.getElementById('collFilterBar');
-    if (label === 'collections') { cg.style.display = ''; cf.style.display = ''; renderCollections(); }
+    if (label === 'collections') { cg.style.display = ''; cf.style.display = ''; renderCollections(); updateCollPills(); }
     else { cg.style.display = 'none'; cf.style.display = 'none'; }
     const dg = document.getElementById('directorsGrid');
     const dsr = document.getElementById('directorSortRow');
-    if (label === 'directors') { dg.style.display = ''; dsr.style.display = 'flex'; dsr.style.flexDirection = 'column'; renderDirectors(); }
+    if (label === 'directors') { dg.style.display = ''; dsr.style.display = 'flex'; dsr.style.flexDirection = 'column'; renderDirectors(); updateDirPills(); }
     else {
       dg.style.display = 'none';
       dsr.style.display = 'none';
@@ -2429,6 +2548,36 @@ document.querySelectorAll('#genrePills .genre-pill').forEach(pill => {
   document.getElementById('pillsLeft').addEventListener('click', () => pills.scrollBy({ left: -200, behavior: 'smooth' }));
   document.getElementById('pillsRight').addEventListener('click', () => pills.scrollBy({ left: 200, behavior: 'smooth' }));
   update();
+})();
+
+function updateCollPills() {
+  const wrap = document.getElementById('collPillsWrap');
+  const pills = document.getElementById('collPills');
+  if (!pills || !wrap) return;
+  wrap.classList.toggle('has-scroll-left', pills.scrollLeft > 0);
+  wrap.classList.toggle('has-scroll-right', pills.scrollLeft < pills.scrollWidth - pills.clientWidth - 1);
+}
+(function() {
+  const pills = document.getElementById('collPills');
+  pills.addEventListener('scroll', updateCollPills, { passive: true });
+  window.addEventListener('resize', updateCollPills);
+  document.getElementById('collPillsLeft').addEventListener('click', () => pills.scrollBy({ left: -200, behavior: 'smooth' }));
+  document.getElementById('collPillsRight').addEventListener('click', () => pills.scrollBy({ left: 200, behavior: 'smooth' }));
+})();
+
+function updateDirPills() {
+  const wrap = document.getElementById('dirPillsWrap');
+  const pills = document.getElementById('directorCatPills');
+  if (!pills || !wrap) return;
+  wrap.classList.toggle('has-scroll-left', pills.scrollLeft > 0);
+  wrap.classList.toggle('has-scroll-right', pills.scrollLeft < pills.scrollWidth - pills.clientWidth - 1);
+}
+(function() {
+  const pills = document.getElementById('directorCatPills');
+  pills.addEventListener('scroll', updateDirPills, { passive: true });
+  window.addEventListener('resize', updateDirPills);
+  document.getElementById('dirPillsLeft').addEventListener('click', () => pills.scrollBy({ left: -200, behavior: 'smooth' }));
+  document.getElementById('dirPillsRight').addEventListener('click', () => pills.scrollBy({ left: 200, behavior: 'smooth' }));
 })();
 
 const sortEl = document.getElementById('sortDropdown-sort');
@@ -2557,10 +2706,8 @@ function buildLangPills(type) {
   const showMoreEl = pills.querySelector('#langShowMore');
   if (showMoreEl) {
     showMoreEl.addEventListener('click', () => {
-      const expanded = showMoreEl.dataset.expanded === '1';
-      pills.querySelectorAll('.lang-pill-hidden').forEach(p => { p.style.display = expanded ? 'none' : ''; });
-      showMoreEl.dataset.expanded = expanded ? '0' : '1';
-      showMoreEl.textContent = expanded ? `+${hiddenLangs.length} more` : 'Show less';
+      pills.querySelectorAll('.lang-pill-hidden').forEach(p => { p.style.display = ''; });
+      showMoreEl.remove();
     });
   }
 
@@ -2644,14 +2791,25 @@ function toggleDropdown(e) {
   const open = dd.classList.toggle('open');
   document.getElementById('navHamburger').setAttribute('aria-expanded', open);
 }
+function toggleDropdownMob(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('navDropdownMob');
+  const open = dd.classList.toggle('open');
+  document.getElementById('navHamburgerMob').setAttribute('aria-expanded', open);
+}
 document.addEventListener('click', () => {
   const dd = document.getElementById('navDropdown');
   if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', false); }
+  const ddm = document.getElementById('navDropdownMob');
+  if (ddm) { ddm.classList.remove('open'); document.getElementById('navHamburgerMob').setAttribute('aria-expanded', false); }
 });
+document.getElementById('searchOpenBtnMob').addEventListener('click', e => { e.stopPropagation(); openSearch(); });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     const dd = document.getElementById('navDropdown');
     if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', false); }
+    const ddm = document.getElementById('navDropdownMob');
+    if (ddm) { ddm.classList.remove('open'); document.getElementById('navHamburgerMob').setAttribute('aria-expanded', false); }
     closeSearch();
   }
 });
