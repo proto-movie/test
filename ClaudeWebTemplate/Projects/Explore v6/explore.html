@@ -926,6 +926,17 @@
     .filter-btn.is-active.is-open:hover .filter-icon circle:nth-child(3) { transform: translateY(6px); }
     .filter-btn.is-active.is-open .filter-icon circle:nth-child(4),
     .filter-btn.is-active.is-open:hover .filter-icon circle:nth-child(4) { transform: translateY(-6px); }
+    .filter-btn-count {
+      display: none;
+      width: 18px; height: 18px;
+      background: #000; color: #fff;
+      border-radius: 50%;
+      font-size: 11px; font-weight: 600;
+      align-items: center; justify-content: center;
+      flex-shrink: 0; line-height: 1;
+    }
+    @media (max-width: 809px) { .filter-btn-count { display: flex; } }
+    @media (max-width: 809px) { .filter-btn-count:empty { display: none; } }
     .filter-sort:hover .filter-select { opacity: 0.6; }
     .filter-sort:hover .material-icons { opacity: 0.6; }
     .filter-overlay {
@@ -1491,6 +1502,7 @@
         <button class="filter-btn" id="filterBtn">
           <svg width="14" height="14" viewBox="4 2 16 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="filter-icon" style="flex-shrink:0"><line x1="8" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="16" y2="21"/><circle cx="8" cy="9" r="3"/><circle cx="16" cy="15" r="3"/></svg>
           <span id="filterBtnLabel" style="font-family:Riforma,sans-serif;font-weight:500;">Filters</span>
+          <span id="filterBtnCount" class="filter-btn-count"></span>
         </button>
         <div class="filter-sort">
           <span style="font-family:Riforma,sans-serif;font-size:14px;font-weight:500;color:#323232;">Sort by:</span>
@@ -2772,7 +2784,11 @@ function updateFilterBtnLabel() {
       : `Subtitled in: ${langVal}`);
   }
   const el = document.getElementById('filterBtnLabel');
-  if (el) el.textContent = parts.length ? parts.join(' & ') : 'Filters';
+  const badge = document.getElementById('filterBtnCount');
+  if (el) {
+    el.textContent = (parts.length && window.innerWidth >= 810) ? parts.join(' & ') : 'Filters';
+  }
+  if (badge) badge.textContent = parts.length || '';
 }
 
 function buildLangPills(type) {
