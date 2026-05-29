@@ -2640,6 +2640,9 @@ function selectDirector(name) {
     document.getElementById('directorCatPills').style.display = '';
     document.getElementById('dirPillsWrap').style.display = '';
     document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = '';
+    if (isMobile() && visibleDirsCount < currentDirs.length) {
+      document.getElementById('loadMoreDirsWrap').style.display = '';
+    }
   });
   tag.appendChild(document.createTextNode(name + ' '));
   tag.appendChild(btn);
@@ -2649,6 +2652,7 @@ function selectDirector(name) {
   const films = ALL_FILMS.filter(f => f.director === name);
   document.getElementById('directorFilmsGrid').innerHTML = films.map(filmCard).join('');
   dg.style.display = 'none';
+  document.getElementById('loadMoreDirsWrap').style.display = 'none';
   section.style.display = '';
   document.getElementById('directorCatPills').style.display = 'none';
   document.getElementById('dirPillsWrap').style.display = 'none';
