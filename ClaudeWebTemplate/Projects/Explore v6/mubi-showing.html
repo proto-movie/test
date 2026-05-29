@@ -233,6 +233,20 @@
       padding: 72px 20px 28px;
       z-index: 2;
     }
+    @media (max-width: 809px) {
+      .hero-info { padding-top: 102px; }
+      .hero-info-bottom { display: flex; flex-direction: column; }
+      .hero-meta { margin-bottom: 12px; }
+      .hero-bottom-row { flex-direction: column; align-items: flex-start; gap: 12px; width: 100%; }
+      .hero-our-take { width: 100%; max-width: 100%; margin-left: 0; }
+      .hero-actions { align-self: flex-start; }
+      .hero-meta-label,
+      .hero-meta-director,
+      .hero-meta-country-row,
+      .hero-synopsis,
+      .hero-rating,
+      .hero-our-take { color: #fff; }
+    }
     @media (min-width: 810px) { .hero-info { padding: 170px 22px 40px; } }
     @media (min-width: 1186px) {
       .hero-info {
@@ -258,7 +272,8 @@
       object-fit: contain;
       object-position: left center;
     }
-    @media (max-width: 420px) { .hero-title-img { max-height: 80px; max-width: 320px; } }
+    @media (max-width: 809px) { .hero-title-img { max-height: 90px; max-width: 360px; } }
+    @media (max-width: 420px) { .hero-title-img { max-height: 70px; max-width: 280px; } }
 
     /* Text fallback if title treatment isn't used */
     .hero-title-text {
@@ -933,7 +948,7 @@
       <a href="#" class="mob-drawer-link">Watchlist</a>
       <div class="mob-drawer-sep"></div>
       <a href="#" class="mob-drawer-link">Notebook</a>
-      <a href="#" class="mob-drawer-link">Film Database</a>
+      <a href="film-database.html" class="mob-drawer-link">Film Database</a>
       <a href="#" class="mob-drawer-link">Notebook Magazine</a>
       <a href="#" class="mob-drawer-link">MUBI Editions</a>
       <a href="#" class="mob-drawer-link">SHOP</a>

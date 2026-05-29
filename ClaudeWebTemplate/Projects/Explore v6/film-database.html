@@ -52,6 +52,85 @@
       max-width: 1500px;
       margin: 0 auto;
     }
+    @media (max-width: 1185px) { .nav-desktop { display: none; } }
+
+    /* ─── MOBILE NAV ─── */
+    .nav-mobile {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 12px;
+      position: relative;
+    }
+    @media (min-width: 1186px) { .nav-mobile { display: none; } }
+    .nav-mobile-left {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      z-index: 1;
+    }
+    .nav-mobile-logo {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+    }
+    .nav-mobile-right { margin-left: auto; }
+
+    /* ─── MOBILE DRAWER ─── */
+    .mob-drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      pointer-events: none;
+    }
+    .mob-drawer.open { pointer-events: auto; }
+    .mob-drawer-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.6);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-overlay { opacity: 1; }
+    .mob-drawer-panel {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: calc(100% - 60px);
+      max-width: 350px;
+      background: #fff;
+      overflow-y: auto;
+      padding: 20px 0 120px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-panel { transform: translateX(0); }
+    .mob-drawer-close {
+      position: absolute;
+      top: 20px;
+      left: calc(min(100% - 60px, 350px) + 20px);
+      color: #fff;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-close { opacity: 1; }
+    .mob-drawer-link {
+      display: block;
+      padding: 0 25px;
+      font-family: Riforma, sans-serif;
+      font-size: 20px;
+      line-height: 42px;
+      color: #7d7d7d;
+      text-decoration: none;
+      transition: color 0.1s;
+    }
+    .mob-drawer-link:hover { color: #323232; }
+    .mob-drawer-link.is-active { color: #323232; }
+    .mob-drawer-sep { border-top: 1px solid #EAEAEA; margin: 10px 0; }
 
     .nav-logo { flex-shrink: 0; padding-right: 40px; display: flex; align-items: center; }
 
@@ -376,8 +455,17 @@
       column-gap: 4px;
       row-gap: 36px;
     }
+    @media (max-width: 809px) { .film-grid { grid-template-columns: 1fr; } }
     @media (min-width: 650px)  { .film-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (min-width: 1562px) { .film-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    @media (max-width: 809px) {
+      .filter-bar { flex-wrap: wrap; }
+      .filter-bar-right { margin-left: 0; width: 100%; padding-top: 4px; border-top: 1px solid #EAEAEA; justify-content: flex-end; }
+      .page-tabs { gap: 24px; overflow-x: auto; justify-content: center; padding: 0 16px; -ms-overflow-style: none; scrollbar-width: none; }
+      .page-tabs::-webkit-scrollbar { display: none; }
+      .page-tab { font-size: 13px; white-space: nowrap; }
+    }
 
     .film-card { display: block; background: #fff; cursor: pointer; position: relative; z-index: 0; }
     .film-card:hover { z-index: 20; }
@@ -504,11 +592,14 @@
 
     /* ─── PAGE HERO ─── */
     .page-hero {
-      height: 109px;
+      padding: 28px 0 24px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       text-align: center;
+    }
+    @media (max-width: 809px) {
+      .page-hero { padding: 36px 0 28px; }
     }
     .page-title {
       font-family: Riforma, sans-serif;
@@ -530,7 +621,68 @@
 </head>
 <body>
 
+<div class="mob-drawer" id="mobDrawer" role="dialog" aria-modal="true" aria-label="Navigation">
+  <div class="mob-drawer-overlay" onclick="closeMobDrawer()"></div>
+  <div class="mob-drawer-panel">
+      <a href="mubi-showing.html" class="mob-drawer-link">Now Showing</a>
+      <a href="explore.html" class="mob-drawer-link">Browse</a>
+      <a href="#" class="mob-drawer-link">Watchlist</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="#" class="mob-drawer-link">Notebook</a>
+      <a href="film-database.html" class="mob-drawer-link is-active">Film Database</a>
+      <a href="#" class="mob-drawer-link">Notebook Magazine</a>
+      <a href="#" class="mob-drawer-link">MUBI Editions</a>
+      <a href="#" class="mob-drawer-link">SHOP</a>
+      <a href="#" class="mob-drawer-link">Gift MUBI</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="#" class="mob-drawer-link">About</a>
+      <a href="#" class="mob-drawer-link">Students</a>
+      <a href="#" class="mob-drawer-link">Contribute</a>
+      <a href="#" class="mob-drawer-link">Jobs</a>
+      <a href="#" class="mob-drawer-link">Terms &amp; Privacy</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="#" class="mob-drawer-link">Earn 1 month free</a>
+      <a href="#" class="mob-drawer-link">Viewing History</a>
+      <a href="#" class="mob-drawer-link">Settings</a>
+      <a href="#" class="mob-drawer-link">Help</a>
+      <a href="#" class="mob-drawer-link">Log Out</a>
+  </div>
+  <button class="mob-drawer-close" onclick="closeMobDrawer()" aria-label="Close menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
+
 <header class="site-header">
+  <div class="nav-mobile">
+    <div class="nav-mobile-left">
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="openMobDrawer()" aria-label="Open menu">
+          <span class="material-icons" style="font-size:20px;">menu</span>
+        </button>
+      </div>
+      <button class="search-icon-btn" id="searchOpenBtnMob" aria-label="Search">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    <a href="mubi-showing.html" class="nav-mobile-logo" aria-label="MUBI">
+      <svg viewBox="0 0 800 240" width="65" style="vertical-align:top" aria-hidden="true">
+        <g fill="#000000">
+          <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+          <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+          <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+          <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+          <circle cx="766.5"  cy="118.11" r="33.13"/>
+          <circle cx="595.89" cy="118.11" r="33.13"/>
+          <circle cx="681.2"  cy="118.11" r="33.13"/>
+          <circle cx="595.89" cy="33.13"  r="33.13"/>
+          <circle cx="681.2"  cy="33.13"  r="33.13"/>
+          <circle cx="595.89" cy="203.1"  r="33.13"/>
+          <circle cx="681.2"  cy="203.1"  r="33.13"/>
+        </g>
+      </svg>
+    </a>
+    <div class="nav-mobile-right"></div>
+  </div>
   <div class="nav-desktop">
     <div class="nav-logo">
       <a href="mubi-showing.html" aria-label="MUBI">
@@ -1308,6 +1460,12 @@ document.getElementById('searchOpenBtn').addEventListener('click', e => {
   inline.classList.contains('is-open') ? closeSearch() : openSearch();
 });
 
+document.getElementById('searchOpenBtnMob').addEventListener('click', e => {
+  e.stopPropagation();
+  const inline = document.getElementById('searchInline');
+  inline.classList.contains('is-open') ? closeSearch() : openSearch();
+});
+
 document.getElementById('searchDropBackdrop').addEventListener('click', closeSearch);
 
 document.getElementById('searchInput').addEventListener('input', e => {
@@ -1329,6 +1487,18 @@ document.getElementById('searchInput').addEventListener('input', e => {
 
 window.addEventListener('resize', () => {
   if (document.getElementById('searchInline').classList.contains('is-open')) positionSearchDropdown();
+});
+
+function openMobDrawer() {
+  document.getElementById('mobDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobDrawer() {
+  document.getElementById('mobDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeMobDrawer();
 });
 </script>
 </body>
