@@ -991,7 +991,7 @@
     }
     .lang-type-toggle {
       display: flex;
-      border: 1.5px solid #888888;
+      border: 1px solid #8D8D8D;
       border-radius: 50px;
       background: #fff;
       margin-bottom: 16px;
@@ -1006,7 +1006,8 @@
       left: 3px;
       width: calc((100% - 6px) / 3);
       height: calc(100% - 6px);
-      background: #323232;
+      background: #fff;
+      border: 1.5px solid #000;
       border-radius: 50px;
       transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
       pointer-events: none;
@@ -1015,8 +1016,9 @@
     .lang-type-seg {
       flex: 1;
       font-family: Riforma, sans-serif;
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 500;
+      text-transform: uppercase;
       color: #666666;
       background: transparent;
       border: none;
@@ -1028,7 +1030,7 @@
       border-radius: 50px;
       transition: color 0.22s;
     }
-    .lang-type-seg.is-active { color: #fff; }
+    .lang-type-seg.is-active { color: #363636; }
     #langPills { flex-wrap: wrap; overflow: visible; gap: 6px; }
     #langPills .genre-pill { margin: 0; }
     .lang-pill-count { font-size: 11px; margin-left: 4px; color: #666; }
@@ -1055,7 +1057,7 @@
     }
     .filter-footer-clear {
       font-family: Riforma, sans-serif;
-      font-size: 13px; font-weight: 500;
+      font-size: 14px; font-weight: 500;
       text-transform: uppercase; letter-spacing: 0.4px;
       color: #001489;
       background: none; border: 1px solid #001489; border-radius: 4px;
@@ -1066,7 +1068,7 @@
     .filter-footer-clear:hover { background: #001489; color: #fff; border-color: #001489; }
     .filter-footer-apply {
       font-family: Riforma, sans-serif;
-      font-size: 13px; font-weight: 500;
+      font-size: 14px; font-weight: 500;
       text-transform: uppercase; letter-spacing: 0.4px;
       color: #fff; background: #001489; border: 1px solid #001489; border-radius: 4px;
       cursor: pointer; padding: 9px 16px;
