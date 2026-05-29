@@ -1308,6 +1308,36 @@
   </button>
 </div>
 
+<div class="filter-overlay" id="filterOverlay"></div>
+<div class="filter-panel" id="filterPanel">
+  <div class="filter-panel-head">
+    <span class="filter-panel-title">FILTER BY</span>
+    <button class="filter-panel-close" id="filterPanelClose" aria-label="Close filters">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="filter-panel-body">
+    <div class="filter-panel-label">Language</div>
+    <div class="lang-type-toggle">
+      <div class="lang-slider" id="langSlider"></div>
+      <button class="lang-type-seg is-active" data-lang-type="original" data-idx="0">Original</button>
+      <button class="lang-type-seg" data-lang-type="dubbed" data-idx="1">Dubbed in</button>
+      <button class="lang-type-seg" data-lang-type="subtitles" data-idx="2">Subtitled in</button>
+    </div>
+    <div class="genre-pills" id="langPills"></div>
+    <hr style="border:none;border-top:1px solid #EAEAEA;margin:20px 0 16px;">
+    <div class="filter-panel-label">Video Quality</div>
+    <div class="genre-pills" id="qualityPills" style="flex-wrap:wrap; gap:6px;">
+      <button class="genre-pill quality-pill is-active" data-quality="">All</button>
+      <button class="genre-pill quality-pill" data-quality="4k">4K Ultra HD</button>
+    </div>
+  </div>
+  <div class="filter-panel-footer">
+    <button class="filter-footer-clear" id="filterFooterClear">Clear</button>
+    <button class="filter-footer-apply" id="filterFooterApply">Apply Filters</button>
+  </div>
+</div>
+
 <header class="site-header">
   <div class="nav-mobile">
     <div class="nav-mobile-left">
@@ -1470,35 +1500,6 @@
         </div>
       </div>
     </div>
-    <div class="filter-overlay" id="filterOverlay"></div>
-    <div class="filter-panel" id="filterPanel">
-      <div class="filter-panel-head">
-        <span class="filter-panel-title">FILTER BY</span>
-        <button class="filter-panel-close" id="filterPanelClose" aria-label="Close filters">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </button>
-      </div>
-      <div class="filter-panel-body">
-        <div class="filter-panel-label">Language</div>
-        <div class="lang-type-toggle">
-          <div class="lang-slider" id="langSlider"></div>
-          <button class="lang-type-seg is-active" data-lang-type="original" data-idx="0">Original</button>
-          <button class="lang-type-seg" data-lang-type="dubbed" data-idx="1">Dubbed in</button>
-          <button class="lang-type-seg" data-lang-type="subtitles" data-idx="2">Subtitled in</button>
-        </div>
-        <div class="genre-pills" id="langPills"></div>
-        <hr style="border:none;border-top:1px solid #EAEAEA;margin:20px 0 16px;">
-        <div class="filter-panel-label">Video Quality</div>
-        <div class="genre-pills" id="qualityPills" style="flex-wrap:wrap; gap:6px;">
-          <button class="genre-pill quality-pill is-active" data-quality="">All</button>
-          <button class="genre-pill quality-pill" data-quality="4k">4K Ultra HD</button>
-        </div>
-      </div>
-      <div class="filter-panel-footer">
-        <button class="filter-footer-clear" id="filterFooterClear">Clear</button>
-        <button class="filter-footer-apply" id="filterFooterApply">Apply Filters</button>
-      </div>
-    </div>
     <div class="coll-filter-bar" id="collFilterBar" style="display:none">
       <div class="pills-wrap pills-wrap--overflow" id="collPillsWrap">
         <button class="pills-chevron pills-chevron--left" id="collPillsLeft" aria-label="Scroll left">
@@ -1562,6 +1563,9 @@
     <div class="page-body">
       <div class="film-grid" id="filmGrid"></div>
       <div class="film-grid" id="collectionsGrid" style="display:none"></div>
+      <div id="loadMoreWrap" style="display:none; text-align:center; padding: 32px 0 16px;">
+        <button id="loadMoreBtn" style="font-family:Riforma,sans-serif;font-size:13px;font-weight:500;letter-spacing:0.4px;text-transform:uppercase;padding:10px 28px;border:1px solid #323232;background:none;cursor:pointer;color:#323232;">Load More</button>
+      </div>
     </div>
   </div>
 </main>
@@ -2262,6 +2266,12 @@ function getActiveGenre() {
   return activePill ? (activePill.dataset.genre || '') : '';
 }
 
+const PAGE_SIZE = 24;
+const isMobile = () => window.innerWidth < 810;
+let currentFilms = [];
+let currentCardFn = filmCard;
+let visibleCount = PAGE_SIZE;
+
 function renderGrid(genre) {
   if (genre === undefined) genre = getActiveGenre();
   const sortVal = (document.getElementById('sortDropdown-sort') || {}).value || 'popularity_quality_score';
@@ -2286,15 +2296,35 @@ function renderGrid(genre) {
   } else if (sortVal === 'average_rating') {
     films = films.slice().sort((a, b) => (b.rating || 0) - (a.rating || 0) || a.title.localeCompare(b.title));
   } else if (sortVal === 'recent') {
-    // preserve original array order (index = recency)
+    // preserve original array order
   } else {
     films = shuffle(films);
   }
-  const grid = document.getElementById('filmGrid');
-  const cardFn = (genre === 'Series') ? seriesCard : filmCard;
-  grid.innerHTML = films.map(cardFn).join('');
-  grid.classList.toggle('rating-active', sortVal === 'rating');
+  currentFilms = films;
+  currentCardFn = (genre === 'Series') ? seriesCard : filmCard;
+  visibleCount = PAGE_SIZE;
+  flushGrid();
 }
+
+function flushGrid() {
+  const grid = document.getElementById('filmGrid');
+  const sortVal = (document.getElementById('sortDropdown-sort') || {}).value || 'popularity_quality_score';
+  const films = isMobile() ? currentFilms.slice(0, visibleCount) : currentFilms;
+  grid.innerHTML = films.map(currentCardFn).join('');
+  grid.classList.toggle('rating-active', sortVal === 'rating');
+  const wrap = document.getElementById('loadMoreWrap');
+  wrap.style.display = isMobile() && visibleCount < currentFilms.length ? '' : 'none';
+}
+
+document.getElementById('loadMoreBtn').addEventListener('click', () => {
+  visibleCount += PAGE_SIZE;
+  const grid = document.getElementById('filmGrid');
+  const sortVal = (document.getElementById('sortDropdown-sort') || {}).value || 'popularity_quality_score';
+  grid.insertAdjacentHTML('beforeend', currentFilms.slice(visibleCount - PAGE_SIZE, visibleCount).map(currentCardFn).join(''));
+  grid.classList.toggle('rating-active', sortVal === 'rating');
+  document.getElementById('loadMoreWrap').style.display = visibleCount < currentFilms.length ? '' : 'none';
+});
+
 renderGrid();
 
 document.addEventListener('mouseover', e => {
