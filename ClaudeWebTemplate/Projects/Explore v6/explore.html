@@ -1337,7 +1337,7 @@
     <div class="lang-type-toggle">
       <div class="lang-slider" id="langSlider"></div>
       <button class="lang-type-seg is-active" data-lang-type="original" data-idx="0">Original</button>
-      <button class="lang-type-seg" data-lang-type="subtitles" data-idx="1">Subtitles</button>
+      <button class="lang-type-seg" data-lang-type="subtitles" data-idx="1">Subtitle</button>
       <button class="lang-type-seg" data-lang-type="dubbed" data-idx="2">Dub</button>
     </div>
     <div class="genre-pills" id="langPills"></div>
@@ -2677,7 +2677,15 @@ document.querySelectorAll('.page-tab[data-tab]').forEach(tab => {
     else { cg.style.display = 'none'; cf.style.display = 'none'; }
     const dg = document.getElementById('directorsGrid');
     const dsr = document.getElementById('directorSortRow');
-    if (label === 'directors') { dg.style.display = ''; dsr.style.display = 'flex'; dsr.style.flexDirection = 'column'; renderDirectors(); updateDirPills(); }
+    if (label === 'directors') {
+      dg.style.display = ''; dsr.style.display = 'flex'; dsr.style.flexDirection = 'column';
+      document.getElementById('directorTagsRow').innerHTML = '';
+      document.getElementById('directorFilterSection').style.display = 'none';
+      document.getElementById('directorCatPills').style.display = '';
+      document.getElementById('dirPillsWrap').style.display = '';
+      document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = '';
+      renderDirectors(); updateDirPills();
+    }
     else {
       dg.style.display = 'none';
       dsr.style.display = 'none';
@@ -2845,7 +2853,7 @@ function updateFilterBtnLabel() {
   if (langVal) {
     parts.push(activeLangType === 'original' ? `Original: ${langVal}`
       : activeLangType === 'dubbed' ? `Dub: ${langVal}`
-      : `Subtitles: ${langVal}`);
+      : `Subtitle: ${langVal}`);
   }
   const el = document.getElementById('filterBtnLabel');
   const badge = document.getElementById('filterBtnCount');
