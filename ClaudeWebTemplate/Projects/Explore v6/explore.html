@@ -1337,8 +1337,8 @@
     <div class="lang-type-toggle">
       <div class="lang-slider" id="langSlider"></div>
       <button class="lang-type-seg is-active" data-lang-type="original" data-idx="0">Original</button>
-      <button class="lang-type-seg" data-lang-type="dubbed" data-idx="1">Dubbed in</button>
-      <button class="lang-type-seg" data-lang-type="subtitles" data-idx="2">Subtitled in</button>
+      <button class="lang-type-seg" data-lang-type="subtitles" data-idx="1">Subtitles</button>
+      <button class="lang-type-seg" data-lang-type="dubbed" data-idx="2">Dub</button>
     </div>
     <div class="genre-pills" id="langPills"></div>
     <hr style="border:none;border-top:1px solid #EAEAEA;margin:28px 0 24px;">
@@ -2843,9 +2843,9 @@ function updateFilterBtnLabel() {
   if (qualityVal) parts.push(`Video quality: ${qualityVal}`);
   if (audioVal) parts.push(`Audio: ${audioVal}`);
   if (langVal) {
-    parts.push(activeLangType === 'original' ? `Original language: ${langVal}`
-      : activeLangType === 'dubbed' ? `Dubbed in: ${langVal}`
-      : `Subtitled in: ${langVal}`);
+    parts.push(activeLangType === 'original' ? `Original: ${langVal}`
+      : activeLangType === 'dubbed' ? `Dub: ${langVal}`
+      : `Subtitles: ${langVal}`);
   }
   const el = document.getElementById('filterBtnLabel');
   const badge = document.getElementById('filterBtnCount');
