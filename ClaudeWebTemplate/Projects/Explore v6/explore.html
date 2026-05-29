@@ -2662,6 +2662,9 @@ document.querySelectorAll('.page-tab[data-tab]').forEach(tab => {
     const label = tab.dataset.tab;
     document.getElementById('filmGrid').style.display = label === 'films & series' ? '' : 'none';
     document.getElementById('filterBar').style.display = label === 'films & series' ? '' : 'none';
+    document.getElementById('loadMoreWrap').style.display = 'none';
+    document.getElementById('loadMoreCollsWrap').style.display = 'none';
+    document.getElementById('loadMoreDirsWrap').style.display = 'none';
     if (label !== 'films & series') closeFilterPanel();
     const cg = document.getElementById('collectionsGrid');
     const cf = document.getElementById('collFilterBar');
