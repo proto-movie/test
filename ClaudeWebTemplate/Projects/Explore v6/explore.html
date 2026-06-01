@@ -2820,7 +2820,7 @@ document.getElementById('filterPanelClose').addEventListener('click', closeFilte
 document.getElementById('filterOverlay').addEventListener('click', closeFilterPanel);
 
 document.getElementById('filterFooterApply').addEventListener('click', closeFilterPanel);
-document.getElementById('filterFooterClear').addEventListener('click', clearFilters);
+document.getElementById('filterFooterClear').addEventListener('click', () => { clearFilters(); closeFilterPanel(); });
 
 let activeLangType = 'original';
 
@@ -2872,15 +2872,15 @@ function buildLangPills(type) {
     langs = type === 'dubbed' ? DUBBED_LANGS : SUBTITLE_LANGS;
   }
 
-  function makePill(l, hidden) {
-    return `<a href="#" class="genre-pill${hidden ? ' lang-pill-hidden' : ''}" data-lang="${l}">${l}</a>`;
+  function makePill(l, hidden, active) {
+    return `<a href="#" class="genre-pill${active ? ' is-active' : ''}${hidden ? ' lang-pill-hidden' : ''}" data-lang="${l}">${l}</a>`;
   }
 
   const visibleLangs = langs.slice(0, VISIBLE);
   const hiddenLangs = langs.slice(VISIBLE);
 
-  let html = `<a href="#" class="genre-pill is-active" data-lang="all">All</a>`;
-  html += visibleLangs.map(l => makePill(l, false)).join('');
+  let html = type === 'original' ? `<a href="#" class="genre-pill is-active" data-lang="all">All</a>` : '';
+  html += visibleLangs.map(l => makePill(l, false, false)).join('');
   html += hiddenLangs.map(l => makePill(l, true)).join('');
   if (hiddenLangs.length > 0) {
     html += `<button class="genre-pill lang-show-more" id="langShowMore">+${hiddenLangs.length} more</button>`;
