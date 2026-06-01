@@ -2775,11 +2775,9 @@ function updateClearBtn() {
 
 
 function clearFilters() {
+  document.querySelectorAll('#langPills .genre-pill').forEach(p => p.classList.remove('is-active'));
   const allLang = document.querySelector('#langPills .genre-pill[data-lang="all"]');
-  if (allLang) {
-    document.querySelectorAll('#langPills .genre-pill').forEach(p => p.classList.remove('is-active'));
-    allLang.classList.add('is-active');
-  }
+  if (allLang) allLang.classList.add('is-active');
   document.querySelectorAll('#qualityPills .quality-pill').forEach(p => p.classList.remove('is-active'));
   const allQuality = document.querySelector('#qualityPills .quality-pill[data-quality=""]');
   if (allQuality) allQuality.classList.add('is-active');
