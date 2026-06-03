@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Letterboxd Prototype</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="ios-theme">
+    <div id="app">
+        <!-- Top Navigation Bar -->
+        <header class="ios-nav-bar">
+            <div class="app-logo">FilmClub</div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="content-area">
+            <!-- Content will be injected by script.js -->
+        </main>
+
+        <!-- Movie Details Modal -->
+        <div id="movie-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="back-btn" id="close-movie-btn">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                </div>
+                <div id="modal-body"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Tab Bar -->
+        <nav class="ios-tab-bar">
+            <button class="tab-item active" data-tab="home">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </button>
+            <button class="tab-item" data-tab="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Search</span>
+            </button>
+            <button class="tab-item" data-tab="activity">
+                <i class="fa-solid fa-bolt"></i>
+                <span>Activity</span>
+            </button>
+            <button class="tab-item" data-tab="profile">
+                <i class="fa-solid fa-user"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+    <script src="movie_data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
