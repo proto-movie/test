@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CineNear — London Cinema Finder</title>
+<title>London Cinemas & Showtimes</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="cinema_data.js"></script>
@@ -168,8 +168,6 @@ header {
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .dp-now-btn.is-now { background: var(--primary); color: #fff; border-color: var(--primary); }
-.dp-now-btn:hover  { background: var(--parchment); color: var(--ink); }
-.dp-now-btn.is-now:hover { opacity: 0.85; background: var(--primary); color: #fff; }
 .dp-now-btn:active { transform: scale(0.95); }
 .dp-slider-wrap { flex: 1; min-width: 260px; }
 .dp-slider-outer { position: relative; }
@@ -204,7 +202,6 @@ header {
 }
 .dbtn-day  { font-size: 11px; font-weight: 600; letter-spacing: -0.08px; }
 .dbtn-date { font-size: 11px; letter-spacing: -0.08px; opacity: 0.7; }
-.dbtn:hover { background: var(--parchment); color: var(--ink); }
 .dbtn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
 .dbtn.active .dbtn-date { opacity: 0.8; }
 .dbtn:active { transform: scale(0.95); }
@@ -362,28 +359,35 @@ input[type=range].time-slider::-moz-range-thumb {
 .loc-dist { color: var(--primary); }
 .loc-count { color: var(--ink-muted-48); }
 
-/* Tab bar */
+/* Tab bar — segmented control style */
 .tab-bar {
   display: flex; flex-shrink: 0;
-  background: var(--parchment);
-  border-bottom: 1px solid var(--hairline);
+  background: var(--mubi-brown);
+  padding: 10px 16px 10px;
+  border-bottom: none;
+}
+.tab-bar-inner {
+  display: flex; flex: 1;
+  border: 1px solid var(--mubi-yellow);
+  border-radius: 6px; overflow: hidden;
 }
 .tab {
-  flex: 1; padding: 11px 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  font-size: 13px; font-weight: 400; letter-spacing: -0.224px;
-  color: var(--ink-muted-48); text-align: center; cursor: pointer;
-  border: none; border-bottom: 2px solid transparent;
-  background: none; transition: color 0.15s; outline: none;
+  flex: 1; padding: 8px 0;
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 400;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--mubi-yellow); text-align: center; cursor: pointer;
+  border: none; border-bottom: none;
+  background: transparent; transition: background 0.15s, color 0.15s; outline: none;
 }
-.tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
-.tab:not(.active):hover { color: var(--ink-muted-80); }
+.tab + .tab { border-left: 1px solid var(--mubi-yellow); }
+.tab.active { background: var(--mubi-yellow); color: var(--mubi-brown); }
 
 /* Screen content */
 .screen-content {
   flex: 1; overflow-y: auto; overflow-x: hidden;
-  scrollbar-width: thin; scrollbar-color: var(--hairline) transparent;
-  background: var(--canvas);
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;
+  background: var(--mubi-brown);
 }
 .screen-content::-webkit-scrollbar { width: 3px; }
 .screen-content::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 2px; }
@@ -424,7 +428,6 @@ input[type=range].time-slider::-moz-range-thumb {
   cursor: pointer; transition: background 0.1s;
   background: var(--canvas);
 }
-.wo-film:hover { background: var(--parchment); }
 .wo-film:last-child { border-bottom: none; }
 
 .wo-film-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
@@ -474,27 +477,69 @@ input[type=range].time-slider::-moz-range-thumb {
 .gn-cinema-section { border-bottom: 1px solid var(--hairline); }
 .gn-cinema-section:last-child { border-bottom: none; }
 
+/* Nearest cinema card — yellow block aligned with tabs */
+.gn-cinema-section.nearest {
+  margin: 8px 16px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--mubi-yellow);
+  border-bottom: none;
+}
+.gn-cinema-section.nearest .gn-film {
+  background: var(--mubi-yellow);
+  border-bottom: none;
+  padding: 14px 16px 16px;
+  position: relative;
+}
+.gn-cinema-section.nearest .gn-film::after {
+  content: '';
+  position: absolute; bottom: 0; left: 16px; right: 16px;
+  height: 1px; background: rgba(45,36,32,0.15);
+}
+.gn-cinema-section.nearest .gn-film:last-child::after { display: none; }
+.gn-cinema-section.nearest .gn-title { color: var(--mubi-brown); }
+.gn-cinema-section.nearest .gn-film.all-past { opacity: 0.45; }
+/* NOW badge on yellow */
+.gn-cinema-section.nearest .gn-badge.next { background: none; color: var(--mubi-brown); border: none; font-weight: 600; }
+
 .gn-cinema-hdr {
   padding: 12px 18px 10px;
   background: var(--parchment);
   position: sticky; top: 0; z-index: 4;
   border-bottom: 1px solid var(--hairline);
 }
+.gn-cinema-hdr.nearest {
+  background: transparent;
+  border-bottom: none;
+  padding-left: 16px; padding-right: 16px;
+  position: static;
+}
 .gn-cinema-rank {
   font-size: 11px; font-weight: 400; color: var(--ink-muted-48);
   letter-spacing: -0.08px; margin-bottom: 2px;
 }
-.gn-cinema-rank.r1 { color: #16a34a; }
+.gn-cinema-rank.r1 { color: var(--mubi-brown); font-weight: 600; letter-spacing: 0.04em; }
 .gn-cinema-rank.r2 { color: #16a34a; }
 .gn-cinema-rank.r3 { color: #16a34a; }
 .gn-cinema-rank.r4 { color: var(--ink-muted-48); }
+.gn-cinema-hdr.nearest .gn-cinema-name {
+  font-size: 20px; font-weight: 400; letter-spacing: 0;
+  text-transform: uppercase; line-height: 1;
+  color: var(--mubi-brown);
+  max-width: 65%; white-space: normal;
+}
+.gn-cinema-hdr.nearest .gn-cinema-addr {
+  max-width: 65%; white-space: normal; overflow: visible;
+  text-overflow: unset; color: var(--mubi-brown);
+}
+.gn-cinema-hdr.nearest .gn-cinema-dist { color: var(--mubi-brown); }
 
 .gn-cinema-name {
   font-family: var(--font-display);
   font-size: 15px; font-weight: 500; color: var(--ink); letter-spacing: 0;
 }
 .gn-cinema-addr {
-  font-size: 11px; color: var(--ink-muted-48); margin-top: 1px;
+  font-size: 14px; color: var(--ink-muted-48); margin-top: 1px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.08px;
 }
 .gn-cinema-dist { font-size: 12px; margin-top: 3px; letter-spacing: -0.12px; color: var(--ink-muted-48); }
@@ -508,6 +553,30 @@ input[type=range].time-slider::-moz-range-thumb {
   font-size: 13px; color: var(--ink-muted-48); font-style: italic; letter-spacing: -0.224px;
 }
 
+/* Other cinemas — compact white rows */
+.gn-cinema-other {
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.gn-cinema-other:last-child { border-bottom: none; }
+.gn-cinemas-label {
+  padding: 50px 16px 2px;
+  font-family: var(--font-ui);
+  font-size: 14px; font-weight: 400;
+  color: rgba(255,192,0,0.5);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.gn-other-name {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 400; color: #fff;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.gn-other-dist {
+  font-size: 11px; color: rgba(255,255,255,0.55); letter-spacing: -0.08px;
+  margin-top: 2px;
+}
+
 /* Film card inside Go Now */
 .gn-film {
   padding: 12px 18px 10px;
@@ -515,42 +584,37 @@ input[type=range].time-slider::-moz-range-thumb {
   cursor: pointer; transition: background 0.1s;
   background: var(--canvas);
 }
-.gn-film:hover { background: var(--parchment); }
 .gn-film:last-child { border-bottom: none; }
 .gn-film.all-past { opacity: 0.42; }
 
-.gn-film-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 7px; }
+.gn-film-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 3px; }
 .gn-title {
   font-family: var(--font-display);
-  font-size: 15px; font-weight: 500; color: var(--ink);
-  line-height: 1.24; flex: 1; min-width: 0; letter-spacing: -0.01em;
+  font-size: 14px; font-weight: 400; color: var(--ink);
+  line-height: 1.24; flex: 1; min-width: 0;
+  letter-spacing: 0; text-transform: uppercase;
 }
 .gn-film.all-past .gn-title { color: var(--ink-muted-48); }
 
 /* Time chips row */
-.gn-times { display: flex; flex-wrap: wrap; gap: 5px; }
+.gn-times-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.gn-times { display: flex; flex-wrap: wrap; gap: 14px; flex: 1; }
+.gn-book-icon {
+  display: flex; align-items: center; gap: 4px;
+  flex-shrink: 0; opacity: 0.75;
+}
 
 .gn-chip {
-  font-size: 12px; font-weight: 500;
-  padding: 4px 11px; border-radius: 9999px;
-  letter-spacing: -0.12px; white-space: nowrap;
+  font-size: 18px; font-weight: 400;
+  padding: 0; border-radius: 0; border: none; background: none;
+  letter-spacing: 0; white-space: nowrap;
 }
-.gn-chip.past {
-  background: var(--parchment); color: var(--ink-muted-48);
-  border: 1px solid var(--hairline);
-}
-.gn-chip.upcoming {
-  background: rgba(0,102,204,0.07); color: var(--primary);
-  border: 1px solid rgba(0,102,204,0.18);
-}
-.gn-chip.next {
-  background: var(--primary); color: #fff;
-  border: 1px solid var(--primary); font-size: 13px;
-}
-.gn-chip.soon {
-  background: rgba(0,102,204,0.12); color: var(--primary);
-  border: 1px solid rgba(0,102,204,0.28);
-}
+.gn-chip.past     { color: rgba(45,36,32,0.35); }
+.gn-chip.upcoming { color: var(--mubi-brown); }
+.gn-chip.next     { color: var(--mubi-brown); font-weight: 600; }
+.gn-chip.soon     { color: var(--mubi-brown); }
 
 .gn-badge {
   font-size: 9px; font-weight: 600;
@@ -586,7 +650,7 @@ input[type=range].time-slider::-moz-range-thumb {
 
 <!-- Header lives inside the map column only -->
 <header>
-  <div class="logo">London Cinemas &amp; Listings</div>
+  <div class="logo">London Cinemas &amp; Showtimes</div>
   <div class="hdr-stat"><strong id="hdr-c">69</strong> cinemas · <strong id="hdr-s">9,367</strong> showtimes</div>
 </header>
 
@@ -658,8 +722,10 @@ input[type=range].time-slider::-moz-range-thumb {
 
         <!-- Tabs -->
         <div class="tab-bar">
-          <button class="tab active" data-tab="whats-on">What's On</button>
-          <button class="tab" data-tab="go-now">Go Now</button>
+          <div class="tab-bar-inner">
+            <button class="tab active" data-tab="whats-on">What's On</button>
+            <button class="tab" data-tab="go-now">Go Now</button>
+          </div>
         </div>
 
         <!-- Content -->
@@ -1021,8 +1087,9 @@ function renderWhatsOn(cinemas, date) {
 // ─── GO NOW: 3 nearest cinemas, unique films with time chips ─────────────────
 
 function rankLabel(i) {
+  if (i === 0) return 'NEAREST CINEMA';
   const n = i + 1;
-  const s = n === 1 ? 'ST' : n === 2 ? 'ND' : n === 3 ? 'RD' : 'TH';
+  const s = n === 2 ? 'ND' : n === 3 ? 'RD' : 'TH';
   return `${n}${s} CLOSEST`;
 }
 function rankClass(i) {
@@ -1060,55 +1127,63 @@ function renderGoNow(cinemas, date) {
       ? `${fmtDist(cinema.km)} away · <span style="color:var(--amber)">next: ${formatDayLabel(displayDate)}</span>`
       : `${fmtDist(cinema.km)} away`;
 
-    html += `<div class="gn-cinema-section">
-      <div class="gn-cinema-hdr">
-        <div class="gn-cinema-rank ${rankClass(rank)}">${rankLabel(rank)}</div>
-        <div class="gn-cinema-name">${esc(cinema.n)}</div>
-        <div class="gn-cinema-addr">${esc(cinema.a)}</div>
-        <div class="gn-cinema-dist ${rankClass(rank)}">${distLabel}</div>
-      </div>`;
+    if (rank === 0) {
+      // ── NEAREST: full yellow card with films and times ──
+      html += `<div class="gn-cinema-section nearest">
+        <div class="gn-cinema-hdr nearest">
+          <div class="gn-cinema-rank r1">${rankLabel(0)}</div>
+          <div class="gn-cinema-name">${esc(cinema.n)}</div>
+          <div class="gn-cinema-addr">${esc(cinema.a)}</div>
+          <div class="gn-cinema-dist r1">${distLabel}</div>
+        </div>`;
 
-    if (!shows.length) {
-      html += `<div class="gn-no-shows">No screenings found for this cinema</div>`;
-    } else {
-      // Group by film title → collect all times
-      const filmMap = new Map();
-      shows.forEach(([title, cert, time]) => {
-        if (!filmMap.has(title)) filmMap.set(title, { cert, times: [] });
-        filmMap.get(title).times.push(time);
-      });
-
-      const films = [...filmMap.entries()].map(([title, d]) => ({
-        title, cert: d.cert, times: d.times.sort(),
-      })).sort((a,b) => a.times[0].localeCompare(b.times[0]));
-
-      const upcoming = films.flatMap(f => f.times).filter(t => compareTime(t, now) >= 0).sort();
-      const globalNextTime = upcoming[0] || null;
-
-      films.forEach(f => {
-        const allPast = f.times.every(t => compareTime(t, now) < 0);
-        html += `<div class="gn-film${allPast?' all-past':''}">
-          <div class="gn-film-top">
-            <div class="gn-title">${esc(f.title)}</div>
-            <span class="fi-cert ${certCls(f.cert)}" style="margin-top:4px">${f.cert||'—'}</span>
-          </div>
-          <div class="gn-times">`;
-        f.times.forEach(time => {
-          const isPast = compareTime(time, now) < 0;
-          const isNext = time === globalNextTime;
-          const isSoon = !isPast && !isNext && minsUntil(now, time) <= 90;
-          let cls = 'gn-chip' + (isPast?' past':isNext?' next':isSoon?' soon':' upcoming');
-          const label = isNext
-            ? `${time} <span class="gn-badge next" style="margin-left:3px">NOW</span>`
-            : isSoon ? `${time} <span style="font-size:9px;opacity:0.7"> ${minsUntil(now,time)}m</span>`
-            : time;
-          html += `<span class="${cls}">${label}</span>`;
+      if (!shows.length) {
+        html += `<div class="gn-no-shows" style="color:var(--mubi-brown)">No screenings found</div>`;
+      } else {
+        const filmMap = new Map();
+        shows.forEach(([title, cert, time]) => {
+          if (!filmMap.has(title)) filmMap.set(title, { cert, times: [] });
+          filmMap.get(title).times.push(time);
         });
-        html += '</div></div>';
-      });
-    }
+        const films = [...filmMap.entries()].map(([title, d]) => ({
+          title, cert: d.cert, times: d.times.sort(),
+        })).sort((a,b) => a.times[0].localeCompare(b.times[0]));
+        const upcoming = films.flatMap(f => f.times).filter(t => compareTime(t, now) >= 0).sort();
+        const globalNextTime = upcoming[0] || null;
+        const QR_ARROW = `<div class="gn-book-icon">
+          <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="6" height="6" stroke="#2D2420" stroke-width="2"/><rect x="1" y="15" width="6" height="6" stroke="#2D2420" stroke-width="2"/><rect x="15" y="1" width="6" height="6" stroke="#2D2420" stroke-width="2"/><rect x="10" width="2" height="2" fill="#2D2420"/><rect y="10" width="4" height="2" fill="#2D2420"/><rect width="2" height="2" transform="matrix(-1 0 0 1 12 17)" fill="#2D2420"/><rect width="2" height="2" transform="matrix(-1 0 0 1 18 15)" fill="#2D2420"/><rect width="4" height="2" transform="matrix(-1 0 0 1 20 20)" fill="#2D2420"/><rect width="4" height="2" transform="matrix(-1 0 0 1 20 10)" fill="#2D2420"/><rect x="6" y="10" width="6" height="2" fill="#2D2420"/><rect x="10" y="4" width="2" height="7" fill="#2D2420"/><rect x="12" y="14" width="2" height="8" fill="#2D2420"/><rect x="14" y="10" width="2" height="4" fill="#2D2420"/><rect x="20" y="14" width="2" height="6" fill="#2D2420"/></svg>
+          <svg width="6" height="10" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.2925 9.46255L4.1725 5.58255L0.2925 1.70255C-0.0974996 1.31255 -0.0974995 0.682549 0.2925 0.292549C0.6825 -0.0974512 1.3125 -0.0974512 1.7025 0.292549L6.2925 4.88255C6.6825 5.27255 6.6825 5.90255 6.2925 6.29255L1.7025 10.8825C1.3125 11.2725 0.6825 11.2725 0.2925 10.8825C-0.0875 10.4925 -0.0974999 9.85255 0.2925 9.46255Z" fill="#2D2420"/></svg>
+        </div>`;
 
-    html += '</div>';
+        films.forEach(f => {
+          const allPast = f.times.every(t => compareTime(t, now) < 0);
+          html += `<div class="gn-film${allPast?' all-past':''}">
+            <div class="gn-film-top">
+              <div class="gn-title">${esc(f.title)}</div>
+            </div>
+            <div class="gn-times-row">
+            <div class="gn-times">`;
+          f.times.forEach(time => {
+            const isPast = compareTime(time, now) < 0;
+            const isNext = time === globalNextTime;
+            const isSoon = !isPast && !isNext && minsUntil(now, time) <= 90;
+            const cls = 'gn-chip' + (isPast?' past':isNext?' next':isSoon?' soon':' upcoming');
+            const label = time;
+            html += `<span class="${cls}">${label}</span>`;
+          });
+          html += `</div>${QR_ARROW}</div></div>`;
+        });
+      }
+      html += '</div>';
+
+    } else {
+      // ── OTHER CINEMAS: name + distance only, white on brown ──
+      if (rank === 1) html += `<div class="gn-cinemas-label">Cinemas</div>`;
+      html += `<div class="gn-cinema-other">
+        <div class="gn-other-name">${esc(cinema.n)}</div>
+        <div class="gn-other-dist">${distLabel}</div>
+      </div>`;
+    }
   });
 
   panel.innerHTML = html;
