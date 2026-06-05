@@ -498,9 +498,8 @@ input[type=range].time-slider::-moz-range-thumb {
 }
 .gn-cinema-section.nearest .gn-film:last-child::after { display: none; }
 .gn-cinema-section.nearest .gn-title { color: var(--mubi-brown); }
-.gn-cinema-section.nearest .gn-film.all-past { opacity: 0.45; }
 /* NOW badge on yellow */
-.gn-cinema-section.nearest .gn-badge.next { background: none; color: var(--mubi-brown); border: none; font-weight: 600; }
+.gn-cinema-section.nearest .gn-badge.next { background: none; color: var(--mubi-brown); border: none; }
 
 .gn-cinema-hdr {
   padding: 12px 18px 10px;
@@ -518,7 +517,7 @@ input[type=range].time-slider::-moz-range-thumb {
   font-size: 11px; font-weight: 400; color: var(--ink-muted-48);
   letter-spacing: -0.08px; margin-bottom: 2px;
 }
-.gn-cinema-rank.r1 { color: var(--mubi-brown); font-weight: 600; letter-spacing: 0.04em; }
+.gn-cinema-rank.r1 { color: var(--mubi-brown); font-weight: 400; letter-spacing: 0.04em; }
 .gn-cinema-rank.r2 { color: #16a34a; }
 .gn-cinema-rank.r3 { color: #16a34a; }
 .gn-cinema-rank.r4 { color: var(--ink-muted-48); }
@@ -585,7 +584,6 @@ input[type=range].time-slider::-moz-range-thumb {
   background: var(--canvas);
 }
 .gn-film:last-child { border-bottom: none; }
-.gn-film.all-past { opacity: 0.42; }
 
 .gn-film-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 3px; }
 .gn-title {
@@ -603,18 +601,14 @@ input[type=range].time-slider::-moz-range-thumb {
 .gn-times { display: flex; flex-wrap: wrap; gap: 14px; flex: 1; }
 .gn-book-icon {
   display: flex; align-items: center; gap: 4px;
-  flex-shrink: 0; opacity: 0.75;
+  flex-shrink: 0;
 }
 
 .gn-chip {
-  font-size: 18px; font-weight: 400;
+  font-size: 18px; font-weight: 400; color: var(--mubi-brown);
   padding: 0; border-radius: 0; border: none; background: none;
   letter-spacing: 0; white-space: nowrap;
 }
-.gn-chip.past     { color: rgba(45,36,32,0.35); }
-.gn-chip.upcoming { color: var(--mubi-brown); }
-.gn-chip.next     { color: var(--mubi-brown); font-weight: 600; }
-.gn-chip.soon     { color: var(--mubi-brown); }
 
 .gn-badge {
   font-size: 9px; font-weight: 600;
@@ -1156,20 +1150,20 @@ function renderGoNow(cinemas, date) {
         </div>`;
 
         films.forEach(f => {
-          const allPast = f.times.every(t => compareTime(t, now) < 0);
-          html += `<div class="gn-film${allPast?' all-past':''}">
+          // Keep times that started less than 30 min ago (or haven't started yet)
+          const validTimes = f.times.filter(t => {
+            const [th,tm]=t.split(':').map(Number), [nh,nm]=now.split(':').map(Number);
+            return (th*60+tm+30) >= (nh*60+nm);
+          });
+          if (!validTimes.length) return;
+          html += `<div class="gn-film">
             <div class="gn-film-top">
               <div class="gn-title">${esc(f.title)}</div>
             </div>
             <div class="gn-times-row">
             <div class="gn-times">`;
-          f.times.forEach(time => {
-            const isPast = compareTime(time, now) < 0;
-            const isNext = time === globalNextTime;
-            const isSoon = !isPast && !isNext && minsUntil(now, time) <= 90;
-            const cls = 'gn-chip' + (isPast?' past':isNext?' next':isSoon?' soon':' upcoming');
-            const label = time;
-            html += `<span class="${cls}">${label}</span>`;
+          validTimes.forEach(time => {
+            html += `<span class="gn-chip">${time}</span>`;
           });
           html += `</div>${QR_ARROW}</div></div>`;
         });
