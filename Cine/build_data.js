@@ -9,7 +9,7 @@ const COORDS = {
   'BFI IMAX':                        [51.5054, -0.1132],
   'BFI Southbank':                   [51.5067, -0.1152],
   'Barbican Cinema':                  [51.5208, -0.0934],
-  'The Castle Cinema':               [51.5432, -0.0656],
+  'The Castle Cinema':               [51.5513, -0.0431],
   'The Lexi Cinema':                 [51.5377, -0.2227],
   'The Nickel Cinema':               [51.5232, -0.1055],
   'Cineworld Bexleyheath':           [51.4614,  0.1392],

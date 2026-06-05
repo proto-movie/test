@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="cinema_data.js"></script>
+<script src="film_metadata.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
@@ -233,16 +234,40 @@ header {
   70%  { box-shadow: 0 0 0 14px rgba(34,197,94,0); }
   100% { box-shadow: 0 0 0 0    rgba(34,197,94,0); }
 }
+@keyframes pulse-pink {
+  0%   { box-shadow: 0 0 0 0    rgba(244,63,148,0.7); }
+  70%  { box-shadow: 0 0 0 14px rgba(244,63,148,0); }
+  100% { box-shadow: 0 0 0 0    rgba(244,63,148,0); }
+}
 .cinema-dot {
   width: 10px; height: 10px; border-radius: 50%;
   border: 2px solid rgba(255,255,255,0.85);
   background: #22c55e;
-  box-shadow: 0 1px 4px rgba(34,197,94,0.4);
   cursor: pointer; transition: transform 0.15s;
+  animation: pulse-c 3.4s infinite;  /* in-range: green pulse */
 }
+.cinema-dot.dim { animation: none; }  /* outside radius: no pulse */
 .cinema-dot:hover { transform: scale(1.5); }
+/* Nearest label */
+.leaflet-tooltip.nearest-label {
+  background: #f43f94; color: #fff; border: none; border-radius: 4px;
+  font-family: var(--font-ui); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  white-space: nowrap;
+}
+.leaflet-tooltip.nearest-label::before {
+  display: block;
+  content: '';
+  position: absolute;
+  bottom: -10px; left: 50%;
+  transform: translateX(-50%);
+  width: 1px; height: 10px;
+  background: #f43f94;
+  border: none; margin: 0;
+}
 .cinema-dot.dim { background: #5b9bd5; border-color: rgba(255,255,255,0.85); box-shadow: 0 1px 4px rgba(91,155,213,0.35); }
-.cinema-dot.closest { background: #22c55e; border-color: rgba(255,255,255,0.95); animation: pulse-c 2.2s infinite; }
+.cinema-dot.closest { background: #f43f94; border-color: rgba(255,255,255,0.95); animation: pulse-pink 2.2s infinite; }
 .cinema-dot.near2   { background: #22c55e; border-color: rgba(255,255,255,0.95); animation: pulse-c 2.6s infinite; }
 .cinema-dot.near3   { background: #22c55e; border-color: rgba(255,255,255,0.95); animation: pulse-c 3.0s infinite; }
 
@@ -398,9 +423,9 @@ input[type=range].time-slider::-moz-range-thumb {
 /* Home bar */
 .home-bar {
   height: 30px; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; background: var(--canvas);
+  flex-shrink: 0; background: var(--mubi-brown);
 }
-.home-line { width: 110px; height: 4px; background: var(--ink); border-radius: 2px; opacity: 0.18; }
+.home-line { width: 110px; height: 4px; background: #fff; border-radius: 2px; opacity: 0.25; }
 
 /* ─── Empty state ────────────────────────────────────────────── */
 .empty {
@@ -411,35 +436,118 @@ input[type=range].time-slider::-moz-range-thumb {
 .empty-ttl { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: -0.374px; }
 .empty-sub { font-size: 14px; color: var(--ink-muted-48); line-height: 1.43; letter-spacing: -0.224px; }
 
-/* ─── WHAT'S ON ──────────────────────────────────────────────── */
-.wo-list { padding: 0; }
-
-.wo-date-divider {
-  padding: 10px 18px 8px;
-  font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: -0.374px;
-  background: var(--canvas);
-  position: sticky; top: 0; z-index: 3;
-  border-bottom: 1px solid var(--hairline);
+/* ─── WHAT'S ON — film tiles ─────────────────────────────────── */
+.wo-list {
+  padding: 8px 16px 20px;
+  display: flex; flex-direction: column; gap: 12px;
 }
 
-.wo-film {
-  padding: 14px 18px 12px;
-  border-bottom: 1px solid var(--hairline);
-  cursor: pointer; transition: background 0.1s;
-  background: var(--canvas);
+.wo-tile {
+  width: 100%; height: 442px;
+  flex-shrink: 0; align-self: center;
+  position: relative; overflow: hidden;
+  border-radius: 6px; cursor: pointer;
+  background: rgba(255,255,255,0.06);
 }
-.wo-film:last-child { border-bottom: none; }
-
-.wo-film-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
-.wo-film-title {
+.wo-tile-img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.wo-tile-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    rgba(45,36,32,0.88) 0%,
+    rgba(45,36,32,0.3) 50%,
+    transparent 100%);
+}
+.wo-tile-title {
+  position: absolute; bottom: 32px; left: 14px; right: 14px;
   font-family: var(--font-display);
-  font-size: 17px; font-weight: 500; color: var(--ink);
-  line-height: 1.24; flex: 1; min-width: 0; letter-spacing: -0.01em;
+  font-size: 34px; font-weight: 400; color: #fff;
+  line-height: 1.0; letter-spacing: 0; text-transform: uppercase;
+}
+.wo-showing-label {
+  font-family: var(--font-ui);
+  font-size: 14px; font-weight: 400;
+  color: var(--mubi-yellow);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0 2px;
+  margin-top: 16px;
+}
+.wo-tile-grid {
+  display: flex; flex-direction: column;
+  gap: 12px;
+}
+.wo-tile-small {
+  aspect-ratio: 16/9;
+  overflow: hidden; border-radius: 4px; cursor: pointer;
+  position: relative; width: 100%;
+}
+.wo-tile-small .wo-tile-img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.wo-tile-small .wo-tile-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    rgba(45,36,32,0.85) 0%,
+    rgba(45,36,32,0.2) 45%,
+    transparent 100%);
+}
+.wo-tile-small-info {
+  position: absolute; bottom: 10px; left: 16px; right: 16px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.wo-tile-small-title {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 400; color: #fff;
+  line-height: 1.0; letter-spacing: 0; text-transform: uppercase;
+}
+.wo-tile-small-director {
+  font-family: var(--font-ui);
+  font-size: 12px; font-weight: 400; color: #fff;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.wo-tile-no-img {
+  background: rgba(255,255,255,0.12);
+  display: flex; align-items: flex-end; padding: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.wo-tile-no-img-title {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 400; color: #fff;
+  text-transform: uppercase; line-height: 1.05;
+}
+.wo-tile-director {
+  font-family: var(--font-ui);
+  font-size: 12px; font-weight: 400;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: -0.08px;
+  padding: 0 2px;
+}
+.wo-tile-top-gradient {
+  position: absolute; top: 0; left: 0; right: 0; height: 80px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+  pointer-events: none;
+}
+.wo-tile-mubi-rec {
+  position: absolute; top: 14px; left: 14px; right: 14px;
+  font-family: var(--font-ui);
+  font-size: 12px; font-weight: 400;
+  color: #fff;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.wo-tile-director-inside {
+  position: absolute;
+  bottom: 14px; left: 14px; right: 14px;
+  font-family: var(--font-ui);
+  font-size: 14px; font-weight: 400;
+  color: #fff; letter-spacing: 0.06em;
+  text-transform: uppercase; line-height: 1;
 }
 .wo-film-cert {
   font-size: 10px; font-weight: 600;
   padding: 3px 7px; border-radius: 9999px; flex-shrink: 0;
-  line-height: 1.4; letter-spacing: 0.04em; margin-top: 2px;
+  line-height: 1.4; letter-spacing: 0.04em;
 }
 
 /* Cinema rows within a film card */
@@ -555,15 +663,15 @@ input[type=range].time-slider::-moz-range-thumb {
 /* Other cinemas — compact white rows */
 .gn-cinema-other {
   display: flex; flex-direction: column; align-items: flex-start;
-  padding: 10px 16px;
+  padding: 2px 16px 10px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 .gn-cinema-other:last-child { border-bottom: none; }
 .gn-cinemas-label {
-  padding: 50px 16px 2px;
+  padding: 50px 16px 0;
   font-family: var(--font-ui);
   font-size: 14px; font-weight: 400;
-  color: rgba(255,192,0,0.5);
+  color: rgba(255,192,0,0.8);
   letter-spacing: 0.08em; text-transform: uppercase;
 }
 .gn-other-name {
@@ -1003,6 +1111,12 @@ function updateAll() {
   document.getElementById('rp-cinemas').textContent = inRange.length;
   document.getElementById('rp-films').textContent = filmSet.size;
 
+  // Remove old nearest label
+  if (window._nearestMarker) {
+    try { window._nearestMarker.unbindTooltip(); } catch(_) {}
+    window._nearestMarker = null;
+  }
+
   // Update markers — top 3 always lit, rest dim beyond effective radius
   ranked.forEach((c, i) => {
     const marker = cinemaMarkers.get(c.n);
@@ -1010,8 +1124,18 @@ function updateAll() {
     const dot = marker.getElement()?.querySelector('.cinema-dot');
     if (!dot) return;
     dot.className = 'cinema-dot';
-    if (i === 0) dot.classList.add('closest');
-    else if (i === 1) dot.classList.add('near2');
+    dot.style.background = '';
+    dot.style.animation = '';
+    if (i === 0) {
+      dot.classList.add('closest');
+      dot.style.background = '#f43f94';
+      // Attach permanent NEAREST label
+      marker.bindTooltip('NEAREST', {
+        permanent: true, direction: 'top', offset: [0, -8],
+        className: 'nearest-label'
+      }).openTooltip();
+      window._nearestMarker = marker;
+    } else if (i === 1) dot.classList.add('near2');
     else if (i === 2) dot.classList.add('near3');
     else if (c.km > effectiveRadius) dot.classList.add('dim');
     marker.getPopup()?.setContent(`<div class="popup-name">${c.n}</div><div class="popup-dist">${fmtDist(c.km)}</div>`);
@@ -1048,8 +1172,16 @@ function renderWhatsOn(cinemas, date) {
       if (next) shows = c.s[next] || [];
     }
     shows.forEach(([title, cert, time]) => {
-      if (!filmMap.has(title)) filmMap.set(title, { cert, times: [] });
-      if (time) filmMap.get(title).times.push(time);
+      // Strip year, rerelease, and format suffixes before deduplication
+      const clean = title.trim()
+        .replace(/\s*\(\d{4}\)\s*$/, '')          // (2026)
+        .replace(/\s*\(4K[^)]*\)\s*$/i, '')       // (4K Restoration)
+        .replace(/\s*\(Re-?release\)\s*$/i, '')   // (Re-release)
+        .replace(/\s*\(\d+th Anniversary\)\s*$/i,'') // (25th Anniversary)
+        .trim();
+      const key = clean.toLowerCase();
+      if (!filmMap.has(key)) filmMap.set(key, { title: clean, cert, times: [] });
+      if (time) filmMap.get(key).times.push(time);
     });
   });
 
@@ -1058,21 +1190,89 @@ function renderWhatsOn(cinemas, date) {
     return;
   }
 
-  const films = [...filmMap.entries()]
-    .filter(([, d]) => d.times.length === 0 || d.times.some(t => compareTime(t, DEMO_NOW) >= 0))
-    .map(([title, d]) => ({ title, cert: d.cert }))
+  const allFilms = [...filmMap.values()]
+    .filter(d => d.times.length === 0 || d.times.some(t => compareTime(t, DEMO_NOW) >= 0))
+    .map(d => ({ title: d.title, cert: d.cert }))
     .sort((a, b) => a.title.localeCompare(b.title));
 
+  // Always feature Backrooms first — even if not showing near current location
+  const backroomsIdx = allFilms.findIndex(f => f.title.toLowerCase() === 'backrooms');
+  const backroomsEntry = backroomsIdx >= 0
+    ? allFilms[backroomsIdx]
+    : { title: 'Backrooms', cert: '' };   // inject if not in local list
+  const films = backroomsIdx > 0
+    ? [backroomsEntry, ...allFilms.filter((_, i) => i !== backroomsIdx)]
+    : backroomsIdx === 0
+    ? allFilms
+    : [backroomsEntry, ...allFilms];     // prepend if not playing locally
+
+  const META = window.FILM_METADATA || {};
+
+  // Normalise title for metadata lookup
+  function metaKey(t) {
+    if (META[t]) return t;
+    const tc = t.replace(/\b\w/g, c => c.toUpperCase()); if (META[tc]) return tc;
+    const caps = t.toUpperCase(); if (META[caps]) return caps;
+    const lower = t.toLowerCase();
+    const exact = Object.keys(META).find(k => k.toLowerCase() === lower);
+    if (exact) return exact;
+    // Try without year / suffix variants
+    const stripped = t.replace(/\s*\(\d{4}\)\s*$/, '')
+                      .replace(/\s*\(4K[^)]*\)\s*$/i, '')
+                      .replace(/\s*\(Re-?release\)\s*$/i, '')
+                      .replace(/\s*\(\d+th Anniversary\)\s*$/i, '')
+                      .trim();
+    if (stripped !== t) return metaKey(stripped);
+    return null;
+  }
+
+  const [firstFilm, ...restFilms] = films;
   let html = `<div class="wo-list">`;
 
-  films.forEach(f => {
-    html += `<div class="wo-film">
-      <div class="wo-film-top">
-        <div class="wo-film-title">${esc(f.title)}</div>
-        <span class="wo-film-cert fi-cert ${certCls(f.cert)}">${f.cert||'—'}</span>
-      </div>
-    </div>`;
-  });
+  // ── First tile: full-width film still with overlaid title + director ──
+  if (firstFilm) {
+    const k1   = metaKey(firstFilm.title);
+    const m1   = k1 ? META[k1] : null;
+    const img1 = m1?.stills?.retina || m1?.stills?.standard || m1?.still_url || m1?.cover_artwork_box || null;
+    const dir1 = m1?.directors?.[0] || '';
+    html += `<div class="wo-tile">
+      ${img1 ? `<img class="wo-tile-img" src="${esc(img1)}" alt="${esc(firstFilm.title)}" loading="lazy">` : ''}
+      <div class="wo-tile-overlay"></div>
+      <div class="wo-tile-top-gradient"></div>
+      <div class="wo-tile-mubi-rec">MUBI Recommends</div>
+      <div class="wo-tile-title">${esc(firstFilm.title)}</div>
+      ${dir1 ? `<div class="wo-tile-director-inside">${esc(dir1)}</div>` : ''}
+    </div>
+    <div class="wo-showing-label">Showing Near You</div>`;
+  }
+
+  // ── Rest: single-column 16:9 stills with director ──
+  if (restFilms.length) {
+    html += `<div class="wo-tile-grid">`;
+    restFilms.forEach(f => {
+      const k = metaKey(f.title); const m = k ? META[k] : null;
+      const img = m?.stills?.retina || m?.stills?.standard || m?.still_url || null;
+      const director = m?.directors?.[0] || '';
+      if (img) {
+        html += `<div class="wo-tile-small">
+          <img class="wo-tile-img" src="${esc(img)}" alt="${esc(f.title)}" loading="lazy">
+          <div class="wo-tile-overlay"></div>
+          <div class="wo-tile-small-info">
+            <div class="wo-tile-small-title">${esc(f.title)}</div>
+            ${director ? `<div class="wo-tile-small-director">${esc(director)}</div>` : ''}
+          </div>
+        </div>`;
+      } else {
+        html += `<div class="wo-tile-small wo-tile-no-img">
+          <div class="wo-tile-small-info">
+            <div class="wo-tile-small-title">${esc(f.title)}</div>
+            ${director ? `<div class="wo-tile-small-director">${esc(director)}</div>` : ''}
+          </div>
+        </div>`;
+      }
+    });
+    html += `</div>`;
+  }
 
   html += '</div>';
   panel.innerHTML = html;
