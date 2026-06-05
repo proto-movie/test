@@ -1315,9 +1315,7 @@ function renderGoNow(cinemas, date) {
       }
     }
 
-    const distLabel = usingFallback
-      ? `${fmtDist(cinema.km)} away · <span style="color:var(--amber)">next: ${formatDayLabel(displayDate)}</span>`
-      : `${fmtDist(cinema.km)} away`;
+    const distLabel = `${fmtDist(cinema.km)} away`;
 
     if (rank === 0) {
       // ── NEAREST: full yellow card with films and times ──
