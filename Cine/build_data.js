@@ -5,8 +5,13 @@
 const fs = require('fs');
 
 const COORDS = {
+  'ActOne Cinema':                    [51.5079, -0.2676],
   'BFI IMAX':                        [51.5054, -0.1132],
+  'BFI Southbank':                   [51.5054, -0.1144],
   'Barbican Cinema':                  [51.5208, -0.0934],
+  'The Castle Cinema':               [51.5431, -0.0681],
+  'The Lexi Cinema':                 [51.5352, -0.2278],
+  'The Nickel Cinema':               [51.5265, -0.0757],
   'Cineworld Bexleyheath':           [51.4614,  0.1392],
   'Cineworld Feltham':               [51.4452, -0.4100],
   'Cineworld Hounslow':              [51.4680, -0.3600],
@@ -94,6 +99,12 @@ function parseCSVLine(line) {
 const csv = fs.readFileSync('london_cinema_showtimes.csv', 'utf8');
 const lines = csv.split('\n').filter(l => l.trim());
 
+const _today = new Date();
+const _first = new Date(_today); _first.setDate(_first.getDate() + 1);
+const _last  = new Date(_today); _last.setDate(_last.getDate() + 6);
+const VALID_DATE_MIN = _first.toISOString().slice(0, 10);
+const VALID_DATE_MAX = _last.toISOString().slice(0, 10);
+
 const cinemaMap = new Map();
 let skipped = 0;
 
@@ -102,6 +113,7 @@ for (let i = 1; i < lines.length; i++) {
   if (f.length < 7) continue;
   const [name, address, date, title, cert, runtime, time] = f;
   if (!name || !date || !title || !time) continue;
+  if (date < VALID_DATE_MIN || date > VALID_DATE_MAX) continue;
 
   if (!cinemaMap.has(name)) {
     const coords = COORDS[name];

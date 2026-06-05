@@ -52,7 +52,7 @@ body {
   background: var(--parchment);
   color: var(--ink);
   font-family: system-ui, -apple-system, sans-serif;
-  display: flex; flex-direction: column;
+  display: flex;
 }
 
 /* ─── Global Nav ─────────────────────────────────────────────── */
@@ -68,12 +68,12 @@ header {
   color: var(--ink); letter-spacing: -0.224px;
 }
 
-.hdr-sep { flex: 1; }
-.hdr-stat { font-size: 12px; color: var(--ink-muted-48); letter-spacing: -0.12px; }
+.hdr-stat { font-size: 12px; color: var(--ink-muted-48); letter-spacing: -0.12px; margin-left: 12px; }
 .hdr-stat strong { color: var(--primary); font-weight: 400; }
 
 /* ─── Layout ─────────────────────────────────────────────────── */
-.layout { display: flex; flex: 1; overflow: hidden; }
+/* ─── App shell ──────────────────────────────────────────────── */
+.map-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
 /* ─── MAP SIDE ───────────────────────────────────────────────── */
 .map-side { flex: 1; position: relative; min-width: 0; }
@@ -113,34 +113,48 @@ header {
 .popup-name { font-weight: 600; font-size: 13px; margin-bottom: 2px; letter-spacing: -0.374px; }
 .popup-dist { font-size: 12px; color: var(--primary); letter-spacing: -0.12px; }
 
-/* ─── Date selector (map overlay, top) ──────────────────────── */
+/* ─── Date + time overlay (map, top-centre) ─────────────────── */
 .date-panel {
   position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
   z-index: 1000;
-  background: rgba(245,245,247,0.84);
+  background: rgba(245,245,247,0.88);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border: 1px solid rgba(0,0,0,0.07);
   border-radius: 18px;
-  padding: 10px 16px;
-  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px 12px;
+  display: flex; flex-direction: column; gap: 10px;
   white-space: nowrap;
 }
+.dp-row { display: flex; align-items: center; gap: 10px; }
 .dp-label { font-size: 12px; letter-spacing: -0.12px; color: var(--ink-muted-48); flex-shrink: 0; }
 .dp-scroll { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
 .dp-scroll::-webkit-scrollbar { display: none; }
+.dp-time-val {
+  font-size: 13px; font-weight: 600; color: var(--ink);
+  letter-spacing: -0.224px; min-width: 40px; flex-shrink: 0; text-align: right;
+}
+.dp-slider-wrap { flex: 1; min-width: 260px; }
+.dp-time-labels {
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: var(--ink-muted-48); letter-spacing: -0.08px;
+  margin-top: 3px; padding: 0 1px;
+}
 .dbtn {
   background: var(--surface-pearl);
   border: 1px solid var(--hairline);
   color: var(--ink-muted-80);
   font-family: system-ui, -apple-system, sans-serif;
-  font-size: 13px; letter-spacing: -0.224px;
   padding: 6px 14px; border-radius: 9999px; cursor: pointer;
   transition: background 0.15s, color 0.15s; white-space: nowrap; flex-shrink: 0;
   outline: none;
+  display: flex; flex-direction: column; align-items: center; gap: 1px; line-height: 1;
 }
+.dbtn-day  { font-size: 11px; font-weight: 600; letter-spacing: -0.08px; }
+.dbtn-date { font-size: 11px; letter-spacing: -0.08px; opacity: 0.7; }
 .dbtn:hover { background: var(--parchment); color: var(--ink); }
 .dbtn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.dbtn.active .dbtn-date { opacity: 0.8; }
 .dbtn:active { transform: scale(0.95); }
 
 /* ─── Radius info (map overlay, bottom-left) ────────────────── */
@@ -187,22 +201,44 @@ header {
 .cinema-dot.near2   { background: #22c55e; border-color: rgba(255,255,255,0.95); animation: pulse-c 2.6s infinite; }
 .cinema-dot.near3   { background: #22c55e; border-color: rgba(255,255,255,0.95); animation: pulse-c 3.0s infinite; }
 
-/* ─── PHONE SIDE ─────────────────────────────────────────────── */
-.phone-side {
-  width: 560px; min-width: 560px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: var(--parchment);
-  border-left: 1px solid var(--hairline);
-  padding: 16px;
-  gap: 12px;
+input[type=range].time-slider {
+  width: 100%; height: 4px;
+  -webkit-appearance: none; appearance: none;
+  background: linear-gradient(to right, var(--primary) 0%, var(--primary) var(--pct,0%), var(--hairline) var(--pct,0%), var(--hairline) 100%);
+  border-radius: 2px; outline: none; cursor: pointer;
+}
+input[type=range].time-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px;
+  border-radius: 50%; background: var(--primary);
+  border: 2.5px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  cursor: pointer;
+}
+input[type=range].time-slider::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--primary); border: 2.5px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18); cursor: pointer;
 }
 
-/* ─── Phone frame ────────────────────────────────────────────── */
+/* ─── Phone column ───────────────────────────────────────────── */
+.phone-col {
+  /* Wide enough for the 402px frame + 19px padding each side */
+  width: 440px; min-width: 440px;
+  background: var(--parchment);
+  border-left: 1px solid var(--hairline);
+  display: flex; align-items: center; justify-content: center;
+  padding: 14px 19px;
+  overflow: hidden;
+}
+
+/* ─── Phone frame — iPhone 17 ratio: 402 × 874 logical pts ─── */
 .phone-frame {
-  width: 410px;
-  height: calc(100vh - 44px - 56px);
-  min-height: 680px;
-  max-height: 880px;
+  /* Ideal size: exactly iPhone 17 logical resolution */
+  max-width: 402px;
+  /* Scale height proportionally; if viewport too short, shrink uniformly */
+  height: min(874px, calc(100vh - 28px));
+  width: auto;
+  aspect-ratio: 402 / 874;
+  min-height: unset; max-height: none;
   background: #080810;
   border-radius: 46px;
   position: relative;
@@ -210,11 +246,12 @@ header {
     0 0 0 1px #1e1e34,
     0 0 0 3px #131326,
     0 0 0 5px #0a0a1c,
-    0 28px 60px rgba(0,0,0,0.22),
+    0 24px 60px rgba(0,0,0,0.35),
     inset 0 0 0 1px rgba(255,255,255,0.04);
   overflow: hidden;
   flex-shrink: 0;
 }
+
 .phone-frame::before {
   content: ''; position: absolute; left: -4px; top: 100px;
   width: 4px; height: 32px; background: #1a1a2e; border-radius: 2px 0 0 2px;
@@ -227,6 +264,7 @@ header {
 
 /* Dynamic island */
 .dynamic-island {
+  display: block;
   position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
   width: 118px; height: 34px; background: #000;
   border-radius: 20px; z-index: 10;
@@ -493,23 +531,32 @@ header {
 </head>
 <body>
 
-<!-- Global Nav -->
+<div class="map-col">
+
+<!-- Header lives inside the map column only -->
 <header>
   <div class="logo">London Cinemas &amp; Listings</div>
-  <div class="hdr-sep"></div>
   <div class="hdr-stat"><strong id="hdr-c">66</strong> cinemas · <strong id="hdr-s">18,411</strong> showtimes</div>
 </header>
-
-<div class="layout">
 
   <!-- ─── MAP ─────────────────────────────────────────────────── -->
   <div class="map-side">
     <div id="map"></div>
 
-    <!-- Date selector -->
+    <!-- Date + time selector -->
     <div class="date-panel">
-      <span class="dp-label">Date</span>
-      <div class="dp-scroll" id="date-btns"></div>
+      <div class="dp-row">
+        <span class="dp-label">Date</span>
+        <div class="dp-scroll" id="date-btns"></div>
+      </div>
+      <div class="dp-row">
+        <span class="dp-label">Time</span>
+        <div class="dp-slider-wrap">
+          <input type="range" class="time-slider" id="time-slider" min="0" max="1439" value="0">
+          <div class="dp-time-labels"><span>Morning</span><span>Midday</span><span>Evening</span><span>Late</span></div>
+        </div>
+        <span class="dp-time-val" id="time-display">00:00</span>
+      </div>
     </div>
 
     <!-- Radius info -->
@@ -524,10 +571,12 @@ header {
     </div>
   </div>
 
-  <!-- ─── PHONE ────────────────────────────────────────────────── -->
-  <div class="phone-side">
-    <div class="phone-frame">
-      <div class="dynamic-island"></div>
+</div><!-- /map-col -->
+
+<!-- ─── PHONE COLUMN ──────────────────────────────────────────── -->
+<div class="phone-col">
+  <div class="phone-frame">
+    <div class="dynamic-island"></div>
       <div class="screen">
 
         <!-- Status bar -->
@@ -563,17 +612,8 @@ header {
 
         <div class="home-bar"><div class="home-line"></div></div>
       </div>
-    </div>
-
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>CLOSEST</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>2ND</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>3RD</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>IN RANGE</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#5b9bd5"></div>OUT</div>
-    </div>
   </div>
-</div>
+</div><!-- /phone-col -->
 
 <script>
 // ─── Utils ────────────────────────────────────────────────────────────────────
@@ -587,6 +627,26 @@ function haversineKm(lat1,lng1,lat2,lng2) {
 }
 
 function fmtDist(km) { return km<1 ? `${Math.round(km*1000)}m` : `${km.toFixed(1)}km`; }
+
+// ─── London boundary ──────────────────────────────────────────────────────────
+
+const LONDON_CENTER = [51.509, -0.118];
+const LONDON_RADIUS_KM = 22;
+
+function clampToLondon(lat, lng) {
+  const dist = haversineKm(LONDON_CENTER[0], LONDON_CENTER[1], lat, lng);
+  if (dist <= LONDON_RADIUS_KM) return { lat, lng };
+  // Project from center toward (lat,lng) at exactly LONDON_RADIUS_KM
+  const φ1 = LONDON_CENTER[0] * Math.PI / 180, λ1 = LONDON_CENTER[1] * Math.PI / 180;
+  const φ2 = lat * Math.PI / 180,              λ2 = lng * Math.PI / 180;
+  const y = Math.sin(λ2 - λ1) * Math.cos(φ2);
+  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(λ2 - λ1);
+  const θ = Math.atan2(y, x);
+  const d = LONDON_RADIUS_KM / 6371;
+  const φ3 = Math.asin(Math.sin(φ1)*Math.cos(d) + Math.cos(φ1)*Math.sin(d)*Math.cos(θ));
+  const λ3 = λ1 + Math.atan2(Math.sin(θ)*Math.sin(d)*Math.cos(φ1), Math.cos(d) - Math.sin(φ1)*Math.sin(φ3));
+  return { lat: φ3 * 180 / Math.PI, lng: λ3 * 180 / Math.PI };
+}
 
 function certCls(c) {
   if (!c) return 'cert-';
@@ -620,24 +680,51 @@ function formatDayLabel(d) {
 const cinemas = window.CINEMA_DATA?.cinemas || [];
 let userLat=51.5115, userLng=-0.1289, radiusKm=1, activeTab='whats-on';
 
-// Build available dates from data
-const allDates = [...new Set(cinemas.flatMap(c=>Object.keys(c.s)))].sort().filter(d=>d>='2026-06-04');
+// Only include dates strictly after today — data quality starts from tomorrow
+const TODAY = new Date().toISOString().slice(0, 10);
+const allDates = [...new Set(cinemas.flatMap(c=>Object.keys(c.s)))].sort().filter(d=>d > TODAY);
 
-let selectedDate = allDates[1] || allDates[0] || '2026-06-05';
+let selectedDate = allDates[0] || '';
 
-// Demo "now" time — treat data's first date as today, 14:00 as current time
-const DEMO_NOW = '14:00';
-const DEMO_TODAY = allDates[0] || '2026-06-04';
+let DEMO_NOW = '00:00';
+const DEMO_TODAY = allDates[0] || '';
+
+// ─── Time slider ──────────────────────────────────────────────────────────────
+
+function minsToTime(m) {
+  return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+}
+
+const timeSlider = document.getElementById('time-slider');
+const timeDisplay = document.getElementById('time-display');
+
+function updateSlider() {
+  const val = parseInt(timeSlider.value);
+  DEMO_NOW = minsToTime(val);
+  timeDisplay.textContent = DEMO_NOW;
+  document.getElementById('status-time').textContent = DEMO_NOW;
+  const pct = (val / 1439 * 100).toFixed(1);
+  timeSlider.style.setProperty('--pct', pct + '%');
+}
+
+timeSlider.addEventListener('input', () => { updateSlider(); updateAll(); });
+
+// Initialise to user's real local time
+const _rn = new Date();
+timeSlider.value = _rn.getHours() * 60 + _rn.getMinutes();
+updateSlider();
 
 // ─── Date buttons ─────────────────────────────────────────────────────────────
 
 const dateBtnsEl = document.getElementById('date-btns');
 
 function buildDateButtons() {
-  const days = allDates.slice(1, 7);
+  const days = allDates.slice(0, 6);
   dateBtnsEl.innerHTML = days.map(d => {
-    const label = new Date(d+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-    return `<button class="dbtn${d===selectedDate?' active':''}" data-date="${d}">${label}</button>`;
+    const obj = new Date(d+'T12:00:00');
+    const dayName  = obj.toLocaleDateString('en-GB',{weekday:'short'});
+    const dateLabel = obj.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    return `<button class="dbtn${d===selectedDate?' active':''}" data-date="${d}"><span class="dbtn-day">${dayName}</span><span class="dbtn-date">${dateLabel}</span></button>`;
   }).join('');
 
   dateBtnsEl.querySelectorAll('.dbtn').forEach(btn => {
@@ -670,6 +757,34 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
   subdomains:'abcd', maxZoom:19,
 }).addTo(map);
 
+// Generate a polygon approximation of the London circle (64 points)
+function circlePoly(center, radiusKm, n=64) {
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const angle = (i / n) * 2 * Math.PI;
+    const d = radiusKm / 6371;
+    const φ1 = center[0] * Math.PI / 180, λ1 = center[1] * Math.PI / 180;
+    const φ2 = Math.asin(Math.sin(φ1)*Math.cos(d) + Math.cos(φ1)*Math.sin(d)*Math.cos(angle));
+    const λ2 = λ1 + Math.atan2(Math.sin(angle)*Math.sin(d)*Math.cos(φ1), Math.cos(d) - Math.sin(φ1)*Math.sin(φ2));
+    pts.push([φ2*180/Math.PI, λ2*180/Math.PI]);
+  }
+  return pts;
+}
+
+// White mask: world rectangle with London circle cut out as a hole
+L.polygon(
+  [[ [-90,-180],[-90,180],[90,180],[90,-180] ],  // outer world
+   circlePoly(LONDON_CENTER, LONDON_RADIUS_KM) ], // hole
+  { color:'none', fillColor:'#ffffff', fillOpacity:0.72, interactive:false }
+).addTo(map);
+
+// Boundary circle outline
+L.circle(LONDON_CENTER, {
+  radius: LONDON_RADIUS_KM * 1000,
+  color: 'rgba(29,29,31,0.22)', weight: 1.5, dashArray: '7 6',
+  fill: false, interactive: false,
+}).addTo(map);
+
 const userIcon = L.divIcon({className:'',html:'<div class="user-marker"></div>',iconSize:[18,18],iconAnchor:[9,9]});
 const userMarker = L.marker([userLat,userLng],{icon:userIcon,draggable:true,zIndexOffset:1000}).addTo(map);
 
@@ -680,14 +795,17 @@ let radiusCircle = L.circle([userLat,userLng],{
 }).addTo(map);
 
 userMarker.on('drag',e=>{
-  userLat=e.latlng.lat; userLng=e.latlng.lng;
+  const p = clampToLondon(e.latlng.lat, e.latlng.lng);
+  userLat=p.lat; userLng=p.lng;
+  userMarker.setLatLng([userLat,userLng]);
   radiusCircle.setLatLng([userLat,userLng]);
-  debouncedUpdate(); // circle radius recalculated inside updateAll
+  debouncedUpdate();
 });
 userMarker.on('dragend',()=>updateAll());
 
 map.on('click',e=>{
-  userLat=e.latlng.lat; userLng=e.latlng.lng;
+  const p = clampToLondon(e.latlng.lat, e.latlng.lng);
+  userLat=p.lat; userLng=p.lng;
   userMarker.setLatLng([userLat,userLng]);
   radiusCircle.setLatLng([userLat,userLng]);
   updateAll();
@@ -775,25 +893,23 @@ function updateAll() {
 
 function renderWhatsOn(cinemas, date) {
   const panel = document.getElementById('panel-whats-on');
-  const isToday = date === DEMO_TODAY;
-  const now = DEMO_NOW;
 
   if (!cinemas.length) {
     panel.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-ttl">No cinemas</div><div class="empty-sub">Move the pin to find cinemas</div></div>`;
     return;
   }
 
-  // Collect unique film titles from all in-range cinemas
-  // Fall forward to next available date per cinema if needed
-  const filmMap = new Map();
+  // Collect unique film titles + all their times from in-range cinemas
+  const filmMap = new Map(); // title → { cert, times[] }
   cinemas.forEach(c => {
     let shows = c.s[date] || [];
     if (!shows.length) {
       const next = Object.keys(c.s).sort().find(d => d > date);
       if (next) shows = c.s[next] || [];
     }
-    shows.forEach(([title, cert]) => {
-      if (!filmMap.has(title)) filmMap.set(title, cert);
+    shows.forEach(([title, cert, time]) => {
+      if (!filmMap.has(title)) filmMap.set(title, { cert, times: [] });
+      if (time) filmMap.get(title).times.push(time);
     });
   });
 
@@ -803,7 +919,7 @@ function renderWhatsOn(cinemas, date) {
   }
 
   const films = [...filmMap.entries()]
-    .map(([title, cert]) => ({ title, cert }))
+    .map(([title, d]) => ({ title, cert: d.cert }))
     .sort((a, b) => a.title.localeCompare(b.title));
 
   let html = `<div class="wo-list"><div class="wo-date-divider">${films.length} films · ${cinemas.length} cinemas</div>`;
@@ -885,15 +1001,11 @@ function renderGoNow(cinemas, date) {
         title, cert: d.cert, times: d.times.sort(),
       })).sort((a,b) => a.times[0].localeCompare(b.times[0]));
 
-      const showingToday = displayDate === DEMO_TODAY;
-      let globalNextTime = null;
-      if (showingToday) {
-        const upcoming = films.flatMap(f => f.times).filter(t => compareTime(t, now) >= 0).sort();
-        globalNextTime = upcoming[0] || null;
-      }
+      const upcoming = films.flatMap(f => f.times).filter(t => compareTime(t, now) >= 0).sort();
+      const globalNextTime = upcoming[0] || null;
 
       films.forEach(f => {
-        const allPast = showingToday && f.times.every(t => compareTime(t, now) < 0);
+        const allPast = f.times.every(t => compareTime(t, now) < 0);
         html += `<div class="gn-film${allPast?' all-past':''}">
           <div class="gn-film-top">
             <div class="gn-title">${esc(f.title)}</div>
@@ -901,9 +1013,9 @@ function renderGoNow(cinemas, date) {
           </div>
           <div class="gn-times">`;
         f.times.forEach(time => {
-          const isPast = showingToday && compareTime(time, now) < 0;
-          const isNext = showingToday && time === globalNextTime;
-          const isSoon = showingToday && !isPast && !isNext && minsUntil(now, time) <= 90;
+          const isPast = compareTime(time, now) < 0;
+          const isNext = time === globalNextTime;
+          const isSoon = !isPast && !isNext && minsUntil(now, time) <= 90;
           let cls = 'gn-chip' + (isPast?' past':isNext?' next':isSoon?' soon':' upcoming');
           const label = isNext
             ? `${time} <span class="gn-badge next" style="margin-left:3px">NOW</span>`
@@ -923,12 +1035,7 @@ function renderGoNow(cinemas, date) {
 
 // ─── Clock ────────────────────────────────────────────────────────────────────
 
-function tick() {
-  const n=new Date();
-  document.getElementById('status-time').textContent=
-    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
-}
-tick(); setInterval(tick,30000);
+// Status bar time is driven by the slider, not the real clock.
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
