@@ -7,11 +7,36 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="cinema_data.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
 
 <style>
+@font-face {
+  font-family: 'Riforma'; font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma'; font-display: swap; font-weight: 500;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma'; font-display: swap; font-weight: bold;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma'; font-display: swap; font-style: italic;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2');
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root {
+  /* MUBI GO brand */
+  --mubi-brown:        #2D2420;
+  --mubi-yellow:       #FFC000;
+  --font-display:      'Riforma', Georgia, serif;
+  --font-ui:           'DM Sans', system-ui, sans-serif;
+
   /* Apple Design System */
   --primary:           #0066cc;
   --primary-focus:     #0071e3;
@@ -51,7 +76,7 @@ html, body { height: 100%; overflow: hidden; }
 body {
   background: var(--parchment);
   color: var(--ink);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-ui);
   display: flex;
 }
 
@@ -134,12 +159,39 @@ header {
   font-size: 13px; font-weight: 600; color: var(--ink);
   letter-spacing: -0.224px; min-width: 40px; flex-shrink: 0; text-align: right;
 }
-.dp-slider-wrap { flex: 1; min-width: 260px; }
-.dp-time-labels {
-  display: flex; justify-content: space-between;
-  font-size: 9px; color: var(--ink-muted-48); letter-spacing: -0.08px;
-  margin-top: 3px; padding: 0 1px;
+.dp-now-btn {
+  background: var(--surface-pearl); color: var(--ink-muted-48);
+  border: 1px solid var(--hairline); border-radius: 9999px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 11px; font-weight: 600; letter-spacing: -0.08px;
+  padding: 4px 10px; cursor: pointer; flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
+.dp-now-btn.is-now { background: var(--primary); color: #fff; border-color: var(--primary); }
+.dp-now-btn:hover  { background: var(--parchment); color: var(--ink); }
+.dp-now-btn.is-now:hover { opacity: 0.85; background: var(--primary); color: #fff; }
+.dp-now-btn:active { transform: scale(0.95); }
+.dp-slider-wrap { flex: 1; min-width: 260px; }
+.dp-slider-outer { position: relative; }
+.dp-ticks {
+  position: absolute; left: 0; right: 0; top: 50%;
+  transform: translateY(-50%); pointer-events: none;
+}
+.dp-tick {
+  position: absolute; width: 2px; height: 10px;
+  background: rgba(0,0,0,0.15); border-radius: 1px;
+  transform: translateX(-50%) translateY(-50%); top: 50%;
+}
+.dp-time-labels {
+  position: relative; height: 18px; margin-top: 4px;
+}
+.dp-time-labels span {
+  position: absolute; transform: translateX(-50%);
+  font-size: 11px; font-weight: 500; color: var(--ink-muted-48);
+  letter-spacing: -0.08px; white-space: nowrap;
+}
+.dp-time-labels span:first-child { transform: none; left: 0 !important; }
+.dp-time-labels span:last-child  { transform: none; left: auto !important; right: 0; }
 .dbtn {
   background: var(--surface-pearl);
   border: 1px solid var(--hairline);
@@ -158,19 +210,15 @@ header {
 .dbtn:active { transform: scale(0.95); }
 
 /* ─── Radius info (map overlay, bottom-left) ────────────────── */
-.radius-panel {
-  position: absolute; bottom: 20px; left: 20px; z-index: 1000;
-  background: rgba(245,245,247,0.84);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border: 1px solid rgba(0,0,0,0.07);
-  border-radius: 9999px;
-  padding: 8px 16px;
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12px; letter-spacing: -0.12px;
+.dp-summary {
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  font-size: 12px; letter-spacing: -0.12px; color: var(--ink-muted-48);
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  margin-top: 2px;
 }
-.rp-val { color: var(--ink); font-weight: 600; }
-.rp-sep { color: var(--ink-muted-48); }
+.dp-summary-label { color: var(--ink-muted-48); }
+.dp-summary-val   { color: var(--ink); font-weight: 600; }
 
 /* ─── Map markers ────────────────────────────────────────────── */
 .user-marker {
@@ -271,37 +319,37 @@ input[type=range].time-slider::-moz-range-thumb {
   box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
 }
 
-/* Screen — light mode interior */
+/* Screen */
 .screen {
   position: absolute; inset: 0;
   border-radius: 46px;
   overflow: hidden;
   display: flex; flex-direction: column;
-  background: var(--canvas);
+  background: var(--mubi-brown);
 }
 
 /* Status bar — dark icons on white */
 .status-bar {
   height: 52px; padding: 14px 26px 0;
   display: flex; align-items: center; justify-content: space-between;
-  flex-shrink: 0; background: var(--canvas);
+  flex-shrink: 0; background: var(--mubi-brown);
 }
-.status-time { font-size: 15px; font-weight: 600; color: var(--ink); }
+.status-time { font-size: 15px; font-weight: 600; color: #fff; }
 .status-icons { display: flex; align-items: center; gap: 5px; }
-.status-icons svg { fill: var(--ink); }
+.status-icons svg { fill: #fff; color: #fff; }
 
 /* App bar */
 .app-bar {
-  padding: 6px 22px 12px;
+  padding: 10px 22px 10px;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--hairline);
-  background: var(--canvas);
-  display: flex; align-items: flex-end; gap: 10px;
+  background: var(--mubi-brown);
+  display: flex; align-items: center; gap: 10px;
 }
 .app-bar-title {
-  font-size: 28px; font-weight: 600;
-  letter-spacing: -0.374px; line-height: 1.1;
-  color: var(--ink); flex-shrink: 0;
+  font-family: var(--font-ui);
+  font-size: 14px; font-weight: 400;
+  letter-spacing: -0.1px; line-height: 1.2;
+  color: var(--mubi-yellow); flex-shrink: 0;
 }
 
 .location-info { flex: 1; min-width: 0; padding-bottom: 4px; }
@@ -381,8 +429,9 @@ input[type=range].time-slider::-moz-range-thumb {
 
 .wo-film-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
 .wo-film-title {
-  font-size: 17px; font-weight: 600; color: var(--ink);
-  line-height: 1.24; flex: 1; min-width: 0; letter-spacing: -0.374px;
+  font-family: var(--font-display);
+  font-size: 17px; font-weight: 500; color: var(--ink);
+  line-height: 1.24; flex: 1; min-width: 0; letter-spacing: -0.01em;
 }
 .wo-film-cert {
   font-size: 10px; font-weight: 600;
@@ -441,7 +490,8 @@ input[type=range].time-slider::-moz-range-thumb {
 .gn-cinema-rank.r4 { color: var(--ink-muted-48); }
 
 .gn-cinema-name {
-  font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -0.374px;
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 500; color: var(--ink); letter-spacing: 0;
 }
 .gn-cinema-addr {
   font-size: 11px; color: var(--ink-muted-48); margin-top: 1px;
@@ -471,8 +521,9 @@ input[type=range].time-slider::-moz-range-thumb {
 
 .gn-film-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 7px; }
 .gn-title {
-  font-size: 15px; font-weight: 600; color: var(--ink);
-  line-height: 1.24; flex: 1; min-width: 0; letter-spacing: -0.374px;
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 500; color: var(--ink);
+  line-height: 1.24; flex: 1; min-width: 0; letter-spacing: -0.01em;
 }
 .gn-film.all-past .gn-title { color: var(--ink-muted-48); }
 
@@ -536,7 +587,7 @@ input[type=range].time-slider::-moz-range-thumb {
 <!-- Header lives inside the map column only -->
 <header>
   <div class="logo">London Cinemas &amp; Listings</div>
-  <div class="hdr-stat"><strong id="hdr-c">66</strong> cinemas · <strong id="hdr-s">18,411</strong> showtimes</div>
+  <div class="hdr-stat"><strong id="hdr-c">69</strong> cinemas · <strong id="hdr-s">9,367</strong> showtimes</div>
 </header>
 
   <!-- ─── MAP ─────────────────────────────────────────────────── -->
@@ -552,22 +603,33 @@ input[type=range].time-slider::-moz-range-thumb {
       <div class="dp-row">
         <span class="dp-label">Time</span>
         <div class="dp-slider-wrap">
-          <input type="range" class="time-slider" id="time-slider" min="0" max="1439" value="0">
-          <div class="dp-time-labels"><span>Morning</span><span>Midday</span><span>Evening</span><span>Late</span></div>
+          <div class="dp-slider-outer">
+            <input type="range" class="time-slider" id="time-slider" min="0" max="1439" value="0">
+            <div class="dp-ticks">
+              <span class="dp-tick" style="left:25%"></span>
+              <span class="dp-tick" style="left:50%"></span>
+              <span class="dp-tick" style="left:75%"></span>
+            </div>
+          </div>
+          <div class="dp-time-labels">
+            <span style="left:0%">12am</span>
+            <span style="left:25%">6am</span>
+            <span style="left:50%">Noon</span>
+            <span style="left:75%">6pm</span>
+            <span style="left:100%">12am</span>
+          </div>
         </div>
         <span class="dp-time-val" id="time-display">00:00</span>
+        <button class="dp-now-btn" id="btn-now" title="Reset to current time">Now</button>
       </div>
-    </div>
-
-    <!-- Radius info -->
-    <div class="radius-panel">
-      <span class="rp-val" id="rp-radius">—</span>
-      <span class="rp-sep">·</span>
-      <span class="rp-val" id="rp-cinemas">—</span>
-      <span class="rp-sep">cinemas</span>
-      <span class="rp-sep">·</span>
-      <span class="rp-val" id="rp-films">—</span>
-      <span class="rp-sep">films</span>
+      <div class="dp-summary">
+        <span class="dp-summary-label">App will show</span>
+        <span class="dp-summary-val" id="rp-cinemas">—</span>
+        <span class="dp-summary-label">cinemas ·</span>
+        <span class="dp-summary-val" id="rp-films">—</span>
+        <span class="dp-summary-label">films within</span>
+        <span class="dp-summary-val" id="rp-radius">—</span>
+      </div>
     </div>
   </div>
 
@@ -678,6 +740,11 @@ function formatDayLabel(d) {
 // ─── State ────────────────────────────────────────────────────────────────────
 
 const cinemas = window.CINEMA_DATA?.cinemas || [];
+
+// Update header counts from loaded data
+document.getElementById('hdr-c').textContent = cinemas.length;
+document.getElementById('hdr-s').textContent = cinemas.reduce((sum, c) =>
+  sum + Object.values(c.s).reduce((n, shows) => n + shows.length, 0), 0).toLocaleString();
 let userLat=51.5115, userLng=-0.1289, radiusKm=1, activeTab='whats-on';
 
 // Only include dates strictly after today — data quality starts from tomorrow
@@ -698,6 +765,12 @@ function minsToTime(m) {
 const timeSlider = document.getElementById('time-slider');
 const timeDisplay = document.getElementById('time-display');
 
+const btnNow = document.getElementById('btn-now');
+
+function realNowMins() {
+  const n = new Date(); return n.getHours() * 60 + n.getMinutes();
+}
+
 function updateSlider() {
   const val = parseInt(timeSlider.value);
   DEMO_NOW = minsToTime(val);
@@ -705,14 +778,21 @@ function updateSlider() {
   document.getElementById('status-time').textContent = DEMO_NOW;
   const pct = (val / 1439 * 100).toFixed(1);
   timeSlider.style.setProperty('--pct', pct + '%');
+  // Blue only when slider is at current real time (within 1 minute)
+  btnNow.classList.toggle('is-now', Math.abs(val - realNowMins()) <= 1);
 }
 
 timeSlider.addEventListener('input', () => { updateSlider(); updateAll(); });
 
-// Initialise to user's real local time
-const _rn = new Date();
-timeSlider.value = _rn.getHours() * 60 + _rn.getMinutes();
+// Default to user's current real time
+timeSlider.value = realNowMins();
 updateSlider();
+
+btnNow.addEventListener('click', () => {
+  timeSlider.value = realNowMins();
+  updateSlider();
+  updateAll();
+});
 
 // ─── Date buttons ─────────────────────────────────────────────────────────────
 
@@ -919,10 +999,11 @@ function renderWhatsOn(cinemas, date) {
   }
 
   const films = [...filmMap.entries()]
+    .filter(([, d]) => d.times.length === 0 || d.times.some(t => compareTime(t, DEMO_NOW) >= 0))
     .map(([title, d]) => ({ title, cert: d.cert }))
     .sort((a, b) => a.title.localeCompare(b.title));
 
-  let html = `<div class="wo-list"><div class="wo-date-divider">${films.length} films · ${cinemas.length} cinemas</div>`;
+  let html = `<div class="wo-list">`;
 
   films.forEach(f => {
     html += `<div class="wo-film">

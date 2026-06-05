@@ -5,13 +5,13 @@
 const fs = require('fs');
 
 const COORDS = {
-  'ActOne Cinema':                    [51.5079, -0.2676],
+  'ActOne Cinema':                    [51.5081, -0.2739],
   'BFI IMAX':                        [51.5054, -0.1132],
-  'BFI Southbank':                   [51.5054, -0.1144],
+  'BFI Southbank':                   [51.5067, -0.1152],
   'Barbican Cinema':                  [51.5208, -0.0934],
-  'The Castle Cinema':               [51.5431, -0.0681],
-  'The Lexi Cinema':                 [51.5352, -0.2278],
-  'The Nickel Cinema':               [51.5265, -0.0757],
+  'The Castle Cinema':               [51.5432, -0.0656],
+  'The Lexi Cinema':                 [51.5377, -0.2227],
+  'The Nickel Cinema':               [51.5232, -0.1055],
   'Cineworld Bexleyheath':           [51.4614,  0.1392],
   'Cineworld Feltham':               [51.4452, -0.4100],
   'Cineworld Hounslow':              [51.4680, -0.3600],
