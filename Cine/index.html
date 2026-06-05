@@ -75,7 +75,7 @@
 
 html, body { height: 100%; overflow: hidden; }
 body {
-  background: var(--parchment);
+  background: #fff;
   color: var(--ink);
   font-family: var(--font-ui);
   display: flex;
@@ -103,7 +103,7 @@ header {
 
 /* ─── MAP SIDE ───────────────────────────────────────────────── */
 .map-side { flex: 1; position: relative; min-width: 0; }
-#map { width: 100%; height: 100%; background: var(--map-bg); }
+#map { width: 100%; height: 100%; background: #fff; }
 
 /* Leaflet overrides */
 .leaflet-container { background: var(--parchment); }
@@ -293,7 +293,7 @@ input[type=range].time-slider::-moz-range-thumb {
 .phone-col {
   /* Wide enough for the 402px frame + 19px padding each side */
   width: 440px; min-width: 440px;
-  background: var(--parchment);
+  background: #fff;
   border-left: 1px solid var(--hairline);
   display: flex; align-items: center; justify-content: center;
   padding: 14px 19px;
@@ -703,19 +703,14 @@ input[type=range].time-slider::-moz-range-thumb {
 .gn-film.all-past .gn-title { color: var(--ink-muted-48); }
 
 /* Time chips row */
-.gn-times-row {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
-}
-.gn-times { display: flex; flex-wrap: wrap; gap: 14px; flex: 1; }
-.gn-book-icon {
-  display: flex; align-items: center; gap: 4px;
-  flex-shrink: 0;
-}
+.gn-times-row { display: flex; align-items: center; }
+.gn-times { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .gn-chip {
   font-size: 18px; font-weight: 400; color: var(--mubi-brown);
-  padding: 0; border-radius: 0; border: none; background: none;
-  letter-spacing: 0; white-space: nowrap;
+  padding: 3px 10px; border-radius: 4px;
+  border: 1px solid rgba(45,36,32,0.35);
+  background: none; letter-spacing: 0; white-space: nowrap;
 }
 
 .gn-badge {
@@ -980,6 +975,9 @@ function buildDateButtons() {
       selectedDate = btn.dataset.date;
       dateBtnsEl.querySelectorAll('.dbtn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
+      // Reset slider to midnight when switching dates so all shows are visible
+      timeSlider.value = 0;
+      updateSlider();
       updateAll();
     });
   });
@@ -1344,10 +1342,6 @@ function renderGoNow(cinemas, date) {
         })).sort((a,b) => a.times[0].localeCompare(b.times[0]));
         const upcoming = films.flatMap(f => f.times).filter(t => compareTime(t, now) >= 0).sort();
         const globalNextTime = upcoming[0] || null;
-        const QR_ARROW = `<div class="gn-book-icon">
-          <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="6" height="6" stroke="#2D2420" stroke-width="2"/><rect x="1" y="15" width="6" height="6" stroke="#2D2420" stroke-width="2"/><rect x="15" y="1" width="6" height="6" stroke="#2D2420" stroke-width="2"/><rect x="10" width="2" height="2" fill="#2D2420"/><rect y="10" width="4" height="2" fill="#2D2420"/><rect width="2" height="2" transform="matrix(-1 0 0 1 12 17)" fill="#2D2420"/><rect width="2" height="2" transform="matrix(-1 0 0 1 18 15)" fill="#2D2420"/><rect width="4" height="2" transform="matrix(-1 0 0 1 20 20)" fill="#2D2420"/><rect width="4" height="2" transform="matrix(-1 0 0 1 20 10)" fill="#2D2420"/><rect x="6" y="10" width="6" height="2" fill="#2D2420"/><rect x="10" y="4" width="2" height="7" fill="#2D2420"/><rect x="12" y="14" width="2" height="8" fill="#2D2420"/><rect x="14" y="10" width="2" height="4" fill="#2D2420"/><rect x="20" y="14" width="2" height="6" fill="#2D2420"/></svg>
-          <svg width="6" height="10" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.2925 9.46255L4.1725 5.58255L0.2925 1.70255C-0.0974996 1.31255 -0.0974995 0.682549 0.2925 0.292549C0.6825 -0.0974512 1.3125 -0.0974512 1.7025 0.292549L6.2925 4.88255C6.6825 5.27255 6.6825 5.90255 6.2925 6.29255L1.7025 10.8825C1.3125 11.2725 0.6825 11.2725 0.2925 10.8825C-0.0875 10.4925 -0.0974999 9.85255 0.2925 9.46255Z" fill="#2D2420"/></svg>
-        </div>`;
 
         films.forEach(f => {
           // Keep times that started less than 30 min ago (or haven't started yet)
@@ -1365,7 +1359,7 @@ function renderGoNow(cinemas, date) {
           validTimes.forEach(time => {
             html += `<span class="gn-chip">${time}</span>`;
           });
-          html += `</div>${QR_ARROW}</div></div>`;
+          html += `</div></div></div>`;
         });
       }
       html += '</div>';
