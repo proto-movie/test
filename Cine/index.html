@@ -90,11 +90,11 @@ header {
   padding: 0 20px; gap: 16px; z-index: 200;
 }
 .logo {
-  font-size: 14px; font-weight: 600;
+  font-size: 16px; font-weight: 600;
   color: var(--ink); letter-spacing: -0.224px;
 }
 
-.hdr-stat { font-size: 12px; color: var(--ink-muted-48); letter-spacing: -0.12px; margin-left: 12px; }
+.hdr-stat { font-size: 14px; color: var(--ink-muted-48); letter-spacing: -0.12px; margin-left: 12px; }
 .hdr-stat strong { color: var(--primary); font-weight: 400; }
 
 /* ─── Layout ─────────────────────────────────────────────────── */
@@ -748,7 +748,7 @@ input[type=range].time-slider::-moz-range-thumb {
 <!-- Header lives inside the map column only -->
 <header>
   <div class="logo">London Cinemas &amp; Showtimes</div>
-  <div class="hdr-stat"><strong id="hdr-c">69</strong> cinemas · <strong id="hdr-s">9,367</strong> showtimes</div>
+  <div class="hdr-stat"><strong id="hdr-c">69</strong> cinemas · <strong id="hdr-f">—</strong> films · <strong id="hdr-s">9,367</strong> showtimes · <span id="hdr-popular"></span></div>
 </header>
 
   <!-- ─── MAP ─────────────────────────────────────────────────── -->
@@ -906,8 +906,26 @@ const cinemas = window.CINEMA_DATA?.cinemas || [];
 
 // Update header counts from loaded data
 document.getElementById('hdr-c').textContent = cinemas.length;
+const uniqueFilms = new Set(cinemas.flatMap(c => Object.values(c.s).flatMap(shows => shows.map(s => s[0].toLowerCase()))));
+document.getElementById('hdr-f').textContent = uniqueFilms.size.toLocaleString();
 document.getElementById('hdr-s').textContent = cinemas.reduce((sum, c) =>
   sum + Object.values(c.s).reduce((n, shows) => n + shows.length, 0), 0).toLocaleString();
+
+// Most-shown film: appears at the highest number of distinct cinemas
+const filmCinemas = {};
+cinemas.forEach(c => {
+  const titles = new Set(Object.values(c.s).flatMap(shows => shows.map(s => s[0].toLowerCase())));
+  titles.forEach(t => { filmCinemas[t] = (filmCinemas[t] || new Set()); filmCinemas[t].add(c.n); });
+});
+const topFilm = Object.entries(filmCinemas).sort((a,b) => b[1].size - a[1].size)[0];
+const sorted = Object.entries(filmCinemas).sort((a,b) => b[1].size - a[1].size);
+const fmt = ([t, cs]) => `<strong style="color:var(--primary);font-weight:400">${t.replace(/\b\w/g,c=>c.toUpperCase())}</strong> (${cs.size})`;
+if (sorted.length >= 2) {
+  document.getElementById('hdr-popular').innerHTML =
+    `most shown: ${fmt(sorted[0])} &amp; ${fmt(sorted[1])}`;
+} else if (sorted.length === 1) {
+  document.getElementById('hdr-popular').innerHTML = `most shown: ${fmt(sorted[0])}`;
+}
 let userLat=51.5115, userLng=-0.1289, radiusKm=1, activeTab='whats-on';
 
 // Only include dates strictly after today — data quality starts from tomorrow
