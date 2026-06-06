@@ -94,6 +94,7 @@ header {
   color: var(--ink); letter-spacing: -0.224px;
 }
 
+.logo-sub { font-size: 11px; font-weight: 400; color: var(--ink); letter-spacing: -0.08px; }
 .hdr-stat { font-size: 14px; color: var(--ink-muted-48); letter-spacing: -0.12px; margin-left: 12px; }
 .hdr-stat strong { color: var(--primary); font-weight: 400; }
 
@@ -747,7 +748,10 @@ input[type=range].time-slider::-moz-range-thumb {
 
 <!-- Header lives inside the map column only -->
 <header>
-  <div class="logo">London Cinemas &amp; Showtimes</div>
+  <div>
+    <div class="logo">London Cinemas &amp; Showtimes</div>
+    <div class="logo-sub">6–10 Jun 2026</div>
+  </div>
   <div class="hdr-stat"><strong id="hdr-c">69</strong> cinemas · <strong id="hdr-f">—</strong> films · <strong id="hdr-s">9,367</strong> showtimes · <span id="hdr-popular"></span></div>
 </header>
 
@@ -919,7 +923,7 @@ cinemas.forEach(c => {
 });
 const topFilm = Object.entries(filmCinemas).sort((a,b) => b[1].size - a[1].size)[0];
 const sorted = Object.entries(filmCinemas).sort((a,b) => b[1].size - a[1].size);
-const fmt = ([t, cs]) => `<strong style="color:var(--primary);font-weight:400">${t.replace(/\b\w/g,c=>c.toUpperCase())}</strong> (${cs.size})`;
+const fmt = ([t, cs]) => `<strong style="color:var(--primary);font-weight:400">${t.replace(/\b\w/g,c=>c.toUpperCase())}</strong> ${cs.size} cinemas`;
 if (sorted.length >= 2) {
   document.getElementById('hdr-popular').innerHTML =
     `most shown: ${fmt(sorted[0])} &amp; ${fmt(sorted[1])}`;
@@ -928,9 +932,9 @@ if (sorted.length >= 2) {
 }
 let userLat=51.5115, userLng=-0.1289, radiusKm=1, activeTab='whats-on';
 
-// Only include dates strictly after today — data quality starts from tomorrow
+// Fixed data window: always show these 6 dates regardless of current date
 const TODAY = new Date().toISOString().slice(0, 10);
-const allDates = [...new Set(cinemas.flatMap(c=>Object.keys(c.s)))].sort().filter(d=>d > TODAY);
+const allDates = ['2026-06-06','2026-06-07','2026-06-08','2026-06-09','2026-06-10'];
 
 let selectedDate = allDates[0] || '';
 
@@ -981,9 +985,9 @@ const dateBtnsEl = document.getElementById('date-btns');
 
 function buildDateButtons() {
   const days = allDates.slice(0, 6);
-  dateBtnsEl.innerHTML = days.map(d => {
+  dateBtnsEl.innerHTML = days.map((d) => {
     const obj = new Date(d+'T12:00:00');
-    const dayName  = obj.toLocaleDateString('en-GB',{weekday:'short'});
+    const dayName   = obj.toLocaleDateString('en-GB',{weekday:'short'});
     const dateLabel = obj.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
     return `<button class="dbtn${d===selectedDate?' active':''}" data-date="${d}"><span class="dbtn-day">${dayName}</span><span class="dbtn-date">${dateLabel}</span></button>`;
   }).join('');
