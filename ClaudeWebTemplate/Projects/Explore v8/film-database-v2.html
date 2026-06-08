@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Film Database — MUBI</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <style>
+    @font-face { font-family: 'Riforma'; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-weight: 500; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-weight: bold; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-style: italic; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2'); }
+
+    html { overflow-y: scroll; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Riforma, Helvetica, Arial, sans-serif;
+      background: #fff;
+      color: #323232;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; padding: 0; }
+
+    .wrap { width: 100%; padding: 0 20px; margin: 0 auto; }
+    @media (min-width: 810px)  { .wrap { padding: 0 22px; max-width: 836px; } }
+    @media (min-width: 1186px) { .wrap { max-width: 1124px; } }
+    @media (min-width: 1562px) { .wrap { max-width: 1500px; } }
+
+    /* ─── HEADER / NAV ─── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #fff;
+      border-bottom: 1px solid #EAEAEA;
+      height: 50px;
+    }
+
+    .nav-desktop {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 22px;
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+
+    .nav-logo { flex-shrink: 0; padding-right: 40px; display: flex; align-items: center; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      align-self: flex-end;
+      margin-bottom: 7px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .nav-link {
+      display: block;
+      padding: 0 15px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      line-height: 24px;
+      color: rgba(0,0,0,0.45);
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { color: #000; }
+    .nav-link.is-active { color: #000; }
+
+    .nav-avatar {
+      display: flex; align-items: center;
+      padding: 0 8px 0 15px;
+    }
+    .nav-avatar img {
+      width: 22px; height: 22px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .nav-hamburger {
+      display: flex; align-items: center;
+      padding: 0 8px;
+      color: rgba(0,0,0,0.45);
+    }
+    .nav-hamburger:hover { color: #000; }
+    .nav-hamburger-wrap { position: relative; }
+
+    .nav-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 14px);
+      right: 0;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.08);
+      min-width: 200px;
+      padding: 6px 0;
+      z-index: 200;
+    }
+    .nav-dropdown.open { display: block; }
+    .nav-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      right: 16px;
+      width: 12px; height: 12px;
+      background: #fff;
+      transform: rotate(45deg);
+      box-shadow: -2px -2px 4px rgba(0,0,0,0.06);
+    }
+    .nav-dropdown a {
+      display: block;
+      padding: 9px 16px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #666;
+      white-space: nowrap;
+    }
+    .nav-dropdown a:hover { color: #323232; background: #F8F8F8; }
+    .nav-dropdown a.is-active { color: #323232; font-weight: 500; }
+    .nav-dropdown-sep { height: 1px; background: #E8E8E8; margin: 4px 0; }
+
+    /* ─── INLINE SEARCH ─── */
+    .search-inline {
+      display: flex;
+      align-items: center;
+      position: relative;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .search-inline.is-open { padding: 0 6px; }
+    #searchNavBg {
+      position: fixed; top: 0;
+      display: none; pointer-events: none;
+      z-index: 99;
+      background: rgba(255,255,255,0.97);
+      border-radius: 0 0 4px 4px;
+    }
+    .search-inline-input {
+      width: 0;
+      min-width: 0;
+      opacity: 0;
+      border: none;
+      outline: none;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(0,0,0,0.65);
+      background: transparent;
+      padding: 0;
+      transition: width 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s;
+      pointer-events: none;
+    }
+    .search-inline.is-open .search-inline-input {
+      width: 320px;
+      opacity: 1;
+      padding: 0 0 0 8px;
+      pointer-events: auto;
+    }
+    .search-icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      color: rgba(0,0,0,0.55);
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+    .search-icon-btn:hover { color: rgba(0,0,0,0.55); }
+    .search-inline.is-open .search-icon-btn { color: rgba(0,0,0,0.55); }
+
+    /* ─── SEARCH DROPDOWN ─── */
+    .search-dropdown {
+      position: fixed;
+      top: 50px;
+      width: 350px;
+      height: 448px;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+      z-index: 300;
+      display: none;
+      overflow: hidden;
+      padding-bottom: 5px;
+    }
+    .search-dropdown.is-open { display: block; }
+    .search-drop-label {
+      font-family: Riforma, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(0,0,0,0.4);
+      padding: 10px 12px 6px;
+    }
+    .search-drop-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 2px 12px;
+      text-decoration: none;
+      transition: background 0.1s;
+      cursor: pointer;
+    }
+    .search-drop-item:hover { background: #F4F4F4; }
+    .search-drop-thumb {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      background: #D8D8D8;
+    }
+    .search-drop-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .search-drop-play {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .search-drop-play svg { filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4)); }
+    .search-drop-info { min-width: 0; flex: 1; }
+    .search-drop-title {
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #323232;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .search-drop-director {
+      font-family: Riforma, sans-serif;
+      font-size: 12px;
+      color: rgba(0,0,0,0.45);
+    }
+    .search-drop-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 299;
+    }
+    .search-drop-backdrop.is-open { display: block; }
+
+    /* ─── TABS ─── */
+    .page-tabs {
+      display: flex;
+      border-bottom: 1px solid #EAEAEA;
+    }
+    .page-tab {
+      font-family: Riforma, sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: rgba(0,0,0,0.45);
+      padding: 10px 0;
+      margin-right: 24px;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+      transition: color 0.15s;
+      text-decoration: none;
+    }
+    .page-tab:hover { color: #323232; }
+    .page-tab.is-active { color: #323232; border-bottom-color: #323232; }
+
+    /* ─── FILM GRID ─── */
+    .page-body { padding: 8px 0 80px; }
+    .grid-heading {
+      font-family: Riforma, sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(0,0,0,0.45);
+      padding: 16px 0 14px;
+      text-align: center;
+    }
+
+    /* ─── FILTER BAR ─── */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 0 20px;
+    }
+    .filter-bar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+    }
+    .filter-select-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+    .filter-select {
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #666666;
+      background: #fff url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23666666' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+      border: 1px solid #D0D0D0;
+      border-radius: 50px;
+      padding: 5px 32px 5px 13px;
+      cursor: pointer;
+      outline: none;
+    }
+    .filter-select:hover { border-color: #323232; }
+    .sort-label {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #323232;
+      white-space: nowrap;
+      padding-right: 4px;
+    }
+    .filter-select-sort {
+      border: none;
+      background: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23323232' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 0 center transparent;
+      padding: 0 18px 0 0;
+      border-radius: 0;
+    }
+    .film-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 4px;
+      row-gap: 36px;
+      padding-top: 8px;
+    }
+    @media (min-width: 650px)  { .film-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1562px) { .film-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .film-card { display: block; background: #fff; cursor: pointer; position: relative; z-index: 0; }
+    .film-card:hover { z-index: 20; }
+    .card-img-wrap {
+      position: relative;
+      aspect-ratio: 371 / 209;
+      background: #d0d0d0;
+      transition: box-shadow 0.35s ease;
+    }
+    .film-card:hover .card-img-wrap { box-shadow: 0 4px 14px rgba(0,0,0,0.45); }
+    .card-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transform-origin: center bottom;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .film-card:hover .card-img { transform: scale(1.08); }
+    .card-preview {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transform-origin: center bottom;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease 0.1s;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .film-card:hover .card-preview { opacity: 1; transform: scale(1.08); }
+    .card-synopsis-block {
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      background: #fff;
+      padding: 16px 20px;
+      overflow: hidden;
+      z-index: 20;
+      pointer-events: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+      opacity: 0;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      display: flex; flex-direction: column;
+    }
+    .film-card:hover .card-synopsis-block { transform: scaleX(1.08); opacity: 1; pointer-events: auto; }
+    .card-synopsis-block .card-actions,
+    .card-synopsis-block .card-synopsis,
+    .card-synopsis-block .card-meta-icons { transform: translateY(8px); transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+    .film-card:hover .card-synopsis-block .card-actions,
+    .film-card:hover .card-synopsis-block .card-synopsis,
+    .film-card:hover .card-synopsis-block .card-meta-icons { transform: translateY(0); }
+    .card-synopsis {
+      font-family: Riforma, sans-serif; font-size: 14px; line-height: 140%; color: #323232;
+      display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-actions { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .card-meta-icons { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    .card-meta-icons svg { width: 24px; height: 24px; flex-shrink: 0; }
+    .card-watch-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 9px 16px 9px 12px;
+      background: #001489; color: #fff; border: none; border-radius: 100px;
+      font-family: Riforma, sans-serif; font-size: 14px; font-weight: 500;
+      text-transform: uppercase; line-height: 1; cursor: pointer; transition: opacity 0.15s;
+    }
+    .card-watch-btn:hover { opacity: 0.85; }
+    .card-icon-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; padding: 0;
+      border-radius: 50%; border: 1.5px solid #323232;
+      background: transparent; color: #323232; cursor: pointer; flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+    .card-icon-btn:hover { background: #001489; border-color: #001489; color: #fff; }
+    .card-img-wrap::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 55%, transparent 100%);
+      transform-origin: center bottom;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 1; pointer-events: none;
+    }
+    .film-card:hover .card-img-wrap::before { transform: scale(1.08); }
+    .card-overlay {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 12px 14px 12px 20px; z-index: 4;
+    }
+    .card-title {
+      font-family: Riforma, sans-serif; font-size: 22px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: -0.1px; line-height: 1.2; color: #fff;
+      margin-bottom: 1px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .card-meta {
+      font-family: Riforma, sans-serif; font-size: 12px; font-weight: 400;
+      text-transform: uppercase; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .film-card:hover .card-title,
+    .film-card:hover .card-meta { transform: translateX(-14px); }
+    .card-meta-director { font-weight: 700; }
+    .card-audio-btn {
+      position: absolute; top: 8px; right: 8px; z-index: 5;
+      background: rgba(0,0,0,0.55); border: none; border-radius: 50%;
+      width: 32px; height: 32px; padding: 0 0 0 5px;
+      display: flex; align-items: center; justify-content: flex-start;
+      cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+    }
+    .film-card:hover .card-audio-btn { opacity: 1; pointer-events: auto; }
+
+    /* ─── RATING BADGE ─── */
+    .rating-badge {
+      position: absolute; top: 8px; right: 8px; z-index: 5;
+      display: flex; align-items: center; gap: 3px;
+      background: rgba(0,0,0,0.5); color: #fff;
+      font-family: Riforma, sans-serif; font-size: 11px; font-weight: 500;
+      padding: 3px 6px; border-radius: 3px;
+    }
+    .card-eyebrow {
+      font-family: Riforma, sans-serif; font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255,255,255,0.7);
+      margin-bottom: 2px;
+    }
+
+    /* ─── PAGE HERO ─── */
+    .page-hero {
+      padding: 32px 0 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .page-title {
+      font-family: Riforma, sans-serif;
+      font-size: 32px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      color: #323232;
+    }
+    .page-subtitle {
+      font-family: Riforma, sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: rgba(0,0,0,0.5);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+    .site-footer {
+      border-top: 1px solid #EAEAEA;
+      padding: 36px 20px 48px;
+    }
+    @media (min-width: 810px) { .site-footer { padding: 36px 22px 48px; } }
+    .footer-logo { margin-bottom: 18px; }
+    .footer-links {
+      display: flex; flex-wrap: wrap;
+      gap: 6px 18px; list-style: none; margin-bottom: 24px;
+    }
+    .footer-links a { font-size: 14px; color: #7d7d7d; }
+    .footer-links a:hover { color: #323232; }
+    .footer-copy { font-size: 14px; color: #aaa; }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-desktop">
+    <div class="nav-logo">
+      <a href="mubi-showing.html" aria-label="MUBI">
+        <svg viewBox="0 0 800 240" width="75" style="vertical-align:top" aria-hidden="true">
+          <g fill="#000000">
+            <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+            <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+            <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+            <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+            <circle cx="766.5"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="118.11" r="33.13"/>
+            <circle cx="681.2"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="33.13"  r="33.13"/>
+            <circle cx="681.2"  cy="33.13"  r="33.13"/>
+            <circle cx="595.89" cy="203.1"  r="33.13"/>
+            <circle cx="681.2"  cy="203.1"  r="33.13"/>
+          </g>
+        </svg>
+      </a>
+    </div>
+
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="mubi-showing.html" class="nav-link">Now Showing</a>
+      <a href="explore.html" class="nav-link">Browse</a>
+      <a href="#" class="nav-link">Watchlist</a>
+    </nav>
+
+    <div style="flex: 1;"></div>
+
+    <nav class="nav-links" aria-label="Secondary navigation">
+      <div class="search-inline" id="searchInline">
+        <button class="search-icon-btn" id="searchOpenBtn" aria-label="Search">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <input class="search-inline-input" id="searchInput" type="text" placeholder="Search" autocomplete="off">
+      </div>
+      <a href="#" class="nav-avatar" aria-label="Profile">
+        <img src="../../brand_assets/avatar.png" alt="Profile">
+      </a>
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="toggleDropdown(event)" aria-label="More" aria-expanded="false" id="navHamburger">
+          <span class="material-icons" style="font-size:20px;">menu</span>
+        </button>
+        <div class="nav-dropdown" id="navDropdown">
+          <a href="#">Notebook</a>
+          <a href="film-database.html" class="is-active">Film Database</a>
+          <a href="#">Notebook Magazine</a>
+          <a href="#">MUBI Editions</a>
+          <a href="#">SHOP</a>
+          <a href="#">Gift MUBI</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">About</a>
+          <a href="#">Students</a>
+          <a href="#">Contribute</a>
+          <a href="#">Jobs</a>
+          <a href="#">Terms &amp; Privacy</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">Earn 1 month free</a>
+          <a href="#">Viewing History</a>
+          <a href="#">Settings</a>
+          <a href="#">Help</a>
+          <a href="#">Log Out</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div id="searchNavBg"></div>
+<div id="searchDropdown" class="search-dropdown">
+  <div class="search-drop-label" id="searchDropLabel">Suggested</div>
+  <div id="searchDropList"></div>
+</div>
+<div id="searchDropBackdrop" class="search-drop-backdrop"></div>
+
+<main>
+  <div class="wrap">
+    <div class="page-hero">
+      <h1 class="page-title">FILM DATABASE</h1>
+    </div>
+    <div class="page-tabs">
+      <a href="#" class="page-tab is-active" data-tab="films">Films</a>
+      <a href="#" class="page-tab" data-tab="cast-crew">Cast &amp; Crew</a>
+      <a href="#" class="page-tab" data-tab="lists">Lists</a>
+      <a href="#" class="page-tab" data-tab="awards">Awards &amp; Festivals</a>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="wrap">
+      <div class="filter-bar">
+        <div class="filter-select-wrap">
+          <select class="filter-select" id="filterGenre">
+            <option value="">All genres</option>
+          </select>
+        </div>
+        <div class="filter-select-wrap">
+          <select class="filter-select" id="filterCountry">
+            <option value="">All countries</option>
+          </select>
+        </div>
+        <div class="filter-select-wrap">
+          <select class="filter-select" id="filterYear">
+            <option value="">All years</option>
+            <option value="2020">2020+</option>
+            <option value="2010">2010–19</option>
+            <option value="2000">2000–09</option>
+            <option value="1990">1990–99</option>
+            <option value="1980">1980–89</option>
+            <option value="1970">1970–79</option>
+            <option value="1960">1960–69</option>
+            <option value="1950">1950–59</option>
+            <option value="1940">1940–49</option>
+            <option value="1930">1930–39</option>
+            <option value="1920">1920–29</option>
+            <option value="1910">1910–19</option>
+            <option value="1900">1900–09</option>
+            <option value="1890">1890–99</option>
+            <option value="1880">1880–89</option>
+            <option value="1870">1870–79</option>
+          </select>
+        </div>
+        <div class="filter-select-wrap filter-bar-right">
+          <span class="sort-label">Sort by:</span>
+          <select class="filter-select filter-select-sort" id="filterSort">
+            <option value="trending">Trending</option>
+            <option value="popular">Most Popular</option>
+            <option value="rating">Highest Rated</option>
+            <option value="year">Newest First</option>
+            <option value="title">A–Z</option>
+          </select>
+        </div>
+      </div>
+      <div class="film-grid" id="filmGrid"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+function toggleDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('navDropdown');
+  const btn = document.getElementById('navHamburger');
+  const open = dd.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', () => {
+  document.getElementById('navDropdown').classList.remove('open');
+  document.getElementById('navHamburger').setAttribute('aria-expanded', 'false');
+});
+
+// ─── INLINE SEARCH ───
+const ALL_FILMS = [
+  {title:"Fatherland",director:"Paweł Pawlikowski",year:2026,country:"Italy, Poland",image:"https://assets.mubicdn.net/images/film/453561/image-w448.jpg?1775834114",fX:0.47,fY:0.27,genres:["Drama"],synopsis:"At the height of the Cold War, Fatherland centers on the relationship between the writer Thomas Mann and his daughter Erika—actress, writer and rally driver—as they embark on a road trip in a black Buick cruiser across a Germany in ruins, from U.S. dominated Frankfurt to Soviet controlled Weimar.",ourTake:"",rating:8.2,previewURL:"https://trailers.mubicdn.net/453561/optimised/240p-t-fatherland-2026_en_us_1780062482.mp4",artwork:"https://images.mubicdn.net/images/artworks/971266/cache-971266-1775834159/images-original.png"},
+  {title:"GENER8ION: STORM starring Yung Lean [MV]",director:"Romain Gavras",year:2026,country:"France",image:"https://assets.mubicdn.net/images/film/472364/image-w448.jpg?1778749505",fX:0.5,fY:0.34,genres:["Music Video"],synopsis:"Leeds, 2034. A charismatic yet violent student rules the pupils of an all-boys school through a combination of menacing charm and sheer thuggery. At the end of the academic year, they gather for a school photo, which quickly descends into riotous, pugilistic celebration under the boy’s leadership.",ourTake:"Cult Swedish internet-rap sensation Yung Lean gets raucous as the star of this ferocious music video, directed by Romain Gavras. Giving Britain’s gritty schoolyards a bracing sci-fi makeover, the French filmmaker elicits otherworldly spectacle from boisterous antics.",rating:9.1,artwork:"https://images.mubicdn.net/images/artworks/989944/cache-989944-1778823022/images-original.png"},
+  {title:"Coward",director:"Lukas Dhont",year:2026,country:"Belgium, France",image:"https://assets.mubicdn.net/images/film/466009/image-w448.jpg?1775795415",fX:0.52,fY:0.73,genres:["Drama","War","History"],synopsis:"1916. During the First World War, the soldiers try to keep up their morale behind the trenches. Stirred by wartime rhetoric, each of them seeks their own path.",ourTake:"",rating:7.3,previewURL:"https://trailers.mubicdn.net/466009/optimised/240p-t-coward-2026_en_us_1455.107_1920_1080_1779078330.mp4",artwork:"https://images.mubicdn.net/images/artworks/975463/cache-975463-1776253140/images-original.png"},
+  {title:"Minotaur",director:"Andrey Zvyagintsev",year:2026,country:"France, Latvia",image:"https://assets.mubicdn.net/images/film/456346/image-w448.jpg?1777649755",fX:0.2,fY:0.4,genres:["Drama"],synopsis:"Russia, 2022. When Gleb, a successful company director, finds himself under siege from mounting corporate pressures and an increasingly unstable world, the collapse of his carefully ordered life accelerates toward violence.",ourTake:"",rating:7.8,artwork:"https://images.mubicdn.net/images/artworks/986156/cache-986156-1777649812/images-original.png"},
+  {title:"Discipline",director:"Mona Fastvold",year:2026,country:"United States",image:"https://assets.mubicdn.net/images/film/465582/image-w448.jpg?1772538660",fX:0.47,fY:0.35,genres:["Short","Drama"],synopsis:"Northern Italy. In an otherwise uninhabited boarding school, two figures—a masked puppeteer, a life-size doll—awake in the same bed. Along with other identical pairings, they dress for the day and start their routine: from inspection, to playtime, to lunch. But order gradually gives way to ecstasy.",ourTake:"Mona Fastvold’s hypnotic short—soundtracked by Daniel Blumberg—is captivated by similarly rapturous rhythms as crescendo in The Testament of Ann Lee. With anonymity and synchronicity twisting to sudden abandon, Discipline is an eerie study in girlhood that is performed, tried fitfully on for size.",rating:7.8,previewURL:"https://trailers.mubicdn.net/465582/optimised/240p-t-_en_us_1772718839.mp4",artwork:"https://images.mubicdn.net/images/artworks/946931/cache-946931-1773212333/images-original.png"},
+  {title:"Teenage Sex and Death at Camp Miasma",director:"Jane Schoenbrun",year:2026,country:"United States, Canada",image:"https://assets.mubicdn.net/images/film/368829/image-w448.jpg?1771019329",fX:0.51,fY:0.45,genres:["LGBTQ+","Comedy","Horror"],synopsis:"After years of slapdash sequels, the Camp Miasma franchise is handed over to an enthusiastic young director for resurrection. But when she visits the original’s star, a now-reclusive actress shrouded in mystery, the two women fall into a blood-soaked world of desire, fear, and delirium.",ourTake:"",rating:9.0,previewURL:"https://trailers.mubicdn.net/368829/optimised/240p-t-teenage-sex-and-death-at-camp-miasma_en_us_1779898475.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/995272/cache-995272-1779889050/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/937173/cache-937173-1772528941/images-original.png"},
+  {title:"Fjord",director:"Cristian Mungiu",year:2026,country:"Denmark, France",image:"https://assets.mubicdn.net/images/film/434018/image-w448.jpg?1780055985",fX:0.45,fY:0.42,genres:["Drama"],synopsis:"An immigrant Romanian family living in Norway is subject to an investigation and faces the scrutiny of the local judicial system.",ourTake:"",rating:7.3,previewURL:"https://trailers.mubicdn.net/434018/optimised/240p-t-fjord_en_us_1780384360.mp4",artwork:"https://images.mubicdn.net/images/artworks/996379/cache-996379-1780288785/images-original.png"},
+  {title:"All of a Sudden",director:"Ryusuke Hamaguchi",year:2026,country:"Japan, France",image:"https://assets.mubicdn.net/images/film/443608/image-w448.jpg?1778498487",fX:0.46,fY:0.35,genres:["Drama"],synopsis:"Two scholars exchange letters about chance and risk. As the philosopher falls ill, their academic correspondence evolves into intimate discussions about mortality and a deeper connection forms between them.",ourTake:"",rating:7.8,previewURL:"https://trailers.mubicdn.net/443608/optimised/240p-t-all-of-a-sudden-2026_en_us_669.355_1920_1080_1775785677.mp4",artwork:"https://images.mubicdn.net/images/artworks/988250/cache-988250-1778570357/images-original.png"},
+  {title:"Rosebush Pruning",director:"Karim Aïnouz",year:2026,country:"Italy, Germany",image:"https://assets.mubicdn.net/images/film/391721/image-w448.jpg?1772705599",fX:0.34,fY:0.15,genres:["Drama","Thriller"],synopsis:"Underneath the Catalonian sun, a rich white American family lives in hedonistic isolation, seeking love and validation through one another, their designer wardrobes and pop music. When an outsider infiltrates the family, buried tensions surface and blood ties are severed.",ourTake:"",rating:7.1,previewURL:"https://trailers.mubicdn.net/391721/optimised/240p-t-rosebush-pruning_en_us_1776958773.mp4",artwork:"https://images.mubicdn.net/images/artworks/939501/cache-939501-1779989649/images-original.png"},
+  {title:"The Drama",director:"Kristoffer Borgli",year:2026,country:"United States",image:"https://assets.mubicdn.net/images/film/420475/image-w448.jpg?1772453980",fX:0.62,fY:0.42,genres:["Romance","Drama"],synopsis:"Charlie and Emma are engaged to be wed. But just one week away from the ceremony, the happy couple share their most intimate secrets at dinner with friends—and their relationship is put to the test by one shock revelation.",ourTake:"Starring an enviably heavenly movie match in Robert Pattinson and Zendaya, this provocative rom-com sounds wedding bells—but finds them ringing in unexpected fashion. Kristoffer Borgli orchestrates the typical storybook path to the altar with signature dark humor, garlanding it with surprise.",rating:7.2,previewURL:"https://trailers.mubicdn.net/420475/optimised/240p-t-the-drama_en_us_841.951_1920_1080_1770149542.mp4",artwork:"https://images.mubicdn.net/images/artworks/936058/cache-936058-1772454276/images-original.png"},
+  {title:"Bitter Christmas",director:"Pedro Almodóvar",year:2026,country:"Spain",image:"https://assets.mubicdn.net/images/film/423142/image-w448.jpg?1769504143",fX:0.38,fY:0.51,genres:["Drama"],synopsis:"During a long December holiday weekend, a woman, whose mother dies recently, throws herself into work as a form of escape. Her relentless pace is interrupted when a panic attack forces her to take a break.",ourTake:"",rating:6.0,previewURL:"https://trailers.mubicdn.net/423142/optimised/240p-t-bitter-christmas_en_us_2261.553_1920_1080_1766063257.mp4",artwork:"https://images.mubicdn.net/images/artworks/898139/cache-898139-1766063331/images-original.png"},
+  {title:"The Black Ball",director:"Javier Ambrossi",year:2026,country:"Spain, France",image:"https://assets.mubicdn.net/images/film/470035/image-w448.jpg?1775301024",fX:0.48,fY:0.43,genres:["Drama","Musical","LGBTQ+"],synopsis:"The story of three men whose lives are intimately connected through sexuality and desire, pain and inheritance, across three different eras – 1932, 1937, and 2017.",ourTake:"",rating:7.1,previewURL:"https://trailers.mubicdn.net/470035/optimised/240p-t-la-bola-negra_en_us_1779672774.mp4",artwork:"https://images.mubicdn.net/images/artworks/992726/cache-992726-1779608545/images-original.png"},
+  {title:"Hope",director:"Na Hong-jin",year:2026,country:"South Korea",image:"https://assets.mubicdn.net/images/film/374905/image-w448.jpg?1758074740",fX:0.61,fY:0.31,genres:["Sci-Fi","Thriller"],synopsis:"When a tiger is suspected to have appeared and local police chief Bum-seok is alerted, it throws the community into chaos. What begins as a local emergency soon spirals into a deeper, more terrifying mystery, one that forces the town’s residents to confront the unknown.",ourTake:"",rating:7.3,previewURL:"https://trailers.mubicdn.net/374905/optimised/240p-t-hope-2023_en_us_1059.7730000000001_1920_1080_1779077085.mp4",artwork:"https://images.mubicdn.net/images/artworks/975457/cache-975457-1776253133/images-original.png"},
+  {title:"The Man I Love",director:"Ira Sachs",year:2026,country:"United States, France",image:"https://assets.mubicdn.net/images/film/435277/image-w448.jpg?1775791032",fX:0.44,fY:0.4,genres:["Drama","Musical","LGBTQ+"],synopsis:"A film set in the late ’80s in New York City.",ourTake:"",rating:6.7,previewURL:"https://trailers.mubicdn.net/435277/optimised/240p-t-the-man-i-love-2026_en_us_556.078_1920_1080_1780543802.mp4",artwork:"https://images.mubicdn.net/images/artworks/976964/cache-976964-1776415690/images-original.png"},
+  {title:"Backrooms",director:"Kane Parsons",year:2026,country:"United States",image:"https://assets.mubicdn.net/images/film/371101/image-w448.jpg?1780130309",fX:0.17,fY:0.57,genres:["Horror"],synopsis:"A strange doorway appears in the basement of a furniture showroom.",ourTake:"",rating:6.7,previewURL:"https://trailers.mubicdn.net/371101/optimised/240p-t-backrooms_en_us_642.545_1920_1080_1775018522.mp4",artwork:"https://images.mubicdn.net/images/artworks/996195/cache-996195-1780130340/images-original.png"},
+  {title:"Rose",director:"Markus Schleinzer",year:2026,country:"Austria, Germany",image:"https://assets.mubicdn.net/images/film/440735/image-w448.jpg?1768908267",fX:0.47,fY:0.45,genres:["Drama","History"],synopsis:"In the early 17th century, a soldier arrives at an isolated Protestant village in Germany claiming to be the heir to an abandoned farmstead. Even though he proves to be a good man, the villagers’ suspicions about his identity grow and they force a reckoning.",ourTake:"A rugged vision of strength and vulnerability, Sandra Hüller transcends gender binaries in Markus Schleinzer’s enthralling tale of deception, empowerment, and self-invention. Playing tricks on the stifling social order erected by the patriarchy, Rose breathes vital urgency into historical legends.",rating:8.1,previewURL:"https://trailers.mubicdn.net/440735/optimised/240p-t-rose-2025_en_us_733.0550000000001_1920_1080_1771218430.mp4",artwork:"https://images.mubicdn.net/images/artworks/934270/cache-934270-1772190708/images-original.png"},
+  {title:"Yellow Letters",director:"İlker Çatak",year:2026,country:"Germany, Turkey",image:"https://assets.mubicdn.net/images/film/440751/image-w448.jpg?1770027287",fX:0.38,fY:0.41,genres:["Drama"],synopsis:"Life is good for Derya and Aziz, a celebrated artist couple from Turkey, until an incident at their play’s premiere. Suddenly targeted by the state and struggling to balance their ideals with life’s necessities, their marriage is pushed to a breaking point.",ourTake:"Two poignant performances capture the sacrifices, compromises, and sharp maneuvers artists must often make in this riveting Golden Bear winner. With Berlin and Hamburg standing in for Turkey, İlker Çatak’s soul-stirring film circumvents real-world censorship to stage an ambitious political drama.",rating:7.7,previewURL:"https://trailers.mubicdn.net/440751/optimised/240p-t-yellow-letters_en_us_2029.7930000000001_1920_1080_1769373255.mp4",artwork:"https://images.mubicdn.net/images/artworks/913719/cache-913719-1770027344/images-original.png"},
+  {title:"The Beloved",director:"Rodrigo Sorogoyen",year:2026,country:"Spain, France",image:"https://assets.mubicdn.net/images/film/436878/image-w448.jpg?1775791614",fX:0.62,fY:0.52,genres:["Drama"],synopsis:"An acclaimed director reunites with estranged daughter, an unsuccessful actress, to shoot a film together, confronting their strained relationship and unresolved past issues that neither wants to address directly.",ourTake:"",rating:6.8,previewURL:"https://trailers.mubicdn.net/436878/optimised/240p-t-el-ser-querido_en_us_1775891431.mp4",artwork:"https://images.mubicdn.net/images/artworks/977893/cache-977893-1776491897/images-original.png"},
+  {title:"Parallel Tales",director:"Asghar Farhadi",year:2026,country:"France, Italy",image:"https://assets.mubicdn.net/images/film/466008/image-w448.jpg?1775793780",fX:0.57,fY:0.44,genres:["Drama","Thriller"],synopsis:"Seeking inspiration for her new novel, Sylvie spies on her neighbors across the street. When she hires Adam to help her with her daily life, she ignores how he will turn her life upside down, until the fiction she imagined surpasses everyone’s reality.",ourTake:"",rating:6.0,previewURL:"https://trailers.mubicdn.net/466008/optimised/240p-t-histoires-paralleles-2026_en_us_673.081_1920_1080_1777017605.mp4",artwork:"https://images.mubicdn.net/images/artworks/982361/cache-982361-1777017619/images-original.png"},
+  {title:"Garance",director:"Jeanne Herry",year:2026,country:"France",image:"https://assets.mubicdn.net/images/film/469807/image-w448.jpg?1775792958",fX:0.62,fY:0.22,genres:["Drama"],synopsis:"Garance is a young actress but not a star. She manages things as best she can, finding fuel and comfort in alcohol. As she embarks for an eight-year journey of life changes, she drinks more and more. Until death seems to loom.",ourTake:"",rating:6.0,artwork:"https://images.mubicdn.net/images/artworks/982127/cache-982127-1776930901/images-original.png"},
+  {title:"Her Private Hell",director:"Nicolas Winding Refn",year:2026,country:"United States",image:"https://assets.mubicdn.net/images/film/442304/image-w448.jpg?1780479783",fX:0.46,fY:0.5,genres:["Thriller","Drama","Avant-Garde"],synopsis:"As a strange mist engulfs a futuristic metropolis and unleashes an elusive deadly presence, a troubled young woman sets out in search of her father. In this quest, her fate crosses with that of an American GI engaged in a desperate journey to snatch his daughter from Hell.",ourTake:"",rating:4.4,previewURL:"https://trailers.mubicdn.net/442304/optimised/240p-t-her-private-hell-2026_en_us_390.06000000000006_1920_1080_1779158608.mp4",artwork:"https://images.mubicdn.net/images/artworks/997814/cache-997814-1780479826/images-original.png"},
+  {title:"A Man of His Time",director:"Emmanuel Marre",year:2026,country:"France, Belgium",image:"https://assets.mubicdn.net/images/film/467735/image-w448.jpg?1775793987",fX:0.44,fY:0.49,genres:["Drama","History"],synopsis:"In 1940, Henri Marre arrived alone in Vichy, aspiring to make a place for himself in the new regime. In his suitcase, his self-taught political manuscript Notre Salut, which he intends to have published. Henri wants to help save France from debacle, but perhaps to save himself…",ourTake:"",rating:8.0,artwork:"https://images.mubicdn.net/images/artworks/975289/cache-975289-1776252108/images-original.png"},
+  {title:"Club Kid",director:"Jordan Firstman",year:2026,country:"United States",image:"https://assets.mubicdn.net/images/film/470492/image-w448.jpg?1775792590",fX:0.48,fY:0.52,genres:["Comedy","Drama","LGBTQ+"],synopsis:"Club Kid follows a washed-up underground party promoter whose life takes an unexpected turn when he’s forced to look after a son that he never knew he had.",ourTake:"",rating:7.3},
+  {title:"The Dreamed Adventure",director:"Valeska Grisebach",year:2026,country:"Germany",image:"https://assets.mubicdn.net/images/film/431190/image-w448.jpg?1779433824",fX:0.5,fY:0.0,genres:["Drama"],synopsis:"A woman who agrees to a deal to help an old acquaintance. She follows the hero on his adventure and enters dangerous territory where she is then confronted with her own desire.",ourTake:"",rating:7.4,previewURL:"https://trailers.mubicdn.net/431190/optimised/240p-t-the-dreamed-adventure_en_us_846.9390000000001_1920_1080_1780912070.mp4"},
+  {title:"Paper Tiger",director:"James Gray",year:2026,country:"United States",image:"https://assets.mubicdn.net/images/film/444172/image-w448.jpg?1778850623",fX:0.5,fY:0.0,genres:["Crime","Drama","Thriller"],synopsis:"Two brothers pursue the American Dream but get entangled in a dangerous Russian mafia scheme that terrorizes their family, testing their bond as betrayal becomes possible.",ourTake:"",rating:6.6},
+  {title:"Gentle Monster",director:"Marie Kreutzer",year:2026,country:"Austria, Germany",image:"https://assets.mubicdn.net/images/film/461295/image-w448.jpg?1775794253",fX:0.42,fY:0.43,genres:["Drama"],synopsis:"Renowned pianist relocates with her family to the countryside, where she uncovers a life-shattering truth that forces her to confront the complexities of love, trust, and deception.",ourTake:"",rating:5.0,previewURL:"https://trailers.mubicdn.net/461295/optimised/240p-t-gentle-monster_en_us_468.457_1920_1080_1778913288.mp4",artwork:"https://images.mubicdn.net/images/artworks/993027/cache-993027-1779775157/images-original.png"},
+  {title:"Project Hail Mary",director:"Phil Lord",year:2026,country:"United States",image:"https://assets.mubicdn.net/images/film/418273/image-w448.jpg?1773055274",fX:0.45,fY:0.22,genres:["Sci-Fi","Adventure"],synopsis:"An astronaut tries to save Earth while alone in outer space. Upon waking up in space, he will, thanks to a surprise encounter, find solutions to the threat of star destruction that could endanger Earth.",ourTake:"",rating:7.0,previewURL:"https://trailers.mubicdn.net/418273/optimised/240p-t-project-hail-mary_en_us_765.7349999999999_1920_1080_1751305226.mp4",artwork:"https://images.mubicdn.net/images/artworks/946031/cache-946031-1773141535/images-original.png"},
+  {title:"Full Phil",director:"Quentin Dupieux",year:2026,country:"France, Belgium",image:"https://assets.mubicdn.net/images/film/466012/image-w448.jpg?1775791777",fX:0.7,fY:0.4,genres:["Comedy"],synopsis:"Wealthy businessman Philip Doom (Woody Harrelson) travels to Paris in an effort to get closer to his daughter Madeline (Kristen Stewart).",ourTake:"",artwork:"https://images.mubicdn.net/images/artworks/977638/cache-977638-1776489149/images-original.png"},
+  {title:"The Unknown",director:"Arthur Harari",year:2026,country:"France, Italy",image:"https://assets.mubicdn.net/images/film/433521/image-w448.jpg?1777459842",fX:0.61,fY:0.33,genres:["Sci-Fi"],synopsis:"At almost 40, David Zimmerman is a photographer, but no one knows it. Although he hardly ever leaves his house, some friends drag him to a crazy party. He spots a woman in the crowd, can’t take his eyes off her, follows her. In the middle of the night, David wakes up in the body of the stranger.",ourTake:"",rating:5.8,artwork:"https://images.mubicdn.net/images/artworks/997837/cache-997837-1780490294/images-original.png"},
+  {title:"Hokum",director:"Damian McCarthy",year:2026,country:"Ireland",image:"https://assets.mubicdn.net/images/film/435835/image-w448.jpg?1756559209",fX:0.53,fY:0.27,genres:["Horror"],synopsis:"When novelist Ohm Bauman retreats to a remote inn to scatter his parents’ ashes, he is consumed by tales of a witch haunting the honeymoon suite. Disturbing visions and a shocking disappearance forces him to confront dark corners of his past.",ourTake:"",rating:6.4,previewURL:"https://trailers.mubicdn.net/435835/optimised/240p-t-hokum-2026_en_us_261.769_640_360_1773246825.mp4",artwork:"https://images.mubicdn.net/images/artworks/961714/cache-961714-1774525495/images-original.png"},
+  {title:"I Want Your Sex",director:"Gregg Araki",year:2026,country:"United States",image:"https://assets.mubicdn.net/images/film/412419/image-w448.jpg?1774532009",fX:0.46,fY:0.32,genres:["Thriller","Comedy","Drama"],synopsis:"When a fresh-faced newcomer lands an exciting job for renowned icon and provocateur, his fantasies come true as she taps him to become her sexual muse. Soon he finds himself out of his depth as she takes him on a journey more profound than he ever could have imagined.",ourTake:"",rating:7.0,artwork:"https://images.mubicdn.net/images/artworks/962729/cache-962729-1774605052/images-original.png"},
+  {title:"Sheep in the Box",director:"Hirokazu Koreeda",year:2026,country:"Japan",image:"https://assets.mubicdn.net/images/film/456256/image-w448.jpg?1763374565",fX:0.5,fY:0.32,genres:["Drama"],synopsis:"A couple takes in a state-of-the-art humanoid into their home as their son.",ourTake:"",previewURL:"https://trailers.mubicdn.net/456256/optimised/240p-t-sheep-in-the-box_en_us_813.893_1920_1080_1774955710.mp4",artwork:"https://images.mubicdn.net/images/artworks/978064/cache-978064-1776494252/images-original.png"},
+  {title:"La Gradiva",director:"Marine Atlan",year:2026,country:"France, Italy",image:"https://assets.mubicdn.net/images/film/467739/image-w448.jpg?1776107426",fX:0.5,fY:0.0,genres:["Drama"],synopsis:"A small group of French high school students embarks on a school trip to Pompeii to explore its ruins and the bodies petrified by Vesuvius in 79 AD. In this ghost town, they are suddenly overwhelmed by a dizzying sensation.",ourTake:"",previewURL:"https://trailers.mubicdn.net/467739/optimised/240p-t-la-gradiva_en_us_479.63199999999995_1794_1080_1779310236.mp4"},
+  {title:"The Diary of a Chambermaid",director:"Radu Jude",year:2026,country:"France, Romania",image:"https://assets.mubicdn.net/images/film/472643/image-w448.jpg?1778103008",fX:0.5,fY:0.0,genres:["Drama"],synopsis:"A young Romanian woman living in France works for a French family and joins a theatre company who are adapting Octave Mirbeau’s The Diary of a Chambermaid.",ourTake:"",rating:7.2,previewURL:"https://trailers.mubicdn.net/472643/optimised/240p-t-the-diary-of-a-chambermaid-2026_en_us_1779313104.mp4"},
+  {title:"Leviticus",director:"Adrian Chiarella",year:2026,country:"Australia",image:"https://assets.mubicdn.net/images/film/461727/image-w448.jpg?1765402415",fX:0.5,fY:0.14,genres:["Horror","LGBTQ+"],synopsis:"Two star-crossed teenage boys must escape a violent entity that takes the form of the person they desire most – each other.",ourTake:"",previewURL:"https://trailers.mubicdn.net/461727/optimised/240p-t-leviticus-2026_en_us_537.094_1920_1080_1776928125.mp4",artwork:"https://images.mubicdn.net/images/artworks/925927/cache-925927-1771417506/images-original.png"},
+  {title:"For the Opponents",director:"Federico Luis Tachella",year:2026,country:"Mexico, Chile",image:"https://assets.mubicdn.net/images/film/472769/image-w448.jpg?1778256829",fX:0.61,fY:0.16,genres:["Short"],synopsis:"In the tough neighbourhood of Tepito, a young boy chases the great Mexican dream: to become a boxing champion",ourTake:"",previewURL:"https://trailers.mubicdn.net/472769/optimised/240p-t-for-the-opponents_en_us_2565.09_1440_1080_1779670284.mp4",artwork:"https://images.mubicdn.net/images/artworks/987535/cache-987535-1778256863/images-original.png"},
+  {title:"I Love Boosters",director:"Boots Riley",year:2026,country:"United States",image:"https://assets.mubicdn.net/images/film/413595/image-w448.jpg?1762567538",fX:0.22,fY:0.32,genres:["Adventure","Comedy","Sci-Fi","Crime","Drama"],synopsis:"A ring of enterprising boosters (aka shoplifters, equal opportunists), take aim at a cutthroat fashion maven.",ourTake:"",rating:6.9,previewURL:"https://trailers.mubicdn.net/413595/optimised/240p-t-i-love-boosters_en_us_1088.707_1920_1080_1774951090.mp4",artwork:"https://images.mubicdn.net/images/artworks/997769/cache-997769-1780478677/images-original.png"},
+  {title:"The Fall of Sir Douglas Weatherford",director:"Sean Robert Dunn",year:2026,country:"United Kingdom",image:"https://assets.mubicdn.net/images/film/407615/image-w448.jpg?1776358035",fX:0.52,fY:0.29,genres:["Comedy"],synopsis:"Kenneth works as a tour guide dressing up as the town’s most notable historical figure, Sir Douglas Weatherford, who Kenneth proudly claims as his ancestor. When the village becomes the base of a big-budget fantasy TV show, his obsession with the show’s lead actor fuels a tragic downward spiral.",ourTake:"",previewURL:"https://trailers.mubicdn.net/407615/optimised/240p-t-the-fall-of-sir-douglas-weatherford_en_us_1778757589.mp4",artwork:"https://images.mubicdn.net/images/artworks/975988/cache-975988-1779828166/images-original.png"},
+  {title:"Everytime",director:"Sandra Wollner",year:2026,country:"Austria, Germany",image:"https://assets.mubicdn.net/images/film/433369/image-w448.jpg?1778496844",fX:0.38,fY:0.48,genres:["Drama"],synopsis:"Death is a trip. Ella may have lost her teenage daughter, but she still clings to life. She’s above grief. She befriends the boy the whole world blames for her daughter’s death. But ghosts are everywhere.",ourTake:"",previewURL:"https://trailers.mubicdn.net/433369/optimised/240p-t-everytime_en_us_1605.138_1920_1080_1778305203.mp4",artwork:"https://images.mubicdn.net/images/artworks/987810/cache-987810-1778496888/images-original.png"},
+  {title:"Look Back",director:"Hirokazu Koreeda",year:2026,country:"Japan",image:"https://assets.mubicdn.net/images/film/461284/image-w448.jpg?1764929584",fX:0.49,fY:0.35,genres:["Drama"],synopsis:"Two manga artists, the brash Fujino and the reclusive Kyomoto, meet and develop a bond over making manga.",ourTake:"",previewURL:"https://trailers.mubicdn.net/461284/optimised/240p-t-look-back-2026_en_us_832.518_1920_1080_1766364875.mp4",artwork:"https://images.mubicdn.net/images/artworks/932780/cache-932780-1772089045/images-original.png"},
+  {title:"Father Mother Sister Brother",director:"Jim Jarmusch",year:2025,country:"United States, United Kingdom",image:"https://assets.mubicdn.net/images/film/398054/image-w448.jpg?1770218943",fX:0.5,fY:0.39,genres:["Drama","Comedy"],synopsis:"A feature film in the form of a triptych. The three stories all concern the relationships between adult children, their somewhat distant parent (or parents), and each other.",ourTake:"Iconic auteur Jim Jarmusch’s acclaimed return to anthology filmmaking abounds with wryly resonant observations on the family unit. Sketching finely detailed portraits with its starry ensemble cast (including a gloriously rumpled Tom Waits), this offbeat triptych finds universals in idiosyncrasies.",rating:7.9,previewURL:"https://trailers.mubicdn.net/398054/optimised/240p-t-father-mother-sister-brother_en_us_1780038525.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/991705/cache-991705-1779296307/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/845522/cache-845522-1764791914/images-original.png"},
+  {title:"La grazia",director:"Paolo Sorrentino",year:2025,country:"Italy",image:"https://assets.mubicdn.net/images/film/437598/image-w448.jpg?1751620976",fX:0.48,fY:0.49,genres:["Drama"],synopsis:"As his tenure as President of Italy nears its end, Mariano De Santis faces wrenching decisions—both political and deeply personal. Amid these moral quandaries, he must confront his own conscience and seek guidance from those closest to him, including his confidante and daughter, Dorotea.",ourTake:"Unfolding within the splendorous walls of grand palaces and presidential homes, Paolo Sorrentino’s stylish drama ruminates on fatherhood, legacy, and doubt. Winner of the Best Actor prize at Venice, Toni Servillo captivates as a national leader shaken by the weight of an impossible moral dilemma.",rating:9.1,previewURL:"https://trailers.mubicdn.net/437598/optimised/240p-t-la-grazia_en_us_1778235740.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/901637/cache-901637-1767781959/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/889903/cache-889903-1765494025/images-original.png"},
+  {title:"Peter Hujar’s Day",director:"Ira Sachs",year:2025,country:"United States, Germany",image:"https://assets.mubicdn.net/images/film/392686/image-w448.jpg?1745503383",fX:0.4,fY:0.43,genres:["Drama","LGBTQ+"],synopsis:"East Village, 1974. At his Second Avenue apartment, photographer Peter Hujar talks with his friend, the writer Linda Rosenkrantz. She tape-records Hujar as he recounts the previous 24 hours, detailing the ins and outs of his work and his interactions with personalities from New York’s art scene.",ourTake:"Adapting an intimate transcript from ‘70s New York, where what separated art from life was rarely more than a cigarette’s width, director Ira Sachs finds beauty in conversation. Ben Whishaw is charisma embodied as the titular photographer, each gesture limned with wit, style, and compassion.",rating:7.5,previewURL:"https://trailers.mubicdn.net/392686/optimised/240p-t-peter-hujar-s-day_en_us_1779436673.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/990080/cache-990080-1778863538/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/967141/cache-967141-1775140742/images-original.png"},
+  {title:"The Mysterious Gaze of the Flamingo",director:"Diego Céspedes",year:2025,country:"Chile, France",image:"https://assets.mubicdn.net/images/film/440746/image-w448.jpg?1778689885",fX:0.49,fY:0.3,genres:["Drama","LGBTQ+"],synopsis:"1982. As an unknown disease begins to spread in a small mining town in the Chilean desert, gay men are accused of transmitting it through their eyes. Eleven-year-old Lidia, the only girl in the community, sets out in search of the truth.",ourTake:"Winner of Un Certain Regard at Cannes, Diego Céspedes’s debut feature pays luminous tribute to human resilience in inhumane times. Equal parts Chilean Western, dark fairy tale, and chosen-family hangout movie, this gorgeous work of queer magical realism finds love thriving amid sickness and hatred.",rating:8.4,previewURL:"https://trailers.mubicdn.net/440746/optimised/240p-t-the-mysterious-gaze-of-the-flamingo_en_us_1776844804.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/989579/cache-989579-1778752646/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/989292/cache-989292-1778690062/images-original.png"},
+  {title:"Sirât",director:"Oliver Laxe",year:2025,country:"Spain, France",image:"https://assets.mubicdn.net/images/film/301059/image-w448.jpg?1769615497",fX:0.43,fY:0.32,genres:["Drama","Thriller"],synopsis:"A man and his son arrive at a rave lost in the mountains of Morocco. They are looking for Marina, their daughter and sister, who disappeared months ago at another rave. Driven by fate, they decide to follow a group of ravers in search of one last party, in the hope that Marina will be there.",ourTake:"Traversing scorched landscapes of liminal danger and apocalyptic revelry, Oliver Laxe won the Cannes Jury Prize with this thrillingly unpredictable road movie. Galvanized by earth-shaking sounds of gear-grinding techno, Sirāt is an audacious encounter with powerful forces—both sublime and absurd.",rating:8.3,previewURL:"https://trailers.mubicdn.net/301059/optimised/240p-t-sirat_en_us_1770992437.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/907759/cache-907759-1768995180/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/847469/cache-847469-1764963412/images-original.png"},
+  {title:"The Secret Agent",director:"Kleber Mendonça Filho",year:2025,country:"France, Brazil",image:"https://assets.mubicdn.net/images/film/411498/image-w448.jpg?1771581654",fX:0.42,fY:0.34,genres:["Thriller","Drama"],synopsis:"Marcelo is a father on the run from a mysterious past. Arriving in Recife during Carnival, Marcelo is swept into a dizzying world of colour, noise, and unforgettable characters. As the city’s sights and sounds intensify, Marcelo’s true place within Recife’s intricate web of secrets begins to emerge.",ourTake:"Nominated for four Oscars® including Best Picture, Kleber Mendonça Filho’s anarchic political thriller stars Wagner Moura in a risky cat-and-mouse hunt. Mixing taut suspense with sly absurdism, this epoch-defining marvel reconstructs memories of the Brazilian military dictatorship in vivid colors.",rating:8.8,previewURL:"https://trailers.mubicdn.net/411498/optimised/240p-t-the-secret-agent-2025_en_us_1776415007.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/951729/cache-951729-1773679193/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/914052/cache-914052-1771606161/images-original.png"},
+  {title:"My Father's Shadow",director:"Akinola Davies Jr.",year:2025,country:"United Kingdom, Nigeria",image:"https://assets.mubicdn.net/images/film/410994/image-w448.jpg?1745503807",fX:0.54,fY:0.44,genres:["Drama"],synopsis:"Over the course of a single day’s journey into and around Lagos, Folarin and his young sons, Akin and Remi, reckon with their relationship while navigating a city on the precipice of democratic crisis. As details of Folarin’s life emerge, the strain in their connection becomes increasingly clear.",ourTake:"The first Nigerian film ever to screen in Official Selection at Cannes, this prizewinning debut feature from Akinola Davies Jr. is steeped in feeling and lyrical imagery. Bathing the father-son bond in a tender glow, this vibrant coming-of-age tale gathers up precious things amid political tumult.",rating:8.9,previewURL:"https://trailers.mubicdn.net/410994/optimised/240p-t-my-father-s-shadow_en_us_1775813062.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/982842/cache-982842-1777024596/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/876313/cache-876313-1766439876/images-original.png"},
+  {title:"Sentimental Value",director:"Joachim Trier",year:2025,country:"Norway, Germany",image:"https://assets.mubicdn.net/images/film/400360/image-w448.jpg?1757575671",fX:0.77,fY:0.4,genres:["Drama"],synopsis:"Nora, a successful stage actress, reunites with her estranged father, Gustav Borg—a once-renowned film director planning a comeback with a script based on their family. When Gustav offers Nora the lead role, which she promptly declines, he turns his attention to a rising Hollywood starlet instead.",ourTake:"Eskil Vogt and Joachim Trier—the writer-director dream team behind The Worst Person in the World—return with this stunningly observed family drama. Winner of the Best International Feature Oscar®, and featuring an all-star cast, Sentimental Value traces the fault lines between vanity, art, and life.",rating:9.2,previewURL:"https://trailers.mubicdn.net/400360/optimised/240p-t-sentimental-value_en_us_1773933105.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/920723/cache-920723-1770742695/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/885865/cache-885865-1765220772/images-original.png"},
+  {title:"No Other Choice",director:"Park Chan-wook",year:2025,country:"South Korea",image:"https://assets.mubicdn.net/images/film/255497/image-w448.jpg?1753801050",fX:0.51,fY:0.63,genres:["Comedy","Crime","Drama"],synopsis:"Looking for a job? When a happy family man is dismissed after twenty-five years of loyal service at a paper company, he finds the perfect solution to land his next role: truly eliminate the competition.",ourTake:"Desperate times call for desperate measures in this wild satirical ride from Korean master Park Chan-wook, starring Lee Byung-hun as a trampled worker with nothing to lose. An unruly blend of ingenious visuals and twisted humor, No Other Choice delivers a brutal takedown of the cutthroat job market.",rating:8.8,previewURL:"https://trailers.mubicdn.net/255497/optimised/240p-t-no-other-choice_en_us_1773366969.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/947983/cache-947983-1773255621/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/846404/cache-846404-1765487791/images-original.png"},
+  {title:"Sound of Falling",director:"Mascha Schilinski",year:2025,country:"Germany",image:"https://assets.mubicdn.net/images/film/436826/image-w448.jpg?1747926473",fX:0.46,fY:0.42,genres:["Drama"],synopsis:"Four adolescent girls (Alma, Erika, Angelika, Lenka) each spend their youth in the same farmhouse over the last century. Though separated by decades, resonances between their lives emerge: their desires and distress, secrets and truths, encounters with another’s gaze and defiant gaze in return.",ourTake:"Cascading through time, Mascha Schilinski’s incomparable Cannes prizewinner orchestrates echoes of past experience into transcendent poetic cinema. Surfacing evocative, gilded imagery from the shadows of femininity, Sound of Falling confirms the tremendous talents of its ambitious writer-director.",rating:8.2,previewURL:"https://trailers.mubicdn.net/436826/optimised/240p-t-sound-of-falling_en_us_1777043235.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/982441/cache-982441-1777021473/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/859601/cache-859601-1766435481/images-original.png"},
+  {title:"Agon",director:"Giulio Bertelli",year:2025,country:"Italy, France",image:"https://assets.mubicdn.net/images/film/448851/image-w448.jpg?1767698068",fX:0.79,fY:0.11,genres:["Drama","Sport"],synopsis:"Three elite athletes train for the Summer Games, Ludoj, 2024. Facing press attention, injury, and exhaustion, they practice their respective disciplines of rifle shooting, fencing, and judo. The women work with coaches to optimize their performance before competing under acute pressure at the Games.",ourTake:"Giulio Bertelli’s absorbingly experimental debut feature pins down the world of athletics and its clashing atmospherics. Setting the sterility of competitive environments against the animal intimacies of endurance and exhaustion, this unique film thinks nothing of genre confines or barriers of pain.",rating:8.1,previewURL:"https://trailers.mubicdn.net/448851/optimised/240p-t-agon-2025_en_us_1777017883.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/962090/cache-962090-1774540657/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/962103/cache-962103-1774540951/images-original.png"},
+  {title:"It Was Just an Accident",director:"Jafar Panahi",year:2025,country:"Iran, France",image:"https://assets.mubicdn.net/images/film/441162/image-w448.jpg?1747995632",fX:0.522284,fY:0.420792,genres:["Crime","Thriller","Drama","Mystery"],synopsis:"When an auto mechanic encounters the man who may have been his torturer in prison, he kidnaps him to exact vengeance. But since the sole clue to Eghbal’s identity is the squeak of his prosthetic leg, Vahid turns to other now-freed victims for confirmation. And the danger only escalates.",ourTake:"Jafar Panahi won the Palme d’Or for this tour-de-force morality tale, which ignites the pursuit of truth with dark comedy and impassioned urgency. Driving through obstinate barriers of authoritarianism and censorship, this is a defining work of political cinema from one of Iran’s great auteurs.",rating:8.7,previewURL:"https://trailers.mubicdn.net/441162/optimised/240p-t-it-was-just-an-accident_en_us_1772767374.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/990325/cache-990325-1779098566/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/779408/cache-779408-1762811339/images-original.png"},
+  {title:"Die My Love",director:"Lynne Ramsay",year:2025,country:"United States, United Kingdom",image:"https://assets.mubicdn.net/images/film/360569/image-w448.jpg?1778585747",fX:0.52,fY:0.22,genres:["Drama","Thriller"],synopsis:"Grace and her partner Jackson move into an old country house. She pursues her dream of writing, and the couple welcome a baby soon after. However, with Jackson frequently absent, and the pressures of domestic life weighing on her, Grace begins to unravel, leaving a path of destruction in her wake.",ourTake:"Instincts both maternal and carnal clatter like shards of glass in a blender in this uncompromising portrait of a woman on the edge from director Lynne Ramsay. Starring Jennifer Lawrence and Robert Pattinson in a frenzied pas de deux, Die My Love inflames the exposed nerves of delirium and desire.",rating:7.4,previewURL:"https://trailers.mubicdn.net/360569/optimised/240p-t-die-my-love_en_us_1769161959.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/886805/cache-886805-1767128125/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/874505/cache-874505-1762372486/images-original.png"},
+  {title:"Arco",director:"Ugo Bienvenu",year:2025,country:"France",image:"https://assets.mubicdn.net/images/film/442350/image-w448.jpg?1765576972",fX:0.53,fY:0.32,genres:["Animation","Adventure","Sci-Fi"],synopsis:"In 2075, Iris, a 10-year-old girl, sees a mysterious boy in a rainbow suit fall from the sky. It’s Arco. Iris will take him in and help him by any means possible to get home.",ourTake:"Coproduced by Natalie Portman and Oscar®-nominated for Best Animated Feature, Ugo Bienvenu’s epic adventure whizzes through time and space with dazzling handcrafted visuals. Eco-conscious yet hopeful, Arco soars with its heartfelt vision of friendship and utopia, drawn in kaleidoscopic colors.",rating:9.3,previewURL:"https://trailers.mubicdn.net/442350/optimised/240p-t-arco_en_us_1765575703.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/967580/cache-967580-1775546036/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/921522/cache-921522-1770832323/images-original.png"},
+  {title:"Pompei: Below the Clouds",director:"Gianfranco Rosi",year:2025,country:"Italy",image:"https://assets.mubicdn.net/images/film/440441/image-w448.jpg?1753700563",fX:0.52,fY:0.63,genres:["Documentary"],synopsis:"Naples is a city forever marked by the looming presence of Mount Vesuvius. Beneath the quiet threat of eruption, people go about their days: archaeologists unearth the past, children learn as the earth hums, firefighters wait for the next call.",ourTake:"Past and present, flesh and ash, enormity and the infinitesimal: Gianfranco Rosi’s astonishing, Venice-prizewinning documentary is a marbled study in high contrast. In bone white and velvety black, pin-sharp chiaroscuro photography screens an active volcano for the elemental geometries of life.",rating:8.6,previewURL:"https://trailers.mubicdn.net/440441/optimised/240p-t-pompei-below-the-clouds_en_us_1769696189.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/965548/cache-965548-1774955974/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/957583/cache-957583-1774281297/images-original.png"},
+  {title:"The Mastermind",director:"Kelly Reichardt",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/422583/image-w448.jpg?1765544027",fX:0.35,fY:0.01,genres:["Crime"],synopsis:"In a sedate Massachusetts suburb circa 1970, unemployed family man and amateur art thief J.B. Mooney sets out on his first heist. With the museum cased and accomplices recruited, he has an airtight plan. Or so he thinks.",ourTake:"With an artful eye and jazzy unpredictability, Kelly Reichardt unravels the threads of the heist film in this standout from Cannes. As an antihero kicking about on the brink of the ‘70s, Josh O’Connor is unmissable, lending rumpled discontent to this ironic, wry vision of American individualism.",rating:6.7,previewURL:"https://trailers.mubicdn.net/422583/optimised/240p-t-the-mastermind_en_us_1765549437.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/886806/cache-886806-1765797028/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/778988/cache-778988-1766525115/images-original.png"},
+  {title:"Endless Cookie",director:"Seth Scriver",year:2025,country:"Canada",image:"https://assets.mubicdn.net/images/film/431210/image-w448.jpg?1776250272",fX:0.62,fY:0.46,genres:["Documentary","Animation","Avant-Garde","Comedy"],synopsis:"Two half-brothers, one Indigenous and one white, embark on a journey through time and place. They travel from their remote home in Shamattawa to the vibrant urban landscape of the 1980s.",ourTake:"Zigzagging between 2020s northern Manitoba, 1980s Toronto, and the future, this joyously intergenerational, time-traveling animation zings with color and squirmy line work. Cross talk and scatological humor join the blunt rotation with Native memory and song in this awesomely inclusive documentary.",rating:8.3,previewURL:"https://trailers.mubicdn.net/431210/optimised/240p-t-endless-cookie_en_us_1290.2559999999999_1920_1080_1746609358.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/975999/cache-975999-1776359134/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/975032/cache-975032-1776250328/images-original.png"},
+  {title:"Mitski: The Land",director:"Grant James",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/458206/image-w448.jpg?1777028350",fX:0.49,fY:0.55,genres:["Music","Documentary"],synopsis:"Indie singer-songwriter Mitski takes the stage at Atlanta’s Fox Theater with a seven-piece band. Over the course of three nights in September 2024, they perform music from Mitski’s acclaimed seventh album, The Land Is Inhospitable and So Are We, alongside reimaginings of her earlier work.",ourTake:"Channeling influence from the movies into her mesmerizing movements, Mitski gives live performances that find kindred spirit in cinema. Playing with speed, color, and freeze frames to electrifying effect, her first concert documentary embraces the transformative power of both film and music.",rating:9.0,previewURL:"https://trailers.mubicdn.net/458206/optimised/240p-t-mitski-the-land_en_us_1778246304.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/985975/cache-985975-1777542495/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/987217/cache-987217-1778169695/images-original.png"},
+  {title:"A Poet",director:"Simón Mesa Soto",year:2025,country:"Colombia, Germany",image:"https://assets.mubicdn.net/images/film/442272/image-w448.jpg?1780562305",fX:0.53,fY:0.35,genres:["Comedy","Drama"],synopsis:"Oscar Restrepo’s obsession with poetry brought him no glory. Aging and erratic, he has succumbed to the cliché of the poet in the shadows. Meeting Yurlady, a humble teenager, brings some light to his days, but dragging her into the world of poets may not be the way.",ourTake:"At once teasing and empathetic toward its hopeless protagonist, this Cannes prizewinner tussles tragicomic absurdities from threadbare ambitions. Parsing student-teacher relations for hilarious odd-couple antics, Colombian director Simón Mesa Soto undoes conventional verse with this riotous film.",rating:9.1,previewURL:"https://trailers.mubicdn.net/442272/optimised/240p-t-a-poet-2025_en_us_1780568824.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/998218/cache-998218-1780562886/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/998178/cache-998178-1780562346/images-original.png"},
+  {title:"The Ugly Stepsister",director:"Emilie Blichfeldt",year:2025,country:"Norway, Poland",image:"https://assets.mubicdn.net/images/film/431131/image-w448.jpg?1758284892",fX:0.45,fY:0.45,genres:["Comedy","Horror"],synopsis:"Seemingly plain but ambitious Elvira is pushed by her mother to win over a vain prince and save their family. But when her stunning stepsister Agnes becomes a rival, Elvira is driven to extremes. As the royal ball nears, she must face the harsh truths of the world she longs to belong to.",ourTake:"Festering with maggots and tapeworms, this majestically gruesome feature debut from Norwegian writer-director Emilie Blichfeldt guts facile fantasies of inner beauty. Adapting the timeless tale, this body-horror spin on Cinderella writhes with the darkness of the Grimm Brothers’ original vision.",rating:8.6,previewURL:"https://trailers.mubicdn.net/431131/optimised/240p-t-the-ugly-stepsister_en_us_1798.7620000000002_1920_1080_1742349242.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/876561/cache-876561-1760972856/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/767704/cache-767704-1757617885/images-original.png"},
+  {title:"The Piano Accident",director:"Quentin Dupieux",year:2025,country:"France",image:"https://assets.mubicdn.net/images/film/447318/image-w448.jpg?1764695248",fX:0.31,fY:0.24,genres:["Comedy","Drama"],synopsis:"Magalie, a social media sensation famous for posting shocking content online, takes a break after suffering a serious accident while filming one of her videos. Isolated in a mountain chalet with her personal assistant, her retreat is interrupted by a journalist who begins to blackmail her.",ourTake:"Unrecognizable as a spoiled influencer with a thirst for danger, Adèle Exarchopoulos is a delightful ball of anxiety in Quentin Dupieux’s absurdist comedy.  A cautionary tale against the trappings of modern fame, this acerbic satire indulges in the worst of human behaviors with cartoonish glee.",rating:7.5,previewURL:"https://trailers.mubicdn.net/447318/optimised/240p-t-l-accident-de-piano_en_us_2526.937_1920_1080_1752391086.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/900245/cache-900245-1767122649/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/888379/cache-888379-1764695702/images-original.png"},
+  {title:"Atropia",director:"Hailey Gates",year:2025,country:"United States, France",image:"https://assets.mubicdn.net/images/film/408020/image-w448.jpg?1745503378",fX:0.48,fY:0.53,genres:["Drama","Comedy","War"],synopsis:"When an aspiring actress in a military role-playing facility falls in love with a soldier cast as an insurgent, their unsimulated emotions threaten to derail the performance.",ourTake:"A beautifully modulated turn from Alia Shawkat complicates the broader fun of this zany war satire, costarring Callum Turner. A playfully shot debut feature, Atropia lands its different strands skillfully: touching human drama, tangly undercover romance, and confrontational send-up of US militarism.",rating:7.9,previewURL:"https://trailers.mubicdn.net/408020/optimised/240p-t-atropia_en_us_5119.758_1920_1080_1762502604.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/976006/cache-976006-1776360273/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/889894/cache-889894-1764967772/images-original.png"},
+  {title:"Hot Milk",director:"Rebecca Lenkiewicz",year:2025,country:"United Kingdom",image:"https://assets.mubicdn.net/images/film/332978/image-w448.jpg?1746718753",fX:0.312935,fY:0.437037,genres:["Drama","LGBTQ+"],synopsis:"Sofia and her ailing mother, Rose, travel to the Spanish seaside town of Almería to seek the help of Dr. Gómez, an enigmatic healer who may hold the key to Rose’s mysterious illness. As long-buried tensions simmer between them, Sofia finds herself drawn to the magnetic and free-spirited Ingrid.",ourTake:"Rising star Emma Mackey stuns in this searing adaptation of Deborah Levy’s acclaimed novel about sensual longing and animal instincts. Intoxicated by the sun and salt sensations of the Andalusian coast, her hot-headed heroine swims clear of her mother’s stinging gaze in a break for self-realization.",rating:7.4,previewURL:"https://trailers.mubicdn.net/332978/optimised/240p-t-hot-milk-2023_en_us_1755853444.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/849389/cache-849389-1754999024/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/843464/cache-843464-1752059503/images-original.png"},
+  {title:"Magic Farm",director:"Amalia Ulman",year:2025,country:"Argentina, United States",image:"https://assets.mubicdn.net/images/film/418722/image-w448.jpg?1745503382",fX:0.538997,fY:0.470297,genres:["Comedy"],synopsis:"When a misguided American documentary crew in search of their next viral segment ends up in the wrong town in rural Argentina, chaos ensues. As they collaborate with locals to fake a new music trend, unexpected relationships form and an unfolding health crisis becomes apparent.",ourTake:"Things get weird in Amalia Ulman’s kaleidoscopic film, a colorful comedy of errors and an imaginative send-up of millennial media. Starring Simon Rex and Chloë Sevigny, this story of a frantic search for an internet sensation is electrified by wit, subversion, and distinctively fluorescent style.",rating:7.5,previewURL:"https://trailers.mubicdn.net/418722/optimised/240p-t-magic-farm_en_us_1749218333.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/779454/cache-779454-1748617975/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/768270/cache-768270-1744793026/images-original.png"},
+  {title:"Everyday in Gaza",director:"Omar Rammal",year:2025,country:"Italy",image:"https://assets.mubicdn.net/images/film/469875/image-w448.jpg?1775728875",fX:0.43,fY:0.5,genres:["Short","Documentary"],synopsis:"On the ground in the Gaza Strip, the plight of the Palestinian people is documented through the day-to-day struggles of the Al-Farra family. For fifteen years, Mohammed has worked as a barber to provide for his wife and children. Together, they endure bombings, food scarcity, and displacement.",ourTake:"In Omar Rammal’s poignant documentary, ordinary necessities—a hot meal, a roof over one’s head—are luxuries for generations of Palestinians. While aerial shots capture the harrowing destruction of Gaza, intimate interviews lend a voice to the voiceless, laying bare the staggering human cost of war.",rating:8.7,previewURL:"https://trailers.mubicdn.net/469875/optimised/240p-t-everyday-in-gaza_en_us_5989.0_1920_1080_1775742572.mp4",artwork:"https://images.mubicdn.net/images/artworks/969440/cache-969440-1775728901/images-original.png"},
+  {title:"Saipan",director:"Lisa Barros D'Sa",year:2025,country:"Ireland, United Kingdom",image:"https://assets.mubicdn.net/images/film/448949/image-w448.jpg?1778581963",fX:0.3,fY:0.27,genres:["Drama","Biography","Sport","History"],synopsis:"Japan, 2002. The Irish football team decamps to the island of Saipan to train for the FIFA World Cup. Their star player and captain, Roy Keane, is outraged at leadership’s subpar preparations and quarrels with manager Mick McCarthy, who removes him from the squad on the eve of the tournament.",ourTake:"Approaching Irish history through the lens of overblown tabloid fodder, Saipan dissects one of world football’s most infamous punch-ups. Comedy legend Steve Coogan deploys his prodigious powers of mimicry with droll aplomb, punctuating this farcical media satire with deft moments of pathos.",rating:6.8,previewURL:"https://trailers.mubicdn.net/448949/optimised/240p-t-saipan_en_us_2569.0370000000003_1920_1080_1777563685.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/997438/cache-997438-1780401755/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/988490/cache-988490-1778582061/images-original.png"},
+  {title:"The Last One for the Road",director:"Francesco Sossai",year:2025,country:"Italy",image:"https://assets.mubicdn.net/images/film/441168/image-w448.jpg?1767880192",fX:0.66,fY:0.37,genres:["Drama","Comedy"],synopsis:"Two broke, bar-hopping fiftysomethings meet a shy and aimless architecture student. Together, the three men embark on a chaotic road trip through the Venetian plains where bad advice, hangovers, and unexpected friendship shake up the young man’s future plans for life and love.",ourTake:"Sossai brings disheveled panache to his boozy second feature: a gloriously shaggy road movie, which takes its lust for life neat. Channeling the roguishness of a favorite eccentric uncle, this eye-catchingly stylish tribute to the hidden fringes of Veneto radiates infectious goodwill.",rating:8.7,previewURL:"https://trailers.mubicdn.net/441168/optimised/240p-t-the-last-one-for-the-road_en_us_1767880502.mp4",artwork:"https://images.mubicdn.net/images/artworks/902590/cache-902590-1767880240/images-original.png"},
+  {title:"Chapter 1",director:"Joe Wright",year:2025,country:"United States, Italy",image:"https://assets.mubicdn.net/images/film/444140/image-w448.jpg?1752852159",fX:0.48,fY:0.23,genres:["Drama","Biography","TV Mini-series"],synopsis:"Mussolini has just founded the Fasces of Combat when D’Annunzio takes Fiume. Mussolini hopes to exploit the feat of his poet on the field.",ourTake:"",rating:9.3,artwork:"https://images.mubicdn.net/images/artworks/845267/cache-845267-1752852281/images-original.png"},
+  {title:"The History of Sound",director:"Oliver Hermanus",year:2025,country:"United States, United Kingdom",image:"https://assets.mubicdn.net/images/film/323321/image-w448.jpg?1746192262",fX:0.58078,fY:0.408416,genres:["LGBTQ+","Romance","History","Drama"],synopsis:"Two young music students, Lionel and David, attending the Boston Conservatory in 1917, bond over their shared love of folk music. They reconnect a few years later, embarking on a song collecting trip in the backwaters of Maine.",ourTake:"Paul Mescal and Josh O’Connor star in this nostalgic, aching romance, lifting a profound story of yearning in exquisitely tender performances. Interweaving timeless folk tunes with sumptuous, autumnal images, director Oliver Hermanus chronicles a love whose reverberations are felt for a lifetime.",rating:8.7,previewURL:"https://trailers.mubicdn.net/323321/optimised/240p-t-the-history-of-sound_en_us_1762175024.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/879719/cache-879719-1761737787/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/772868/cache-772868-1758218747/images-original.png"},
+  {title:"Pilot",director:"Cooper Raiff",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/448206/image-w448.jpg?1757432851",fX:0.7,fY:0.3,genres:["Comedy","Drama","TV Mini-series"],synopsis:"Hal and Harper’s childhood house is on the market, and Dad’s got even bigger news that’s about to send all three on a journey through time.",ourTake:"",rating:9.3,artwork:"https://images.mubicdn.net/images/artworks/865965/cache-865965-1758810182/images-original.png"},
+  {title:"Orphan",director:"László Nemes",year:2025,country:"Hungary, United Kingdom",image:"https://assets.mubicdn.net/images/film/414484/image-w448.jpg?1777642614",fX:0.46,fY:0.46,genres:["Drama","History"],synopsis:"Hungary, 1957. A young Jewish boy, raised by his mother with idealized tales of his dead father, has his world turned upside down when a brutish man appears, claiming to be his true parent.",ourTake:"In this exquisitely rendered historical drama, Oscar®-winning filmmaker László Nemes mounts a powerful reckoning with Hungary’s turbulent past. Filtered through a child’s scarred curiosity, Orphan is a deeply moving exploration of a family unmoored by the tidal waves of political circumstance.",rating:6.6,previewURL:"https://trailers.mubicdn.net/414484/optimised/240p-t-orphan-2025_en_us_1778851527.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/991235/cache-991235-1779892957/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/962179/cache-962179-1774898235/images-original.png"},
+  {title:"Miroirs No. 3",director:"Christian Petzold",year:2025,country:"Germany",image:"https://assets.mubicdn.net/images/film/411499/image-w448.jpg?1758546736",fX:0.42,fY:0.48,genres:["Drama","Music"],synopsis:"A young piano student is involved in a car accident in which her boyfriend is killed. Miraculously, she survives the accident unharmed and is taken in by a family. She finds comfort and support in order to get her life back on track, but over time she notices that something is wrong with the family.",ourTake:"Framing the Brandenburg landscape with the delicacy of a miniaturist, Christian Petzold’s enigmatic autumnal drama shivers with seasonal moods of pensive disquietude. A bewitchingly mysterious Paula Beer teases riddles from the director’s signature understatement in their fourth collaboration.",rating:7.4,previewURL:"https://trailers.mubicdn.net/411499/optimised/240p-t-miroirs-no-3_en_us_5449.65_1920_1038_1763506117.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/950200/cache-950200-1773424852/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/929961/cache-929961-1771866502/images-original.png"},
+  {title:"Sorry, Baby",director:"Eva Victor",year:2025,country:"United States, France",image:"https://assets.mubicdn.net/images/film/431122/image-w448.jpg?1758281044",fX:0.46,fY:0.41,genres:["Drama"],synopsis:"Something bad happened to Agnes, but life goes on for everyone else. When a beloved friend on the brink of a major milestone visits, Agnes starts to realize just how stuck she’s been, and begins to work through how to move forward.",ourTake:"Salting psychological trauma with sly humor and a mackerel kitten, this bracing debut from comedian Eva Victor puts roses in the cheeks. Recalling Kenneth Lonergan’s dramas with piercing honesty and confident tread, this tale of self-compassion and companionship is an adagio in New England snow.",rating:8.4,previewURL:"https://trailers.mubicdn.net/431122/optimised/240p-t-sorry-baby-2025_en_us_1762191022.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/876795/cache-876795-1761056701/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/862365/cache-862365-1758281079/images-original.png"},
+  {title:"Fragments for Venus",director:"Alice Diop",year:2025,country:"France, Italy",image:"https://assets.mubicdn.net/images/film/453108/image-w448.jpg?1762770049",fX:0.56,fY:0.28,genres:["Short","Drama"],synopsis:"A Black woman wanders alone through the galleries of a museum, carefully examining each painting, searching for something. Across Brooklyn, another Black woman wanders the streets, her gaze full of wonder at the Black women she encounters.",ourTake:"Alice Diop colors in the blind spots of art history with this thoughtful short starring Kayije Kagame (Saint Omer). Countering clichés and absences in Black portraiture with the joys of real life, Fragments for Venus leaves behind Old Masters to widen the frame on where we find aesthetic pleasure.",rating:8.1,artwork:"https://images.mubicdn.net/images/artworks/883162/cache-883162-1762772243/images-original.png"},
+  {title:"Extra Time",director:"Matteo Memè",year:2025,country:"Italy",image:"https://assets.mubicdn.net/images/film/469874/image-w448.jpg?1775723075",fX:0.77,fY:0.48,genres:["Drama","Short"],synopsis:"Mattia drops his father, Claudio, off at his weekly meeting with a friend, only to spot him discreetly entering a hospital building moments later. On their way back home, the pair starts bickering as usual, then Mattia confronts his father with the truth.",ourTake:"Unfolding on the winding streets of Rome, Matteo Memè’s profoundly moving short observes the small yet shattering frictions that undergird familial conflicts. Dedicated to the filmmaker’s father, Extra Time finds healing through the restorative power of intergenerational dialogue.",rating:7.5,artwork:"https://images.mubicdn.net/images/artworks/969298/cache-969298-1775723109/images-original.png"},
+  {title:"Lurker",director:"Alex Russell",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/431077/image-w448.jpg?1749138946",fX:0.573018,fY:0.31358,genres:["Drama","Thriller"],synopsis:"When a twenty-something retail clerk encounters a rising pop star, he takes the opportunity to edge his way into the in-crowd. But as the line between friend and fan blurs beyond recognition, access and proximity become a matter of life and death.",ourTake:"Love and obsession are two sides of the same coin in this daring thriller from The Bear writer-producer Alex Russell, featuring rising stars Archie Madekwe and Théodore Pellerin. In a glitzy LA ruled by social currency, Lurker luxuriates in the suspense and the dark irony of celebrity worship.",rating:8.1,previewURL:"https://trailers.mubicdn.net/431077/optimised/240p-t-lurker_en_us_1753454757.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/870794/cache-870794-1760034008/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/781223/cache-781223-1755110750/images-original.jpg"},
+  {title:"Orwell: 2+2=5",director:"Raoul Peck",year:2025,country:"France, United States",image:"https://assets.mubicdn.net/images/film/391592/image-w448.jpg?1779454240",fX:0.71,fY:0.41,genres:["Documentary","Biography","History"],synopsis:"Through archival and contemporary newsreels, photos, and films, Raoul Peck explores the legacy of George Orwell’s iconic novel 1984. Aided by excerpts from the author’s various writings—read in voiceover by Damian Lewis—the filmmaker reflects on authoritarianism past and present.",ourTake:"Armed with the prescient works of one of totalitarianism’s most ruthless critics, Raoul Peck finds history repeating itself in this laser-focused documentary. Countering political skulduggery with bracing directness, Orwell: 2+2=5 offers the antidote to a paranoid age of misinformation.",rating:7.2,previewURL:"https://trailers.mubicdn.net/391592/optimised/240p-t-orwell-2-2-5_en_us_1779452923.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/992571/cache-992571-1779462870/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/992419/cache-992419-1779454299/images-original.png"},
+  {title:"Hello Warsaw",director:"Diletta Di Nicolantonio",year:2025,country:"Italy, Poland",image:"https://assets.mubicdn.net/images/film/469873/image-w448.jpg?1775658131",fX:0.55,fY:0.33,genres:["Short","Drama"],synopsis:"Fresh out of a specialized treatment center for eating disorders, an aspiring model in Warsaw resumes her destructive habits of bingeing and purging. When the opportunity to audition for a lingerie brand comes up, her mental health further deteriorates.",ourTake:"Oscillating between cavernous wide shots and discomfiting close-ups, Diletta Di Nicolantonio’s unnerving short inhabits the debilitating extremes of body dysmorphia. Empathetic to the physical and financial toil endured by women in fashion, this is a searing condemnation of a predatory industry.",rating:5.8,artwork:"https://images.mubicdn.net/images/artworks/968095/cache-968095-1775658158/images-original.png"},
+  {title:"Family Feast",director:"Nadir Taji",year:2025,country:"Italy",image:"https://assets.mubicdn.net/images/film/454863/image-w448.jpg?1757339050",fX:0.69,fY:0.31,genres:["Short","Drama"],synopsis:"The peaceful atmosphere of a Moroccan family holiday is shattered by a shocking event: Hassan molests his twelve-year-old cousin in secret. After the incident comes to light, the adults are faced with a difficult decision of whether to preserve the family or to confront the uncomfortable situation.",ourTake:"Sun-dappled compositions belie murky secrets in Nadir Taji’s sobering debut, which stages a startling collision of revelry and discord. Treating the sensitive subject of abuse with thoughtfulness and empathy, Family Feast rigorously probes the patriarchal tolerance that begets gender-based violence.",rating:7.4,artwork:"https://images.mubicdn.net/images/artworks/971076/cache-971076-1775821414/images-original.png"},
+  {title:"It Was Nice to Meet You",director:"Jehan Barbur",year:2025,country:"Turkey",image:"https://assets.mubicdn.net/images/film/467093/image-w448.jpg?1775746488",fX:0.56,fY:0.39,genres:["Short","Documentary"],synopsis:"Deniz and Can are two siblings who are bedridden and live with the support of their mother, Aysel. After losing their home in the Maraş earthquake, the family now lives with a relative in Alaçatı. Five days of interviews shed light on their lives and perspectives.",ourTake:"Shunning spectacle and schadenfreude, Jehan Barbur and Güneş Kazdal’s empathetic documentary surfaces the dignity of its subjects in the face of adversity and erasure. Attentive to their voices, this deeply humane film reframes care, autonomy, and visibility as matters not of charity but of justice.",rating:9.4,previewURL:"https://trailers.mubicdn.net/467093/optimised/240p-t-it-was-nice-to-meet-you_en_us_1775746107.mp4",artwork:"https://images.mubicdn.net/images/artworks/969788/cache-969788-1775746513/images-original.png"},
+  {title:"Plainclothes",director:"Carmen Emmi",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/431120/image-w448.jpg?1768501568",fX:0.48,fY:0.35,genres:["Drama","Romance","Thriller","LGBTQ+"],synopsis:"In 1990s New York, police officer Lucas’s daily assignment is casing a shopping mall, looking to lure gay men into intimate situations in the public bathroom so they can be arrested for indecency. During a routine shift Lucas encounters Andrew and struggles to complete his usual mission.",ourTake:"Writer-director Carmen Emmi handcuffs obsession to power in this confident debut set in ‘90s New York, detecting erotic fixations in homophobic policing. With one furtive eye on William Friedkin’s cult classic Cruising, Plainclothes searches fuzzy videotape surveillance footage for forbidden desire.",rating:8.7,previewURL:"https://trailers.mubicdn.net/431120/optimised/240p-t-plainclothes_en_us_2978.607_1920_1080_1755197131.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/900248/cache-900248-1768644858/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/906116/cache-906116-1768501609/images-original.png"},
+  {title:"Reveries: The Mind Prison",director:"Graham Mason",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/442960/image-w448.jpg?1777386746",fX:0.48,fY:0.4,genres:["Comedy"],synopsis:"Two mysterious drifters find themselves in an endless desert landscape. They have been lost for a long time, telling stories through which reality becomes fuzzy, and in which nightmares sometimes look like dreams. They embark on an ambitious journey: to escape from the mind prison once and for all.",ourTake:"As if smashing the hourglass from earlier installments, then wandering through the out-of-whack time of its scattered sands, the hallucinatory end to “Reveries” gets into meta-referential terrain. In a satisfyingly silly comeback, this last adventure fires ludicrous shots at the finale as genre.",rating:9.6,previewURL:"https://trailers.mubicdn.net/442960/optimised/240p-t-reveries-the-mind-prison_en_us_1777387948.mp4",artwork:"https://images.mubicdn.net/images/artworks/985449/cache-985449-1777386838/images-original.png"},
+  {title:"Astronaut",director:"Giorgio Giampà",year:2025,country:"Italy, Guatemala",image:"https://assets.mubicdn.net/images/film/468423/image-w448.jpg?1775728834",fX:0.31,fY:0.42,genres:["Short","Drama"],synopsis:"Audely works as a lumberjack in the Guatemalan wilderness. At home, his daughter Carol yearns to enter that same jungle. In a bid to satisfy her curiosity, Audely makes a symbolic gesture that will alter the course of Carol’s future.",ourTake:"Nurturing yet vulnerable, the rainforest is a space of mystery and possibility in Giorgio Giampà’s dreamy, genre-bending short. Depicting a profound bond between humans and nature that transcends time, Astronaut delivers its eco-conscious message through the unexpected lens of magical realism.",rating:7.9,artwork:"https://images.mubicdn.net/images/artworks/970423/cache-970423-1775809840/images-original.png"},
+  {title:"Dracula",director:"Radu Jude",year:2025,country:"Romania, Austria",image:"https://assets.mubicdn.net/images/film/433332/image-w448.jpg?1771419170",fX:0.65,fY:0.98,genres:["Comedy","Horror"],synopsis:"A frustrated filmmaker, facing creative paralysis, turns to an AI chatbot to make his latest movie a hit. The result is a series of increasingly outrageous vignettes exploring the legend of Dracula, from a wild chase through the streets of modern Transylvania to eerie hauntings in rural Romania.",ourTake:"Acclaimed Romanian auteur Radu Jude throws the Dracula myth into the blender of modern commodity culture, reassembling the undead pieces into a grotesquerie of digital-media stupidity. Anarchic, obscene, and utterly hypnotic, this monstrous AI satire is an intravenous hit of 21st-century absurdity.",rating:6.2,previewURL:"https://trailers.mubicdn.net/433332/optimised/240p-t-dracula-2025_en_us_3629.985_1920_1080_1772759097.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/927770/cache-927770-1771525035/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/926388/cache-926388-1771428813/images-original.png"},
+  {title:"Obsession",director:"Curry Barker",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/452937/image-w448.jpg?1754920887",fX:0.53,fY:0.59,genres:["Horror"],synopsis:"Music store clerk Bear endlessly pines after Nikki, his co-worker and closest friend. When another attempted profession of love fizzles, Bear uses a mysterious trinket to wish for romantic reciprocation. Just when his desire is fulfilled, a sinister enchantment ensues.",ourTake:"With this queasy girlfriend-to-order horror, former YouTube prodigy Curry Barker updates the wish-gone-wrong fairytale for the incel era. An eerily hypnotic showcase for the preternatural talents of newcomer Inde Navarrette, this brutal satire comes with a warning: Always read the small print.",rating:7.1,previewURL:"https://trailers.mubicdn.net/452937/optimised/240p-t-obsession-2025_en_us_375.495_1920_1080_1773246921.mp4"},
+  {title:"Alpha",director:"Julia Ducournau",year:2025,country:"France, Belgium",image:"https://assets.mubicdn.net/images/film/411747/image-w448.jpg?1747833599",fX:0.486787,fY:0.330864,genres:["Drama","Horror"],synopsis:"Alpha, a troubled thirteen-year-old, lives with her single mom. Their world collapses the day she returns from school with a tattoo on her arm.",ourTake:"Finding ghastly echoes between the AIDS epidemic and body horror’s dark imaginary, Julia Ducournau erases the gap between life and art with merciless precision. The hotly anticipated follow-up to the Palme d’Or–winning Titane, Alpha is another operatic provocation from an inimitable auteur.",rating:6.5,previewURL:"https://trailers.mubicdn.net/411747/optimised/240p-t-alpha_en_us_1778079471.mp4",artwork:"https://images.mubicdn.net/images/artworks/990978/cache-990978-1779180326/images-original.png"},
+  {title:"God is Shy",director:"Jocelyn Charles",year:2025,country:"France",image:"https://assets.mubicdn.net/images/film/445143/image-w448.jpg?1780064319",fX:0.5,fY:0.39,genres:["Animation","Short"],synopsis:"During a train ride, Ariel and Paul pass the time, sketching their deepest fears. Their journey takes an unexpected turn when Gilda, another passenger, intrudes on their exchange. Suddenly, their playful drawings are given a frightening reality by the stranger, darkening the innocence of their game.",ourTake:"",rating:8.0,previewURL:"https://trailers.mubicdn.net/445143/optimised/240p-t-god-is-shy_en_us_2187.962_1920_1080_1778142307.mp4",artwork:"https://images.mubicdn.net/images/artworks/996119/cache-996119-1780064350/images-original.png"},
+  {title:"Resurrection",director:"Bi Gan",year:2025,country:"China, France",image:"https://assets.mubicdn.net/images/film/400216/image-w448.jpg?1746716521",fX:0.39,fY:0.48,genres:["Sci-Fi","Crime","Drama"],synopsis:"In a future where humanity has surrendered its ability to dream in exchange for immortality, an outcast finds illusion, nightmarish visions, and beauty in an intoxicating world of his own making.",ourTake:"",rating:7.6,previewURL:"https://trailers.mubicdn.net/400216/optimised/240p-t-resurrection-2024_en_us_5118.847_1920_1080_1763021020.mp4"},
+  {title:"Serious People",director:"Pasqual Gutierrez",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/431237/image-w448.jpg?1771424179",fX:0.5,fY:0.99,genres:["Comedy","Drama"],synopsis:"Married and expecting a child, music video director Pasqual is struggling to balance the needs of his business and his pregnant wife. When a famous rapper hires him, Pasqual finds a look-alike to impersonate him at work while he focuses on his new family. But his replacement has ideas of his own.",ourTake:"Directors Pasqual Gutierrez and Ben Mullinkosson skewer the clout-chasing music video scene with absurd candor, casting loved ones and colleagues in an inventive doppelgänger docufiction. Depicting contemporary LA with cringe-inducing accuracy, this improvisatory industry satire hits home—literally.",rating:7.4,previewURL:"https://trailers.mubicdn.net/431237/optimised/240p-t-serious-people_en_us_1598.308_1920_1080_1770915746.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/926324/cache-926324-1771879611/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/926321/cache-926321-1771424228/images-original.png"},
+  {title:"Hysteria",director:"Mehmet Akif Büyükatalay",year:2025,country:"Germany",image:"https://assets.mubicdn.net/images/film/434103/image-w448.jpg?1745503501",fX:0.55,fY:0.56,genres:["Drama"],synopsis:"A film shoot takes a dark turn when the burning of a Quran throws the crew into turmoil. Caught in the crossfire of accusations, intern Elif is drawn into a dangerous game of secrets and lies and finds herself at the heart of an all-absorbing conspiracy.",ourTake:"The making of a film about racism becomes a mirror of its subject in _Hysteria_. Crafting a timely psychological thriller with sharp political undertones, Mehmet Akif Büyükatalay probes the uneasy ethics of art and the fragility of sincerity in a culture haunted by unacknowledged prejudices.",rating:8.0,previewURL:"https://trailers.mubicdn.net/434103/optimised/240p-t-hysteria-2025_en_us_1739701459.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/917216/cache-917216-1770313541/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/876652/cache-876652-1761037179/images-original.png"},
+  {title:"Silent Friend",director:"Ildikó Enyedi",year:2025,country:"Germany, France",image:"https://assets.mubicdn.net/images/film/408026/image-w448.jpg?1766492427",fX:0.31,fY:0.34,genres:["Drama"],synopsis:"In Marburg’s Old Botanical Garden, an ancient ginkgo tree anchors three lives across a century. In 1908, Grete, the university’s first biology student, turns to plant photography. In 1972, Hannes is changed by close observation. In 2020, a visiting neuroscientist experiments with the tree.",ourTake:"Léa Seydoux and Tony Leung Chiu Wai bring dignified serenity to this ambitiously branching drama of twined human and nonhuman lives. Forgoing the urgency of climate-change documentaries for the calm of a botanist’s attention, this poetic film collected six awards at the Venice Film Festival.",rating:7.8,previewURL:"https://trailers.mubicdn.net/408026/optimised/240p-t-silent-friend_en_us_751.815_1920_1080_1757494078.mp4",artwork:"https://images.mubicdn.net/images/artworks/899177/cache-899177-1766492464/images-original.png"},
+  {title:"Hamnet",director:"Chloé Zhao",year:2025,country:"United Kingdom, United States",image:"https://assets.mubicdn.net/images/film/375425/image-w448.jpg?1766499826",fX:0.51,fY:0.18,genres:["Drama","Romance","Fantasy"],synopsis:"In 16th-century England, Agnes, deeply attuned to the natural world, and Will defy expectations to build a life together. When the loss of their child shatters the family, sorrow strains their bond, as Will retreats into his work, transforming mourning into the tragedy Hamlet.",ourTake:"Nominated for eight Oscars®, Chloé Zhao’s powerfully spiritual drama is earthed by a fathoms-deep performance from Jessie Buckley. Ploughing up the mysteries of creativity and the metaphysics of loss, this twinned history—of a play and a relationship—gives raw and cathartic expression to love.",rating:7.8,previewURL:"https://trailers.mubicdn.net/375425/optimised/240p-t-hamnet_en_us_856.736_1920_1080_1760259853.mp4",artwork:"https://images.mubicdn.net/images/artworks/899200/cache-899200-1766499854/images-original.png"},
+  {title:"The Stranger",director:"François Ozon",year:2025,country:"France",image:"https://assets.mubicdn.net/images/film/451805/image-w448.jpg?1775827506",fX:0.61,fY:0.46,genres:["Drama","Crime"],synopsis:"In 1930s Algeria, apathetic Frenchman Meursault shows total indifference to life. His emotional detachment leads to a murder, followed by a trial that scrutinizes both the crime and his character.",ourTake:"Conjuring the heat and dust of Albert Camus’s classic novel, François Ozon’s meticulous adaptation seduces with its lush black-and-white cinematography. Benjamin Voisin (Summer of 85) cuts an enigmatic figure as the antihero, a dashing yet chilling avatar for the callousness of French imperialism.",rating:7.3,previewURL:"https://trailers.mubicdn.net/451805/optimised/240p-t-the-stranger-2025-francois-ozon_en_us_848.733_1920_1080_1768116628.mp4",artwork:"https://images.mubicdn.net/images/artworks/971161/cache-971161-1775828261/images-original.png"},
+  {title:"Romería",director:"Carla Simón",year:2025,country:"Spain, Germany",image:"https://assets.mubicdn.net/images/film/421811/image-w448.jpg?1755972643",fX:0.36,fY:0.28,genres:["Drama","Biography","Romance"],synopsis:"A woman travels to the Galician city of Vigo to meet her biological father’s family. Like her mother, he died of AIDS when she was very young. Through her encounters with the family, she attempts to piece together the story of her father and the love he shared with her mother.",ourTake:"Tracing the emotional ebb and flow of a bracing pilgrimage to the past, Carla Simón’s soul-searching film immerses its stormy secrets in imagery of aqua-blue iridescence. Anchored by the lead’s confident performance, Romería swirls with the fundamental mysteries of family and inheritance.",rating:6.9,previewURL:"https://trailers.mubicdn.net/421811/optimised/240p-t-romeria_en_us_4197.761_1920_1080_1769115921.mp4",artwork:"https://images.mubicdn.net/images/artworks/912987/cache-912987-1769764172/images-original.png"},
+  {title:"Blue Heron",director:"Sophy Romvari",year:2025,country:"Canada, Hungary",image:"https://assets.mubicdn.net/images/film/450015/image-w448.jpg?1751972542",fX:0.37,fY:0.23,genres:["Drama"],synopsis:"A family of six settles into their new home on Vancouver Island as internal dynamics are slowly revealed through the eyes of the youngest child.",ourTake:"",rating:7.5,previewURL:"https://trailers.mubicdn.net/450015/optimised/240p-t-blue-heron_en_us_943.481_1920_1080_1773833018.mp4",artwork:"https://images.mubicdn.net/images/artworks/944270/cache-944270-1773057860/images-original.png"},
+  {title:"Bugonia",director:"Yorgos Lanthimos",year:2025,country:"United Kingdom, Ireland",image:"https://assets.mubicdn.net/images/film/264995/image-w448.jpg?1763372067",fX:0.56,fY:0.18,genres:["Sci-Fi","Comedy"],synopsis:"Two conspiracy-obsessed friends kidnap the CEO of a powerful pharmaceutical company, convinced she is an alien plotting Earth’s destruction. As paranoia mounts, their clash spirals into a dangerous game where reality, ideology, and control violently collide.",ourTake:"No strangers to the twisted corners of the human psyche, dream team Yorgos Lanthimos and Emma Stone take a tumble down the rabbit hole of conspiracy theories in this brutally funny satire. Sending an electric shock to the system, Bugonia serves up a macabre remedy for the societal ills of our time.",rating:7.4,previewURL:"https://trailers.mubicdn.net/264995/optimised/240p-t-save-the-green-planet-2021_en_us_2495.11_1920_1080_1756488253.mp4",artwork:"https://images.mubicdn.net/images/artworks/884679/cache-884679-1763372123/images-original.png"},
+  {title:"The Good Sister",director:"Sarah Miro Fischer",year:2025,country:"Germany, Spain",image:"https://assets.mubicdn.net/images/film/434119/image-w448.jpg?1745503502",fX:0.42,fY:0.44,genres:["Drama"],synopsis:"Springtime in Berlin occasions new beginnings, but has its darknesses too. When Sam is accused of rape, his sister Rose is asked to testify in the police investigation against him. Faced with uncomfortable questions and moral quandaries, Rose’s feelings toward her older brother are tested.",ourTake:"Braving controversial waters, Sarah Miro Fischer’s feature debut dwells with sibling intimacies that might, from certain angles, seem incestuous. As feminist principles contend with that family loyalty, this self-assured drama risks ethical murkiness—but never turns to shock for cheap effect.",rating:8.4,previewURL:"https://trailers.mubicdn.net/434119/optimised/240p-t-the-good-sister_en_us_1739701246.mp4",artwork:"https://images.mubicdn.net/images/artworks/987911/cache-987911-1778503532/images-original.png"},
+  {title:"The Chronology of Water",director:"Kristen Stewart",year:2025,country:"United States, France",image:"https://assets.mubicdn.net/images/film/362153/image-w448.jpg?1772567578",fX:0.35,fY:0.49,genres:["Biography","Drama","Romance"],synopsis:"A young woman finds her voice through the written word and her salvation as a swimmer—ultimately becoming a triumphant teacher, mother and a singular modern writer.",ourTake:"",rating:6.6,previewURL:"https://trailers.mubicdn.net/362153/optimised/240p-t-the-chronology-of-water_en_us_5030.069_1920_1080_1763506338.mp4",artwork:"https://images.mubicdn.net/images/artworks/938290/cache-938290-1772633221/images-original.png"},
+  {title:"One Battle After Another",director:"Paul Thomas Anderson",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/363407/image-w448.jpg?1758536394",fX:0.43,fY:0.33,genres:["Crime","Thriller","Action","Drama"],synopsis:"Washed-up revolutionary Bob exists in a state of paranoia, surviving off-grid with his self-reliant daughter, Willa. When his evil nemesis resurfaces after 16 years and she goes missing, the former radical scrambles to find her, father and daughter both battling the consequences of his past.",ourTake:"Yanking scruffy comedy from Leonardo DiCaprio, Paul Thomas Anderson rounds up revolutionaries, reactionaries, and authoritarian forces into this action-packed thrill ride. Inspired by Thomas Pynchon, One Battle After Another is an exhilarating vision of discord and chaos in modern America.",rating:7.8,previewURL:"https://trailers.mubicdn.net/363407/optimised/240p-t-one-battle-after-another_en_us_3488.996_1920_1080_1743094427.mp4",artwork:"https://images.mubicdn.net/images/artworks/862924/cache-862924-1758536431/images-original.png"},
+  {title:"I Swear",director:"Kirk Jones",year:2025,country:"United Kingdom",image:"https://assets.mubicdn.net/images/film/450204/image-w448.jpg?1752539735",fX:0.39,fY:0.22,genres:["Drama"],synopsis:"True life story of John Davidson. Diagnosed with Tourette’s at 15, targeted as insane by his peers, he struggled with a condition few had witnessed. Campaigning for Tourette’s as an adult, he accepted his MBE from the Queen in 2019.",ourTake:"",rating:7.9,previewURL:"https://trailers.mubicdn.net/450204/optimised/240p-t-i-swear_en_us_877.812_1920_1080_1752466472.mp4",artwork:"https://images.mubicdn.net/images/artworks/931186/cache-931186-1771931230/images-original.png"},
+  {title:"The Blue Trail",director:"Gabriel Mascaro",year:2025,country:"Brazil, Mexico",image:"https://assets.mubicdn.net/images/film/430956/image-w448.jpg?1760296868",fX:0.49,fY:0.41,genres:["Drama","Sci-Fi"],synopsis:"In the near future, the elderly must relocate to remote retirement colonies so that the younger generations can go about their work undisturbed. 77-year-old Tereza refuses to comply, embarking instead on a life-changing journey through the Amazon.",ourTake:"Springing its resolute heroine from a necrotic society, this wild sci-fi voyage into the Amazon steers a course toward life. Ecstatic with natural and neon colors, splashy with jungly sound, Gabriel Mascaro’s latest film is a subversive and eccentric adventure for the senses—and a gulp of fresh air!",rating:7.4,previewURL:"https://trailers.mubicdn.net/430956/optimised/240p-t-the-other-side-of-the-sky_en_us_1706.849_1920_1038_1777775255.mp4"},
+  {title:"Or Something",director:"Jeffrey Scotti Schroeder",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/451719/image-w448.jpg?1766588681",fX:0.93,fY:0.24,genres:["Drama"],synopsis:"Two strangers show up at the same Brooklyn apartment to collect cash they’re both owed. Forced to spend the day together on a journey through New York City to find the promised money, the pair begin to open up to one another and reveal intimate details about their lives.",ourTake:"SubwayTakes creator Kareem Rahma swaps rapid transit for walking in step with comedian Mary Neely in this fresh low-budget drama, which the pair cowrote. Park buskers and mom-and-pop diners dot the route to intimacy—breaking through the ice of modern loneliness—in this tribute to a wintry New York.",rating:7.4,previewURL:"https://trailers.mubicdn.net/451719/optimised/240p-t-or-something_en_us_1568.52_1920_1080_1753613059.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/905780/cache-905780-1768395954/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/910894/cache-910894-1769184005/images-original.png"},
+  {title:"The Last First Time",director:"Rafael Ruiz Espejo",year:2025,country:"Mexico",image:"https://assets.mubicdn.net/images/film/439855/image-w448.jpg?1745503738",fX:0.48,fY:0.4,genres:["Drama","LGBTQ+"],synopsis:"Eduardo, an 18-year-old kid from a small village in Jalisco, travels to Guadalajara. In this big and strange city, away from the eyes of his parents, he experiences his first encounters in love and sex.",ourTake:"Beckoning with the seductive pull of a new lover on a summer’s eve, this intimate portrait of queer sexual awakening rushes like hormones in the bloodstream. An irresistibly immersive snapshot of one transformative night, this yearning film observes the blossoming of a life with delicate candor.",rating:8.3,artwork:"https://images.mubicdn.net/images/artworks/935622/cache-935622-1772451777/images-original.png"},
+  {title:"The Exit 8",director:"Genki Kawamura",year:2025,country:"Japan",image:"https://assets.mubicdn.net/images/film/440484/image-w448.jpg?1745503762",fX:0.43,fY:0.44,genres:["Horror","Mystery","Thriller"],synopsis:"A man gets lost in an underground passage. He follows the “guide” through the passage, but one after another, strange things happen to him. Is this space real? Or an illusion? Will the man be able to escape the passage?",ourTake:"Exploiting its liminal setting with eerie precision, this uncanny metro-station horror mines the latent dread of daily routines. Designed like a Möbius strip and colored with Kafkaesque absurdism, this ingenious video-game adaptation dwells in the waking nightmare of inescapable repetition.",rating:6.3,previewURL:"https://trailers.mubicdn.net/440484/optimised/240p-t-the-exit-8_en_us_gb_2636.28_1920_1080_1773613951.mp4"},
+  {title:"Nouvelle Vague",director:"Richard Linklater",year:2025,country:"France, United States",image:"https://assets.mubicdn.net/images/film/414706/image-w448.jpg?1764256257",fX:0.62,fY:0.31,genres:["Drama","Biography","Comedy"],synopsis:"Paris, 1959. A young Jean-Luc Godard is determined to make his debut film. Battling conventions, budgetary chaos and sceptical producers, he and his collaborators launch a quiet revolution in cinema, capturing the raw energy of the era.",ourTake:"Richard Linklater channels Parisian chic—and a certain je ne sais quoi—in this erudite homage to Jean-Luc Godard’s ultracool Breathless. Part dissection of a cinematic revolution and part who’s who of the titular movement, Nouvelle Vague is a cinephilic tour de force peppered with Godardian wit.",rating:7.4,previewURL:"https://trailers.mubicdn.net/414706/optimised/240p-t-nouvelle-vague-2024_en_us_3003.674_1920_1080_1747558957.mp4",artwork:"https://images.mubicdn.net/images/artworks/877531/cache-877531-1761147269/images-original.png"},
+  {title:"Chungking Express 2020",director:"Wong Kar Wai",year:2025,country:"Hong Kong",image:"",fX:0.5,fY:0.5,genres:["Romance"],synopsis:"In ‘90s Hong Kong, broken-hearted Policeman 223 encounters a blonde female assassin, and they spend a short time together overnight. Policeman 663, who also is getting over heartbreak, sees his life gradually changed by the intrusions of the ’person of his dreams.’",ourTake:"",rating:9.5},
+  {title:"Sacrifice",director:"Romain Gavras",year:2025,country:"Greece, United Kingdom",image:"https://assets.mubicdn.net/images/film/414481/image-w448.jpg?1754221568",fX:0.51,fY:0.45,genres:["Action","Adventure","Comedy"],synopsis:"A star-studded charity event turns chaotic when a radical group crashes it, seeking a mystical artifact tied to an ancient prophecy.",ourTake:"",artwork:"https://images.mubicdn.net/images/artworks/919564/cache-919564-1770631753/images-original.png"},
+  {title:"Kokuho",director:"Lee Sang-il",year:2025,country:"Japan",image:"https://assets.mubicdn.net/images/film/432041/image-w448.jpg?1770388838",fX:0.59,fY:0.38,genres:["Drama"],synopsis:"After the death of his yakuza father, 14-year-old Kikuo is taken in by a famous kabuki actor. Alongside Shunsuke, the actor’s only son, he wholly dedicates himself to theater. For decades, the two young men grow and evolve together, but only one will become the greatest Japanese master of kabuki.",ourTake:"An Oscar®-nominated epic spanning across decades, Lee Sang-il’s resplendent drama makes history as the highest-grossing Japanese live-action film of all time. Witnessing the blood, sweat, and tears that spill on the Kabuki stage, Kokuho celebrates an art of heart-fluttering beauty and precision.",rating:8.0,previewURL:"https://trailers.mubicdn.net/432041/optimised/240p-t-kokuho_en_us_1559.873_1920_804_1757630798.mp4",artwork:"https://images.mubicdn.net/images/artworks/918356/cache-918356-1770389625/images-original.png"},
+  {title:"Rose of Nevada",director:"Mark Jenkin",year:2025,country:"United Kingdom",image:"https://assets.mubicdn.net/images/film/435880/image-w448.jpg?1756024690",fX:0.54,fY:0.3,genres:["Mystery","Drama"],synopsis:"A mysterious boat returns to a village 30 years after vanishing. Two men join its crew hoping for better fortune. After one voyage, they find themselves transported back in time, mistaken for the original crew.",ourTake:"Cementing his status as a seminal voice in British filmmaking, the multi-hyphenate Mark Jenkin crafts another salt-sprayed, hand-cranked vision of haunted Cornish tides. Merging the ghost story with time-warp sci-fi, this eerie mood piece navigates troubled seas of national nostalgia and decline.",rating:7.5,previewURL:"https://trailers.mubicdn.net/435880/optimised/240p-t-rose-of-nevada_en_us_1432.9099999999999_1920_1080_1770854678.mp4",artwork:"https://images.mubicdn.net/images/artworks/950919/cache-950919-1773639979/images-original.png"},
+  {title:"Pillion",director:"Harry Lighton",year:2025,country:"United Kingdom, Ireland",image:"https://assets.mubicdn.net/images/film/436829/image-w448.jpg?1768905104",fX:0.34,fY:0.43,genres:["Drama","LGBTQ+","Romance"],synopsis:"Colin, a timid man, meets Ray, a confident biker gang leader, who initiates him into a submissive relationship, challenging Colin’s mundane existence and prompting personal growth through their unconventional dynamic.",ourTake:"Gleaming motorcycle bodywork reflects kinky mind games in director Harry Lighton’s startling and alluring debut, an erotic tragicomedy dressed in buffed-leather black. Harry Melling is crushingly sensitive as a young man submitting to the savage will of Alexander Skarsgård’s sphinxlike Adonis.",rating:7.3,previewURL:"https://trailers.mubicdn.net/436829/optimised/240p-t-pillion-2025_en_us_660.048_1920_1080_1768461288.mp4",artwork:"https://images.mubicdn.net/images/artworks/907510/cache-907510-1768905067/images-original.png"},
+  {title:"The Wizard of the Kremlin",director:"Olivier Assayas",year:2025,country:"France, United Kingdom",image:"https://assets.mubicdn.net/images/film/413113/image-w448.jpg?1753699722",fX:0.43,fY:0.31,genres:["Thriller","History","Drama"],synopsis:"Russia, early 1990s. Amid post-Soviet chaos,  Vadim Baranov, a resourceful TV producer, unexpectedly becomes the spin doctor of a rising politician, Vladimir Putin. Years later, after retreating into silence, Baranov finally opens up, revealing the dark secrets of the regime he helps build.",ourTake:"Casting heartthrob Jude Law as Vladimir Putin, French auteur Olivier Assayas continues to defy expectations with his latest genre experiment. Extracting political truths from fiction, this gripping thriller sheds light on the shadowy forces behind the ascent of Russia’s most powerful man.",rating:5.8,previewURL:"https://trailers.mubicdn.net/413113/optimised/240p-t-the-wizard-of-the-kremlin_en_us_gb_831.413_1920_1080_1774768427.mp4",artwork:"https://images.mubicdn.net/images/artworks/919415/cache-919415-1770631419/images-original.png"},
+  {title:"The Christophers",director:"Steven Soderbergh",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/430955/image-w448.jpg?1754977139",fX:0.67,fY:0.29,genres:["Comedy"],synopsis:"A mainstay of the London art scene since his breakout in the 1960s, Julian Sklar has drifted into a self-imposed seclusion. His two estranged children enlist Lori, a forger, to pose as an assistant in a deceptive bid to secure an inheritance for themselves.",ourTake:"Dialogue as sharp as an artist’s craft knife slashes at the cult of personality in this playful chamber piece from heist-film maestro Steven Soderbergh. Orbiting an airily conspiratorial Ian McKellen and Michaela Coel, The Christophers is slippery with feints and bluffs, and gleefully destructive.",rating:6.9,previewURL:"https://trailers.mubicdn.net/430955/optimised/240p-t-the-christophers_en_us_793.969_1920_1080_1772418448.mp4",artwork:"https://images.mubicdn.net/images/artworks/975833/cache-975833-1776336575/images-original.png"},
+  {title:"The Little Sister",director:"Hafsia Herzi",year:2025,country:"France, Germany",image:"https://assets.mubicdn.net/images/film/417809/image-w448.jpg?1777364457",fX:0.48,fY:0.33,genres:["Drama","LGBTQ+"],synopsis:"Fatima, 17, the youngest daughter of a French-Algerian family in a Paris suburb, leaves school for a prestigious prep class. She plays football, has a secret boyfriend, but hides that she loves women. In Paris, new freedoms clash with family tradition and faith, forcing her to find her own path.",ourTake:"Awarded both the Queer Palm and the Best Actress prize at Cannes, Hafsia Herzi’s fourth feature as director is alive with signature sexiness and empathy. Textured by an authentic performance from an impressive newcomer in Nadia Melliti, this lesbian coming-of-age film smolders with real passion.",rating:6.5,previewURL:"https://trailers.mubicdn.net/417809/optimised/240p-t-la-petite-derniere_en_us_1661.691_1920_1080_1760867860.mp4",artwork:"https://images.mubicdn.net/images/artworks/983650/cache-983650-1777364499/images-original.png"},
+  {title:"Marty Supreme",director:"Josh Safdie",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/418411/image-w448.jpg?1768902460",fX:0.56,fY:0.23,genres:["Biography","Drama","Sport","Comedy"],synopsis:"In Manhattan’s backstreets, shoe clerk Marty dreams beyond his uncle’s shop, chasing a table tennis career after hours in smoky competition halls. Short on money, he turns to lies, stolen cash, and reckless alliances, betting relationships and morals on a fragile chance at fame.",ourTake:"Director Josh Safdie plays brinksmanship with the American dream in his febrile, win-at-all-costs ping pong thriller. A transfixing Timothée Chalamet fast-talks his way through a scuzzily evoked 1950s New York underworld, testing his vulpine wiles on a rogues’ gallery of scene-stealing cameos.",rating:7.4,previewURL:"https://trailers.mubicdn.net/418411/optimised/240p-t-marty-supreme_en_us_542.28_1920_1080_1755094619.mp4",artwork:"https://images.mubicdn.net/images/artworks/907413/cache-907413-1768902506/images-original.png"},
+  {title:"If I Had Legs I’d Kick You",director:"Mary Bronstein",year:2025,country:"United States",image:"https://assets.mubicdn.net/images/film/382733/image-w448.jpg?1745503382",fX:0.71,fY:0.49,genres:["Drama","Comedy"],synopsis:"With her life crashing down around her, Linda attempts to navigate her child’s mysterious illness, her absent husband, a missing person, and an increasingly hostile relationship with her therapist.",ourTake:"With an electrifying, Oscar®-nominated performance, Rose Byrne bottles lightning-strike energy in this portrait of frenzied motherhood. Charged with the formal daring and dark humour of American independent Mary Bronstein, the 21st-century nervous breakdown inspires cosmic awe in this terrific film.",rating:6.8,previewURL:"https://trailers.mubicdn.net/382733/optimised/240p-t-if-i-had-legs-i-d-kick-you_en_us_565.5699999999999_1920_1080_1754730542.mp4",artwork:"https://images.mubicdn.net/images/artworks/890881/cache-890881-1765365693/images-original.png"},
+  {title:"The Love That Remains",director:"Hlynur Pálmason",year:2025,country:"Iceland, Denmark",image:"https://assets.mubicdn.net/images/film/406102/image-w448.jpg?1745503515",fX:0.49,fY:0.21,genres:["Drama"],synopsis:"The film tenderly captures a year in the life of a family as the parents navigate their separation. Through both playful and heartfelt moments, the film portrays the bittersweet essence of faded love and shared memories amidst the changing seasons.",ourTake:"",rating:7.3,previewURL:"https://trailers.mubicdn.net/406102/optimised/240p-t-on-land-and-sea_en_us_2766.011_1920_1080_1764265789.mp4"},
+  {title:"Phantoms of July",director:"Julian Radlmaier",year:2025,country:"Germany",image:"https://assets.mubicdn.net/images/film/450009/image-w448.jpg?1751981001",fX:0.39,fY:0.43,genres:["Comedy"],synopsis:"An East German waitress with a broken heart and an Iranian YouTuber with a broken arm seek solace from loneliness on a ghost hunt in the mountains.",ourTake:"",rating:7.2,previewURL:"https://trailers.mubicdn.net/450009/optimised/240p-t-phantoms-of-july_en_us_3525.335_1920_1080_1764264946.mp4",artwork:"https://images.mubicdn.net/images/artworks/920796/cache-920796-1770808420/images-original.png"},
+  {title:"Montréal, My Beautiful",director:"He Xiaodan",year:2025,country:"Canada",image:"https://assets.mubicdn.net/images/film/456535/image-w448.jpg?1759442769",fX:0.6,fY:0.36,genres:["Drama","Romance","LGBTQ+"],synopsis:"Feng Xia, a 53-year-old Chinese immigrant and mother living in Montreal, has spent her life shaped by duty — to her family, her culture, and a loveless marriage. But when she meets Camille, a spirited young Québécoise, a long-buried desire is awakened.",ourTake:"",rating:8.0,previewURL:"https://trailers.mubicdn.net/456535/optimised/240p-t-montreal-my-beautiful_en_us_1748.961_1920_1080_1759742614.mp4",artwork:"https://images.mubicdn.net/images/artworks/916098/cache-916098-1770224327/images-original.png"},
+  {title:"The Last Guest of the Holloway Motel",director:"Ramiel Petros",year:2025,country:"United States, United Kingdom",image:"https://assets.mubicdn.net/images/film/443869/image-w448.jpg?1746824860",fX:0.51,fY:0.45,genres:["Documentary","LGBTQ+"],synopsis:"Former British football star Tony Powell manages a dying Hollywood motel, reflecting on his solitary life and the path not taken.",ourTake:"",artwork:"https://images.mubicdn.net/images/artworks/972662/cache-972662-1776071674/images-original.png"},
+  {title:"Amrum",director:"Fatih Akın",year:2025,country:"Germany",image:"https://assets.mubicdn.net/images/film/433233/image-w448.jpg?1758536702",fX:0.48,fY:0.22,genres:["Drama","History"],synopsis:"On Amrum Island in spring 1945, twelve-year-old Nanning hunts seals, fishes at night, and works the fields to help feed his family. When the war ends, his mother sinks into depression, and he must navigate new conflicts while struggling to find his own path.",ourTake:"A steady gaze and a level horizon impart a stunning simplicity to a deafeningly tempestuous period of history in Fatih Akin’s arresting film, featuring Diane Kruger. Vast stretches of windblown beach become a painter’s canvas for a pivotal conflict between childhood innocence and malignant ideology.",rating:7.0,previewURL:"https://trailers.mubicdn.net/433233/optimised/240p-t-amrum_en_us_2735.051_1920_1080_1767331646.mp4",artwork:"https://images.mubicdn.net/images/artworks/964910/cache-964910-1774944754/images-original.png"}
+];
+
+const SEARCH_FILMS = ALL_FILMS;
+const SEARCH_SUGGESTED = ALL_FILMS.slice().sort((a,b) => (b.rating||0)-(a.rating||0)).slice(0,8);
+
+function filmCard(film) {
+  const posX = Math.round((film.fX||0.5) * 100);
+  const posY = Math.round((film.fY||0.3) * 100);
+  return `<a class="film-card" href="#" aria-label="${film.title}">
+    <div class="card-img-wrap">
+      <img class="card-img" src="${film.image}" alt="${film.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
+      ${film.previewURL ? `<video class="card-preview" src="${film.previewURL}" muted loop playsinline preload="none"></video>` : ''}
+      <div class="card-overlay">
+        <div class="card-title">${film.title}</div>
+        <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
+      </div>
+      ${film.previewURL ? `<button class="card-audio-btn" aria-label="Toggle audio">
+        <svg class="icon-audio-off" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.5403 18.914C11.6378 18.9719 11.7491 19.0022 11.8624 19.0015V18.9928C11.9669 18.9928 12.0539 18.9753 12.1409 18.9315C12.3237 18.844 12.4456 18.669 12.4456 18.4765V5.51627C12.4456 5.32375 12.3237 5.14873 12.1409 5.06122C11.9494 4.97371 11.7144 4.98246 11.5403 5.08748L6.87462 8.60537H2.58321C2.26114 8.60537 2 8.84165 2 9.12168V14.2848C2 14.5735 2.26114 14.8011 2.58321 14.8011H6.87462L11.5403 18.914ZM15.3183 8.4666C15.1748 8.28187 15.2074 8.01585 15.3914 7.87134L15.4086 7.85783C15.594 7.71226 15.8623 7.74521 16.007 7.93129L18.6178 11.2908L21.2266 7.93384C21.3712 7.74776 21.6396 7.71481 21.825 7.86038L21.8422 7.87389C22.0261 8.0184 22.0588 8.28442 21.9152 8.46915L19.1701 12.0015L21.9161 15.5349C22.0597 15.7196 22.027 15.9857 21.843 16.1302L21.8258 16.1437C21.6405 16.2892 21.3721 16.2563 21.2275 16.0702L18.6178 12.7122L16.0061 16.0728C15.8615 16.2588 15.5931 16.2918 15.4078 16.1462L15.3905 16.1327C15.2066 15.9882 15.1739 15.7222 15.3175 15.5375L18.0655 12.0015L15.3183 8.4666Z" fill="#fff"/></svg>
+        <svg class="icon-audio-on" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none"><path fill-rule="evenodd" clip-rule="evenodd" d="M17.8696 5.13125C18.1501 4.94123 18.5213 4.95902 18.7826 5.175C20.8609 7.07375 22 9.50625 22 12.0437C21.9503 14.6402 20.8211 17.0968 18.887 18.8162C18.7565 18.9387 18.5739 19 18.3913 19C18.2435 19 18.0957 18.965 17.9739 18.8775C17.7043 18.685 17.6696 18.3525 17.9043 18.1425C19.6453 16.5939 20.6611 14.3815 20.7043 12.0437C20.6588 9.66517 19.6089 7.41864 17.8174 5.86625C17.5826 5.65625 17.6087 5.32375 17.8696 5.13125ZM11.5304 18.9125C11.6279 18.9704 11.739 19.0006 11.8522 19V18.9912C11.9565 18.9912 12.0435 18.9737 12.1304 18.93C12.313 18.8425 12.4348 18.6675 12.4348 18.475V5.51625C12.4348 5.32375 12.313 5.14875 12.1304 5.06125C11.9391 4.97375 11.7043 4.9825 11.5304 5.0875L6.86957 8.605H2.58261C2.26087 8.605 2 8.84125 2 9.12125V14.2837C2 14.5725 2.26087 14.8 2.58261 14.8H6.86957L11.5304 18.9125ZM15.0444 8.11572C15.0476 7.9826 15.1037 7.85631 15.2 7.765C15.4035 7.57644 15.7189 7.58418 15.913 7.7825C18.1927 10.1113 18.2349 13.8369 16.0087 16.2175C15.9043 16.3225 15.7739 16.375 15.6348 16.375C15.513 16.375 15.3913 16.3312 15.287 16.2437C15.087 16.0512 15.0783 15.7362 15.2696 15.5262C17.1385 13.5377 17.1 10.415 15.1826 8.47375C15.0909 8.37776 15.0411 8.24885 15.0444 8.11572Z" fill="#fff"/></svg>
+      </button>` : ''}
+    </div>
+    <div class="card-synopsis-block">
+      <div class="card-actions">
+        <button class="card-watch-btn"><span class="material-icons" style="font-size:18px;line-height:1;">play_arrow</span>Watch</button>
+        <button class="card-icon-btn"><span class="material-icons" style="font-size:18px;">add</span></button>
+        <button class="card-icon-btn"><span class="material-icons" style="font-size:18px;">star_border</span></button>
+      </div>
+      <p class="card-synopsis">${film.ourTake || film.synopsis || ''}</p>
+    </div>
+  </a>`;
+}
+
+// Populate filter dropdowns
+(function() {
+  const genres = [...new Set(ALL_FILMS.flatMap(f => f.genres || []))].sort();
+  const countries = [...new Set(ALL_FILMS.flatMap(f => (f.country || '').split(', ')))].filter(Boolean).sort();
+
+  const genreEl = document.getElementById('filterGenre');
+  const countryEl = document.getElementById('filterCountry');
+  const yearEl = document.getElementById('filterYear');
+
+  genres.forEach(g => genreEl.insertAdjacentHTML('beforeend', `<option value="${g}">${g}</option>`));
+  countries.forEach(c => countryEl.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`));
+
+  function applyFilters() {
+    const genre = genreEl.value;
+    const country = countryEl.value;
+    const decade = parseInt(yearEl.value);
+    const filtered = ALL_FILMS.filter(f =>
+      (!genre || (f.genres || []).includes(genre)) &&
+      (!country || (f.country || '').split(', ').includes(country)) &&
+      (!decade || (f.year >= decade && f.year < (decade === 2020 ? 9999 : decade + 10)))
+    );
+    document.getElementById('filmGrid').innerHTML = filtered.map(filmCard).join('');
+  }
+
+  genreEl.addEventListener('change', applyFilters);
+  countryEl.addEventListener('change', applyFilters);
+  yearEl.addEventListener('change', applyFilters);
+})();
+
+document.getElementById('filmGrid').innerHTML = ALL_FILMS.map(filmCard).join('');
+
+
+
+function searchDropItem(f) {
+  return `<a class="search-drop-item" href="#">
+    <div class="search-drop-thumb">
+      <img src="${f.image}" alt="${f.title}" loading="lazy" style="object-position:${Math.round((f.fX||0.5)*100)}% ${Math.round((f.fY||0.3)*100)}%">
+      <div class="search-drop-play">
+        <svg width="28" height="28" viewBox="0 0 44 44"><g transform="translate(1 1)" fill-rule="evenodd"><circle cx="21" cy="21" r="21" fill="none" stroke="#fff" stroke-width="1.5"/><path fill="#fff" d="M30 21.5L15 29V14z"/></g></svg>
+      </div>
+    </div>
+    <div class="search-drop-info">
+      <div class="search-drop-title">${f.title}</div>
+      <div class="search-drop-director">${f.director}</div>
+    </div>
+  </a>`;
+}
+
+function positionSearchDropdown() {
+  const el = document.getElementById('searchInline');
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  const dropTop = r.bottom + 8;
+  const dd = document.getElementById('searchDropdown');
+  dd.style.left = r.left + 'px';
+  dd.style.right = 'auto';
+  dd.style.top = dropTop + 'px';
+  const bg = document.getElementById('searchNavBg');
+  if (bg) { bg.style.left = r.left + 'px'; bg.style.width = (r.width - 4) + 'px'; bg.style.height = dropTop + 'px'; bg.style.display = 'block'; }
+}
+
+function openSearch() {
+  const dd = document.getElementById('navDropdown');
+  if (dd && dd.classList.contains('open')) {
+    dd.classList.remove('open');
+    document.getElementById('navHamburger').setAttribute('aria-expanded', false);
+  }
+  const inline = document.getElementById('searchInline');
+  inline.classList.add('is-open');
+  setTimeout(() => document.getElementById('searchInput').focus(), 50);
+  document.getElementById('searchDropLabel').textContent = 'Suggested';
+  document.getElementById('searchDropList').innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
+  document.getElementById('searchDropBackdrop').classList.add('is-open');
+  document.getElementById('searchInput').addEventListener('transitionend', function handler(e) {
+    if (e.propertyName === 'width') {
+      positionSearchDropdown();
+      document.getElementById('searchDropdown').classList.add('is-open');
+      this.removeEventListener('transitionend', handler);
+    }
+  });
+}
+
+function closeSearch() {
+  document.getElementById('searchInline').classList.remove('is-open');
+  document.getElementById('searchDropdown').classList.remove('is-open');
+  document.getElementById('searchDropBackdrop').classList.remove('is-open');
+  document.getElementById('searchInput').value = '';
+  const bg = document.getElementById('searchNavBg');
+  if (bg) bg.style.display = 'none';
+}
+
+document.getElementById('searchOpenBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  const inline = document.getElementById('searchInline');
+  inline.classList.contains('is-open') ? closeSearch() : openSearch();
+});
+
+document.getElementById('searchDropBackdrop').addEventListener('click', closeSearch);
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  const q = e.target.value.trim();
+  const list = document.getElementById('searchDropList');
+  const label = document.getElementById('searchDropLabel');
+  if (!q) {
+    label.textContent = 'Suggested';
+    list.innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
+    return;
+  }
+  const ql = q.toLowerCase();
+  const matches = SEARCH_FILMS.filter(f =>
+    f.title.toLowerCase().includes(ql) || f.director.toLowerCase().includes(ql)
+  ).slice(0, 8);
+  label.textContent = matches.length ? `${matches.length} result${matches.length !== 1 ? 's' : ''} for "${q}"` : `No results for "${q}"`;
+  list.innerHTML = matches.map(searchDropItem).join('');
+});
+
+window.addEventListener('resize', () => {
+  if (document.getElementById('searchInline').classList.contains('is-open')) positionSearchDropdown();
+});
+</script>
+
+<style>
+.version-switcher {
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #EAEAEA;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+.version-switcher-label {
+  font-family: Riforma, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #999;
+  text-align: center;
+  padding: 0 4px 4px;
+  border-bottom: 1px solid #EAEAEA;
+  margin-bottom: 2px;
+}
+.version-switcher a {
+  font-family: Riforma, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: rgba(0,0,0,0.45);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  text-align: center;
+  transition: background 0.15s, color 0.15s;
+}
+.version-switcher a:hover { background: #F5F5F5; color: #323232; }
+.version-switcher a.is-active { background: #323232; color: #fff; }
+</style>
+
+<div class="version-switcher">
+  <div class="version-switcher-label">Version</div>
+  <a href="film-database.html">V1</a>
+  <a href="film-database-v2.html" class="is-active">V2</a>
+  <a href="film-database-v3.html">V3</a>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-logo">
+    <a href="mubi-showing.html" aria-label="MUBI">
+      <svg viewBox="0 0 800 240" width="55" style="vertical-align:top" aria-hidden="true">
+        <g fill="#7d7d7d">
+          <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+          <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+          <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+          <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+          <circle cx="766.5"  cy="118.11" r="33.13"/>
+          <circle cx="595.89" cy="118.11" r="33.13"/>
+          <circle cx="681.2"  cy="118.11" r="33.13"/>
+          <circle cx="595.89" cy="33.13"  r="33.13"/>
+          <circle cx="681.2"  cy="33.13"  r="33.13"/>
+          <circle cx="595.89" cy="203.1"  r="33.13"/>
+          <circle cx="681.2"  cy="203.1"  r="33.13"/>
+        </g>
+      </svg>
+    </a>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#">About MUBI</a></li>
+    <li><a href="#">Ways to Watch</a></li>
+    <li><a href="#">Students</a></li>
+    <li><a href="#">Jobs</a></li>
+    <li><a href="#">Terms &amp; Privacy</a></li>
+    <li><a href="#">Help</a></li>
+    <li><a href="#">Notebook</a></li>
+    <li><a href="#">Notebook Magazine</a></li>
+    <li><a href="#">MUBI Editions</a></li>
+    <li><a href="#">SHOP</a></li>
+  </ul>
+  <p class="footer-copy">© 2025 MUBI Inc. All rights reserved.</p>
+</footer>
+</body>
+</html>
