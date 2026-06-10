@@ -36,8 +36,7 @@
 
     /* ─── HEADER / NAV ─── */
     .site-header {
-      position: sticky;
-      top: 0;
+      position: relative;
       z-index: 100;
       background: #fff;
       border-bottom: 1px solid #EAEAEA;
@@ -2180,7 +2179,7 @@ document.querySelectorAll('#filterGenre, #filterCountry, #filterYear, #filterSor
   text-decoration: none;
   padding: 6px 12px;
   border-radius: 5px;
-  text-align: center;
+  text-align: left;
   transition: background 0.15s, color 0.15s;
 }
 .version-switcher a:hover { background: #F5F5F5; color: #323232; }
@@ -2190,7 +2189,10 @@ document.querySelectorAll('#filterGenre, #filterCountry, #filterYear, #filterSor
 <div class="version-switcher">
   <div class="version-switcher-label">Version</div>
   <a href="film-database.html">V1</a>
-  <a href="film-database-v2.html">V2</a>
+  <div style="display:flex;gap:2px;">
+    <a href="film-database-v2.html" style="flex:1;">V2</a>
+    <a href="film-database-v2.html" style="flex:1;">V2.1</a>
+  </div>
   <a href="film-database-v3.html" class="is-active">V3</a>
 </div>
 
