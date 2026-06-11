@@ -251,6 +251,21 @@
       font-size: 12px;
       color: rgba(0,0,0,0.45);
     }
+    .search-drop-suggestion {
+      display: none;
+      padding: 8px 12px 10px;
+      border-top: 1px solid #F0F0F0;
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      color: rgba(0,0,0,0.45);
+    }
+    .search-drop-suggestion.is-visible { display: block; }
+    .search-drop-suggestion a {
+      color: #001489;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .search-drop-suggestion a:hover { text-decoration: underline; }
     .search-drop-backdrop {
       display: none;
       position: fixed;
@@ -565,7 +580,7 @@
       font-size: 15px;
       font-weight: 400;
       color: rgba(0,0,0,0.5);
-      margin-top: 10px;
+      margin-top: 18px;
       line-height: 1.5;
     }
     .site-footer {
@@ -793,7 +808,7 @@
         <div class="nav-dropdown" id="navDropdown">
           <a href="mubi-showing.html" id="dropdownNowShowing" style="display:none;">Now Showing</a>
           <a href="#">Notebook</a>
-          <a href="film-database.html" class="is-active">Film Database</a>
+          <a href="film-database-v2.html" class="is-active">Film Database</a>
           <a href="#">Notebook Magazine</a>
           <a href="#">MUBI Editions</a>
           <a href="#">SHOP</a>
@@ -820,13 +835,18 @@
 <div id="searchDropdown" class="search-dropdown">
   <div class="search-drop-label" id="searchDropLabel">Suggested</div>
   <div id="searchDropList"></div>
+  <div id="searchDropSuggestion" class="search-drop-suggestion">Did you mean <a href="https://mubi.com/films/2001-a-space-odyssey" target="_self">2001: A Space Odyssey</a>?</div>
 </div>
 <div id="searchDropBackdrop" class="search-drop-backdrop"></div>
 
 <main>
   <div class="wrap">
-    <div class="page-hero">
-      <h1 class="page-title">FILM DATABASE</h1>
+    <div class="page-hero" style="flex-direction:row;align-items:flex-end;justify-content:space-between;">
+      <div>
+        <h1 class="page-title">FILM DATABASE</h1>
+        <p class="page-subtitle">The Film Database covers hundreds of thousands of films.<br>If you want to browse films now showing use <a href="explore.html" style="color:#001489;text-decoration:underline;">browse</a>.</p>
+      </div>
+      <a href="https://mubi.com/en/contribute" target="_self" style="font-family:Riforma,sans-serif;font-size:12px;font-weight:500;letter-spacing:0.05em;color:#666;text-decoration:none;white-space:nowrap;flex-shrink:0;border:1px solid #D0D0D0;border-radius:2px;padding:8px 16px;transition:border-color 0.15s,color 0.15s;" onmouseover="this.style.borderColor='#323232';this.style.color='#323232'" onmouseout="this.style.borderColor='#D0D0D0';this.style.color='#666'">CONTRIBUTE TO THE DATABASE</a>
     </div>
     <div class="page-tabs">
       <a href="#" class="page-tab is-active" data-tab="films">Films</a>
@@ -1373,6 +1393,9 @@ const ALL_FILMS = [
 
 const SEARCH_FILMS = ALL_FILMS;
 const SEARCH_SUGGESTED = ALL_FILMS.slice().sort((a,b) => (b.rating||0)-(a.rating||0)).slice(0,8);
+const SEARCH_EXTRAS = [
+  {title:"2001: A Space Odyssey",director:"Stanley Kubrick",year:1968,country:"UK, US",image:"https://assets.mubicdn.net/images/film/303/image-w448.jpg?1745489497",fX:0.5,fY:0.3,slug:"2001-a-space-odyssey",notShowing:true,webUrl:"https://mubi.com/films/2001-a-space-odyssey"}
+];
 
 const ON_MUBI_SLUGS = new Set(["perfect-days","close-2022","aftersun","portrait-de-la-jeune-fille-en-feu","northwest-passage-david-lynch","sentimental-value","paris-texas","the-fall","episode-1-2015","the-girl-with-the-needle","crossing-2023-levan-akin","part-1","parasite-2018","festen","the-worst-person-in-the-world","witches","meeting-the-man-james-baldwin-in-paris","crossing-the-bridge-the-sound-of-istanbul","great-freedom","la-grazia","holy-spider","the-handmaiden","the-substance","the-apartment","no-other-choice","fargo","we-need-to-talk-about-kevin","fallen-leaves-2023","decision-to-leave","the-edge-of-heaven","the-elephant-man","it-was-just-an-accident","the-general","sherlock-jr","shiva-baby-2020","self-portrait-as-a-coffee-pot-episode-1","ucurtmayi-vurmasinlar","high-low-john-galliano","the-secret-agent-2025","malcolm-x","le-otto-montagne","bird","past-lives","the-settlers-2023","a-valparaiso","first-cow","a-regular-woman","wadjda","blue-velvet","oslo-august-31st","the-silence-of-the-lambs","petite-maman","limbo-2019-ben-sharrock","the-great-beauty","phoenix-2014","thelma-louise","my-father-s-shadow","alcarras","beanpole","prayers-for-the-stolen","flow-2024","the-graduate","you-hide-me","reality-2014-coralie-fargeat","allegorie-citadine","les-cinq-diables","invisible-demons","the-watermelon-woman","some-like-it-hot","charade","time-to-love","dona-flor-and-her-two-husbands","cold-tropics","when-harry-met-sally","do-the-right-thing","on-body-and-soul","winter-in-sokcho","paterson","popeye-the-sailor-meets-sindbad-the-sailor","dahomey","the-conversation","nun-or-never","matthias-maxime","midnight-cowboy","chapters-4-5-my-undesirable-friends-part-i-last-air-in-moscow","lingui","reprise","rotting-in-the-sun","barbara-2012","the-white-balloon","belle-de-jour","being-john-malkovich","bacurau","soul-kitchen","sirat","humanist-vampire-seeking-consenting-suicidal-person","orlando","night-of-the-living-dead","cow-2021","taxi-tehran-2015","yannick","elevator-to-the-gallows","revanche","the-times-of-harvey-milk","grand-theft-hamlet","peeping-tom","la-cienaga","notturno-2020","submarino","ema-2019","transit-2018","one-fine-morning-2022","a-summer-s-tale-1996","mermaids","la-cocina","asparagus","moonstruck","born-in-flames","pompei-below-the-clouds","good-time","irreversible","about-dry-grasses-2023","free-chol-soo-lee","kes","rewind-play","sorry-baby-2025","offside","beating-hearts-2024","tavern-man","blow-out","pictures-of-ghosts","i-hired-a-contract-killer","queer","perfumed-nightmare","seven-chances","american-fiction","the-unheavenly-host","eletrodomestica","faya-dayi","whores-glory","the-nile-hilton-incident","adaptation","short-sharp-shock","gasoline-rainbow","outer-space","toomas-beneath-the-valley-of-the-wild-wolves","chapters-1-3-my-undesirable-friends-part-i-last-air-in-moscow","gerhard-richter-painting","babyteeth","i-am-love","uncle-boonmee-who-can-recall-his-past-lives","passages-2022","la-antena","boro-in-the-box","c-est-pas-moi","son-of-saul","bug-diner","shanghai-blues","from-what-is-before","fists-in-the-pocket","tendaberry","the-hypnosis-2023","neighbouring-sounds","the-factory-2011","stories-we-tell","the-consequences-of-love","father-mother-sister-brother","a-cambodian-spring","the-making-of-priscilla","the-celluloid-closet","inland-empire","l-avance","los-delincuentes","tram","the-circle","the-reluctant-revolutionary","one-second","tom-at-the-farm","special-flight","incoherence","afire","un-dessert-pour-constance","the-future-tense","45-years","babettes-feast","the-wrestler","bergman-island-2021","return-to-seoul","silvia-prieto","the-mirror-1997","the-mysterious-gaze-of-the-flamingo","fragments-for-venus","lamb-2020","the-killing-of-a-sacred-deer","swimming-pool","priscilla","the-adventures-of-priscilla-queen-of-the-desert","cryptozoo","undine-2020","minari","die-my-love","crimson-gold","sibyl-2019","this-is-not-a-film","titane","the-last-year-of-darkness","a-chiara","deep-red","wild-goose-lake","dream-work","ramen-shop","state-funeral","my-first-film","super-happy-forever","revenge-2017","winter-s-bone","pleasure-2020","high-school","mitski-the-land","sound-of-falling","flowers-of-taipei-taiwan-new-cinema","medusa-deluxe","touki-bouki","atlantiques","the-golden-glove","orlando-my-political-biography","o-bi-o-ba-the-end-of-civilization","hot-milk-2023","muse-2024","jerichow","melancholia","grand-tour","our-hospitality","vinil-verde","magic-farm","charles-dead-or-alive","toxic-2024","yukis-sun","when-i-saw-you","in-the-heat-of-the-night","a-dog-called-money","benedetta","terminal-norte","beginning-2020","bamako","broadway-by-light","living-still-life","azor","a-place-without-fear","further-beyond","pepe-2024","desire-pie","mond","13-tzameti","tardes-de-soledad","the-box-2021-lorenzo-vigas","thief","dazed-and-confused","being-john-smith","the-magic-gloves","oh-moon","old-joy","nickel-boys","law-and-order","the-souvenir-part-ii","matt-and-mara","blank-narcissus-passion-of-the-swamp","l-accident-de-piano","spring-night-summer-night","viet-and-nam","actual-people","-45365","occupied-city","endless-cookie","house-by-the-river","unclenching-the-fists","something-wild","agon-2025","this-closeness","to-wong-foo-thanks-for-everything-julie-newmar","the-nature-of-love","the-here-after","discipline-2026","shrooms-2023","the-cut-2014","the-war-of-the-world-next-centur","the-anabasis-of-may-and-fusako-shigenobu-masao-adachi-and-the-27-years-without-images","train-again","the-fortress-2008","dammi","bones-and-all","la-libertad-2017","pebbles-2021","felicite","the-african-desperate","altman","harvest","pavements","annette","caprice-1983","the-blazing-sun-1954","zama","under-the-silver-lake","pepi-luci-bom","in-jackson-heights","please-baby-please","the-last-showgirl","wuthering-heights-2011","florentina-hubaldo-cte","el-planeta","golem","b-for-boy","madeline-s-madeline","good-one","from-the-reports-of-security-guards-patrol-services-no1","the-watchman-2024","an-asian-ghost-story","a-bigger-splash-2015","the-towrope","night-tide","the-store","paris-memories","bloodsuckers-2021","the-road-2009","magnificent-obsession","the-second-act","river-of-grass","butterfly-vision","self-criticism-of-a-bourgeois-dog","it-follows","the-nest-2020-sean-durkin","pino","days-of-the-bagnold-summer","the-image-book","vice-is-broke","the-assistant-2019","at-berkeley","heaven-s-gate-1980","lizard-2020","the-mastermind","on-the-road","abouna","rapado","ashes","damage","ali-ava","white-turnips-make-it-hard-to-sleep","parthenope","model","century-of-birthing","alps","yves-saint-laurent-the-last-collections","city-hall-2020","new-order-2020","calm-with-horses","what-you-gonna-do-when-the-world-s-on-fire","un-film-dramatique","tatsumi","within-our-gates","thoroughbred","smoking-causes-coughing","letters-to-max","touch-me-not-2018","bad-tales","ga-ga-glory-to-the-heroes","sexual-drive","slack-bay","21xoxo","time-of-the-wolf","passing-summer","le-moulin","only-the-river-flows","have-a-nice-day","irma-la-douce","flux-gourmet","in-the-name-of-christ","tellurian-drama","the-neon-demon","dont-expect-too-much","monangambeee","friday-night-saturday-morning","signal-8","closed-curtain","fragment-53","the-practice-2023","the-president-s-cake","ingrid-goes-west","chicken-2015","mary-is-happy-mary-is-happy","oxhide","zombi-child","shakti-2019","first-love-2019","lucky-grandma","blood-of-my-blood-2015","fruits-of-passion","trailer-of-the-film-that-will-never-exist-phony-wars","sol-negro","rey","wetlands-2013","the-cathedral-2021","white-ant","emerald-cities","rouge-2015","untitled-77-a","manufraktur","two-gun-shots","mekong-hotel","eight-postcards-from-utopia","a-mysterious-world","bad-for-a-moment","the-loneliest-planet","aspen","papirosen","coma-2022","bad-seed-1934","the-end","the-other-lamb","taste-2021","get-ready","alien0089","hollywood-90028","storm-children-book-one","guilty-bystander","we-cant-go-home-again","the-capsule","-36","la-pelicula-infinita","leonor-will-never-die","shagbands","married-to-the-mob","animals-2019","for-you-i-will-fight","an-odd-turn","hidden-agenda","as-long-as-shotguns-remain","pirates-2021","young-adam","my-skin-luminous","la-paz-in-buenos-aires","beauty-is-not-a-sin","laissez-bronzer-les-cadavres","dogma","letter","satan-in-high-heels","human-traffic","the-driller-killer","the-second-game","shanty-tramp","wild-guitar","her-smell","blind-pig-who-wants-to-fly","nosebleed-2018","sunset-2017","edith-walks","lek-and-the-dogs","an-evening-with-beverly-luff-lin","elegy-to-the-visitor-from-the-revolution","megalopolis-2021","cut-2012","stark-fear","plan-9-from-outer-space","frankie-2019","dead-knot","second-coming-2014","miniatures-many-berlin-artists-in-hoisdorf","the-house-by-the-cemetery","touch-of-crude","ahlaam","the-makes","the-nest-of-the-cuckoo-birds","not-a-pretty-picture","murder-in-mississippi-1965","the-ugly-one","sheep-2013","she-man-a-story-of-fixation","occidental","an-investigation-on-the-night-that-wont-forget","rosebush-pruning","the-girls-on-f-street","radio-mary","minotaur-2015","the-burning-hell","god-is-shy","phantoms-of-july","one-shocking-moment","walk-the-walk-1970","notes-of-a-crocodile","orphan-2025","rocket-rain","if-footmen-tire-you-what-will-horses-do","house-of-seven-belles","the-believer-s-heaven","cottonpickin-chickenpickers","house-on-bare-mountain","motion-picture-la-sortie-des-ouvriers-de-lusine-lumiere-a-lyon","chained-girls","orgy-of-the-dead","hot-thrills-and-warm-chills","olga-s-house-of-shame","the-fall-of-sir-douglas-weatherford"]);
 
@@ -1473,12 +1496,10 @@ document.querySelectorAll('.page-tab').forEach(tab => {
 
 
 function searchDropItem(f) {
-  return `<a class="search-drop-item" href="#">
+  return `<a class="search-drop-item" href="${f.webUrl || '#'}" target="_self">
     <div class="search-drop-thumb">
       <img src="${f.image}" alt="${f.title}" loading="lazy" style="object-position:${Math.round((f.fX||0.5)*100)}% ${Math.round((f.fY||0.3)*100)}%">
-      <div class="search-drop-play">
-        <svg width="28" height="28" viewBox="0 0 44 44"><g transform="translate(1 1)" fill-rule="evenodd"><circle cx="21" cy="21" r="21" fill="none" stroke="#fff" stroke-width="1.5"/><path fill="#fff" d="M30 21.5L15 29V14z"/></g></svg>
-      </div>
+      ${f.notShowing ? '' : `<div class="search-drop-play"><svg width="28" height="28" viewBox="0 0 44 44"><g transform="translate(1 1)" fill-rule="evenodd"><circle cx="21" cy="21" r="21" fill="none" stroke="#fff" stroke-width="1.5"/><path fill="#fff" d="M30 21.5L15 29V14z"/></g></svg></div>`}
     </div>
     <div class="search-drop-info">
       <div class="search-drop-title">${f.title}</div>
@@ -1542,17 +1563,26 @@ document.getElementById('searchInput').addEventListener('input', e => {
   const q = e.target.value.trim();
   const list = document.getElementById('searchDropList');
   const label = document.getElementById('searchDropLabel');
+  const suggestion = document.getElementById('searchDropSuggestion');
   if (!q) {
     label.textContent = 'Suggested';
     list.innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
+    suggestion.classList.remove('is-visible');
     return;
   }
   const ql = q.toLowerCase();
-  const matches = SEARCH_FILMS.filter(f =>
+  const extraMatches = SEARCH_EXTRAS.filter(f =>
     f.title.toLowerCase().includes(ql) || f.director.toLowerCase().includes(ql)
-  ).slice(0, 8);
+  );
+  const matches = [
+    ...SEARCH_FILMS.filter(f =>
+      f.title.toLowerCase().includes(ql) || f.director.toLowerCase().includes(ql)
+    ).slice(0, 8 - extraMatches.length),
+    ...extraMatches
+  ];
   label.textContent = matches.length ? `${matches.length} result${matches.length !== 1 ? 's' : ''} for "${q}"` : `No results for "${q}"`;
   list.innerHTML = matches.map(searchDropItem).join('');
+  suggestion.classList.toggle('is-visible', ql.includes('2001'));
 });
 
 window.addEventListener('resize', () => {

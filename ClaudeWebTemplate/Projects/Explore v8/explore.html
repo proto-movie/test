@@ -301,6 +301,27 @@
       font-size: 12px;
       color: rgba(0,0,0,0.45);
     }
+    .search-drop-suggestion {
+      display: none;
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      top: 35px;
+      display: none;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 0 12px;
+      border-top: none;
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      color: #323232;
+      line-height: 1.6;
+    }
+    .search-drop-suggestion.is-visible { display: flex; flex-direction: column; }
+    .search-drop-suggestion a { text-decoration: none; }
+    .search-drop-suggestion .sug-title { color: #001489; font-weight: 700; }
+    .search-drop-suggestion .sug-title:hover { text-decoration: underline; }
+    .search-drop-suggestion .sug-db { color: #323232; }
     .search-drop-backdrop {
       display: none;
       position: fixed;
@@ -1407,7 +1428,7 @@
         </button>
         <div class="nav-dropdown" id="navDropdown">
           <a href="#">Notebook</a>
-          <a href="film-database-v3.html">Film Database</a>
+          <a href="film-database-v2.html">Film Database</a>
           <a href="#">Notebook Magazine</a>
           <a href="#">MUBI Editions</a>
           <a href="#">SHOP</a>
@@ -1434,6 +1455,7 @@
 <div id="searchDropdown" class="search-dropdown">
   <div class="search-drop-label" id="searchDropLabel">Suggested</div>
   <div id="searchDropList"></div>
+  <div id="searchDropSuggestion" class="search-drop-suggestion"></div>
 </div>
 <div id="searchDropBackdrop" class="search-drop-backdrop"></div>
 
@@ -2924,17 +2946,26 @@ document.getElementById('searchInput').addEventListener('input', e => {
   const q = e.target.value.trim();
   const list = document.getElementById('searchDropList');
   const label = document.getElementById('searchDropLabel');
+  const suggestion = document.getElementById('searchDropSuggestion');
   if (!q) {
     label.textContent = 'Suggested';
     list.innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
+    suggestion.classList.remove('is-visible');
     return;
   }
   const ql = q.toLowerCase();
   const matches = ALL_FILMS.filter(f =>
     f.title.toLowerCase().includes(ql) || f.director.toLowerCase().includes(ql)
   ).slice(0, 8);
-  label.textContent = matches.length ? `${matches.length} result${matches.length !== 1 ? 's' : ''} for "${q}"` : `No results for "${q}"`;
+  const show2001 = ql.includes('2001');
+  if (show2001) {
+    label.textContent = `No results for "${q}" in Now Showing.`;
+    suggestion.innerHTML = `<div>Did you mean <a class="sug-title" href="https://mubi.com/films/2001-a-space-odyssey" target="_self">2001: A Space Odyssey</a>?</div><div class="sug-db">Learn more about the film in the MUBI Film Database</div>`;
+  } else {
+    label.textContent = matches.length ? `${matches.length} result${matches.length !== 1 ? 's' : ''} for "${q}"` : `No results for "${q}"`;
+  }
   list.innerHTML = matches.map(searchDropItem).join('');
+  suggestion.classList.toggle('is-visible', show2001);
 });
 
 window.addEventListener('resize', () => {
