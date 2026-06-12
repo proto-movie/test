@@ -866,7 +866,9 @@
     @media (max-width: 809px) {
       .page-title { font-size: 24px; }
       .page-tabs { justify-content: space-between; }
-      .page-tab { font-size: 14px; white-space: nowrap; margin-right: 0; flex: none; }
+      .page-tab { font-size: 14px; white-space: normal; margin-right: 0; flex: 1; text-align: center; line-height: 1.2; padding: 8px 4px; }
+      #filmsFilterBar { flex-wrap: wrap; }
+      #filmsFilterBar .filter-bar-right { flex-basis: 100%; margin-left: 0; padding-top: 4px; justify-content: flex-end; }
       .page-hero { flex-direction: column !important; align-items: flex-start !important; justify-content: flex-start !important; }
       .page-subtitle { display: none; }
       .page-hero > a[href*="contribute"] { display: none !important; margin-top: 12px; }
@@ -1049,7 +1051,7 @@
   </div>
   <div class="page-body" id="pageBody">
     <div class="wrap">
-      <div class="filter-bar">
+      <div class="filter-bar" id="filmsFilterBar">
         <select class="filter-select" id="filterGenre">
           <option value="">All genres</option>
         </select>
