@@ -941,14 +941,14 @@
     }
     .filter-panel-label {
       font-family: Riforma, sans-serif;
-      font-size: 14px; font-weight: 700;
+      font-size: 14px; font-weight: 400;
       text-transform: uppercase; letter-spacing: 0.6px;
       color: #5A5A5A;
       margin-bottom: 12px;
     }
     .lang-type-toggle {
       display: flex;
-      border: 1.5px solid #888888;
+      border: 1px solid #D0D0D0;
       border-radius: 50px;
       background: #fff;
       margin-bottom: 16px;
@@ -963,7 +963,8 @@
       left: 3px;
       width: calc((100% - 6px) / 3);
       height: calc(100% - 6px);
-      background: #323232;
+      background: #fff;
+      border: 1px solid #D0D0D0;
       border-radius: 50px;
       transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
       pointer-events: none;
@@ -975,7 +976,6 @@
       font-size: 14px;
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.4px;
       color: #666666;
       background: transparent;
       border: none;
@@ -987,7 +987,7 @@
       border-radius: 50px;
       transition: color 0.22s;
     }
-    .lang-type-seg.is-active { color: #fff; }
+    .lang-type-seg.is-active { color: #363636; }
     #langPills { flex-wrap: wrap; overflow: visible; gap: 6px; }
     #langPills .genre-pill { margin: 0; }
     .lang-pill-count { font-size: 11px; margin-left: 4px; color: #666; }
@@ -1041,7 +1041,7 @@
       font-weight: 500;
       color: #323232;
       background: #fff url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23323232' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
-      border: 1px solid #888888;
+      border: 1px solid #D0D0D0;
       border-radius: 2px;
       padding: 3px 30px 3px 12px;
       height: 24px;
