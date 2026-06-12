@@ -686,6 +686,61 @@
       transition: color 0.15s;
     }
     .trailer-close:hover { color: #fff; }
+    /* ─── REVIEW RAIL ─── */
+    .review-section { padding: 24px 0 60px; }
+    .review-section-title {
+      font-family: Riforma, sans-serif;
+      font-size: 14px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      color: #323232;
+      padding-bottom: 10px;
+    }
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 4px; row-gap: 4px;
+    }
+    @media (min-width: 810px) { .review-grid { grid-template-columns: repeat(4, 1fr); } }
+    .review-card { background: #fff; display: flex; flex-direction: column; cursor: pointer; }
+    .review-card:hover { background: #FAFAFA; }
+    .review-film-still {
+      display: block; position: relative;
+      aspect-ratio: 371 / 209; background: #d0d0d0;
+      overflow: hidden; flex-shrink: 0; text-decoration: none;
+    }
+    .review-film-still img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .review-film-still-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%); }
+    .review-film-label {
+      position: absolute; bottom: 10px; left: 14px; right: 14px;
+      font-family: Riforma, sans-serif; font-size: 13px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.2px; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .review-body { padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .review-header { display: flex; align-items: center; gap: 10px; }
+    .review-avatar {
+      width: 32px; height: 32px; border-radius: 50%; background: #323232;
+      flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center;
+    }
+    .review-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    a.review-avatar { text-decoration: none; }
+    .review-user-info { flex: 1; min-width: 0; }
+    .review-username {
+      font-family: Riforma, sans-serif; font-size: 13px; font-weight: 500;
+      color: #323232; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      text-decoration: none; display: block;
+    }
+    .review-username:hover { text-decoration: underline; }
+    .review-stars { display: flex; gap: 2px; margin-top: 2px; }
+    .review-stars svg { width: 10px; height: 10px; }
+    .review-date { font-family: Riforma, sans-serif; font-size: 12px; color: rgba(0,0,0,0.4); white-space: nowrap; flex-shrink: 0; }
+    .review-text {
+      font-family: Riforma, sans-serif; font-size: 13px; line-height: 1.55; color: #555;
+      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; flex: 1;
+    }
+    .review-footer { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #F0F0F0; }
+    .review-likes { display: flex; align-items: center; gap: 4px; font-family: Riforma, sans-serif; font-size: 12px; color: rgba(0,0,0,0.4); }
+    .review-likes svg { width: 12px; height: 12px; }
   </style>
   <style>
 .version-switcher {
@@ -1163,6 +1218,147 @@
       </div>
     </div>
 
+  </div>
+</section>
+
+<section class="review-section">
+  <div class="wrap">
+    <div class="review-section-title">Recent Popular Reviews</div>
+    <div class="review-grid">
+
+      <div class="review-card">
+        <a href="https://mubi.com/films/la-grazia" class="review-film-still">
+          <img src="https://assets.mubicdn.net/images/film/437598/image-w856.jpg?1751620976" alt="La grazia" loading="lazy">
+          <div class="review-film-still-overlay"></div>
+          <div class="review-film-label">La grazia · 2025</div>
+        </a>
+        <div class="review-body">
+          <div class="review-header">
+            <a href="https://mubi.com/users/14198095" class="review-avatar">
+              <img src="https://images.mubicdn.net/images/avatars/641538/cache-641538-1760597746/images-large.jpg" alt="Victor Eremita">
+            </a>
+            <div class="review-user-info">
+              <a href="https://mubi.com/users/14198095" class="review-username">Victor Eremita</a>
+              <div class="review-stars">
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#DEDEDE"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#DEDEDE"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#DEDEDE"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+              </div>
+            </div>
+            <div class="review-date">May 15</div>
+          </div>
+          <p class="review-text">A hangover from the extravagances in Sorrentino's aesthetics, it takes him full circle back to the hallmarks of his early work while attempting to broaden the scale of his contemplations.</p>
+          <div class="review-footer">
+            <div class="review-likes">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              14 likes
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <a href="https://mubi.com/films/project-hail-mary" class="review-film-still">
+          <img src="https://assets.mubicdn.net/images/film/418273/image-w856.jpg?1773055274" alt="Project Hail Mary" loading="lazy">
+          <div class="review-film-still-overlay"></div>
+          <div class="review-film-label">Project Hail Mary · 2026</div>
+        </a>
+        <div class="review-body">
+          <div class="review-header">
+            <a href="https://mubi.com/users/12048750" class="review-avatar">
+              <img src="https://images.mubicdn.net/images/avatars/474662/cache-474662-1741564200/images-large.jpg" alt="Bear's Video Library">
+            </a>
+            <div class="review-user-info">
+              <a href="https://mubi.com/users/12048750" class="review-username">Bear's Video Library</a>
+              <div class="review-stars">
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#DEDEDE"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+              </div>
+            </div>
+            <div class="review-date">Mar 23</div>
+          </div>
+          <p class="review-text">Movies like this deserve to be seen on the biggest possible theater screen. Not just for the visuals but for the combined efforts of Lord, Miller, Gosling, and Hüller. Makes one wonder, is it possible to make a perfect film?</p>
+          <div class="review-footer">
+            <div class="review-likes">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              10 likes
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <a href="https://mubi.com/films/discipline-2026" class="review-film-still">
+          <img src="https://assets.mubicdn.net/images/film/465582/image-w856.jpg?1772538660" alt="Discipline" loading="lazy">
+          <div class="review-film-still-overlay"></div>
+          <div class="review-film-label">Discipline · 2026</div>
+        </a>
+        <div class="review-body">
+          <div class="review-header">
+            <a href="https://mubi.com/users/13092121" class="review-avatar">
+              <img src="https://images.mubicdn.net/images/avatars/657668/cache-657668-1773660670/images-large.jpeg" alt="qikealarcon">
+            </a>
+            <div class="review-user-info">
+              <a href="https://mubi.com/users/13092121" class="review-username">qikealarcon</a>
+              <div class="review-stars">
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#DEDEDE"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+              </div>
+            </div>
+            <div class="review-date">Mar 15</div>
+          </div>
+          <p class="review-text">A beautifully executed minimalist idea. It proves that dialogue is not necessary when image, color and movement carry the meaning. The photography and the carefully controlled palette work perfectly together.</p>
+          <div class="review-footer">
+            <div class="review-likes">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              10 likes
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <a href="https://mubi.com/films/the-drama" class="review-film-still">
+          <img src="https://assets.mubicdn.net/images/film/420475/image-w856.jpg?1772453980" alt="The Drama" loading="lazy">
+          <div class="review-film-still-overlay"></div>
+          <div class="review-film-label">The Drama · 2026</div>
+        </a>
+        <div class="review-body">
+          <div class="review-header">
+            <a href="https://mubi.com/users/6771045" class="review-avatar">
+              <img src="https://images.mubicdn.net/images/avatars/203661/cache-203661-1626420140/images-large.jpeg" alt="Kevin You">
+            </a>
+            <div class="review-user-info">
+              <a href="https://mubi.com/users/6771045" class="review-username">Kevin You</a>
+              <div class="review-stars">
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+                <svg viewBox="0 0 10 10" fill="#323232"><path d="M5 0l1.2 3.7H10L7 6l1.2 3.7L5 7.7 1.8 9.7 3 6 0 3.7h3.8z"/></svg>
+              </div>
+            </div>
+            <div class="review-date">Apr 20</div>
+          </div>
+          <p class="review-text">Isn't it nice when cinema refuses to serve as an escape from reality? Especially when it lures audiences in as a rom-com. An important piece of social issue driven dramedy — Borgli at his most provocative.</p>
+          <div class="review-footer">
+            <div class="review-likes">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              7 likes
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </section>
 
