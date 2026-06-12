@@ -33,7 +33,7 @@
     main { padding-top: 0; }
     
     .wrap { width: 100%; padding: 0 20px; margin: 0 auto; }
-    @media (min-width: 810px)  { .wrap { padding: 0 22px; max-width: 836px; } }
+    @media (min-width: 381px)  { .wrap { padding: 0 22px; max-width: 836px; } }
     @media (min-width: 1186px) { .wrap { max-width: 1124px; } }
     @media (min-width: 1562px) { .wrap { max-width: 1500px; } }
 
@@ -124,6 +124,84 @@
     }
     .nav-hamburger:hover { color: #323232; }
     .nav-hamburger-wrap { position: relative; }
+    /* ─── MOBILE NAV ─── */
+    .nav-mobile {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 12px;
+      position: relative;
+    }
+    @media (min-width: 1186px) { .nav-mobile { display: none; } }
+    .nav-mobile-left {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      z-index: 1;
+    }
+    .nav-mobile-logo {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+    }
+    .nav-mobile-right { margin-left: auto; }
+
+    /* ─── MOBILE DRAWER ─── */
+    .mob-drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      pointer-events: none;
+    }
+    .mob-drawer.open { pointer-events: auto; }
+    .mob-drawer-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.6);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-overlay { opacity: 1; }
+    .mob-drawer-panel {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: calc(100% - 60px);
+      max-width: 350px;
+      background: #fff;
+      overflow-y: auto;
+      padding: 20px 0 120px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-panel { transform: translateX(0); }
+    .mob-drawer-close {
+      position: absolute;
+      top: 20px;
+      left: calc(min(100% - 60px, 350px) + 20px);
+      color: #fff;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-close { opacity: 1; }
+    .mob-drawer-link {
+      display: block;
+      padding: 0 25px;
+      font-family: Riforma, sans-serif;
+      font-size: 20px;
+      line-height: 42px;
+      color: #7d7d7d;
+      text-decoration: none;
+      transition: color 0.1s;
+    }
+    .mob-drawer-link:hover { color: #323232; }
+    .mob-drawer-link.is-active { color: #323232; }
+    .mob-drawer-sep { border-top: 1px solid #EAEAEA; margin: 10px 0; }
+
 
     .nav-dropdown {
       display: none;
@@ -384,11 +462,12 @@
 
     .film-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
       column-gap: 4px;
       row-gap: 36px;
     }
-    @media (min-width: 650px)  { .film-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 810px)  { .film-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1186px) { .film-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (min-width: 1562px) { .film-grid { grid-template-columns: repeat(4, 1fr); } }
 
     .film-card { display: block; background: #fff; cursor: pointer; position: relative; z-index: 0; }
@@ -833,8 +912,8 @@
     .filter-sort .filter-select {
       border: none;
       font-size: 14px;
-      background: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23323232' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 0 center transparent;
-      padding: 0 18px 0 4px;
+      background: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23323232' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 4px center transparent;
+      padding: 0 14px 0 4px;
     }
     .genre-pill {
       font-family: Riforma, sans-serif;
@@ -853,6 +932,15 @@
     }
     .genre-pill:hover { border-color: #323232; color: #323232; }
     .genre-pill.is-active { background: #323232; color: #fff; border-color: #323232; }
+    .filter-btn-count {
+      display: none;
+      width: 18px; height: 18px;
+      background: #000; color: #fff;
+      border-radius: 50%;
+      font-size: 11px; font-weight: 600;
+      align-items: center; justify-content: center;
+      flex-shrink: 0; line-height: 1;
+    }
     .filter-btn {
       display: flex; align-items: center; gap: 5px;
       flex-shrink: 0;
@@ -1126,7 +1214,7 @@
     /* ─── DIRECTOR CARDS ─── */
     #directorsGrid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       column-gap: 4px;
       row-gap: 20px;
       width: 100%;
@@ -1378,11 +1466,122 @@
       font-size: 14px; color: #aaa;
       margin-left: auto;
     }
+
+    @media (max-width: 809px) { #genrePillsMobileWrap { display: flex !important; } }
+    @media (max-width: 809px) { #pillsWrap { display: none !important; } }
+    @media (max-width: 809px) { #collCatMobileWrap { display: flex !important; } }
+    @media (max-width: 809px) { #collFilterBar .pills-wrap { display: none !important; } }
+    @media (max-width: 809px) { .coll-filter-bar { display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding-top: 8px; } }
+    @media (max-width: 809px) { .coll-filter-sort-row { margin-top: 0; } }
+    @media (max-width: 809px) { #directorSortRow { flex-direction: row !important; flex-wrap: wrap; align-items: center; padding-top: 8px !important; } }
+    @media (max-width: 809px) { #dirCatMobileWrap { display: flex !important; order: 1; } }
+    @media (max-width: 809px) { #directorCatPills { display: none !important; } }
+    @media (max-width: 809px) { #directorSortRow .coll-filter-sort-row { order: 2; margin-left: auto; } }
+    @media (max-width: 809px) { #dirTagsWrap { order: 3; flex-basis: 100%; } }
+    @media (max-width: 809px) { .page-title { font-size: 24px; } }
+    @media (max-width: 809px) {
+      .page-tabs { justify-content: space-between; }
+      .page-tab { font-size: 13px; white-space: nowrap; margin-right: 0; flex: none; }
+    }
+    @media (max-width: 809px) { .director-tag { font-size: 13px; } }
+    @media (max-width: 809px) { .filter-btn-count { display: flex; } }
+    @media (max-width: 809px) { .filter-btn-count:empty { display: none; } }
+    @media (max-width: 809px) { #filterBtnMobile { display: flex !important; margin-left: auto; } }
+    #filterBtnMobile.filter-btn-mobile-hidden { display: none !important; }
+    @media (max-width: 809px) { #filterBtn { display: none !important; } }
+    @media (max-width: 809px) { .filter-bar { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; } }
+    @media (max-width: 809px) { .filter-controls { justify-content: flex-end; margin-top: 0; } }
+    @media (max-width: 809px) { .film-grid { row-gap: 20px; } }
+    @media (max-width: 809px) { .coll-tile-right { width: 222px; } }
+
+    /* ─── DISABLE HOVER ON TOUCH DEVICES ─── */
+    @media (hover: none) {
+      .film-card:hover { z-index: 0; }
+      .film-card:hover .card-img-wrap { box-shadow: none; }
+      .film-card:hover .card-img,
+      .film-card:hover .card-img-wrap::before,
+      .rating-active .film-card:hover .card-img-wrap::after { transform: none; }
+      .film-card:hover .card-preview { opacity: 0; transform: none; }
+      .film-card:hover .card-synopsis-block { opacity: 0; pointer-events: none; transform: scaleX(1); }
+      .film-card:hover .card-synopsis-block .card-actions,
+      .film-card:hover .card-synopsis-block .card-synopsis,
+      .film-card:hover .card-synopsis-block .card-meta-icons { transform: translateY(8px); }
+      .film-card:hover .card-eyebrow,
+      .film-card:hover .card-title,
+      .film-card:hover .card-meta { transform: none; }
+      .film-card:hover .rating-badge { transform: none; }
+      .film-card:hover .card-audio-btn,
+      #directorFilmsGrid .film-card:hover .card-audio-btn { opacity: 0; pointer-events: none; }
+      .director-card:hover .card-img { transform: none; }
+    }
   </style>
 </head>
 <body>
 
+<div class="mob-drawer" id="mobDrawer" role="dialog" aria-modal="true" aria-label="Navigation">
+  <div class="mob-drawer-overlay" onclick="closeMobDrawer()"></div>
+  <div class="mob-drawer-panel">
+    <nav>
+      <a href="mubi-showing.html" class="mob-drawer-link">Now Showing</a>
+      <a href="explore.html" class="mob-drawer-link is-active">Browse</a>
+      <a href="#" class="mob-drawer-link">Watchlist</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="#" class="mob-drawer-link">Notebook</a>
+      <a href="film-database-v2.html" class="mob-drawer-link">Film Database</a>
+      <a href="#" class="mob-drawer-link">Notebook Magazine</a>
+      <a href="#" class="mob-drawer-link">MUBI Editions</a>
+      <a href="#" class="mob-drawer-link">SHOP</a>
+      <a href="#" class="mob-drawer-link">Gift MUBI</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="#" class="mob-drawer-link">About</a>
+      <a href="#" class="mob-drawer-link">Students</a>
+      <a href="#" class="mob-drawer-link">Contribute</a>
+      <a href="#" class="mob-drawer-link">Jobs</a>
+      <a href="#" class="mob-drawer-link">Terms &amp; Privacy</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="#" class="mob-drawer-link">Earn 1 month free</a>
+      <a href="#" class="mob-drawer-link">Viewing History</a>
+      <a href="#" class="mob-drawer-link">Settings</a>
+      <a href="#" class="mob-drawer-link">Help</a>
+      <a href="#" class="mob-drawer-link">Log Out</a>
+    </nav>
+  </div>
+  <button class="mob-drawer-close" onclick="closeMobDrawer()" aria-label="Close menu">
+    <svg viewBox="0 0 11 11" stroke="currentColor" stroke-width="1.5" width="20"><path d="M1,1 L10,10"/><path d="M10,1 L1,10"/></svg>
+  </button>
+</div>
+
 <header class="site-header">
+  <div class="nav-mobile">
+    <div class="nav-mobile-left">
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="openMobDrawer()" aria-label="Open menu" id="navHamburgerMob">
+          <span class="material-icons" style="font-size:20px;">menu</span>
+        </button>
+      </div>
+      <button class="search-icon-btn" id="searchOpenBtnMob" aria-label="Search">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    <a href="mubi-showing.html" class="nav-mobile-logo" aria-label="MUBI">
+      <svg viewBox="0 0 800 240" width="65" style="vertical-align:top" aria-hidden="true">
+        <g fill="#000000">
+          <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+          <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+          <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+          <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+          <circle cx="766.5"  cy="118.11" r="33.13"/>
+          <circle cx="595.89" cy="118.11" r="33.13"/>
+          <circle cx="681.2"  cy="118.11" r="33.13"/>
+          <circle cx="595.89" cy="33.13"  r="33.13"/>
+          <circle cx="681.2"  cy="33.13"  r="33.13"/>
+          <circle cx="595.89" cy="203.1"  r="33.13"/>
+          <circle cx="681.2"  cy="203.1"  r="33.13"/>
+        </g>
+      </svg>
+    </a>
+    <div class="nav-mobile-right"></div>
+  </div>
   <div class="nav-desktop">
     <div class="nav-logo">
       <a href="mubi-showing.html" aria-label="MUBI">
@@ -1463,6 +1662,11 @@
   <div class="wrap">
     <div class="page-hero">
       <h1 class="page-title">Browse</h1>
+      <button class="filter-btn" id="filterBtnMobile" style="display:none;" aria-label="Filters">
+        <svg width="14" height="14" viewBox="4 2 16 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="filter-icon" style="flex-shrink:0"><line x1="8" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="16" y2="21"/><circle cx="8" cy="9" r="3"/><circle cx="16" cy="15" r="3"/></svg>
+        <span style="font-family:Riforma,sans-serif;font-weight:500;">Filters</span>
+        <span id="filterBtnCountMobile" class="filter-btn-count"></span>
+      </button>
     </div>
 
     <div class="page-tabs">
@@ -1471,6 +1675,27 @@
       <a href="#" class="page-tab" data-tab="directors">Directors</a>
     </div>
     <div class="filter-bar" id="filterBar">
+      <div class="filter-sort" id="genrePillsMobileWrap" style="display:none;">
+        <select class="filter-select" id="genrePillsMobile" style="padding-left:0;">
+          <option value="">All</option>
+          <option value="Drama">Drama</option>
+          <option value="Comedy">Comedy</option>
+          <option value="Documentary">Documentary</option>
+          <option value="Thriller">Thriller</option>
+          <option value="Horror">Horror</option>
+          <option value="Romance">Romance</option>
+          <option value="Crime">Crime</option>
+          <option value="Series">Series</option>
+          <option value="Mystery">Mystery</option>
+          <option value="Sci-Fi">Sci-Fi</option>
+          <option value="Fantasy">Fantasy</option>
+          <option value="LGBTQ+">LGBTQ+</option>
+          <option value="Cult">Cult</option>
+          <option value="Animation">Animation</option>
+          <option value="Short">Short</option>
+          <option value="Avant-Garde">Avant-Garde</option>
+        </select>
+      </div>
       <div class="pills-wrap pills-wrap--overflow" id="pillsWrap">
         <button class="pills-chevron pills-chevron--left" id="pillsLeft" aria-label="Scroll genres left">
           <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,1 1,6 6,11"/></svg>
@@ -1502,6 +1727,7 @@
         <button class="filter-btn" id="filterBtn">
           <svg width="14" height="14" viewBox="4 2 16 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="filter-icon" style="flex-shrink:0"><line x1="8" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="16" y2="21"/><circle cx="8" cy="9" r="3"/><circle cx="16" cy="15" r="3"/></svg>
           <span id="filterBtnLabel" style="font-family:Riforma,sans-serif;font-weight:500;">Filters</span>
+          <span id="filterBtnCount" class="filter-btn-count"></span>
         </button>
         <div class="filter-sort">
           <span style="font-family:Riforma,sans-serif;font-size:14px;font-weight:500;color:#323232;">Sort by:</span>
@@ -1545,6 +1771,16 @@
       </div>
     </div>
     <div class="coll-filter-bar" id="collFilterBar" style="display:none">
+      <div class="filter-sort" id="collCatMobileWrap" style="display:none;">
+        <select class="filter-select" id="collCatMobile" style="padding-left:0;">
+          <option value="">All</option>
+          <option value="spotlight">Spotlight</option>
+          <option value="director">Director Focus</option>
+          <option value="awards">Awards &amp; Festivals</option>
+          <option value="decade">Decade</option>
+          <option value="region">Region</option>
+        </select>
+      </div>
       <div class="pills-wrap" style="min-width:0;">
         <div class="genre-pills">
           <a href="#" class="genre-pill is-active" data-coll-cat="">All</a>
@@ -1566,6 +1802,15 @@
       </div>
     </div>
     <div id="directorSortRow" style="display:none; flex-direction:column; padding:12px 0 0;">
+      <div class="filter-sort" id="dirCatMobileWrap" style="display:none;">
+        <select class="filter-select" id="dirCatMobile" style="padding-left:0;">
+          <option value="">All</option>
+          <option value="Emerging Directors">Emerging Directors</option>
+          <option value="Female Directors">Female Directors</option>
+          <option value="Classic Auteurs">Classic Auteurs</option>
+          <option value="Award Winning">Award Winning</option>
+        </select>
+      </div>
       <div class="genre-pills" id="directorCatPills" style="flex-wrap:wrap;">
         <a href="#" class="genre-pill is-active" data-dir-cat="">All</a>
         <a href="#" class="genre-pill" data-dir-cat="Emerging Directors">Emerging Directors</a>
@@ -1573,7 +1818,7 @@
         <a href="#" class="genre-pill" data-dir-cat="Classic Auteurs">Classic Auteurs</a>
         <a href="#" class="genre-pill" data-dir-cat="Award Winning">Award Winning</a>
       </div>
-      <div style="min-width:0; display:flex; align-items:center;">
+      <div id="dirTagsWrap" style="min-width:0; display:flex; align-items:center;">
         <div class="director-tags-row" id="directorTagsRow" style="flex:1; min-width:0; padding:0;"></div>
       </div>
       <div class="coll-filter-sort-row">
@@ -2592,14 +2837,15 @@ document.querySelectorAll('.page-tab[data-tab]').forEach(tab => {
     const label = tab.dataset.tab;
     document.getElementById('filmGrid').style.display = label === 'films & series' ? '' : 'none';
     document.getElementById('filterBar').style.display = label === 'films & series' ? '' : 'none';
+    document.getElementById('filterBtnMobile').classList.toggle('filter-btn-mobile-hidden', label !== 'films & series');
     if (label !== 'films & series') closeFilterPanel();
     const cg = document.getElementById('collectionsGrid');
     const cf = document.getElementById('collFilterBar');
-    if (label === 'collections') { cg.style.display = ''; cf.style.display = ''; renderCollections(); }
+    if (label === 'collections') { cg.style.display = ''; cf.style.display = ''; renderCollections(); sizeSelect(document.getElementById('collSortSelect')); sizeSelect(document.getElementById('collCatMobile')); }
     else { cg.style.display = 'none'; cf.style.display = 'none'; }
     const dg = document.getElementById('directorsGrid');
     const dsr = document.getElementById('directorSortRow');
-    if (label === 'directors') { dg.style.display = ''; dsr.style.display = 'flex'; dsr.style.flexDirection = 'column'; renderDirectors(); }
+    if (label === 'directors') { dg.style.display = ''; dsr.style.display = 'flex'; dsr.style.flexDirection = 'column'; renderDirectors(); sizeSelect(document.getElementById('directorSortSelect')); sizeSelect(document.getElementById('dirCatMobile')); }
     else {
       dg.style.display = 'none';
       dsr.style.display = 'none';
@@ -2631,8 +2877,16 @@ document.querySelectorAll('#genrePills .genre-pill').forEach(pill => {
     e.preventDefault();
     document.querySelectorAll('#genrePills .genre-pill').forEach(p => p.classList.remove('is-active'));
     pill.classList.add('is-active');
+    document.getElementById('genrePillsMobile').value = pill.dataset.genre || '';
     renderGrid();
   });
+});
+document.getElementById('genrePillsMobile').addEventListener('change', e => {
+  const val = e.target.value;
+  document.querySelectorAll('#genrePills .genre-pill').forEach(p => {
+    p.classList.toggle('is-active', (p.dataset.genre || '') === val);
+  });
+  renderGrid();
 });
 
 (function() {
@@ -2699,6 +2953,10 @@ function closeFilterPanel() {
   panel._anchor = null;
   updateClearBtn();
 }
+document.getElementById('filterBtnMobile').addEventListener('click', (e) => {
+  const panel = document.getElementById('filterPanel');
+  panel.classList.contains('is-open') && panel._anchor === e.currentTarget ? closeFilterPanel() : openFilterPanel(e.currentTarget);
+});
 document.getElementById('filterBtn').addEventListener('click', (e) => {
   e.stopPropagation();
   const panel = document.getElementById('filterPanel');
@@ -2740,7 +2998,11 @@ function updateFilterBtnLabel() {
       : `Subtitled in: ${langVal}`);
   }
   const el = document.getElementById('filterBtnLabel');
-  if (el) el.textContent = parts.length ? parts.join(' & ') : 'Filters';
+  const badge = document.getElementById('filterBtnCount');
+  const badgeMob = document.getElementById('filterBtnCountMobile');
+  if (el) el.textContent = (parts.length && window.innerWidth >= 810) ? parts.join(' & ') : 'Filters';
+  if (badge) badge.textContent = parts.length || '';
+  if (badgeMob) badgeMob.textContent = parts.length || '';
 }
 
 function buildLangPills(type) {
@@ -2858,6 +3120,24 @@ document.getElementById('collSortSelect').addEventListener('change', e => {
   renderCollections();
 });
 
+document.getElementById('collCatMobile').addEventListener('change', e => {
+  const val = e.target.value;
+  document.querySelectorAll('#collFilterBar .genre-pills .genre-pill').forEach(p => {
+    p.classList.toggle('is-active', p.dataset.collCat === val);
+  });
+  renderCollections();
+});
+
+document.getElementById('dirCatMobile').addEventListener('change', e => {
+  const val = e.target.value;
+  document.querySelectorAll('#directorCatPills .genre-pill').forEach(p => {
+    p.classList.toggle('is-active', p.dataset.dirCat === val);
+  });
+  directorCatMode = val;
+  directorsRendered = false;
+  renderDirectors();
+});
+
 function toggleDropdown(e) {
   e.stopPropagation();
   const dd = document.getElementById('navDropdown');
@@ -2873,6 +3153,7 @@ document.addEventListener('keydown', e => {
     const dd = document.getElementById('navDropdown');
     if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', false); }
     closeSearch();
+    closeMobDrawer();
   }
 });
 
@@ -2938,6 +3219,16 @@ function closeSearch() {
   if (bg) bg.style.display = 'none';
 }
 
+
+function openMobDrawer() {
+  document.getElementById('mobDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobDrawer() {
+  document.getElementById('mobDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('searchOpenBtnMob').addEventListener('click', e => { e.stopPropagation(); openSearch(); });
 document.getElementById('searchOpenBtn').addEventListener('click', e => {
   e.stopPropagation();
   const inline = document.getElementById('searchInline');
@@ -3025,12 +3316,15 @@ function sizeSelect(sel) {
   s.style.cssText = 'font-family:Riforma,sans-serif;font-size:14px;font-weight:500;visibility:hidden;position:absolute;white-space:nowrap;';
   s.textContent = sel.options[sel.selectedIndex].text;
   document.body.appendChild(s);
-  sel.style.width = (s.offsetWidth + 30) + 'px';
+  sel.style.width = (s.offsetWidth + 26) + 'px';
   document.body.removeChild(s);
 }
-document.querySelectorAll('#sortDropdown-sort, #collSortSelect').forEach(sel => {
+document.querySelectorAll('#sortDropdown-sort, #collSortSelect, #genrePillsMobile, #collCatMobile, #dirCatMobile').forEach(sel => {
   sizeSelect(sel);
   sel.addEventListener('change', () => sizeSelect(sel));
+});
+document.fonts.ready.then(() => {
+  document.querySelectorAll('#sortDropdown-sort, #genrePillsMobile').forEach(sel => sizeSelect(sel));
 });
 </script>
 
