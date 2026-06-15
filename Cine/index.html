@@ -283,6 +283,7 @@ input[type=range].time-slider::-moz-range-thumb {
   display: flex; align-items: center; justify-content: center;
   padding: 14px 19px;
   overflow: hidden;
+  position: relative;
 }
 
 .phone-frame {
@@ -432,6 +433,8 @@ input[type=range].time-slider::-moz-range-thumb {
   margin-top: 16px;
 }
 .wo-tile-grid { display: flex; flex-direction: column; gap: 12px; }
+.wo-tile-grid.grid-2col { flex-direction: row; flex-wrap: wrap; gap: 10px; }
+.wo-tile-grid.grid-2col .wo-tile-small { width: calc(50% - 5px); aspect-ratio: 2/3; }
 .wo-tile-small {
   aspect-ratio: 16/9;
   overflow: hidden; border-radius: 4px; cursor: pointer;
@@ -445,25 +448,60 @@ input[type=range].time-slider::-moz-range-thumb {
     rgba(45,36,32,0.2) 45%,
     transparent 100%);
 }
+.grid-2col .wo-tile-small .wo-tile-overlay {
+  background: linear-gradient(to top,
+    rgba(45,36,32,0.92) 0%,
+    rgba(45,36,32,0.3) 40%,
+    transparent 70%);
+}
 .wo-tile-small-info {
   position: absolute; bottom: 10px; left: 16px; right: 16px;
   display: flex; flex-direction: column; gap: 3px;
 }
+.grid-2col .wo-tile-small-info { left: 8px; right: 8px; bottom: 8px; }
 .wo-tile-small-title {
   font-family: var(--font-display);
   font-size: 22px; font-weight: 400; color: #fff;
   line-height: 1.0; letter-spacing: 0; text-transform: uppercase;
 }
+.grid-2col .wo-tile-small-title { font-size: 22px; margin-bottom: 20px; }
 .wo-tile-small-director {
   font-family: var(--font-ui);
   font-size: 12px; font-weight: 400; color: #fff;
   letter-spacing: 0.04em; text-transform: uppercase;
 }
+.grid-2col .wo-tile-small-director { font-size: 10px; }
 .wo-tile-no-img {
   background: rgba(255,255,255,0.12);
   display: flex; align-items: flex-end; padding: 10px;
   border: 1px solid rgba(255,255,255,0.08);
 }
+/* Grid toggle */
+.wo-grid-toggle {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px; z-index: 20;
+}
+.wo-grid-toggle-label {
+  font-size: 12px; font-weight: 500; color: var(--ink);
+  letter-spacing: 0.02em; user-select: none;
+}
+.wo-grid-switch {
+  position: relative; width: 36px; height: 20px; cursor: pointer;
+}
+.wo-grid-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.wo-grid-switch-track {
+  position: absolute; inset: 0; border-radius: 10px;
+  background: rgba(0,0,0,0.12);
+  transition: background 0.18s;
+}
+.wo-grid-switch input:checked ~ .wo-grid-switch-track { background: var(--primary); }
+.wo-grid-switch-thumb {
+  position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  transition: transform 0.18s;
+}
+.wo-grid-switch input:checked ~ .wo-grid-switch-thumb { transform: translateX(16px); }
 .wo-tile-top-gradient {
   position: absolute; top: 0; left: 0; right: 0; height: 80px;
   background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
@@ -493,6 +531,63 @@ input[type=range].time-slider::-moz-range-thumb {
 .cert-R18  { background: rgba(255,34,68,0.1);   color: #cc0020; border: 1px solid rgba(255,34,68,0.24); }
 .cert-     { background: var(--parchment); color: var(--ink-muted-48); border: 1px solid var(--hairline); }
 
+/* Go Now cinema detail slide-in */
+#gn-detail-panel {
+  position: absolute; inset: 0;
+  background: var(--canvas);
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.32,0,0.15,1);
+  z-index: 30; display: flex; flex-direction: column;
+  overflow: hidden;
+}
+#gn-detail-panel.open { transform: translateX(0); }
+#gn-detail-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--canvas);
+  flex-shrink: 0;
+}
+#gn-detail-back {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--hairline); background: var(--parchment);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+#gn-detail-back svg { width: 18px; height: 18px; stroke: var(--ink); }
+#gn-detail-title {
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 400; color: var(--ink);
+  text-transform: uppercase; letter-spacing: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#gn-detail-body { flex: 1; overflow-y: auto; }
+.gn-detail-cinema-card {
+  margin: 10px 14px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--mubi-yellow);
+}
+.gn-detail-cinema-card .gn-cinema-hdr {
+  background: transparent; border-bottom: none;
+  padding: 12px 16px 10px; position: static;
+}
+.gn-detail-cinema-card .gn-cinema-rank { color: var(--mubi-brown); font-weight: 400; letter-spacing: 0.04em; }
+.gn-detail-cinema-card .gn-cinema-name {
+  font-size: 20px; color: var(--mubi-brown); text-transform: uppercase; letter-spacing: 0; white-space: normal;
+}
+.gn-detail-cinema-card .gn-cinema-addr { color: var(--mubi-brown); max-width: 75%; white-space: normal; overflow: visible; text-overflow: unset; }
+.gn-detail-cinema-card .gn-cinema-dist { color: var(--mubi-brown); }
+.gn-detail-cinema-card .gn-film {
+  background: var(--mubi-yellow); border-bottom: none;
+  padding: 12px 16px 14px; position: relative;
+}
+.gn-detail-cinema-card .gn-film::after {
+  content: ''; position: absolute; bottom: 0; left: 16px; right: 16px;
+  height: 1px; background: rgba(45,36,32,0.15);
+}
+.gn-detail-cinema-card .gn-film:last-child::after { display: none; }
+.gn-detail-cinema-card .gn-title { color: var(--mubi-brown); }
 .gn-cinema-section { border-bottom: 1px solid var(--hairline); }
 .gn-cinema-section:last-child { border-bottom: none; }
 .gn-cinema-section.nearest {
@@ -867,6 +962,14 @@ input[type=range].time-slider::-moz-range-thumb {
 </div><!-- /map-col -->
 
 <div class="phone-col">
+  <div class="wo-grid-toggle" id="wo-grid-toggle">
+    <span class="wo-grid-toggle-label">Portrait images</span>
+    <label class="wo-grid-switch">
+      <input type="checkbox" id="btn-portrait">
+      <span class="wo-grid-switch-track"></span>
+      <span class="wo-grid-switch-thumb"></span>
+    </label>
+  </div>
   <div class="phone-frame">
     <div class="dynamic-island"></div>
       <div class="screen">
@@ -896,6 +999,15 @@ input[type=range].time-slider::-moz-range-thumb {
           </div>
         </div>
         <div class="home-bar"><div class="home-line"></div></div>
+      </div>
+      <div id="gn-detail-panel">
+        <div id="gn-detail-header">
+          <button id="gn-detail-back">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="13,4 7,10 13,16"/></svg>
+          </button>
+          <div id="gn-detail-title"></div>
+        </div>
+        <div id="gn-detail-body"></div>
       </div>
   </div>
 </div>
@@ -1021,7 +1133,7 @@ if (sorted.length >= 2) {
 }
 
 // Default: London centre, 5km radius
-let userLat=51.5127, userLng=-0.1432, radiusKm=6.437, activeTab='whats-on';
+let userLat=51.5127, userLng=-0.1432, radiusKm=6.437, activeTab='whats-on', woGridMode='1col';
 
 // Derive date list and header from data
 const allDates = [...new Set(cinemas.flatMap(c => Object.keys(c.s)))].sort();
@@ -1303,7 +1415,9 @@ function metaKey(t) {
   return null;
 }
 
+let lastInRange = [], lastSelectedDate = '';
 function renderWhatsOn(cinemaList, date) {
+  lastInRange = cinemaList; lastSelectedDate = date;
   const panel = document.getElementById('panel-whats-on');
 
   if (!cinemaList.length) {
@@ -1358,7 +1472,7 @@ function renderWhatsOn(cinemaList, date) {
 
   if (firstFilm) {
     const k1 = metaKey(firstFilm.title); const m1 = k1 ? META[k1] : null;
-    const img1 = m1?.stills?.retina || m1?.stills?.standard || m1?.still_url || m1?.cover_artwork_box || null;
+    const img1 = m1?.stills?.retina || m1?.stills?.standard || m1?.still_url || null;
     const dir1 = m1?.directors?.[0] || '';
     html += `<div class="wo-tile">
       ${img1 ? `<img class="wo-tile-img" src="${esc(img1)}" alt="${esc(firstFilm.title)}" loading="lazy">` : ''}
@@ -1372,27 +1486,50 @@ function renderWhatsOn(cinemaList, date) {
   }
 
   if (restFilms.length) {
-    html += `<div class="wo-tile-grid">`;
+    const is2col = woGridMode === '2col';
+    html += `<div class="wo-tile-grid${is2col ? ' grid-2col' : ''}">`;
     restFilms.forEach(f => {
       const k = metaKey(f.title); const m = k ? META[k] : null;
-      const img = m?.stills?.retina || m?.stills?.standard || m?.still_url || null;
       const director = m?.directors?.[0] || '';
-      if (img) {
-        html += `<div class="wo-tile-small">
-          <img class="wo-tile-img" src="${esc(img)}" alt="${esc(f.title)}" loading="lazy">
-          <div class="wo-tile-overlay"></div>
-          <div class="wo-tile-small-info">
-            <div class="wo-tile-small-title">${esc(f.title)}</div>
-            ${director ? `<div class="wo-tile-small-director">${esc(director)}</div>` : ''}
-          </div>
-        </div>`;
+      if (is2col) {
+        const artImg = m?.cover_artwork_vertical || null;
+        const fallbackImg = artImg ? null : (m?.portrait_image || m?.cover_artwork_box || m?.stills?.standard || m?.still_url || null);
+        if (artImg) {
+          html += `<div class="wo-tile-small wo-tile-has-art">
+            <img class="wo-tile-img" src="${esc(artImg)}" alt="${esc(f.title)}" loading="lazy">
+          </div>`;
+        } else if (fallbackImg) {
+          html += `<div class="wo-tile-small">
+            <img class="wo-tile-img" src="${esc(fallbackImg)}" alt="${esc(f.title)}" loading="lazy">
+            <div class="wo-tile-overlay"></div>
+            <div class="wo-tile-small-info">
+              <div class="wo-tile-small-title">${esc(f.title)}</div>
+            </div>
+          </div>`;
+        } else {
+          html += `<div class="wo-tile-small wo-tile-no-img">
+            <div class="wo-tile-small-info">
+              <div class="wo-tile-small-title">${esc(f.title)}</div>
+            </div>
+          </div>`;
+        }
       } else {
-        html += `<div class="wo-tile-small wo-tile-no-img">
-          <div class="wo-tile-small-info">
-            <div class="wo-tile-small-title">${esc(f.title)}</div>
-            ${director ? `<div class="wo-tile-small-director">${esc(director)}</div>` : ''}
-          </div>
-        </div>`;
+        const img = m?.stills?.retina || m?.stills?.standard || m?.still_url || null;
+        if (img) {
+          html += `<div class="wo-tile-small">
+            <img class="wo-tile-img" src="${esc(img)}" alt="${esc(f.title)}" loading="lazy">
+            <div class="wo-tile-overlay"></div>
+            <div class="wo-tile-small-info">
+              <div class="wo-tile-small-title">${esc(f.title)}</div>
+            </div>
+          </div>`;
+        } else {
+          html += `<div class="wo-tile-small wo-tile-no-img">
+            <div class="wo-tile-small-info">
+              <div class="wo-tile-small-title">${esc(f.title)}</div>
+            </div>
+          </div>`;
+        }
       }
     });
     html += `</div>`;
@@ -1478,6 +1615,69 @@ function renderGoNow(cinemaList, date) {
   });
 
   panel.innerHTML = html;
+
+  panel.querySelectorAll('.gn-cinema-other').forEach((el, i) => {
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', () => openGnDetail(cinemaList[i + 1], date));
+  });
+}
+
+// ─── Go Now cinema detail panel ──────────────────────────────────────────────
+
+const gnDetailPanel = document.getElementById('gn-detail-panel');
+const gnDetailTitle = document.getElementById('gn-detail-title');
+const gnDetailBody  = document.getElementById('gn-detail-body');
+document.getElementById('gn-detail-back').addEventListener('click', () => {
+  gnDetailPanel.classList.remove('open');
+});
+
+function openGnDetail(cinema, date) {
+  const distLabel = `${fmtDist(cinema.km)} away`;
+  let displayDate = date;
+  let shows = cinema.s[date] || [];
+  if (!shows.length) {
+    const nextDate = Object.keys(cinema.s).sort().find(d => d > date);
+    if (nextDate) { displayDate = nextDate; shows = cinema.s[nextDate] || []; }
+  }
+
+  gnDetailTitle.textContent = cinema.n;
+
+  const now = DEMO_NOW;
+  const filmMap = new Map();
+  shows.forEach(([title, cert, time]) => {
+    if (!filmMap.has(title)) filmMap.set(title, { cert, times: [] });
+    filmMap.get(title).times.push(time);
+  });
+  const films = [...filmMap.entries()]
+    .map(([title, d]) => ({ title, cert: d.cert, times: d.times.sort() }))
+    .sort((a, b) => a.times[0].localeCompare(b.times[0]));
+
+  let body = `<div class="gn-detail-cinema-card">
+    <div class="gn-cinema-hdr">
+      <div class="gn-cinema-rank">${distLabel.toUpperCase()}</div>
+      <div class="gn-cinema-name">${esc(cinema.n)}</div>
+      <div class="gn-cinema-addr">${esc(cinema.a)}</div>
+    </div>`;
+
+  if (!shows.length) {
+    body += `<div class="gn-no-shows">No screenings found</div>`;
+  } else {
+    films.forEach(f => {
+      const validTimes = f.times.filter(t => {
+        const [th, tm] = t.split(':').map(Number), [nh, nm] = now.split(':').map(Number);
+        return (th * 60 + tm + 30) >= (nh * 60 + nm);
+      });
+      if (!validTimes.length) return;
+      body += `<div class="gn-film">
+        <div class="gn-film-top"><div class="gn-title">${esc(f.title)}</div></div>
+        <div class="gn-times-row"><div class="gn-times">`;
+      validTimes.forEach(t => { body += `<span class="gn-chip">${t}</span>`; });
+      body += `</div></div></div>`;
+    });
+  }
+  body += `</div>`;
+  gnDetailBody.innerHTML = body;
+  gnDetailPanel.classList.add('open');
 }
 
 // ─── Cinema list panel ────────────────────────────────────────────────────────
@@ -1550,6 +1750,12 @@ function closeCinemaList() {
 }
 
 document.getElementById('hdr-c').addEventListener('click', openCinemaList);
+
+// ─── What's On grid toggle ────────────────────────────────────────────────────
+document.getElementById('btn-portrait').addEventListener('change', e => {
+  woGridMode = e.target.checked ? '2col' : '1col';
+  renderWhatsOn(lastInRange, lastSelectedDate);
+});
 clOverlay.addEventListener('click', () => { closeCinemaList(); closeFilmList(); });
 clSearch.addEventListener('input', () => renderCinemaList(clSearch.value));
 
