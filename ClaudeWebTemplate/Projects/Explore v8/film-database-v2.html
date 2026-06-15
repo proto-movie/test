@@ -356,7 +356,7 @@
     /* ─── TABS ─── */
     .page-tabs {
       display: flex;
-      align-items: flex-end;
+      align-items: stretch;
       border-bottom: 1px solid #EAEAEA;
     }
     .page-tab {
@@ -373,6 +373,8 @@
       cursor: pointer;
       transition: color 0.15s;
       text-decoration: none;
+      display: flex;
+      align-items: center;
     }
     .page-tab:hover { color: #323232; }
     .page-tab.is-active { color: #323232; border-bottom-color: #323232; }
@@ -688,6 +690,7 @@
       margin-top: 18px;
       line-height: 1.5;
     }
+    .subtitle-break { display: block; margin-top: 0.5em; }
     .site-footer {
       border-top: 1px solid #EAEAEA;
       margin-top: 100px;
@@ -756,7 +759,7 @@
     .list-card { display: block; text-decoration: none; color: inherit; cursor: pointer; min-width: 0; }
     .list-cover {
       position: relative;
-      aspect-ratio: 371 / 209;
+      aspect-ratio: 371 / 146;
       overflow: hidden;
       background: #d0d0d0;
       margin-bottom: 10px;
@@ -867,14 +870,17 @@
     @media (max-width: 809px) {
       .page-title { font-size: 24px; }
       .page-tabs { justify-content: space-between; }
-      .page-tab { font-size: 14px; white-space: normal; margin-right: 0; flex: 1; text-align: center; line-height: 1.2; padding: 8px 4px; }
+      .page-tab { font-size: 14px; white-space: normal; margin-right: 0; flex: 1; text-align: center; justify-content: center; line-height: 1.2; padding: 8px 4px; }
       #filmsFilterBar { flex-wrap: wrap; }
       #filmsFilterBar .filter-bar-right { flex-basis: 100%; margin-left: 0; padding-top: 4px; justify-content: flex-end; }
+      .filter-bar { justify-content: flex-end; }
+      .sort-label { display: none; }
+      .filter-select-sort { padding-left: 0; }
       .page-hero { flex-direction: column !important; align-items: flex-start !important; justify-content: flex-start !important; }
       .page-subtitle { display: none; }
       .page-hero > a[href*="contribute"] { display: none !important; margin-top: 12px; }
       .page-hero.info-open .page-subtitle { display: block; }
-      .page-hero.info-open > a[href*="contribute"] { display: inline-block !important; }
+      .page-hero.info-open > a[href*="contribute"] { display: block !important; width: 100%; box-sizing: border-box; margin-top: 24px; margin-bottom: 28px; padding: 14px 16px; text-align: center; }
       #moreInfoToggle { display: inline-flex; align-items: center; gap: 3px; margin-top: 6px; font-family: Riforma, sans-serif; font-size: 13px; font-weight: 500; color: #666; background: none; border: none; padding: 0; cursor: pointer; }
       .awards-grid { grid-template-columns: 1fr; row-gap: 20px; }
     }
@@ -1038,8 +1044,8 @@
     <div class="page-hero" style="flex-direction:row;align-items:flex-end;justify-content:space-between;">
       <div>
         <h1 class="page-title">FILM DATABASE</h1>
-        <button id="moreInfoToggle" onclick="document.querySelector('.page-hero').classList.add('info-open');this.style.display='none';">Learn more</button>
-        <p class="page-subtitle">MUBI's extensive film database covers hundreds of thousands of films.<br>If you want to explore films we're currently showing, visit <a href="explore.html" style="color:#001489;text-decoration:underline;">browse</a>.</p>
+        <button id="moreInfoToggle" onclick="document.querySelector('.page-hero').classList.add('info-open');this.style.display='none';">Learn more <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 6,8 10,4"/></svg></button>
+        <p class="page-subtitle">MUBI's extensive film database covers hundreds of thousands of films.<span class="subtitle-break"> If you want to explore films we're currently showing, visit <a href="explore.html" style="color:#001489;text-decoration:underline;">browse</a>.</span></p>
       </div>
       <a href="https://mubi.com/en/contribute" target="_self" style="font-family:Riforma,sans-serif;font-size:12px;font-weight:500;letter-spacing:0.05em;color:#666;text-decoration:none;white-space:nowrap;flex-shrink:0;border:1px solid #D0D0D0;border-radius:2px;padding:8px 16px;transition:border-color 0.15s,color 0.15s;" onmouseover="this.style.borderColor='#323232';this.style.color='#323232'" onmouseout="this.style.borderColor='#D0D0D0';this.style.color='#666'">CONTRIBUTE TO THE DATABASE</a>
     </div>

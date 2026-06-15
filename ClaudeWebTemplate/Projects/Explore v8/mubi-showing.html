@@ -494,17 +494,6 @@
       text-transform: uppercase;
       color: #323232;
     }
-    .row-learn-more {
-      display: none;
-      align-items: center;
-      gap: 3px;
-      font-family: Riforma, sans-serif;
-      font-size: 13px;
-      font-weight: 400;
-      color: #7d7d7d;
-      cursor: pointer;
-    }
-    @media (max-width: 809px) { .row-learn-more { display: flex; } }
 
     .row-grid {
       display: grid;
@@ -1391,10 +1380,7 @@ function renderGrid() {
   }
   container.innerHTML = rows.map((rowFilms, rowIdx) => `
     <div class="row-section">
-      <div class="row-header">
-        <span class="row-title">ROW ${rowIdx + 1}</span>
-        <span class="row-learn-more">Learn more <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 6,8 10,4"/></svg></span>
-      </div>
+      <div class="row-header"><span class="row-title">ROW ${rowIdx + 1}</span></div>
       <div class="row-grid">
         ${rowFilms.map(film => {
           const posX = Math.round(film.fX * 100);
