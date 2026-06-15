@@ -100,11 +100,10 @@
 
     /* ─── HEADER ─── transparent — hero image shows through */
     .site-header {
-      position: relative;
+      position: absolute;
+      top: 0; left: 0; right: 0;
       height: 60px;
-      width: 100%;
       z-index: 10;
-      /* no background — transparent over hero */
     }
     @media (min-width: 1186px) { .site-header { height: 50px; } }
 
@@ -113,16 +112,12 @@
       display: flex;
       align-items: center;
       height: 100%;
-      padding: 0 20px;
-      justify-content: space-between;
+      padding: 0 12px;
+      position: relative;
     }
     @media (min-width: 1186px) { .nav-mobile { display: none; } }
-
-    .hamburger-btn {
-      width: 44px; height: 44px;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff;
-    }
+    .nav-mobile-left { display: flex; align-items: center; gap: 2px; z-index: 1; }
+    .nav-mobile-logo { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; }
 
     /* Desktop nav bar */
     .nav-desktop {
@@ -285,7 +280,7 @@
       .hero-info {
         left: max(0px, calc((100% - 1124px) / 2));
         right: max(0px, calc((100% - 1124px) / 2));
-        padding: 62px 22px 52px;
+        padding: 112px 22px 52px;
       }
     }
     @media (min-width: 1562px) {
@@ -293,6 +288,20 @@
         left: max(0px, calc((100% - 1500px) / 2));
         right: max(0px, calc((100% - 1500px) / 2));
       }
+    }
+    @media (max-width: 809px) {
+      .hero-info { padding-top: 102px; }
+      .hero-info-bottom { display: flex; flex-direction: column; }
+      .hero-meta { margin-bottom: 12px; }
+      .hero-bottom-row { flex-direction: column; align-items: flex-start; gap: 12px; width: 100%; }
+      .hero-our-take { width: 100%; max-width: 100%; margin-left: 0; }
+      .hero-actions { align-self: flex-start; }
+      .hero-meta-label,
+      .hero-meta-director,
+      .hero-meta-country-row,
+      .hero-synopsis,
+      .hero-rating,
+      .hero-our-take { color: #fff; }
     }
 
     /* Title treatment PNG (film logo art) — top of hero, below logo */
@@ -305,7 +314,8 @@
       object-fit: contain;
       object-position: left center;
     }
-    @media (max-width: 420px) { .hero-title-img { max-height: 80px; max-width: 320px; } }
+    @media (max-width: 809px) { .hero-title-img { max-height: 90px; max-width: 360px; } }
+    @media (max-width: 420px) { .hero-title-img { max-height: 70px; max-width: 280px; } }
 
     /* Text fallback if title treatment isn't used */
     .hero-title-text {
@@ -476,7 +486,7 @@
     .row-section { margin-bottom: 20px; }
     .row-section:last-child { margin-bottom: 0; }
 
-    .row-header { padding: 0 0 10px; }
+    .row-header { padding: 0 0 10px; display: flex; align-items: center; justify-content: space-between; }
     .row-title {
       font-family: Riforma, sans-serif;
       font-size: 14px;
@@ -484,23 +494,34 @@
       text-transform: uppercase;
       color: #323232;
     }
+    .row-learn-more {
+      display: none;
+      align-items: center;
+      gap: 3px;
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: #7d7d7d;
+      cursor: pointer;
+    }
+    @media (max-width: 809px) { .row-learn-more { display: flex; } }
 
     .row-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
       column-gap: 4px;
       row-gap: 1px;
       background: #EAEAEA;
       border-top: 1px solid #EAEAEA;
       border-bottom: 1px solid #EAEAEA;
     }
-    @media (min-width: 650px)  { .row-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 810px)  { .row-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (min-width: 1186px) { .row-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (min-width: 1562px) { .row-grid { grid-template-columns: repeat(4, 1fr); } }
 
     /* Hide overflow cards so rows never wrap */
-    @media (max-width: 649px)  { .row-grid .film-card:nth-child(n+3) { display: none; } }
-    @media (min-width: 650px) and (max-width: 1561px) { .row-grid .film-card:nth-child(4) { display: none; } }
+    @media (min-width: 810px) and (max-width: 1185px) { .row-grid .film-card:nth-child(n+3) { display: none; } }
+    @media (min-width: 1186px) and (max-width: 1561px) { .row-grid .film-card:nth-child(n+4) { display: none; } }
 
     /* ─── FILM CARD ─── */
     .film-card {
@@ -673,19 +694,22 @@
       color: rgba(255,255,255,0.9);
     }
 
-    /* ─── MOBILE DRAWER (simplified) ─── */
-    .mobile-drawer {
+    /* ─── MOBILE DRAWER ─── */
+    .mob-drawer {
       position: fixed;
       inset: 0;
-      z-index: 200;
-      display: none;
+      z-index: 9999;
+      pointer-events: none;
     }
-    .mobile-drawer.open { display: block; }
-    .mobile-drawer-overlay {
+    .mob-drawer.open { pointer-events: auto; }
+    .mob-drawer-overlay {
       position: absolute; inset: 0;
-      background: rgba(0,0,0,0.75);
+      background: rgba(0,0,0,0.6);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
-    .mobile-drawer-panel {
+    .mob-drawer.open .mob-drawer-overlay { opacity: 1; }
+    .mob-drawer-panel {
       position: absolute;
       top: 0; left: 0; bottom: 0;
       width: calc(100% - 60px);
@@ -693,25 +717,36 @@
       background: #fff;
       overflow-y: auto;
       padding: 20px 0 120px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
     }
-    .drawer-close {
+    .mob-drawer.open .mob-drawer-panel { transform: translateX(0); }
+    .mob-drawer-close {
       position: absolute;
       top: 20px;
       left: calc(min(100% - 60px, 350px) + 20px);
       color: #fff;
       cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
-    .drawer-link {
+    .mob-drawer.open .mob-drawer-close { opacity: 1; }
+    .mob-drawer-link {
       display: block;
       padding: 0 25px;
+      font-family: Riforma, sans-serif;
       font-size: 20px;
       line-height: 42px;
       color: #7d7d7d;
+      text-decoration: none;
       transition: color 0.1s;
     }
-    .drawer-link:hover { color: #323232; }
-    .drawer-link.active { color: #323232; }
-    .drawer-sep { border-top: 1px solid #EAEAEA; margin: 10px 0; }
+    .mob-drawer-link:hover { color: #323232; }
+    .mob-drawer-link.is-active { color: #323232; }
+    .mob-drawer-sep { border-top: 1px solid #EAEAEA; margin: 10px 0; }
 
     /* ─── HAMBURGER DROPDOWN ─── */
     .nav-avatar {
@@ -958,33 +993,31 @@
 <body>
 
 <!-- ─── MOBILE DRAWER ─── -->
-<div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Navigation">
-  <div class="mobile-drawer-overlay" onclick="closeDrawer()"></div>
-  <div class="mobile-drawer-panel">
+<div class="mob-drawer" id="mobDrawer" role="dialog" aria-modal="true" aria-label="Navigation">
+  <div class="mob-drawer-overlay" onclick="closeMobDrawer()"></div>
+  <div class="mob-drawer-panel">
     <nav>
-      <a href="#" class="drawer-link">Try 7 Days Free</a>
-      <div class="drawer-sep"></div>
-      <a href="#" class="drawer-link active">Now Showing</a>
-      <a href="#" class="drawer-link">MUBI GO</a>
-      <div class="drawer-sep"></div>
-      <a href="#" class="drawer-link">Gift MUBI</a>
-      <div class="drawer-sep"></div>
-      <a href="#" class="drawer-link">Browse</a>
-      <a href="#" class="drawer-link">Notebook</a>
-      <a href="#" class="drawer-link">Notebook Magazine</a>
-      <a href="#" class="drawer-link">MUBI Editions</a>
-      <a href="#" class="drawer-link">SHOP</a>
-      <div class="drawer-sep"></div>
-      <a href="#" class="drawer-link">About</a>
-      <a href="#" class="drawer-link">Ways to Watch</a>
-      <a href="#" class="drawer-link">Students</a>
-      <a href="#" class="drawer-link">Jobs</a>
-      <a href="#" class="drawer-link">Terms &amp; Privacy</a>
-      <a href="#" class="drawer-link">Help</a>
+      <a href="mubi-showing.html" class="mob-drawer-link is-active">Now Showing</a>
+      <a href="explore.html" class="mob-drawer-link">Browse</a>
+      <a href="#" class="mob-drawer-link">Watchlist</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="#" class="mob-drawer-link">Notebook</a>
+      <a href="film-database-v2.html" class="mob-drawer-link">Film Database</a>
+      <a href="#" class="mob-drawer-link">Notebook Magazine</a>
+      <a href="#" class="mob-drawer-link">MUBI Editions</a>
+      <a href="#" class="mob-drawer-link">SHOP</a>
+      <a href="#" class="mob-drawer-link">Gift MUBI</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="#" class="mob-drawer-link">About</a>
+      <a href="#" class="mob-drawer-link">Students</a>
+      <a href="#" class="mob-drawer-link">Jobs</a>
+      <a href="#" class="mob-drawer-link">Terms &amp; Privacy</a>
+      <a href="#" class="mob-drawer-link">Help</a>
+      <a href="#" class="mob-drawer-link">Log Out</a>
     </nav>
   </div>
-  <button class="drawer-close" onclick="closeDrawer()" aria-label="Close navigation">
-    <svg viewBox="0 0 11 11" stroke="white" width="20"><path d="M1,1 L10,10"/><path d="M10,1 L1,10"/></svg>
+  <button class="mob-drawer-close" onclick="closeMobDrawer()" aria-label="Close menu">
+    <svg viewBox="0 0 11 11" stroke="currentColor" stroke-width="1.5" width="20"><path d="M1,1 L10,10"/><path d="M10,1 L1,10"/></svg>
   </button>
 </div>
 
@@ -993,12 +1026,18 @@
 
   <!-- Mobile nav -->
   <div class="nav-mobile">
-    <button class="hamburger-btn" onclick="openDrawer()" aria-label="Open menu">
-      <span class="material-icons" style="font-size:24px;">menu</span>
-    </button>
-    <a href="mubi-showing.html" class="nav-logo" aria-label="MUBI">
-      <!-- MUBI logo SVG — exact from production (800×240 viewBox, white) -->
-      <svg viewBox="0 0 800 240" width="60" style="vertical-align:top" aria-hidden="true">
+    <div class="nav-mobile-left">
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="openMobDrawer()" aria-label="Open menu" id="navHamburgerMob">
+          <span class="material-icons" style="font-size:20px;">menu</span>
+        </button>
+      </div>
+      <button class="search-icon-btn" id="searchOpenBtnMob" aria-label="Search">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    <a href="mubi-showing.html" class="nav-mobile-logo" aria-label="MUBI">
+      <svg viewBox="0 0 800 240" width="65" style="vertical-align:top" aria-hidden="true">
         <g fill="#FFFFFF">
           <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
           <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
@@ -1016,11 +1055,7 @@
         </g>
       </svg>
     </a>
-    <div class="nav-mobile-right">
-      <a href="#" class="nav-icon-btn" aria-label="Search">
-        <svg viewBox="0 0 512 512" fill="#fff" width="18"><path d="m340 392l110 109 51-51-109-110z m-121 47c122 0 220-98 220-220 0-121-98-219-220-219-121 0-219 98-219 219 0 122 98 220 219 220z m0-73c-80 0-146-66-146-147 0-80 66-146 146-146 81 0 147 66 147 146 0 81-66 147-147 147z"/></svg>
-      </a>
-    </div>
+    <div class="nav-mobile-right"></div>
   </div>
 
   <!-- Desktop nav -->
@@ -1356,7 +1391,10 @@ function renderGrid() {
   }
   container.innerHTML = rows.map((rowFilms, rowIdx) => `
     <div class="row-section">
-      <div class="row-header"><span class="row-title">ROW ${rowIdx + 1}</span></div>
+      <div class="row-header">
+        <span class="row-title">ROW ${rowIdx + 1}</span>
+        <span class="row-learn-more">Learn more <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 6,8 10,4"/></svg></span>
+      </div>
       <div class="row-grid">
         ${rowFilms.map(film => {
           const posX = Math.round(film.fX * 100);
@@ -1401,15 +1439,15 @@ document.addEventListener('keydown', e => {
 });
 
 /* ─── MOBILE DRAWER ─── */
-function openDrawer() {
-  document.getElementById('mobileDrawer').classList.add('open');
+function openMobDrawer() {
+  document.getElementById('mobDrawer').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-function closeDrawer() {
-  document.getElementById('mobileDrawer').classList.remove('open');
+function closeMobDrawer() {
+  document.getElementById('mobDrawer').classList.remove('open');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobDrawer(); });
 
 renderGrid();
 
