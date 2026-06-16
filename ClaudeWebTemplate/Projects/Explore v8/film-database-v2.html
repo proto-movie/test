@@ -138,6 +138,7 @@
       padding: 0 12px;
       position: relative;
     }
+    @media (min-width: 810px) and (max-width: 1185px) { .nav-mobile { max-width: 836px; margin: 0 auto; padding: 0 22px; } }
     @media (min-width: 1186px) { .nav-mobile { display: none; } }
     .nav-mobile-left {
       display: flex;
@@ -423,6 +424,9 @@
       cursor: pointer;
       outline: none;
     }
+    .sort-icon line { transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); transform-box: fill-box; transform-origin: center; }
+    .filter-bar-right:hover .sort-icon line:nth-child(1) { transform: scaleX(0.25); }
+    .filter-bar-right:hover .sort-icon line:nth-child(3) { transform: scaleX(4); }
     .sort-label {
       font-family: Riforma, sans-serif;
       font-size: 14px;
@@ -875,6 +879,7 @@
       #filmsFilterBar .filter-bar-right { flex-basis: 100%; margin-left: 0; padding-top: 4px; justify-content: flex-end; }
       .filter-bar { justify-content: flex-end; }
       .sort-label { display: none; }
+      .sort-icon { display: none; }
       .filter-select-sort { padding-left: 0; padding-right: 0; }
       .page-hero { flex-direction: column !important; align-items: flex-start !important; justify-content: flex-start !important; }
       .page-subtitle { display: none; }
@@ -1085,7 +1090,7 @@
           <option value="1870">1870–79</option>
         </select>
         <div class="filter-bar-right">
-          <span class="sort-label">Sort by:</span>
+          <svg width="16" height="13" viewBox="0 0 16 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="sort-icon" style="flex-shrink:0;color:#323232;margin-right:4px;"><line x1="0" y1="2" x2="16" y2="2"/><line x1="3" y1="6" x2="13" y2="6"/><line x1="6" y1="10" x2="10" y2="10"/></svg>
           <select class="filter-select filter-select-sort" id="filterSort">
             <option value="trending">Trending</option>
             <option value="popular">Most Popular</option>
@@ -1135,7 +1140,7 @@
           <option value="year">This Year</option>
         </select>
         <div class="filter-bar-right">
-          <span class="sort-label">Sort by:</span>
+          <svg width="16" height="13" viewBox="0 0 16 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="sort-icon" style="flex-shrink:0;color:#323232;margin-right:4px;"><line x1="0" y1="2" x2="16" y2="2"/><line x1="3" y1="6" x2="13" y2="6"/><line x1="6" y1="10" x2="10" y2="10"/></svg>
           <select class="filter-select filter-select-sort" id="listSortSelect">
             <option value="popular">Most Popular</option>
             <option value="recent">Most Recent</option>
@@ -1155,7 +1160,7 @@
           <option value="Awards">Awards</option>
         </select>
         <div class="filter-bar-right">
-          <span class="sort-label">Sort by:</span>
+          <svg width="16" height="13" viewBox="0 0 16 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="sort-icon" style="flex-shrink:0;color:#323232;margin-right:4px;"><line x1="0" y1="2" x2="16" y2="2"/><line x1="3" y1="6" x2="13" y2="6"/><line x1="6" y1="10" x2="10" y2="10"/></svg>
           <select class="filter-select filter-select-sort" id="awardsSortSelect">
             <option value="recommended">Recommended</option>
             <option value="az">A–Z</option>
