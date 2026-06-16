@@ -501,10 +501,15 @@ input[type=range].time-slider::-moz-range-thumb {
 .grid-2col .wo-tile-small-title { font-size: 22px; margin-bottom: 20px; }
 .wo-tile-small-director {
   font-family: var(--font-ui);
-  font-size: 12px; font-weight: 400; color: #fff;
+  font-size: 12px; font-weight: 500; color: #fff;
   letter-spacing: 0.04em; text-transform: uppercase;
 }
 .grid-2col .wo-tile-small-director { font-size: 10px; }
+.wo-tile-small-year {
+  font-family: var(--font-ui);
+  font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.7);
+  letter-spacing: 0.02em;
+}
 .wo-tile-no-img {
   background: rgba(255,255,255,0.12);
   display: flex; align-items: flex-end; padding: 10px;
@@ -1612,18 +1617,23 @@ function renderWhatsOn(cinemaList, date) {
         }
       } else {
         const img = m?.stills?.retina || m?.stills?.standard || m?.still_url || null;
+        const year = m?.year ? String(m.year) : '';
         if (img) {
           html += `<div class="wo-tile-small">
             <img class="wo-tile-img" src="${esc(img)}" alt="${esc(f.title)}" loading="lazy">
             <div class="wo-tile-overlay"></div>
             <div class="wo-tile-small-info">
               <div class="wo-tile-small-title">${esc(f.title)}</div>
+              ${director ? `<div class="wo-tile-small-director">${esc(director)}</div>` : ''}
+              ${year ? `<div class="wo-tile-small-year">${esc(year)}</div>` : ''}
             </div>
           </div>`;
         } else {
           html += `<div class="wo-tile-small wo-tile-no-img">
             <div class="wo-tile-small-info">
               <div class="wo-tile-small-title">${esc(f.title)}</div>
+              ${director ? `<div class="wo-tile-small-director">${esc(director)}</div>` : ''}
+              ${year ? `<div class="wo-tile-small-year">${esc(year)}</div>` : ''}
             </div>
           </div>`;
         }
