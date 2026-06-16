@@ -125,13 +125,47 @@ header {
   padding: 0 !important;
 }
 .leaflet-popup-content {
-  margin: 0 !important; padding: 10px 14px !important;
+  margin: 0 !important; padding: 0 !important;
   font-family: system-ui, -apple-system, sans-serif !important;
   font-size: 13px !important; color: var(--ink) !important;
+  min-width: 260px !important;
 }
 .leaflet-popup-tip-container { display: none !important; }
+.leaflet-popup-close-button { display: none !important; }
+.leaflet-popup-content-wrapper { max-height: 380px !important; overflow: hidden !important; display: flex !important; flex-direction: column !important; }
+.popup-header { padding: 10px 14px 8px; border-bottom: 1px solid var(--hairline); flex-shrink: 0; display: flex; align-items: flex-start; gap: 8px; }
+.popup-header-text { flex: 1; min-width: 0; }
+.popup-close {
+  width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%;
+  background: var(--parchment); border: 1px solid var(--hairline);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--ink-muted-48);
+  font-size: 14px; line-height: 1; margin-top: 1px;
+}
+.popup-close:hover { background: var(--hairline); }
 .popup-name { font-weight: 600; font-size: 13px; margin-bottom: 2px; letter-spacing: -0.374px; }
 .popup-dist { font-size: 12px; color: var(--primary); letter-spacing: -0.12px; }
+.popup-date-tabs {
+  display: flex; gap: 0; overflow-x: auto; flex-shrink: 0;
+  border-bottom: 1px solid var(--hairline);
+  scrollbar-width: none;
+}
+.popup-date-tabs::-webkit-scrollbar { display: none; }
+.popup-date-tab {
+  flex-shrink: 0; padding: 6px 10px;
+  font-size: 11px; font-weight: 500; color: var(--ink-muted-48);
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: color 0.12s;
+  white-space: nowrap; letter-spacing: -0.08px;
+}
+.popup-date-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.popup-shows { overflow-y: auto; max-height: 220px; flex: 1; }
+.popup-film { padding: 8px 14px; border-bottom: 1px solid var(--hairline); }
+.popup-film:last-child { border-bottom: none; }
+.popup-film-title { font-size: 12px; font-weight: 500; color: var(--ink); letter-spacing: -0.2px; margin-bottom: 4px; }
+.popup-times { display: flex; flex-wrap: wrap; gap: 4px; }
+.popup-time { font-size: 11px; padding: 2px 7px; border-radius: 5px; background: var(--parchment); color: var(--ink); border: 1px solid var(--hairline); letter-spacing: -0.08px; }
+.popup-no-shows { padding: 12px 14px; font-size: 12px; color: var(--ink-muted-48); font-style: italic; }
 
 .date-panel {
   position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
@@ -912,7 +946,6 @@ input[type=range].time-slider::-moz-range-thumb {
 
   <div class="map-side">
     <div id="map"></div>
-
     <div class="date-panel">
       <div class="dp-row" style="padding: 4px 0 4px;">
         <span class="dp-label">Location</span>
@@ -1227,6 +1260,8 @@ const map = L.map('map', {
   maxBounds: UK_BOUNDS,
   maxBoundsViscosity: 0.9,
 });
+map.getPane('popupPane').style.zIndex = '5000';
+map.getPane('tooltipPane').style.zIndex = '4900';
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
   attribution:'© <a href="https://carto.com">CARTO</a> © <a href="https://openstreetmap.org">OSM</a>',
@@ -1276,13 +1311,73 @@ map.on('click',e=>{
 
 function sanitize(s){return s.replace(/[^a-zA-Z0-9]/g,'_');}
 
+const POPUP_DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function buildPopupShowsHtml(c, date) {
+  const shows = c.s[date] || [];
+  if (!shows.length) return `<div class="popup-no-shows">No screenings</div>`;
+  const filmMap = new Map();
+  shows.forEach(([title,,time]) => {
+    if (!filmMap.has(title)) filmMap.set(title, []);
+    filmMap.get(title).push(time);
+  });
+  return [...filmMap.entries()]
+    .sort((a,b) => a[1][0].localeCompare(b[1][0]))
+    .map(([title, times]) => `<div class="popup-film">
+      <div class="popup-film-title">${esc(normaliseTitle(title))}</div>
+      <div class="popup-times">${times.sort().map(t=>`<span class="popup-time">${t}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function buildPopupHtml(c, activeDate) {
+  const dates = Object.keys(c.s||{}).sort();
+  if (!activeDate || !c.s[activeDate]) activeDate = dates[0] || '';
+
+  const tabsHtml = dates.map(d => {
+    const dt = new Date(d + 'T00:00:00Z');
+    return `<div class="popup-date-tab${d===activeDate?' active':''}" data-date="${d}">${POPUP_DAYS[dt.getUTCDay()]} ${dt.getUTCDate()}</div>`;
+  }).join('');
+
+  return `<div class="popup-header">
+    <div class="popup-header-text">
+      <div class="popup-name">${esc(c.n)}</div>
+      <div class="popup-dist" id="pp${sanitize(c.n)}">—</div>
+    </div>
+    <div class="popup-close" title="Close">✕</div>
+  </div>
+  <div class="popup-date-tabs">${tabsHtml}</div>
+  <div class="popup-shows">${dates.length ? buildPopupShowsHtml(c, activeDate) : '<div class="popup-no-shows">No screenings this week</div>'}</div>`;
+}
+
 const cinemaMarkers=new Map();
 cinemas.forEach(c=>{
   const icon=L.divIcon({className:'',html:'<div class="cinema-dot dim"></div>',iconSize:[10,10],iconAnchor:[5,5]});
   const m=L.marker([c.c[0],c.c[1]],{icon,zIndexOffset:400}).addTo(map);
-  m.bindPopup(`<div class="popup-name">${esc(c.n)}</div><div class="popup-dist" id="pp${sanitize(c.n)}">—</div>`,{offset:[0,-4]});
+  m.bindPopup('', {offset:[0,-4], maxWidth:300});
+  m.on('popupopen', () => {
+    const popup = m.getPopup();
+    popup.setContent(buildPopupHtml(c, selectedDate));
+    // Stop map from intercepting clicks inside popup
+    L.DomEvent.disableClickPropagation(popup.getElement());
+    // Event delegation — tabs + close button
+    popup.getElement().addEventListener('click', e => {
+      const tab = e.target.closest('.popup-date-tab');
+      if (tab) {
+        const date = tab.dataset.date;
+        popup.getElement().querySelectorAll('.popup-date-tab').forEach(t =>
+          t.classList.toggle('active', t.dataset.date === date));
+        popup.getElement().querySelector('.popup-shows').innerHTML = buildPopupShowsHtml(c, date);
+        return;
+      }
+      if (e.target.closest('.popup-close')) m.closePopup();
+    });
+  });
   cinemaMarkers.set(c.n,m);
 });
+
+const _datePanel = document.querySelector('.date-panel');
+map.on('popupopen',  () => { if (_datePanel) _datePanel.style.zIndex = '0'; });
+map.on('popupclose', () => { if (_datePanel) _datePanel.style.zIndex = ''; });
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 
@@ -1347,7 +1442,9 @@ function updateAll() {
     } else if (i === 1) dot.classList.add('near2');
     else if (i === 2) dot.classList.add('near3');
     else if (c.km > effectiveRadius) dot.classList.add('dim');
-    marker.getPopup()?.setContent(`<div class="popup-name">${esc(c.n)}</div><div class="popup-dist">${fmtDist(c.km)}</div>`);
+    // distance label updates live via pp${sanitize} id when popup is open
+    const ppDist = document.getElementById(`pp${sanitize(c.n)}`);
+    if (ppDist) ppDist.textContent = fmtDist(c.km);
   });
 
   const sc = document.getElementById('screen-content');
