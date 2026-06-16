@@ -499,6 +499,9 @@ input[type=range].time-slider::-moz-range-thumb {
   line-height: 1.0; letter-spacing: 0; text-transform: uppercase;
 }
 .grid-2col .wo-tile-small-title { font-size: 22px; margin-bottom: 20px; }
+.wo-tile-small-meta {
+  display: flex; align-items: center; gap: 6px;
+}
 .wo-tile-small-director {
   font-family: var(--font-ui);
   font-size: 12px; font-weight: 500; color: #fff;
@@ -507,7 +510,7 @@ input[type=range].time-slider::-moz-range-thumb {
 .grid-2col .wo-tile-small-director { font-size: 10px; }
 .wo-tile-small-year {
   font-family: var(--font-ui);
-  font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.7);
+  font-size: 12px; font-weight: 400; color: #fff;
   letter-spacing: 0.02em;
 }
 .wo-tile-no-img {
@@ -1624,16 +1627,14 @@ function renderWhatsOn(cinemaList, date) {
             <div class="wo-tile-overlay"></div>
             <div class="wo-tile-small-info">
               <div class="wo-tile-small-title">${esc(f.title)}</div>
-              ${director ? `<div class="wo-tile-small-director">${esc(director)}</div>` : ''}
-              ${year ? `<div class="wo-tile-small-year">${esc(year)}</div>` : ''}
+              ${(director || year) ? `<div class="wo-tile-small-meta">${director ? `<span class="wo-tile-small-director">${esc(director)}</span>` : ''}${year ? `<span class="wo-tile-small-year">${esc(year)}</span>` : ''}</div>` : ''}
             </div>
           </div>`;
         } else {
           html += `<div class="wo-tile-small wo-tile-no-img">
             <div class="wo-tile-small-info">
               <div class="wo-tile-small-title">${esc(f.title)}</div>
-              ${director ? `<div class="wo-tile-small-director">${esc(director)}</div>` : ''}
-              ${year ? `<div class="wo-tile-small-year">${esc(year)}</div>` : ''}
+              ${(director || year) ? `<div class="wo-tile-small-meta">${director ? `<span class="wo-tile-small-director">${esc(director)}</span>` : ''}${year ? `<span class="wo-tile-small-year">${esc(year)}</span>` : ''}</div>` : ''}
             </div>
           </div>`;
         }
