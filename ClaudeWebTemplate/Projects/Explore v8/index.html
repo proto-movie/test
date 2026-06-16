@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UK Cinemas &amp; Showtimes</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="uk_cinema_data.js"></script>
+<script src="film_metadata.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+
+<style>
+@font-face {
+  font-family: 'Riforma'; font-display: swap;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma'; font-display: swap; font-weight: 500;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma'; font-display: swap; font-weight: bold;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Riforma'; font-display: swap; font-style: italic;
+  src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2');
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --mubi-brown:        #2D2420;
+  --mubi-yellow:       #FFC000;
+  --font-display:      'Riforma', Georgia, serif;
+  --font-ui:           'DM Sans', system-ui, sans-serif;
+  --primary:           #0066cc;
+  --primary-focus:     #0071e3;
+  --primary-on-dark:   #2997ff;
+  --ink:               #1d1d1f;
+  --ink-muted-80:      #333333;
+  --ink-muted-48:      #7a7a7a;
+  --hairline:          #e0e0e0;
+  --canvas:            #ffffff;
+  --parchment:         #f5f5f7;
+  --surface-pearl:     #fafafc;
+  --surface-black:     #000000;
+  --on-dark:           #ffffff;
+  --green:  #3cd68a;
+  --amber:  #f0a030;
+  --text3:  #7a7a7a;
+}
+
+html, body { height: 100%; overflow: hidden; }
+body {
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  display: flex;
+}
+
+header {
+  height: 64px; min-height: 64px;
+  background: var(--canvas);
+  border-bottom: 1px solid var(--hairline);
+  display: flex; align-items: center;
+  padding: 0 20px; gap: 16px; z-index: 200;
+}
+.logo { font-size: 16px; font-weight: 600; color: var(--ink); letter-spacing: -0.224px; }
+.logo-sub { font-size: 14px; font-weight: 400; color: var(--ink); letter-spacing: -0.08px; }
+.hdr-stat { font-size: 14px; color: var(--ink-muted-48); letter-spacing: -0.12px; margin-left: 12px; display: flex; flex-direction: column; gap: 2px; }
+.hdr-stat-row { display: flex; align-items: center; gap: 8px; }
+.hdr-stat strong { color: var(--primary); font-weight: 400; }
+.hdr-sep { font-size: 13px; color: var(--ink-muted-48); }
+.hdr-popular { font-size: 13px; color: var(--ink-muted-48); letter-spacing: -0.08px; }
+.postcode-form { display: flex; align-items: center; gap: 6px; }
+.postcode-input {
+  width: 100px; height: 26px; padding: 0 9px;
+  border: 1px solid var(--hairline); border-radius: 8px;
+  background: var(--canvas); color: var(--ink);
+  font-size: 13px; font-family: inherit; letter-spacing: 0.5px; text-transform: uppercase;
+  outline: none; transition: border-color 0.15s;
+}
+.postcode-input::placeholder { text-transform: none; letter-spacing: 0; color: var(--ink-muted-48); }
+.postcode-input:focus { border-color: var(--primary); }
+.postcode-input.error { border-color: #e05; }
+.postcode-btn {
+  height: 26px; padding: 0 11px;
+  border: none; border-radius: 8px;
+  background: var(--primary); color: #fff;
+  font-size: 13px; font-family: inherit; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.postcode-btn:hover { opacity: 0.85; }
+.postcode-btn:disabled { opacity: 0.5; cursor: default; }
+
+.map-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.map-side { flex: 1; position: relative; min-width: 0; }
+#map { width: 100%; height: 100%; background: #fff; }
+
+.leaflet-container { background: var(--parchment); }
+.leaflet-control-zoom {
+  border: 1px solid var(--hairline) !important;
+  border-radius: 11px !important; overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.14) !important;
+}
+.leaflet-control-zoom a {
+  background: var(--canvas) !important; color: var(--ink-muted-80) !important;
+  border-color: var(--hairline) !important;
+  width: 32px !important; height: 32px !important;
+  line-height: 32px !important; font-size: 16px !important;
+}
+.leaflet-control-zoom a:hover { background: var(--parchment) !important; color: var(--ink) !important; }
+.leaflet-control-attribution {
+  background: rgba(245,245,247,0.82) !important; color: var(--ink-muted-48) !important; font-size: 9px !important;
+}
+.leaflet-control-attribution a { color: var(--primary) !important; }
+.leaflet-popup-content-wrapper {
+  background: var(--canvas) !important;
+  border: 1px solid var(--hairline) !important;
+  border-radius: 11px !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13) !important;
+  padding: 0 !important;
+}
+.leaflet-popup-content {
+  margin: 0 !important; padding: 0 !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+  font-size: 13px !important; color: var(--ink) !important;
+  min-width: 260px !important;
+}
+.leaflet-popup-tip-container { display: none !important; }
+.leaflet-popup-close-button { display: none !important; }
+.leaflet-popup-content-wrapper { max-height: 380px !important; overflow: hidden !important; display: flex !important; flex-direction: column !important; }
+.popup-header { padding: 10px 14px 8px; border-bottom: 1px solid var(--hairline); flex-shrink: 0; display: flex; align-items: flex-start; gap: 8px; }
+.popup-header-text { flex: 1; min-width: 0; }
+.popup-close {
+  width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%;
+  background: var(--parchment); border: 1px solid var(--hairline);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--ink-muted-48);
+  font-size: 14px; line-height: 1; margin-top: 1px;
+}
+.popup-close:hover { background: var(--hairline); }
+.popup-name { font-weight: 600; font-size: 13px; margin-bottom: 2px; letter-spacing: -0.374px; }
+.popup-dist { font-size: 12px; color: var(--primary); letter-spacing: -0.12px; }
+.popup-date-tabs {
+  display: flex; gap: 0; overflow-x: auto; flex-shrink: 0;
+  border-bottom: 1px solid var(--hairline);
+  scrollbar-width: none;
+}
+.popup-date-tabs::-webkit-scrollbar { display: none; }
+.popup-date-tab {
+  flex-shrink: 0; padding: 6px 10px;
+  font-size: 11px; font-weight: 500; color: var(--ink-muted-48);
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: color 0.12s;
+  white-space: nowrap; letter-spacing: -0.08px;
+}
+.popup-date-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.popup-shows { overflow-y: auto; max-height: 220px; flex: 1; }
+.popup-film { padding: 8px 14px; border-bottom: 1px solid var(--hairline); }
+.popup-film:last-child { border-bottom: none; }
+.popup-film-title { font-size: 12px; font-weight: 500; color: var(--ink); letter-spacing: -0.2px; margin-bottom: 4px; }
+.popup-times { display: flex; flex-wrap: wrap; gap: 4px; }
+.popup-time { font-size: 11px; padding: 2px 7px; border-radius: 5px; background: var(--parchment); color: var(--ink); border: 1px solid var(--hairline); letter-spacing: -0.08px; }
+.popup-no-shows { padding: 12px 14px; font-size: 12px; color: var(--ink-muted-48); font-style: italic; }
+
+.date-panel {
+  position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(245,245,247,0.88);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 18px;
+  padding: 10px 16px 12px;
+  display: flex; flex-direction: column; gap: 10px;
+  white-space: nowrap;
+}
+.dp-row { display: flex; align-items: center; gap: 10px; }
+.dp-label { font-size: 12px; letter-spacing: -0.12px; color: var(--ink-muted-48); flex-shrink: 0; }
+.dp-scroll { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.dp-scroll::-webkit-scrollbar { display: none; }
+.dp-time-val {
+  font-size: 13px; font-weight: 600; color: var(--ink);
+  letter-spacing: -0.224px; min-width: 40px; flex-shrink: 0; text-align: right;
+}
+.dp-now-btn {
+  background: var(--surface-pearl); color: var(--ink-muted-48);
+  border: 1px solid var(--hairline); border-radius: 9999px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 11px; font-weight: 600; letter-spacing: -0.08px;
+  padding: 4px 10px; cursor: pointer; flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.dp-now-btn.is-now { background: var(--primary); color: #fff; border-color: var(--primary); }
+.dp-now-btn:active { transform: scale(0.95); }
+.dp-slider-wrap { flex: 1; min-width: 260px; }
+.dp-slider-outer { position: relative; }
+.dp-ticks {
+  position: absolute; left: 0; right: 0; top: 50%;
+  transform: translateY(-50%); pointer-events: none;
+}
+.dp-tick {
+  position: absolute; width: 2px; height: 10px;
+  background: rgba(0,0,0,0.15); border-radius: 1px;
+  transform: translateX(-50%) translateY(-50%); top: 50%;
+}
+.dp-time-labels {
+  position: relative; height: 18px; margin-top: 4px;
+}
+.dp-time-labels span {
+  position: absolute; transform: translateX(-50%);
+  font-size: 11px; font-weight: 500; color: var(--ink-muted-48);
+  letter-spacing: -0.08px; white-space: nowrap;
+}
+.dp-time-labels span:first-child { transform: none; left: 0 !important; }
+.dp-time-labels span:last-child  { transform: none; left: auto !important; right: 0; }
+.dbtn {
+  background: var(--surface-pearl);
+  border: 1px solid var(--hairline);
+  color: var(--ink-muted-80);
+  font-family: system-ui, -apple-system, sans-serif;
+  padding: 6px 14px; border-radius: 9999px; cursor: pointer;
+  transition: background 0.15s, color 0.15s; white-space: nowrap; flex-shrink: 0;
+  outline: none;
+  display: flex; flex-direction: column; align-items: center; gap: 1px; line-height: 1;
+}
+.dbtn-day  { font-size: 11px; font-weight: 600; letter-spacing: -0.08px; }
+.dbtn-date { font-size: 11px; letter-spacing: -0.08px; opacity: 0.7; }
+.dbtn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.dbtn.active .dbtn-date { opacity: 0.8; }
+.dbtn:active { transform: scale(0.95); }
+
+.dp-summary {
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  font-size: 12px; letter-spacing: -0.12px; color: var(--ink-muted-48);
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  margin-top: 2px;
+}
+.dp-summary-label { color: var(--ink-muted-48); }
+.dp-summary-val   { color: var(--ink); font-weight: 600; }
+
+.user-marker {
+  width: 18px; height: 18px; background: var(--primary);
+  border: 3px solid rgba(255,255,255,0.9); border-radius: 50%;
+  animation: pulse-m 2.2s infinite;
+}
+@keyframes pulse-m {
+  0%   { box-shadow: 0 0 0 0   rgba(0,102,204,0.55); }
+  70%  { box-shadow: 0 0 0 16px rgba(0,102,204,0); }
+  100% { box-shadow: 0 0 0 0   rgba(0,102,204,0); }
+}
+@keyframes pulse-c {
+  0%   { box-shadow: 0 0 0 0    rgba(34,197,94,0.65); }
+  70%  { box-shadow: 0 0 0 14px rgba(34,197,94,0); }
+  100% { box-shadow: 0 0 0 0    rgba(34,197,94,0); }
+}
+@keyframes pulse-pink {
+  0%   { box-shadow: 0 0 0 0    rgba(244,63,148,0.7); }
+  70%  { box-shadow: 0 0 0 14px rgba(244,63,148,0); }
+  100% { box-shadow: 0 0 0 0    rgba(244,63,148,0); }
+}
+.cinema-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.85);
+  background: #22c55e;
+  cursor: pointer; transition: transform 0.15s;
+  animation: pulse-c 3.4s infinite;
+}
+.cinema-dot.dim { animation: none; }
+.cinema-dot:hover { transform: scale(1.5); }
+.leaflet-tooltip.nearest-label {
+  background: #f43f94; color: #fff; border: none; border-radius: 4px;
+  font-family: var(--font-ui); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  white-space: nowrap;
+}
+.leaflet-tooltip.nearest-label::before {
+  display: block; content: '';
+  position: absolute; bottom: -10px; left: 50%;
+  transform: translateX(-50%);
+  width: 1px; height: 10px; background: #f43f94;
+  border: none; margin: 0;
+}
+.cinema-dot.dim { background: #5b9bd5; border-color: rgba(255,255,255,0.85); box-shadow: 0 1px 4px rgba(91,155,213,0.35); }
+.cinema-dot.closest { background: #f43f94; border-color: rgba(255,255,255,0.95); animation: pulse-pink 2.2s infinite; }
+.cinema-dot.near2   { background: #22c55e; border-color: rgba(255,255,255,0.95); animation: pulse-c 2.6s infinite; }
+.cinema-dot.near3   { background: #22c55e; border-color: rgba(255,255,255,0.95); animation: pulse-c 3.0s infinite; }
+
+input[type=range].time-slider {
+  width: 100%; height: 4px;
+  -webkit-appearance: none; appearance: none;
+  background: linear-gradient(to right, var(--primary) 0%, var(--primary) var(--pct,0%), var(--hairline) var(--pct,0%), var(--hairline) 100%);
+  border-radius: 2px; outline: none; cursor: pointer;
+}
+input[type=range].time-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px;
+  border-radius: 50%; background: var(--primary);
+  border: 2.5px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  cursor: pointer;
+}
+input[type=range].time-slider::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--primary); border: 2.5px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18); cursor: pointer;
+}
+
+.phone-col {
+  width: 440px; min-width: 440px;
+  background: #fff;
+  border-left: 1px solid var(--hairline);
+  display: flex; align-items: center; justify-content: center;
+  padding: 14px 19px;
+  overflow: hidden;
+  position: relative;
+}
+
+.phone-frame {
+  max-width: 402px;
+  height: min(874px, calc(100vh - 28px));
+  width: auto;
+  aspect-ratio: 402 / 874;
+  min-height: unset; max-height: none;
+  background: #080810;
+  border-radius: 46px;
+  position: relative;
+  box-shadow:
+    0 0 0 1px #1e1e34,
+    0 0 0 3px #131326,
+    0 0 0 5px #0a0a1c,
+    0 24px 60px rgba(0,0,0,0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.phone-frame::before {
+  content: ''; position: absolute; left: -4px; top: 100px;
+  width: 4px; height: 32px; background: #1a1a2e; border-radius: 2px 0 0 2px;
+  box-shadow: 0 46px 0 #1a1a2e;
+}
+.phone-frame::after {
+  content: ''; position: absolute; right: -4px; top: 120px;
+  width: 4px; height: 56px; background: #1a1a2e; border-radius: 0 2px 2px 0;
+}
+.dynamic-island {
+  display: block;
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  width: 118px; height: 34px; background: #000;
+  border-radius: 20px; z-index: 10;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+}
+.screen {
+  position: absolute; inset: 0;
+  border-radius: 46px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  background: var(--mubi-brown);
+}
+.status-bar {
+  height: 52px; padding: 14px 26px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; background: var(--mubi-brown);
+}
+.status-time { font-size: 15px; font-weight: 600; color: #fff; }
+.status-icons { display: flex; align-items: center; gap: 5px; }
+.status-icons svg { fill: #fff; color: #fff; }
+.app-bar {
+  padding: 10px 22px 10px;
+  flex-shrink: 0;
+  background: var(--mubi-brown);
+  display: flex; align-items: center; gap: 10px;
+}
+.app-bar-title {
+  font-family: var(--font-ui);
+  font-size: 14px; font-weight: 400;
+  letter-spacing: -0.1px; line-height: 1.2;
+  color: var(--mubi-yellow); flex-shrink: 0;
+}
+.location-info { flex: 1; min-width: 0; padding-bottom: 4px; }
+.loc-cinema {
+  font-size: 12px; font-weight: 600; color: var(--ink-muted-48);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  letter-spacing: -0.12px;
+}
+.loc-meta { font-size: 11px; color: var(--ink-muted-48); margin-top: 1px; display: flex; gap: 8px; }
+.loc-dist { color: var(--primary); }
+.loc-count { color: var(--ink-muted-48); }
+.tab-bar {
+  display: flex; flex-shrink: 0;
+  background: var(--mubi-brown);
+  padding: 10px 16px 10px;
+  border-bottom: none;
+}
+.tab-bar-inner {
+  display: flex; flex: 1;
+  border: 1px solid var(--mubi-yellow);
+  border-radius: 6px; overflow: hidden;
+}
+.tab {
+  flex: 1; padding: 8px 0;
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 400;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--mubi-yellow); text-align: center; cursor: pointer;
+  border: none; border-bottom: none;
+  background: transparent; transition: background 0.15s, color 0.15s; outline: none;
+}
+.tab + .tab { border-left: 1px solid var(--mubi-yellow); }
+.tab.active { background: var(--mubi-yellow); color: var(--mubi-brown); }
+.screen-content {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;
+  background: var(--mubi-brown);
+}
+.screen-content::-webkit-scrollbar { width: 3px; }
+.screen-content::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 2px; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.home-bar {
+  height: 30px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; background: var(--mubi-brown);
+}
+.home-line { width: 110px; height: 4px; background: #fff; border-radius: 2px; opacity: 0.25; }
+.empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 40px 20px; text-align: center; gap: 10px;
+}
+.empty-icon { font-size: 36px; opacity: 0.22; }
+.empty-ttl { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: -0.374px; }
+.empty-sub { font-size: 14px; color: var(--ink-muted-48); line-height: 1.43; letter-spacing: -0.224px; }
+.wo-list {
+  padding: 8px 16px 20px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.wo-tile {
+  width: 100%; height: 442px;
+  flex-shrink: 0; align-self: center;
+  position: relative; overflow: hidden;
+  border-radius: 6px; cursor: pointer;
+  background: rgba(255,255,255,0.06);
+}
+.wo-tile-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.wo-tile-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    rgba(45,36,32,0.88) 0%,
+    rgba(45,36,32,0.3) 50%,
+    transparent 100%);
+}
+.wo-tile-title {
+  position: absolute; bottom: 32px; left: 14px; right: 14px;
+  font-family: var(--font-display);
+  font-size: 34px; font-weight: 400; color: #fff;
+  line-height: 1.0; letter-spacing: 0; text-transform: uppercase;
+}
+.wo-showing-label {
+  font-family: var(--font-ui);
+  font-size: 14px; font-weight: 400;
+  color: var(--mubi-yellow);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0 2px;
+  margin-top: 16px;
+}
+.wo-tile-grid { display: flex; flex-direction: column; gap: 12px; }
+.wo-tile-grid.grid-2col { flex-direction: row; flex-wrap: wrap; gap: 10px; }
+.wo-tile-grid.grid-2col .wo-tile-small { width: calc(50% - 5px); aspect-ratio: 2/3; }
+.wo-tile-small {
+  aspect-ratio: 16/9;
+  overflow: hidden; border-radius: 4px; cursor: pointer;
+  position: relative; width: 100%;
+}
+.wo-tile-small .wo-tile-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.wo-tile-small .wo-tile-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    rgba(45,36,32,0.85) 0%,
+    rgba(45,36,32,0.2) 45%,
+    transparent 100%);
+}
+.grid-2col .wo-tile-small .wo-tile-overlay {
+  background: linear-gradient(to top,
+    rgba(45,36,32,0.92) 0%,
+    rgba(45,36,32,0.3) 40%,
+    transparent 70%);
+}
+.wo-tile-small-info {
+  position: absolute; bottom: 10px; left: 16px; right: 16px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.grid-2col .wo-tile-small-info { left: 8px; right: 8px; bottom: -4px; }
+.wo-tile-small-title {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 400; color: #fff;
+  line-height: 1.0; letter-spacing: 0; text-transform: uppercase;
+}
+.grid-2col .wo-tile-small-title { font-size: 22px; margin-bottom: 20px; }
+.wo-tile-small-meta {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.wo-tile-small-director {
+  font-family: var(--font-ui);
+  font-size: 12px; font-weight: 500; color: #fff;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.grid-2col .wo-tile-small-director { font-size: 10px; }
+.wo-tile-small-year {
+  font-family: var(--font-ui);
+  font-size: 12px; font-weight: 400; color: #fff;
+  letter-spacing: 0.02em;
+}
+.wo-tile-no-img {
+  background: rgba(255,255,255,0.12);
+  display: flex; align-items: flex-end; padding: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+/* Grid toggle */
+.wo-grid-toggle {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px; z-index: 20;
+}
+.wo-grid-toggle-label {
+  font-size: 12px; font-weight: 500; color: var(--ink);
+  letter-spacing: 0.02em; user-select: none;
+}
+.wo-grid-switch {
+  position: relative; width: 36px; height: 20px; cursor: pointer;
+}
+.wo-grid-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.wo-grid-switch-track {
+  position: absolute; inset: 0; border-radius: 10px;
+  background: rgba(0,0,0,0.12);
+  transition: background 0.18s;
+}
+.wo-grid-switch input:checked ~ .wo-grid-switch-track { background: var(--primary); }
+.wo-grid-switch-thumb {
+  position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  transition: transform 0.18s;
+}
+.wo-grid-switch input:checked ~ .wo-grid-switch-thumb { transform: translateX(16px); }
+.wo-tile-top-gradient {
+  position: absolute; top: 0; left: 0; right: 0; height: 80px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+  pointer-events: none;
+}
+.wo-tile-mubi-rec {
+  position: absolute; top: 14px; left: 14px; right: 14px;
+  font-family: var(--font-ui);
+  font-size: 12px; font-weight: 400;
+  color: #fff;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.wo-tile-director-inside {
+  position: absolute;
+  bottom: 14px; left: 14px; right: 14px;
+  font-family: var(--font-ui);
+  font-size: 14px; font-weight: 400;
+  color: #fff; letter-spacing: 0.06em;
+  text-transform: uppercase; line-height: 1;
+}
+.cert-U    { background: rgba(60,214,138,0.12); color: #1a7a4a; border: 1px solid rgba(60,214,138,0.28); }
+.cert-PG   { background: rgba(60,214,138,0.08); color: #287a40; border: 1px solid rgba(60,214,138,0.2); }
+.cert-12A,
+.cert-12   { background: rgba(240,160,48,0.1);  color: #8a5a00; border: 1px solid rgba(240,160,48,0.24); }
+.cert-15   { background: rgba(255,112,64,0.1);  color: #a03010; border: 1px solid rgba(255,112,64,0.24); }
+.cert-18   { background: rgba(255,68,102,0.1);  color: #aa0030; border: 1px solid rgba(255,68,102,0.24); }
+.cert-R18  { background: rgba(255,34,68,0.1);   color: #cc0020; border: 1px solid rgba(255,34,68,0.24); }
+.cert-     { background: var(--parchment); color: var(--ink-muted-48); border: 1px solid var(--hairline); }
+
+/* Go Now cinema detail slide-in */
+#gn-detail-panel {
+  position: absolute; inset: 0;
+  background: var(--canvas);
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.32,0,0.15,1);
+  z-index: 30; display: flex; flex-direction: column;
+  overflow: hidden;
+}
+#gn-detail-panel.open { transform: translateX(0); }
+#gn-detail-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--canvas);
+  flex-shrink: 0;
+}
+#gn-detail-back {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--hairline); background: var(--parchment);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+#gn-detail-back svg { width: 18px; height: 18px; stroke: var(--ink); }
+#gn-detail-title {
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 400; color: var(--ink);
+  text-transform: uppercase; letter-spacing: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#gn-detail-body { flex: 1; overflow-y: auto; }
+.gn-detail-cinema-card {
+  margin: 10px 14px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--mubi-yellow);
+}
+.gn-detail-cinema-card .gn-cinema-hdr {
+  background: transparent; border-bottom: none;
+  padding: 12px 16px 10px; position: static;
+}
+.gn-detail-cinema-card .gn-cinema-rank { color: var(--mubi-brown); font-weight: 400; letter-spacing: 0.04em; }
+.gn-detail-cinema-card .gn-cinema-name {
+  font-size: 20px; color: var(--mubi-brown); text-transform: uppercase; letter-spacing: 0; white-space: normal;
+}
+.gn-detail-cinema-card .gn-cinema-addr { color: var(--mubi-brown); max-width: 75%; white-space: normal; overflow: visible; text-overflow: unset; }
+.gn-detail-cinema-card .gn-cinema-dist { color: var(--mubi-brown); }
+.gn-detail-cinema-card .gn-film {
+  background: var(--mubi-yellow); border-bottom: none;
+  padding: 12px 16px 14px; position: relative;
+}
+.gn-detail-cinema-card .gn-film::after {
+  content: ''; position: absolute; bottom: 0; left: 16px; right: 16px;
+  height: 1px; background: rgba(45,36,32,0.15);
+}
+.gn-detail-cinema-card .gn-film:last-child::after { display: none; }
+.gn-detail-cinema-card .gn-title { color: var(--mubi-brown); }
+.gn-cinema-section { border-bottom: 1px solid var(--hairline); }
+.gn-cinema-section:last-child { border-bottom: none; }
+.gn-cinema-section.nearest {
+  margin: 8px 16px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--mubi-yellow);
+  border-bottom: none;
+}
+.gn-cinema-section.nearest .gn-film {
+  background: var(--mubi-yellow);
+  border-bottom: none;
+  padding: 14px 16px 16px;
+  position: relative;
+}
+.gn-cinema-section.nearest .gn-film::after {
+  content: '';
+  position: absolute; bottom: 0; left: 16px; right: 16px;
+  height: 1px; background: rgba(45,36,32,0.15);
+}
+.gn-cinema-section.nearest .gn-film:last-child::after { display: none; }
+.gn-cinema-section.nearest .gn-title { color: var(--mubi-brown); }
+.gn-cinema-section.nearest .gn-badge.next { background: none; color: var(--mubi-brown); border: none; }
+.gn-cinema-hdr {
+  padding: 12px 18px 10px;
+  background: var(--parchment);
+  position: sticky; top: 0; z-index: 4;
+  border-bottom: 1px solid var(--hairline);
+}
+.gn-cinema-hdr.nearest {
+  background: transparent;
+  border-bottom: none;
+  padding-left: 16px; padding-right: 16px;
+  position: static;
+}
+.gn-cinema-rank { font-size: 11px; font-weight: 400; color: var(--ink-muted-48); letter-spacing: -0.08px; margin-bottom: 2px; }
+.gn-cinema-rank.r1 { color: var(--mubi-brown); font-weight: 400; letter-spacing: 0.04em; }
+.gn-cinema-rank.r2 { color: #16a34a; }
+.gn-cinema-rank.r3 { color: #16a34a; }
+.gn-cinema-rank.r4 { color: var(--ink-muted-48); }
+.gn-cinema-hdr.nearest .gn-cinema-name {
+  font-size: 20px; font-weight: 400; letter-spacing: 0;
+  text-transform: uppercase; line-height: 1;
+  color: var(--mubi-brown);
+  max-width: 65%; white-space: normal;
+}
+.gn-cinema-hdr.nearest .gn-cinema-addr {
+  max-width: 65%; white-space: normal; overflow: visible;
+  text-overflow: unset; color: var(--mubi-brown);
+}
+.gn-cinema-hdr.nearest .gn-cinema-dist { color: var(--mubi-brown); }
+.gn-cinema-name {
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 500; color: var(--ink); letter-spacing: 0;
+}
+.gn-cinema-addr { font-size: 14px; color: var(--ink-muted-48); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.08px; }
+.gn-cinema-dist { font-size: 12px; margin-top: 3px; letter-spacing: -0.12px; color: var(--ink-muted-48); }
+.gn-cinema-dist.r1 { color: #16a34a; }
+.gn-cinema-dist.r2 { color: #16a34a; }
+.gn-cinema-dist.r3 { color: #16a34a; }
+.gn-cinema-dist.r4 { color: var(--ink-muted-48); }
+.gn-no-shows { padding: 14px 18px; font-size: 13px; color: var(--ink-muted-48); font-style: italic; letter-spacing: -0.224px; }
+.gn-cinema-other {
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding: 2px 16px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.gn-cinema-other:last-child { border-bottom: none; }
+.gn-cinemas-label {
+  padding: 50px 16px 0;
+  font-family: var(--font-ui);
+  font-size: 14px; font-weight: 400;
+  color: rgba(255,192,0,0.8);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.gn-other-name {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 400; color: #fff;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.gn-other-dist { font-size: 11px; color: rgba(255,255,255,0.55); letter-spacing: -0.08px; margin-top: 2px; }
+.gn-film {
+  padding: 12px 18px 10px;
+  border-bottom: 1px solid rgba(224,224,224,0.55);
+  cursor: pointer; transition: background 0.1s;
+  background: var(--canvas);
+}
+.gn-film:last-child { border-bottom: none; }
+.gn-film-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 3px; }
+.gn-title {
+  font-family: var(--font-display);
+  font-size: 14px; font-weight: 400; color: var(--ink);
+  line-height: 1.24; flex: 1; min-width: 0;
+  letter-spacing: 0; text-transform: uppercase;
+}
+.gn-film.all-past .gn-title { color: var(--ink-muted-48); }
+.gn-times-row { display: flex; align-items: center; }
+.gn-times { display: flex; flex-wrap: wrap; gap: 8px; }
+.gn-chip {
+  font-size: 18px; font-weight: 400; color: var(--mubi-brown);
+  padding: 3px 10px; border-radius: 4px;
+  border: 1px solid rgba(45,36,32,0.35);
+  background: none; letter-spacing: 0; white-space: nowrap;
+}
+.gn-badge {
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em; padding: 2px 7px; border-radius: 9999px;
+  flex-shrink: 0; text-transform: uppercase; white-space: nowrap; align-self: center;
+}
+.gn-badge.next { background: rgba(0,102,204,0.1); color: var(--primary); border: 1px solid rgba(0,102,204,0.22); }
+.gn-badge.soon { background: rgba(0,102,204,0.07); color: var(--primary); border: 1px solid rgba(0,102,204,0.18); }
+.screen-content { transition: opacity 0.12s; }
+.screen-content.fade { opacity: 0; }
+
+#hdr-c, #hdr-f {
+  cursor: pointer;
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: 20px;
+  background: rgba(0,102,204,0.09);
+  border: 1px solid rgba(0,102,204,0.18);
+  color: var(--primary);
+  font-size: 13px; font-weight: 500;
+  text-decoration: none;
+  transition: background 0.12s, border-color 0.12s;
+}
+#hdr-c:hover, #hdr-f:hover {
+  background: rgba(0,102,204,0.16);
+  border-color: rgba(0,102,204,0.35);
+}
+
+#cl-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.28);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.18s;
+}
+#cl-overlay.open { opacity: 1; pointer-events: all; }
+
+#cl-panel {
+  position: fixed; top: 44px; left: 50%; transform: translateX(-50%) translateY(-8px);
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100vh - 72px);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: 0 0 14px 14px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  display: flex; flex-direction: column;
+  overflow: hidden; z-index: 2001;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+}
+#cl-panel.open { opacity: 1; pointer-events: all; transform: translateX(-50%) translateY(0); }
+
+#cl-search-wrap {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--hairline);
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+#cl-search {
+  flex: 1; font-family: var(--font-ui); font-size: 14px; color: var(--ink);
+  border: 1px solid var(--hairline); border-radius: 8px;
+  padding: 7px 11px; outline: none; background: var(--parchment);
+  letter-spacing: -0.12px;
+  transition: border-color 0.12s, background 0.12s;
+}
+#cl-search:focus { border-color: var(--primary); background: #fff; }
+#cl-search::placeholder { color: var(--ink-muted-48); }
+#cl-count {
+  font-size: 12px; color: var(--ink-muted-48); white-space: nowrap;
+  letter-spacing: -0.12px; flex-shrink: 0;
+}
+
+#cl-list {
+  overflow-y: auto; flex: 1;
+  scrollbar-width: thin; scrollbar-color: var(--hairline) transparent;
+}
+#cl-list::-webkit-scrollbar { width: 4px; }
+#cl-list::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 2px; }
+
+.cl-item {
+  display: flex; align-items: center;
+  padding: 10px 16px; gap: 10px;
+  border-bottom: 1px solid rgba(224,224,224,0.5);
+  cursor: pointer; transition: background 0.1s;
+}
+.cl-item:last-child { border-bottom: none; }
+.cl-item:hover { background: var(--parchment); }
+.cl-item-info { flex: 1; min-width: 0; }
+.cl-item-name {
+  font-family: var(--font-display); font-size: 14px; font-weight: 500;
+  color: var(--ink); letter-spacing: 0; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.cl-item-addr {
+  font-size: 12px; color: var(--ink-muted-48); margin-top: 1px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  letter-spacing: -0.08px;
+}
+.cl-item-count {
+  font-size: 12px; color: var(--ink-muted-48); white-space: nowrap;
+  flex-shrink: 0; letter-spacing: -0.08px;
+}
+.cl-empty {
+  padding: 40px 20px; text-align: center;
+  font-size: 14px; color: var(--ink-muted-48); letter-spacing: -0.12px;
+}
+
+/* ── Film list panel ─────────────────────────────────────────────────────── */
+#fl-panel {
+  position: fixed; top: 44px; left: 50%; transform: translateX(-50%) translateY(-8px);
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100vh - 72px);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: 0 0 14px 14px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  display: flex; flex-direction: column;
+  overflow: hidden; z-index: 2001;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+}
+#fl-panel.open { opacity: 1; pointer-events: all; transform: translateX(-50%) translateY(0); }
+#fl-search-wrap {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--hairline);
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+#fl-search {
+  flex: 1; font-family: var(--font-ui); font-size: 14px; color: var(--ink);
+  border: 1px solid var(--hairline); border-radius: 8px;
+  padding: 7px 11px; outline: none; background: var(--parchment);
+  letter-spacing: -0.12px; transition: border-color 0.12s, background 0.12s;
+}
+#fl-search:focus { border-color: var(--primary); background: #fff; }
+#fl-search::placeholder { color: var(--ink-muted-48); }
+#fl-count { font-size: 12px; color: var(--ink-muted-48); white-space: nowrap; letter-spacing: -0.12px; flex-shrink: 0; }
+#fl-list {
+  overflow-y: auto; flex: 1;
+  scrollbar-width: thin; scrollbar-color: var(--hairline) transparent;
+}
+#fl-list::-webkit-scrollbar { width: 4px; }
+#fl-list::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 2px; }
+.fl-item {
+  display: flex; align-items: center;
+  padding: 12px 16px; gap: 14px;
+  border-bottom: 1px solid rgba(224,224,224,0.5);
+}
+.fl-item:last-child { border-bottom: none; }
+.fl-item-thumb {
+  width: 96px; height: 64px; border-radius: 6px;
+  object-fit: cover; flex-shrink: 0;
+  background: var(--parchment);
+}
+.fl-item-thumb-placeholder {
+  width: 96px; height: 64px; border-radius: 6px;
+  background: var(--parchment); flex-shrink: 0;
+}
+.fl-item-info { flex: 1; min-width: 0; }
+.fl-item-title {
+  font-family: var(--font-display); font-size: 14px;
+  color: var(--ink); letter-spacing: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fl-item-meta {
+  font-size: 12px; color: var(--ink-muted-48); margin-top: 2px;
+  display: flex; gap: 8px; align-items: center; letter-spacing: -0.08px;
+}
+.fl-item-dir {
+  font-size: 11px; color: var(--ink-muted-48); margin-top: 1px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  letter-spacing: -0.06px;
+}
+.fl-cert {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.04em;
+  padding: 1px 6px; border-radius: 4px; flex-shrink: 0;
+}
+.fl-cinemas {
+  font-size: 12px; color: var(--ink-muted-48); white-space: nowrap; flex-shrink: 0; letter-spacing: -0.08px;
+}
+.fl-empty {
+  padding: 40px 20px; text-align: center;
+  font-size: 14px; color: var(--ink-muted-48); letter-spacing: -0.12px;
+}
+</style>
+</head>
+<body>
+
+<div class="map-col">
+
+<header>
+  <div>
+    <div class="logo">UK Cinemas &amp; Showtimes</div>
+    <div class="logo-sub" id="hdr-dates">—</div>
+  </div>
+  <div class="hdr-stat">
+    <div class="hdr-stat-row">
+      <strong id="hdr-c" title="Click to browse all cinemas">— cinemas</strong>
+      <strong id="hdr-f" title="Click to browse all films">— films</strong>
+      <span class="hdr-sep"><strong id="hdr-s">—</strong> showtimes</span>
+    </div>
+    <div class="hdr-popular" id="hdr-popular"></div>
+  </div>
+</header>
+
+<div id="cl-overlay"></div>
+<div id="fl-panel">
+  <div id="fl-search-wrap">
+    <input id="fl-search" type="text" placeholder="Search films…" autocomplete="off" spellcheck="false">
+    <span id="fl-count"></span>
+  </div>
+  <div id="fl-list"></div>
+</div>
+<div id="cl-panel">
+  <div id="cl-search-wrap">
+    <input id="cl-search" type="text" placeholder="Search cinemas…" autocomplete="off" spellcheck="false">
+    <span id="cl-count"></span>
+  </div>
+  <div id="cl-list"></div>
+</div>
+
+  <div class="map-side">
+    <div id="map"></div>
+    <div class="date-panel">
+      <div class="dp-row" style="padding: 4px 0 4px;">
+        <span class="dp-label">Location</span>
+        <form class="postcode-form" id="postcode-form" autocomplete="off">
+          <input class="postcode-input" id="postcode-input" type="text" placeholder="Postcode" maxlength="8" spellcheck="false">
+          <button class="postcode-btn" id="postcode-btn" type="submit">Go</button>
+        </form>
+      </div>
+      <div style="height:1px; background: var(--hairline); margin: 0 -4px;"></div>
+      <div class="dp-row">
+        <span class="dp-label">Date</span>
+        <div class="dp-scroll" id="date-btns"></div>
+      </div>
+      <div class="dp-row">
+        <span class="dp-label">Time</span>
+        <div class="dp-slider-wrap">
+          <div class="dp-slider-outer">
+            <input type="range" class="time-slider" id="time-slider" min="0" max="1439" value="0">
+            <div class="dp-ticks">
+              <span class="dp-tick" style="left:25%"></span>
+              <span class="dp-tick" style="left:50%"></span>
+              <span class="dp-tick" style="left:75%"></span>
+            </div>
+          </div>
+          <div class="dp-time-labels">
+            <span style="left:0%">12am</span>
+            <span style="left:25%">6am</span>
+            <span style="left:50%">Noon</span>
+            <span style="left:75%">6pm</span>
+            <span style="left:100%">12am</span>
+          </div>
+        </div>
+        <span class="dp-time-val" id="time-display">00:00</span>
+        <button class="dp-now-btn" id="btn-now" title="Reset to current time">Now</button>
+      </div>
+      <div class="dp-summary">
+        <span class="dp-summary-label">App will show</span>
+        <span class="dp-summary-val" id="rp-cinemas">—</span>
+        <span class="dp-summary-label">cinemas ·</span>
+        <span class="dp-summary-val" id="rp-films">—</span>
+        <span class="dp-summary-label">films within</span>
+        <span class="dp-summary-val" id="rp-radius">—</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /map-col -->
+
+<div class="phone-col">
+  <div class="wo-grid-toggle" id="wo-grid-toggle">
+    <span class="wo-grid-toggle-label">Portrait images</span>
+    <label class="wo-grid-switch">
+      <input type="checkbox" id="btn-portrait">
+      <span class="wo-grid-switch-track"></span>
+      <span class="wo-grid-switch-thumb"></span>
+    </label>
+  </div>
+  <div class="phone-frame">
+    <div class="dynamic-island"></div>
+      <div class="screen">
+        <div class="status-bar">
+          <span class="status-time" id="status-time">18:42</span>
+          <div class="status-icons">
+            <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="8" width="3" height="4" rx="1" opacity="0.3"/><rect x="4.5" y="5.5" width="3" height="6.5" rx="1" opacity="0.5"/><rect x="9" y="3" width="3" height="9" rx="1" opacity="0.7"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
+            <svg width="15" height="12" viewBox="0 0 15 12"><path d="M7.5 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/><path d="M4 7.3a5.2 5.2 0 0 1 7 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M1.3 4.6a9 9 0 0 1 12.4 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"/><rect x="22" y="4" width="2" height="4" rx="1" fill="currentColor" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="app-bar">
+          <div class="app-bar-title">Nearby</div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-bar-inner">
+            <button class="tab active" data-tab="whats-on">What's On</button>
+            <button class="tab" data-tab="go-now">Go Now</button>
+          </div>
+        </div>
+        <div class="screen-content" id="screen-content">
+          <div class="tab-panel active" id="panel-whats-on">
+            <div class="empty"><div class="empty-icon">🎬</div><div class="empty-ttl">Finding cinemas…</div><div class="empty-sub">Click the map to set your location</div></div>
+          </div>
+          <div class="tab-panel" id="panel-go-now">
+            <div class="empty"><div class="empty-icon">⏱</div><div class="empty-ttl">Go Now</div><div class="empty-sub">Next screenings at the closest cinema</div></div>
+          </div>
+        </div>
+        <div class="home-bar"><div class="home-line"></div></div>
+      </div>
+      <div id="gn-detail-panel">
+        <div id="gn-detail-header">
+          <button id="gn-detail-back">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="13,4 7,10 13,16"/></svg>
+          </button>
+          <div id="gn-detail-title"></div>
+        </div>
+        <div id="gn-detail-body"></div>
+      </div>
+  </div>
+</div>
+
+<script>
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// Typo / variant fixes applied during normalisation (affects grouping in both panels)
+const NORM_ALIASES = {
+  'Were Nothing at All': "We're Nothing at All",
+  'Zog and Zog & The Flying Doctors': 'Zog & Zog and the Flying Doctors',
+  'Zog + Zog and the Flying Doctors': 'Zog & Zog and the Flying Doctors',
+  'Zog And The Flying Doctors': 'Zog & Zog and the Flying Doctors',
+  'Zog and The Flying Doctors': 'Zog & Zog and the Flying Doctors',
+  // "The" article mismatch between cinema listing and MUBI key
+  'The Fantastic Mr. Fox': 'Fantastic Mr. Fox',
+  // Season/programme wrappers → actual film title
+  'Seven Beauties': 'Seven Beauties',
+  'Innocent Sorcerers': 'Innocent Sorcerers',
+};
+
+function normaliseTitle(t) {
+  if (!t) return '';
+  let s = t.trim();
+  // HTML entities & non-breaking spaces
+  s = s.replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/\xa0/g, ' ');
+  // Strip screening-type / event prefixes: "Open Air: ", "Parent & Baby: ", etc.
+  s = s.replace(/^(?:Open Air|Outdoor|Late Nights?|Dog Friendly(?:\s*Screening)?|Family Film Club|Kids Club|Relaxed Screening|Throwback|Screen Talks?|Autism Friendly Screening|Senior Citizen Kane|Senior Screening|Refugee Week|Presents|RFF|UD Takeover|Carers?\s*(?:&|and)\s*Babies?|Parent\s*(?:&|and)\s*Baby(?:\s*Screening)?|Ciné Sunday|Bring a Baby(?:\s*Screening)?|Baby Friendly(?:\s*Screening)?|Pride at(?: the)? Dukes?|Members'\s*Screening|Alborada Films presents|Viva Espana|Viva España)\s*[:\-]\s*/i, '');
+  // "(last few seats) …" junk prefix
+  s = s.replace(/^\(last few seats\)\s*/i, '');
+  // " - Cert 15" suffix
+  s = s.replace(/\s*[-–]\s*Cert\s*(?:U|PG|12A?|15|18|R18|TBC)\s*$/i, '');
+  // " 2D" / " 3D" screening format suffix
+  s = s.replace(/\s+(?:2D|3D)\s*$/i, '');
+  // "(1990)" bare year suffix — disambiguation, not part of title
+  s = s.replace(/\s*\(\d{4}\)\s*$/, '');
+  // "(4K Re-release)", "(4K Restoration)", "(2025 Re-release)"
+  s = s.replace(/\s*\(\d{4}\s*Re-?release\)\s*$/i, '');
+  s = s.replace(/\s*\(4[Kk][^)]*\)\s*$/i, '');
+  s = s.replace(/\s*:\s*4[Kk](?:\s+Re-?release|\s+Restoration)?\s*$/i, '');
+  s = s.replace(/\s*[-–]\s*4[Kk][^,\n]*$/i, '');
+  s = s.replace(/\s*\(Re-?release\)\s*$/i, '');
+  // "(25th Anniversary)" / "25th Anniversary" suffix
+  s = s.replace(/\s*\(\d+(?:st|nd|rd|th)\s+Anniversary[^)]*\)\s*$/i, '');
+  s = s.replace(/\s+\d+(?:st|nd|rd|th)\s+Anniversary[^,\n]*$/i, '');
+  // "+ Q&A", "+ intro by...", "– Discussion", "[+ Q&A]" etc.
+  s = s.replace(/\s*\[[\s\S]*?(?:Q&(?:amp;)?A|intro|discussion)[\s\S]*?\]\s*$/i, '');
+  s = s.replace(/\s*[+–—]\s*(?:Q&(?:amp;)?A|Introduction|Intro|Panel Discussion|Recorded Q&(?:amp;)?A|Live Q&(?:amp;)?A|Director Q&(?:amp;)?A|pre-?recorded intro|Conversation|Discussion|talk\b|Filmmaker(?:'s)? Q&(?:amp;)?A).*$/i, '');
+  // ": Parent & Baby Screening", ": Senior Screening" etc. as colon-suffix (e.g. "Disclosure Day: Senior Screening")
+  s = s.replace(/\s*:\s*(?:Parent\s*(?:&|and)\s*Baby(?:\s*Screening)?|Carers?\s*(?:&|and)\s*Babies?(?:\s*Screening)?|Senior\s*(?:Citizen\s*)?Screening|Baby\s*(?:Friendly\s*)?Screening|Subtitled\s*Screening|Relaxed\s*Screening|Autism\s*Friendly(?:\s*Screening)?|Dog\s*Friendly(?:\s*Screening)?|Kids?\s*Club|Outdoor(?:\s*Screening)?|Bring\s*a\s*Baby|Sing-?Along(?:\s*Event)?|Event\s*Screening|Members'\s*Screening|Special\s*Screening)\s*$/i, '');
+  // " - Baby Friendly", " - Subtitled Screening" etc. as dash-suffix
+  s = s.replace(/\s*[-–]\s*(?:Baby Friendly|Baby Screening|Senior Screening|Subtitled Screening|Sing-?Along Event?)\s*$/i, '');
+  // Strip cert + accessibility badges repeatedly until stable (handles "(15) (AD)" etc.)
+  let prev;
+  do {
+    prev = s;
+    s = s.replace(/\s*\((?:Cert\s*)?(?:U|PG|12A?|15|18|R18|TBC)\)\s*$/i, '');
+    s = s.replace(/\s*\((?:AD|Audio Description|Subtitled|Relaxed|Autism Friendly|HoH|Open Caption(?:ed)?|Captioned)\)\s*$/i, '');
+  } while (s !== prev);
+  // Language-version suffix: "(Cantonese)", "(Japanese Subbed)", "(Hindi)", etc.
+  s = s.replace(/\s*\((Cantonese|Japanese|Mandarin|Hindi|Gujarati|Punjabi|Malayalam|Telugu|Urdu|Arabic|Tamil|Korean|French|Italian|Spanish|German|Polish|Subbed|Dubbed|OV|VO|VOST)\)\s*$/i, '');
+  // Unclosed parenthesis at end e.g. "(25th Anniversary 4K Restoration"
+  s = s.replace(/\s*\([^)]{1,60}$/, '');
+  // Collapse multiple spaces
+  s = s.replace(/\s{2,}/g, ' ').trim();
+  // Apply typo/variant aliases
+  if (NORM_ALIASES[s]) s = NORM_ALIASES[s];
+  return s;
+}
+
+function haversineKm(lat1,lng1,lat2,lng2) {
+  const R=6371, dL=(lat2-lat1)*Math.PI/180, dN=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dL/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dN/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function fmtDist(km) { return km<1 ? `${Math.round(km*1000)}m` : `${km.toFixed(1)}km`; }
+
+function certCls(c) {
+  if (!c) return 'cert-';
+  const v = c.trim().replace(/\s/g,'');
+  if (v==='U') return 'cert-U';
+  if (v==='PG') return 'cert-PG';
+  if (['12A','12'].includes(v)) return 'cert-12A';
+  if (v==='15') return 'cert-15';
+  if (v==='18') return 'cert-18';
+  if (v==='R18') return 'cert-R18';
+  return 'cert-';
+}
+
+function compareTime(a,b) { return a.localeCompare(b); }
+
+function addMins(t, m) {
+  const [h,n]=t.split(':').map(Number), tot=h*60+n+m;
+  return `${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
+}
+function minsUntil(now,then) {
+  const [nh,nm]=now.split(':').map(Number),[th,tm]=then.split(':').map(Number);
+  return Math.max(0,(th*60+tm)-(nh*60+nm));
+}
+
+// ─── State ────────────────────────────────────────────────────────────────────
+
+const cinemas = window.CINEMA_DATA?.cinemas || [];
+
+document.getElementById('hdr-c').textContent = cinemas.length + ' cinemas';
+const uniqueFilms = new Set(cinemas.flatMap(c => Object.values(c.s).flatMap(shows => shows.map(s => s[0].toLowerCase()))));
+document.getElementById('hdr-f').textContent = uniqueFilms.size.toLocaleString() + ' films';
+document.getElementById('hdr-s').textContent = cinemas.reduce((sum, c) =>
+  sum + Object.values(c.s).reduce((n, shows) => n + shows.length, 0), 0).toLocaleString();
+
+const filmCinemas = {};
+cinemas.forEach(c => {
+  const titles = new Set(Object.values(c.s).flatMap(shows => shows.map(s => s[0].toLowerCase())));
+  titles.forEach(t => { filmCinemas[t] = (filmCinemas[t] || new Set()); filmCinemas[t].add(c.n); });
+});
+const sorted = Object.entries(filmCinemas).sort((a,b) => b[1].size - a[1].size);
+const fmtPopular = ([t, cs]) => `<strong style="color:var(--primary);font-weight:400">${t.replace(/\b\w/g,c=>c.toUpperCase())}</strong> ${cs.size} cinemas`;
+if (sorted.length >= 2) {
+  document.getElementById('hdr-popular').innerHTML = `most shown: ${fmtPopular(sorted[0])} &amp; ${fmtPopular(sorted[1])}`;
+} else if (sorted.length === 1) {
+  document.getElementById('hdr-popular').innerHTML = `most shown: ${fmtPopular(sorted[0])}`;
+}
+
+// Default: London centre, 5km radius
+let userLat=51.5127, userLng=-0.1432, radiusKm=6.437, activeTab='whats-on', woGridMode='1col';
+
+// Derive date list and header from data
+const allDates = [...new Set(cinemas.flatMap(c => Object.keys(c.s)))].sort();
+if (allDates.length) {
+  const d0 = new Date(allDates[0] + 'T12:00:00');
+  const dN = new Date(allDates[allDates.length - 1] + 'T12:00:00');
+  const day0 = d0.toLocaleDateString('en-GB', { day: 'numeric' });
+  const dayN = dN.toLocaleDateString('en-GB', { day: 'numeric' });
+  const mon0 = d0.toLocaleDateString('en-GB', { month: 'short' });
+  const monN = dN.toLocaleDateString('en-GB', { month: 'short' });
+  const yr   = dN.getFullYear();
+  const range = mon0 === monN ? `${day0}–${dayN} ${monN} ${yr}` : `${day0} ${mon0}–${dayN} ${monN} ${yr}`;
+  document.getElementById('hdr-dates').textContent = range;
+}
+
+// Start on today's date if present, otherwise first available
+const todayStr = new Date().toISOString().slice(0, 10);
+let selectedDate = allDates.includes(todayStr) ? todayStr : (allDates[0] || '');
+let DEMO_NOW = '00:00';
+const DEMO_TODAY = selectedDate;
+
+// ─── Time slider ──────────────────────────────────────────────────────────────
+
+function minsToTime(m) {
+  return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+}
+
+const timeSlider = document.getElementById('time-slider');
+const timeDisplay = document.getElementById('time-display');
+const btnNow = document.getElementById('btn-now');
+
+function realNowMins() { const n = new Date(); return n.getHours()*60+n.getMinutes(); }
+
+function updateSlider() {
+  const val = parseInt(timeSlider.value);
+  DEMO_NOW = minsToTime(val);
+  timeDisplay.textContent = DEMO_NOW;
+  document.getElementById('status-time').textContent = DEMO_NOW;
+  const pct = (val / 1439 * 100).toFixed(1);
+  timeSlider.style.setProperty('--pct', pct + '%');
+  btnNow.classList.toggle('is-now', Math.abs(val - realNowMins()) <= 1);
+}
+
+timeSlider.addEventListener('input', () => { updateSlider(); updateAll(); });
+timeSlider.value = realNowMins();
+updateSlider();
+
+btnNow.addEventListener('click', () => { timeSlider.value = realNowMins(); updateSlider(); updateAll(); });
+
+// ─── Date buttons ─────────────────────────────────────────────────────────────
+
+const dateBtnsEl = document.getElementById('date-btns');
+
+function buildDateButtons() {
+  dateBtnsEl.innerHTML = allDates.map((d) => {
+    const obj = new Date(d+'T12:00:00');
+    const dayName   = obj.toLocaleDateString('en-GB',{weekday:'short'});
+    const dateLabel = obj.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    return `<button class="dbtn${d===selectedDate?' active':''}" data-date="${d}"><span class="dbtn-day">${dayName}</span><span class="dbtn-date">${dateLabel}</span></button>`;
+  }).join('');
+  dateBtnsEl.querySelectorAll('.dbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedDate = btn.dataset.date;
+      dateBtnsEl.querySelectorAll('.dbtn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      timeSlider.value = 0; updateSlider(); updateAll();
+    });
+  });
+}
+buildDateButtons();
+
+// ─── Map setup (UK) ──────────────────────────────────────────────────────────
+
+// UK bounding box: SW 49.5,-8.8  NE 61.0,2.2
+const UK_SW = [49.5, -8.8];
+const UK_NE = [61.0,  2.2];
+const UK_BOUNDS = L.latLngBounds(UK_SW, UK_NE);
+
+function clampToUK(lat, lng) {
+  return {
+    lat: Math.max(UK_SW[0], Math.min(UK_NE[0], lat)),
+    lng: Math.max(UK_SW[1], Math.min(UK_NE[1], lng)),
+  };
+}
+
+const map = L.map('map', {
+  center: [51.5127, -0.1432],
+  zoom: 11,
+  minZoom: 5,
+  maxZoom: 17,
+  maxBounds: UK_BOUNDS,
+  maxBoundsViscosity: 0.9,
+});
+map.getPane('popupPane').style.zIndex = '5000';
+map.getPane('tooltipPane').style.zIndex = '4900';
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+  attribution:'© <a href="https://carto.com">CARTO</a> © <a href="https://openstreetmap.org">OSM</a>',
+  subdomains:'abcd', maxZoom:19,
+}).addTo(map);
+
+// White mask: world rectangle with UK bounding box cut out as a hole
+L.polygon(
+  [ [[-90,-180],[-90,180],[90,180],[90,-180]],   // outer world
+    [UK_SW, [UK_SW[0],UK_NE[1]], UK_NE, [UK_NE[0],UK_SW[1]]] ], // UK hole
+  { color:'none', fillColor:'#ffffff', fillOpacity:0.72, interactive:false }
+).addTo(map);
+
+// Dashed border around the UK box
+L.rectangle(UK_BOUNDS, {
+  color: 'rgba(29,29,31,0.22)', weight: 1.5, dashArray: '7 6',
+  fill: false, interactive: false,
+}).addTo(map);
+
+const userIcon = L.divIcon({className:'',html:'<div class="user-marker"></div>',iconSize:[18,18],iconAnchor:[9,9]});
+const userMarker = L.marker([userLat,userLng],{icon:userIcon,draggable:true,zIndexOffset:1000}).addTo(map);
+
+let radiusCircle = L.circle([userLat,userLng],{
+  radius:radiusKm*1000, color:'rgba(0,102,204,0.5)',
+  fillColor:'rgba(0,102,204,0.06)', fillOpacity:1,
+  weight:1.5, dashArray:'6 4',
+}).addTo(map);
+
+map.fitBounds(radiusCircle.getBounds(), { padding: [32, 32] });
+
+userMarker.on('drag',e=>{
+  const p = clampToUK(e.latlng.lat, e.latlng.lng);
+  userLat=p.lat; userLng=p.lng;
+  userMarker.setLatLng([userLat,userLng]);
+  radiusCircle.setLatLng([userLat,userLng]);
+  debouncedUpdate();
+});
+userMarker.on('dragend',()=>updateAll());
+
+map.on('click',e=>{
+  const p = clampToUK(e.latlng.lat, e.latlng.lng);
+  userLat=p.lat; userLng=p.lng;
+  userMarker.setLatLng([userLat,userLng]);
+  radiusCircle.setLatLng([userLat,userLng]);
+  updateAll();
+});
+
+function sanitize(s){return s.replace(/[^a-zA-Z0-9]/g,'_');}
+
+const POPUP_DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function buildPopupShowsHtml(c, date) {
+  const shows = c.s[date] || [];
+  if (!shows.length) return `<div class="popup-no-shows">No screenings</div>`;
+  const filmMap = new Map();
+  shows.forEach(([title,,time]) => {
+    if (!filmMap.has(title)) filmMap.set(title, []);
+    filmMap.get(title).push(time);
+  });
+  return [...filmMap.entries()]
+    .sort((a,b) => a[1][0].localeCompare(b[1][0]))
+    .map(([title, times]) => `<div class="popup-film">
+      <div class="popup-film-title">${esc(normaliseTitle(title))}</div>
+      <div class="popup-times">${times.sort().map(t=>`<span class="popup-time">${t}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function buildPopupHtml(c, activeDate) {
+  const dates = Object.keys(c.s||{}).sort();
+  if (!activeDate || !c.s[activeDate]) activeDate = dates[0] || '';
+
+  const tabsHtml = dates.map(d => {
+    const dt = new Date(d + 'T00:00:00Z');
+    return `<div class="popup-date-tab${d===activeDate?' active':''}" data-date="${d}">${POPUP_DAYS[dt.getUTCDay()]} ${dt.getUTCDate()}</div>`;
+  }).join('');
+
+  return `<div class="popup-header">
+    <div class="popup-header-text">
+      <div class="popup-name">${esc(c.n)}</div>
+      <div class="popup-dist" id="pp${sanitize(c.n)}">—</div>
+    </div>
+    <div class="popup-close" title="Close">✕</div>
+  </div>
+  <div class="popup-date-tabs">${tabsHtml}</div>
+  <div class="popup-shows">${dates.length ? buildPopupShowsHtml(c, activeDate) : '<div class="popup-no-shows">No screenings this week</div>'}</div>`;
+}
+
+const cinemaMarkers=new Map();
+cinemas.forEach(c=>{
+  const icon=L.divIcon({className:'',html:'<div class="cinema-dot dim"></div>',iconSize:[10,10],iconAnchor:[5,5]});
+  const m=L.marker([c.c[0],c.c[1]],{icon,zIndexOffset:400}).addTo(map);
+  m.bindPopup('', {offset:[0,-4], maxWidth:300});
+  m.on('popupopen', () => {
+    const popup = m.getPopup();
+    popup.setContent(buildPopupHtml(c, selectedDate));
+    // Stop map from intercepting clicks inside popup
+    L.DomEvent.disableClickPropagation(popup.getElement());
+    // Event delegation — tabs + close button
+    popup.getElement().addEventListener('click', e => {
+      const tab = e.target.closest('.popup-date-tab');
+      if (tab) {
+        const date = tab.dataset.date;
+        popup.getElement().querySelectorAll('.popup-date-tab').forEach(t =>
+          t.classList.toggle('active', t.dataset.date === date));
+        popup.getElement().querySelector('.popup-shows').innerHTML = buildPopupShowsHtml(c, date);
+        return;
+      }
+      if (e.target.closest('.popup-close')) m.closePopup();
+    });
+  });
+  cinemaMarkers.set(c.n,m);
+});
+
+const _datePanel = document.querySelector('.date-panel');
+map.on('popupopen',  () => { if (_datePanel) _datePanel.style.zIndex = '0'; });
+map.on('popupclose', () => { if (_datePanel) _datePanel.style.zIndex = ''; });
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active'); activeTab=t.dataset.tab;
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById(`panel-${activeTab}`).classList.add('active');
+  });
+});
+
+// ─── Core update ──────────────────────────────────────────────────────────────
+
+let debTimer=null;
+function debouncedUpdate(){clearTimeout(debTimer);debTimer=setTimeout(updateAll,80);}
+
+function updateAll() {
+  const ranked = cinemas.map(c=>({...c,km:haversineKm(userLat,userLng,c.c[0],c.c[1])}))
+    .sort((a,b)=>a.km-b.km);
+
+  const thirdKm = ranked[2]?.km ?? radiusKm;
+  const effectiveRadius = Math.max(radiusKm, thirdKm);
+
+  const inRange = ranked.filter(c => c.km <= effectiveRadius);
+  radiusCircle.setRadius(effectiveRadius * 1000);
+
+  const filmSet = new Set();
+  inRange.forEach(c => {
+    let shows = c.s[selectedDate] || [];
+    if (!shows.length) {
+      const next = Object.keys(c.s).sort().find(d => d > selectedDate);
+      if (next) shows = c.s[next] || [];
+    }
+    shows.forEach(([title]) => filmSet.add(title));
+  });
+
+  document.getElementById('rp-radius').textContent = fmtDist(effectiveRadius);
+  document.getElementById('rp-cinemas').textContent = inRange.length;
+  document.getElementById('rp-films').textContent = filmSet.size;
+
+  if (window._nearestMarker) {
+    try { window._nearestMarker.unbindTooltip(); } catch(_) {}
+    window._nearestMarker = null;
+  }
+
+  ranked.forEach((c, i) => {
+    const marker = cinemaMarkers.get(c.n);
+    if (!marker) return;
+    const dot = marker.getElement()?.querySelector('.cinema-dot');
+    if (!dot) return;
+    dot.className = 'cinema-dot';
+    dot.style.background = '';
+    if (i === 0) {
+      dot.classList.add('closest');
+      dot.style.background = '#f43f94';
+      marker.bindTooltip('NEAREST', {
+        permanent: true, direction: 'top', offset: [0, -8],
+        className: 'nearest-label'
+      }).openTooltip();
+      window._nearestMarker = marker;
+    } else if (i === 1) dot.classList.add('near2');
+    else if (i === 2) dot.classList.add('near3');
+    else if (c.km > effectiveRadius) dot.classList.add('dim');
+    // distance label updates live via pp${sanitize} id when popup is open
+    const ppDist = document.getElementById(`pp${sanitize(c.n)}`);
+    if (ppDist) ppDist.textContent = fmtDist(c.km);
+  });
+
+  const sc = document.getElementById('screen-content');
+  sc.classList.add('fade');
+  setTimeout(()=>{
+    renderWhatsOn(inRange, selectedDate);
+    renderGoNow(inRange, selectedDate);
+    sc.classList.remove('fade');
+  }, 100);
+}
+
+// ─── WHAT'S ON ────────────────────────────────────────────────────────────────
+
+// ─── MUBI metadata helpers (global so renderFilmList can use them too) ────────
+
+const META = window.FILM_METADATA || {};
+
+const normMetaMap = new Map();
+for (const k of Object.keys(META)) {
+  const norm = normaliseTitle(k).toLowerCase();
+  if (norm !== k.toLowerCase() && !normMetaMap.has(norm)) normMetaMap.set(norm, k);
+}
+
+const TITLE_ALIASES = {
+  'The Mandalorian & Grogu': 'Star Wars: The Mandalorian and Grogu',
+  'The Mandalorian and Grogu': 'Star Wars: The Mandalorian and Grogu',
+  'Shrek: 25th Anniversary': 'Shrek',
+  'Strictly Ballroom: 4K Restoration': 'Strictly Ballroom',
+  "Irving Berlin's Top Hat The Musical": 'Top Hat',
+  'Top Hat - The Musical': 'Top Hat',
+  'The Birdcage 30th Anniversary': 'The Birdcage',
+  'KPop Demon Hunters Sing-Along': 'KPop Demon Hunters',
+  'KPop Demon Hunters: Singalong': 'KPop Demon Hunters',
+  'K-Pop Demon Hunters - A Sing-Along Event': 'KPop Demon Hunters',
+  'K-Pop Demon Hunters: Singalong': 'KPop Demon Hunters',
+  'K-Pop Demon Hunters': 'KPop Demon Hunters',
+  "Labyrinth: 40th Anniversary": 'Labyrinth',
+  "Labyrinth 40th Anniversary": 'Labyrinth',
+  'Yi Yi': 'YI YI',
+  'My Mothers Wedding': "My Mother's Wedding",
+  'Koln 75': 'Köln 75',
+  'The Christophers': 'The Christophers',
+  'Jurassic World Rebirth': 'Jurassic World: Rebirth',
+  'Lilo and Stitch': 'Lilo & Stitch',
+};
+
+function metaKey(t) {
+  if (!t) return null;
+  if (META[t]) return t;
+  if (TITLE_ALIASES[t]) return metaKey(TITLE_ALIASES[t]);
+  const tc = t.replace(/\b\w/g, c => c.toUpperCase()); if (META[tc]) return tc;
+  const lower = t.toLowerCase();
+  const exact = Object.keys(META).find(k => k.toLowerCase() === lower);
+  if (exact) return exact;
+  const revHit = normMetaMap.get(lower);
+  if (revHit) return revHit;
+  const noLang = t.replace(/\s*\((Japanese|Hindi|Gujarati|Punjabi|Malayalam|Telugu|Cantonese|Urdu|Arabic|Subbed|Tamil|Korean|French|Italian|Spanish|German|Polish)\)\s*$/i, '').trim();
+  if (noLang !== t) return metaKey(noLang);
+  const norm = normaliseTitle(t);
+  if (norm !== t) {
+    const revHit2 = normMetaMap.get(norm.toLowerCase());
+    if (revHit2) return revHit2;
+    return metaKey(norm);
+  }
+  return null;
+}
+
+let lastInRange = [], lastSelectedDate = '';
+function renderWhatsOn(cinemaList, date) {
+  lastInRange = cinemaList; lastSelectedDate = date;
+  const panel = document.getElementById('panel-whats-on');
+
+  if (!cinemaList.length) {
+    panel.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-ttl">No cinemas</div><div class="empty-sub">Move the pin to find cinemas</div></div>`;
+    return;
+  }
+
+  const filmMap = new Map();
+  cinemaList.forEach(c => {
+    let shows = c.s[date] || [];
+    if (!shows.length) {
+      const next = Object.keys(c.s).sort().find(d => d > date);
+      if (next) shows = c.s[next] || [];
+    }
+    shows.forEach(([title, cert, time]) => {
+      const clean = normaliseTitle(title);
+      if (!clean) return;
+      const key = clean.toLowerCase();
+      if (!filmMap.has(key)) filmMap.set(key, { title: clean, cert, times: [], minKm: c.km ?? Infinity });
+      else {
+        const entry = filmMap.get(key);
+        if (clean.length < entry.title.length) entry.title = clean;
+        if ((c.km ?? Infinity) < entry.minKm) entry.minKm = c.km ?? Infinity;
+      }
+      if (time) filmMap.get(key).times.push(time);
+    });
+  });
+
+  if (!filmMap.size) {
+    panel.innerHTML = `<div class="empty"><div class="empty-icon">📅</div><div class="empty-ttl">Nothing on</div><div class="empty-sub">No films at these cinemas</div></div>`;
+    return;
+  }
+
+  // Feature Disclosure Day first (MUBI GO pick), then sort rest by nearest cinema showing them
+  const FEATURED = 'disclosure day';
+  const allFilms = [...filmMap.values()]
+    .filter(d => d.times.length === 0 || d.times.some(t => compareTime(t, DEMO_NOW) >= 0));
+
+  const featuredIdx = allFilms.findIndex(f => f.title.toLowerCase() === FEATURED);
+  const featuredEntry = featuredIdx >= 0 ? allFilms[featuredIdx] : null;
+  const rest = allFilms
+    .filter((_, i) => i !== featuredIdx)
+    .sort((a, b) => a.minKm - b.minKm)
+    .map(d => ({ title: d.title, cert: d.cert }));
+
+  const films = featuredEntry
+    ? [{ title: featuredEntry.title, cert: featuredEntry.cert }, ...rest]
+    : rest;
+
+  const [firstFilm, ...restFilms] = films;
+  let html = `<div class="wo-list">`;
+
+  if (firstFilm) {
+    const k1 = metaKey(firstFilm.title); const m1 = k1 ? META[k1] : null;
+    const img1 = m1?.stills?.retina || m1?.stills?.standard || m1?.still_url || null;
+    const dir1 = m1?.directors?.[0] || '';
+    html += `<div class="wo-tile">
+      ${img1 ? `<img class="wo-tile-img" src="${esc(img1)}" alt="${esc(firstFilm.title)}" loading="lazy">` : ''}
+      <div class="wo-tile-overlay"></div>
+      <div class="wo-tile-top-gradient"></div>
+      <div class="wo-tile-mubi-rec">MUBI Recommends</div>
+      <div class="wo-tile-title">${esc(firstFilm.title)}</div>
+      ${dir1 ? `<div class="wo-tile-director-inside">${esc(dir1)}</div>` : ''}
+    </div>
+    <div class="wo-showing-label">Showing Near You</div>`;
+  }
+
+  if (restFilms.length) {
+    const is2col = woGridMode === '2col';
+    html += `<div class="wo-tile-grid${is2col ? ' grid-2col' : ''}">`;
+    restFilms.forEach(f => {
+      const k = metaKey(f.title); const m = k ? META[k] : null;
+      const director = m?.directors?.[0] || '';
+      if (is2col) {
+        const artImg = m?.cover_artwork_vertical || null;
+        const fallbackImg = artImg ? null : (m?.portrait_image || m?.cover_artwork_box || m?.stills?.standard || m?.still_url || null);
+        if (artImg) {
+          html += `<div class="wo-tile-small wo-tile-has-art">
+            <img class="wo-tile-img" src="${esc(artImg)}" alt="${esc(f.title)}" loading="lazy">
+          </div>`;
+        } else if (fallbackImg) {
+          html += `<div class="wo-tile-small">
+            <img class="wo-tile-img" src="${esc(fallbackImg)}" alt="${esc(f.title)}" loading="lazy">
+            <div class="wo-tile-overlay"></div>
+            <div class="wo-tile-small-info">
+              <div class="wo-tile-small-title">${esc(f.title)}</div>
+            </div>
+          </div>`;
+        } else {
+          html += `<div class="wo-tile-small wo-tile-no-img">
+            <div class="wo-tile-small-info">
+              <div class="wo-tile-small-title">${esc(f.title)}</div>
+            </div>
+          </div>`;
+        }
+      } else {
+        const img = m?.stills?.retina || m?.stills?.standard || m?.still_url || null;
+        const year = m?.year ? String(m.year) : '';
+        if (img) {
+          html += `<div class="wo-tile-small">
+            <img class="wo-tile-img" src="${esc(img)}" alt="${esc(f.title)}" loading="lazy">
+            <div class="wo-tile-overlay"></div>
+            <div class="wo-tile-small-info">
+              <div class="wo-tile-small-title">${esc(f.title)}</div>
+              ${(director || year) ? `<div class="wo-tile-small-meta">${director ? `<span class="wo-tile-small-director">${esc(director)}</span>` : ''}${year ? `<span class="wo-tile-small-year">${esc(year)}</span>` : ''}</div>` : ''}
+            </div>
+          </div>`;
+        } else {
+          html += `<div class="wo-tile-small wo-tile-no-img">
+            <div class="wo-tile-small-info">
+              <div class="wo-tile-small-title">${esc(f.title)}</div>
+              ${(director || year) ? `<div class="wo-tile-small-meta">${director ? `<span class="wo-tile-small-director">${esc(director)}</span>` : ''}${year ? `<span class="wo-tile-small-year">${esc(year)}</span>` : ''}</div>` : ''}
+            </div>
+          </div>`;
+        }
+      }
+    });
+    html += `</div>`;
+  }
+
+  html += '</div>';
+  panel.innerHTML = html;
+}
+
+// ─── GO NOW ───────────────────────────────────────────────────────────────────
+
+function rankLabel(i) {
+  if (i === 0) return 'NEAREST CINEMA';
+  const n = i + 1;
+  const s = n === 2 ? 'ND' : n === 3 ? 'RD' : 'TH';
+  return `${n}${s} CLOSEST`;
+}
+
+function renderGoNow(cinemaList, date) {
+  const panel = document.getElementById('panel-go-now');
+  const now = DEMO_NOW;
+
+  if (!cinemaList.length) {
+    panel.innerHTML = `<div class="empty"><div class="empty-icon">⏱</div><div class="empty-ttl">Go Now</div><div class="empty-sub">Move pin to find cinemas near you</div></div>`;
+    return;
+  }
+
+  let html = '';
+
+  cinemaList.forEach((cinema, rank) => {
+    let displayDate = date;
+    let shows = cinema.s[date] || [];
+    if (!shows.length) {
+      const nextDate = Object.keys(cinema.s).sort().find(d => d > date);
+      if (nextDate) { displayDate = nextDate; shows = cinema.s[nextDate] || []; }
+    }
+
+    const distLabel = `${fmtDist(cinema.km)} away`;
+
+    if (rank === 0) {
+      html += `<div class="gn-cinema-section nearest">
+        <div class="gn-cinema-hdr nearest">
+          <div class="gn-cinema-rank r1">NEAREST CINEMA</div>
+          <div class="gn-cinema-name">${esc(cinema.n)}</div>
+          <div class="gn-cinema-addr">${esc(cinema.a)}</div>
+          <div class="gn-cinema-dist r1">${distLabel}</div>
+        </div>`;
+
+      if (!shows.length) {
+        html += `<div class="gn-no-shows" style="color:var(--mubi-brown)">No screenings found</div>`;
+      } else {
+        const filmMap = new Map();
+        shows.forEach(([title, cert, time]) => {
+          if (!filmMap.has(title)) filmMap.set(title, { cert, times: [] });
+          filmMap.get(title).times.push(time);
+        });
+        const films = [...filmMap.entries()].map(([title, d]) => ({
+          title, cert: d.cert, times: d.times.sort(),
+        })).sort((a,b) => a.times[0].localeCompare(b.times[0]));
+
+        films.forEach(f => {
+          const validTimes = f.times.filter(t => {
+            const [th,tm]=t.split(':').map(Number), [nh,nm]=now.split(':').map(Number);
+            return (th*60+tm+30) >= (nh*60+nm);
+          });
+          if (!validTimes.length) return;
+          html += `<div class="gn-film">
+            <div class="gn-film-top"><div class="gn-title">${esc(f.title)}</div></div>
+            <div class="gn-times-row"><div class="gn-times">`;
+          validTimes.forEach(time => { html += `<span class="gn-chip">${time}</span>`; });
+          html += `</div></div></div>`;
+        });
+      }
+      html += '</div>';
+
+    } else {
+      if (rank === 1) html += `<div class="gn-cinemas-label">Cinemas</div>`;
+      html += `<div class="gn-cinema-other">
+        <div class="gn-other-name">${esc(cinema.n)}</div>
+        <div class="gn-other-dist">${distLabel}</div>
+      </div>`;
+    }
+  });
+
+  panel.innerHTML = html;
+
+  panel.querySelectorAll('.gn-cinema-other').forEach((el, i) => {
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', () => openGnDetail(cinemaList[i + 1], date));
+  });
+}
+
+// ─── Go Now cinema detail panel ──────────────────────────────────────────────
+
+const gnDetailPanel = document.getElementById('gn-detail-panel');
+const gnDetailTitle = document.getElementById('gn-detail-title');
+const gnDetailBody  = document.getElementById('gn-detail-body');
+document.getElementById('gn-detail-back').addEventListener('click', () => {
+  gnDetailPanel.classList.remove('open');
+});
+
+function openGnDetail(cinema, date) {
+  const distLabel = `${fmtDist(cinema.km)} away`;
+  let displayDate = date;
+  let shows = cinema.s[date] || [];
+  if (!shows.length) {
+    const nextDate = Object.keys(cinema.s).sort().find(d => d > date);
+    if (nextDate) { displayDate = nextDate; shows = cinema.s[nextDate] || []; }
+  }
+
+  gnDetailTitle.textContent = cinema.n;
+
+  const now = DEMO_NOW;
+  const filmMap = new Map();
+  shows.forEach(([title, cert, time]) => {
+    if (!filmMap.has(title)) filmMap.set(title, { cert, times: [] });
+    filmMap.get(title).times.push(time);
+  });
+  const films = [...filmMap.entries()]
+    .map(([title, d]) => ({ title, cert: d.cert, times: d.times.sort() }))
+    .sort((a, b) => a.times[0].localeCompare(b.times[0]));
+
+  let body = `<div class="gn-detail-cinema-card">
+    <div class="gn-cinema-hdr">
+      <div class="gn-cinema-rank">${distLabel.toUpperCase()}</div>
+      <div class="gn-cinema-name">${esc(cinema.n)}</div>
+      <div class="gn-cinema-addr">${esc(cinema.a)}</div>
+    </div>`;
+
+  if (!shows.length) {
+    body += `<div class="gn-no-shows">No screenings found</div>`;
+  } else {
+    films.forEach(f => {
+      const validTimes = f.times.filter(t => {
+        const [th, tm] = t.split(':').map(Number), [nh, nm] = now.split(':').map(Number);
+        return (th * 60 + tm + 30) >= (nh * 60 + nm);
+      });
+      if (!validTimes.length) return;
+      body += `<div class="gn-film">
+        <div class="gn-film-top"><div class="gn-title">${esc(f.title)}</div></div>
+        <div class="gn-times-row"><div class="gn-times">`;
+      validTimes.forEach(t => { body += `<span class="gn-chip">${t}</span>`; });
+      body += `</div></div></div>`;
+    });
+  }
+  body += `</div>`;
+  gnDetailBody.innerHTML = body;
+  gnDetailPanel.classList.add('open');
+}
+
+// ─── Cinema list panel ────────────────────────────────────────────────────────
+
+const clOverlay = document.getElementById('cl-overlay');
+const clPanel   = document.getElementById('cl-panel');
+const clSearch  = document.getElementById('cl-search');
+const clList    = document.getElementById('cl-list');
+const clCount   = document.getElementById('cl-count');
+
+const sortedCinemas = [...cinemas].sort((a, b) => a.n.localeCompare(b.n));
+
+function renderCinemaList(q) {
+  const query = (q || '').toLowerCase().trim();
+  const filtered = query
+    ? sortedCinemas.filter(c => c.n.toLowerCase().includes(query) || (c.a||'').toLowerCase().includes(query))
+    : sortedCinemas;
+
+  clCount.textContent = filtered.length === sortedCinemas.length
+    ? `${sortedCinemas.length} cinemas`
+    : `${filtered.length} of ${sortedCinemas.length}`;
+
+  if (!filtered.length) {
+    clList.innerHTML = `<div class="cl-empty">No cinemas match "${esc(q)}"</div>`;
+    return;
+  }
+
+  clList.innerHTML = filtered.map(c => {
+    const shows = c.s[selectedDate] || [];
+    const films = new Set(shows.map(s => s[0].toLowerCase())).size;
+    const countLabel = shows.length
+      ? `${films} film${films !== 1 ? 's' : ''} · ${shows.length} show${shows.length !== 1 ? 's' : ''}`
+      : '';
+    return `<div class="cl-item" data-name="${esc(c.n)}">
+      <div class="cl-item-info">
+        <div class="cl-item-name">${esc(c.n)}</div>
+        ${c.a ? `<div class="cl-item-addr">${esc(c.a)}</div>` : ''}
+      </div>
+      ${countLabel ? `<div class="cl-item-count">${countLabel}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  clList.querySelectorAll('.cl-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const cinema = cinemas.find(c => c.n === el.dataset.name);
+      if (cinema) {
+        userLat = cinema.c[0]; userLng = cinema.c[1];
+        userMarker.setLatLng([userLat, userLng]);
+        radiusCircle.setLatLng([userLat, userLng]);
+        map.setView([userLat, userLng], 14, { animate: true });
+        updateAll();
+      }
+      closeCinemaList();
+    });
+  });
+}
+
+function openCinemaList() {
+  clSearch.value = '';
+  renderCinemaList('');
+  clList.scrollTop = 0;
+  clOverlay.classList.add('open');
+  clPanel.classList.add('open');
+  setTimeout(() => clSearch.focus(), 80);
+}
+
+function closeCinemaList() {
+  clOverlay.classList.remove('open');
+  clPanel.classList.remove('open');
+}
+
+document.getElementById('hdr-c').addEventListener('click', openCinemaList);
+
+// ─── What's On grid toggle ────────────────────────────────────────────────────
+document.getElementById('btn-portrait').addEventListener('change', e => {
+  woGridMode = e.target.checked ? '2col' : '1col';
+  renderWhatsOn(lastInRange, lastSelectedDate);
+});
+clOverlay.addEventListener('click', () => { closeCinemaList(); closeFilmList(); });
+clSearch.addEventListener('input', () => renderCinemaList(clSearch.value));
+
+// ─── Film list panel ──────────────────────────────────────────────────────────
+
+const flPanel  = document.getElementById('fl-panel');
+const flSearch = document.getElementById('fl-search');
+const flList   = document.getElementById('fl-list');
+const flCount  = document.getElementById('fl-count');
+
+function buildFilmIndex() {
+  const map = new Map();
+  for (const c of cinemas) {
+    for (const [date, shows] of Object.entries(c.s)) {
+      for (const [title, cert] of shows) {
+        const norm = normaliseTitle(title);
+        if (!norm) continue;
+        const key = norm.toLowerCase();
+        if (!map.has(key)) map.set(key, { title: norm, cert, cinemas: new Set(), dates: new Set() });
+        else if (norm.length < map.get(key).title.length) map.get(key).title = norm;
+        map.get(key).cinemas.add(c.n);
+        map.get(key).dates.add(date);
+      }
+    }
+  }
+  return [...map.values()].sort((a, b) => a.title.localeCompare(b.title));
+}
+const allFilmIndex = buildFilmIndex();
+
+function renderFilmList(q) {
+  const query = (q || '').toLowerCase().trim();
+  const filtered = query
+    ? allFilmIndex.filter(f => f.title.toLowerCase().includes(query))
+    : allFilmIndex;
+
+  flCount.textContent = filtered.length === allFilmIndex.length
+    ? `${allFilmIndex.length} films`
+    : `${filtered.length} of ${allFilmIndex.length}`;
+
+  if (!filtered.length) {
+    flList.innerHTML = `<div class="fl-empty">No films match "${esc(q)}"</div>`;
+    return;
+  }
+
+  flList.innerHTML = filtered.map(f => {
+    const cinemaCount = f.cinemas.size;
+    const cls = certCls(f.cert);
+    const k = metaKey(f.title);
+    const m = k ? META[k] : null;
+    const img = m?.stills?.small || m?.stills?.medium || m?.still_url || null;
+    const dirs = m?.directors?.slice(0, 2).join(', ') || '';
+    return `<div class="fl-item">
+      ${img
+        ? `<img class="fl-item-thumb" src="${esc(img)}" alt="" loading="lazy">`
+        : `<div class="fl-item-thumb-placeholder"></div>`}
+      <div class="fl-item-info">
+        <div class="fl-item-title">${esc(f.title)}</div>
+        <div class="fl-item-meta">
+          ${f.cert ? `<span class="fl-cert ${cls}">${esc(f.cert.toUpperCase())}</span>` : ''}
+          ${dirs ? `<span class="fl-item-dir">${esc(dirs)}</span>` : ''}
+        </div>
+      </div>
+      <div class="fl-cinemas">${cinemaCount} cinema${cinemaCount !== 1 ? 's' : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+function openFilmList() {
+  flSearch.value = '';
+  renderFilmList('');
+  flList.scrollTop = 0;
+  clOverlay.classList.add('open');
+  flPanel.classList.add('open');
+  setTimeout(() => flSearch.focus(), 80);
+}
+
+function closeFilmList() {
+  flPanel.classList.remove('open');
+  clOverlay.classList.remove('open');
+}
+
+document.getElementById('hdr-f').addEventListener('click', openFilmList);
+flSearch.addEventListener('input', () => renderFilmList(flSearch.value));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeCinemaList(); closeFilmList(); } });
+
+// ─── Postcode search ──────────────────────────────────────────────────────────
+
+const postcodeForm  = document.getElementById('postcode-form');
+const postcodeInput = document.getElementById('postcode-input');
+const postcodeBtn   = document.getElementById('postcode-btn');
+
+postcodeForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const raw = postcodeInput.value.trim().replace(/\s+/g, '').toUpperCase();
+  if (!raw) return;
+  postcodeInput.classList.remove('error');
+  postcodeBtn.disabled = true;
+  postcodeBtn.textContent = '…';
+  try {
+    const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(raw)}`);
+    const json = await res.json();
+    if (json.status === 200 && json.result) {
+      const { latitude: lat, longitude: lng } = json.result;
+      userLat = lat; userLng = lng;
+      userMarker.setLatLng([lat, lng]);
+      radiusCircle.setLatLng([lat, lng]);
+      map.setView([lat, lng], 13, { animate: true });
+      updateAll();
+      postcodeInput.blur();
+    } else {
+      postcodeInput.classList.add('error');
+      postcodeInput.select();
+    }
+  } catch {
+    postcodeInput.classList.add('error');
+  } finally {
+    postcodeBtn.disabled = false;
+    postcodeBtn.textContent = 'Go';
+  }
+});
+
+// Remove error state on edit
+postcodeInput.addEventListener('input', () => postcodeInput.classList.remove('error'));
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+
+setTimeout(()=>updateAll(), 500);
+</script>
+</body>
+</html>
