@@ -145,6 +145,9 @@ header {
 .popup-close:hover { background: var(--hairline); }
 .popup-name { font-weight: 600; font-size: 13px; margin-bottom: 2px; letter-spacing: -0.374px; }
 .popup-dist { font-size: 12px; color: var(--primary); letter-spacing: -0.12px; }
+.popup-address { font-size: 11px; color: var(--ink-muted-48); padding: 6px 14px 2px; line-height: 1.4; }
+.popup-website { display: block; font-size: 11px; color: var(--primary); padding: 2px 14px 6px; text-decoration: none; opacity: 0.8; }
+.popup-website:hover { opacity: 1; text-decoration: underline; }
 .popup-date-tabs {
   display: flex; gap: 0; overflow-x: auto; flex-shrink: 0;
   border-bottom: 1px solid var(--hairline);
@@ -1346,6 +1349,7 @@ function buildPopupHtml(c, activeDate) {
     return `<div class="popup-date-tab${d===activeDate?' active':''}" data-date="${d}">${POPUP_DAYS[dt.getUTCDay()]} ${dt.getUTCDate()}</div>`;
   }).join('');
 
+  const addrOneLine = (c.a || '').replace(/\n/g, ', ');
   return `<div class="popup-header">
     <div class="popup-header-text">
       <div class="popup-name">${esc(c.n)}</div>
@@ -1353,6 +1357,8 @@ function buildPopupHtml(c, activeDate) {
     </div>
     <div class="popup-close" title="Close">✕</div>
   </div>
+  ${addrOneLine ? `<div class="popup-address">${esc(addrOneLine)}</div>` : ''}
+  ${c.u ? `<a class="popup-website" href="${esc(c.u)}" target="_blank" rel="noopener">${esc(c.u.replace(/^https?:\/\//,'').replace(/\/.*$/,''))}</a>` : ''}
   <div class="popup-date-tabs">${tabsHtml}</div>
   <div class="popup-shows">${dates.length ? buildPopupShowsHtml(c, activeDate) : '<div class="popup-no-shows">No screenings this week</div>'}</div>`;
 }
