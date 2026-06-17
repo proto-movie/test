@@ -1735,7 +1735,7 @@
             <option value="popularity_quality_score" selected>Most Popular</option>
             <option value="recent">Recently Added</option>
             <option value="year">Release Date</option>
-            <option value="rating">Rating</option>
+            <option value="rating">Highest Rated</option>
             <option value="title">A-Z</option>
           </select>
         </div>
@@ -3390,7 +3390,7 @@ function sizeSelect(sel) {
   sel.style.width = (s.offsetWidth + 26) + 'px';
   document.body.removeChild(s);
 }
-document.querySelectorAll('#sortDropdown-sort, #collSortSelect, #genrePillsMobile, #collCatMobile, #dirCatMobile').forEach(sel => {
+document.querySelectorAll('#sortDropdown-sort, #collSortSelect, #directorSortSelect, #genrePillsMobile, #collCatMobile, #dirCatMobile').forEach(sel => {
   sizeSelect(sel);
   sel.addEventListener('change', () => sizeSelect(sel));
 });
