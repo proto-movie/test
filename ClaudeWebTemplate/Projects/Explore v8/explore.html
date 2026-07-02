@@ -237,6 +237,34 @@
     .nav-dropdown a:hover { color: #323232; background: #F8F8F8; }
     .nav-dropdown-sep { height: 1px; background: #E8E8E8; margin: 4px 0; }
 
+    /* ─── VERSION SWITCHER ─── */
+    .version-switcher {
+      display: flex;
+      align-items: center;
+      background: #F0F0F0;
+      border-radius: 6px;
+      padding: 2px;
+      gap: 0;
+    }
+    .version-btn {
+      padding: 5px 13px;
+      font-size: 11px;
+      font-weight: 500;
+      font-family: Riforma, sans-serif;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      color: rgba(0,0,0,0.4);
+      transition: background 0.15s, color 0.15s;
+      cursor: pointer;
+    }
+    .version-btn.is-active {
+      background: #fff;
+      color: #323232;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .version-btn:hover:not(.is-active) { color: rgba(0,0,0,0.65); }
+
     /* ─── PAGE TITLE ─── */
     .page-hero {
       padding: 32px 0 20px;
@@ -1488,6 +1516,8 @@
     #filterBtnMobile.filter-btn-mobile-hidden { display: none !important; }
     #dirCatMobileWrap.dir-cat-hidden { display: none !important; }
     #directorSortRow.dir-selected { padding-top: 16px !important; }
+    #directorSortRow.v2-mode { flex-direction: row !important; align-items: center; padding-top: 0 !important; padding-bottom: 0; }
+    #directorSortRow.v2-mode .coll-filter-sort-row { margin-left: auto; padding: 0; }
     @media (max-width: 809px) { #filterBtn { display: none !important; } }
     @media (max-width: 809px) { .filter-bar { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; } }
     @media (max-width: 809px) { .filter-controls { justify-content: flex-end; margin-top: 0; } }
@@ -1662,11 +1692,17 @@
   <div class="wrap">
     <div class="page-hero">
       <h1 class="page-title">Browse</h1>
-      <button class="filter-btn" id="filterBtnMobile" style="display:none;" aria-label="Filters">
-        <svg width="18" height="18" viewBox="4 2 16 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="filter-icon" style="flex-shrink:0"><line x1="8" y1="6" x2="8" y2="19"/><line x1="16" y1="6" x2="16" y2="19"/><circle cx="8" cy="9" r="3"/><circle cx="16" cy="16" r="3"/></svg>
-        <span style="font-family:Riforma,sans-serif;font-weight:500;">Filters</span>
-        <span id="filterBtnCountMobile" class="filter-btn-count"></span>
-      </button>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="version-switcher" id="versionSwitcher">
+          <button class="version-btn is-active" data-version="v1">v1</button>
+          <button class="version-btn" data-version="v2">v2</button>
+        </div>
+        <button class="filter-btn" id="filterBtnMobile" style="display:none;" aria-label="Filters">
+          <svg width="18" height="18" viewBox="4 2 16 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="filter-icon" style="flex-shrink:0"><line x1="8" y1="6" x2="8" y2="19"/><line x1="16" y1="6" x2="16" y2="19"/><circle cx="8" cy="9" r="3"/><circle cx="16" cy="16" r="3"/></svg>
+          <span style="font-family:Riforma,sans-serif;font-weight:500;">Filters</span>
+          <span id="filterBtnCountMobile" class="filter-btn-count"></span>
+        </button>
+      </div>
     </div>
 
     <div class="page-tabs">
@@ -2877,10 +2913,12 @@ function selectDirector(name) {
     row.innerHTML = '';
     dg.style.display = '';
     document.getElementById('loadMoreDirsWrap').style.display = isMobile() && visibleDirsCount < currentDirs.length ? '' : 'none';
-    document.getElementById('directorCatPills').style.display = '';
-    document.getElementById('dirCatMobileWrap').classList.remove('dir-cat-hidden');
     document.getElementById('directorSortRow').classList.remove('dir-selected');
-    document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = '';
+    if (typeof currentVersion === 'undefined' || currentVersion !== 'v2') {
+      document.getElementById('directorCatPills').style.display = '';
+      document.getElementById('dirCatMobileWrap').classList.remove('dir-cat-hidden');
+      document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = '';
+    }
   });
   tag.appendChild(document.createTextNode(name + ' '));
   tag.appendChild(btn);
@@ -2915,7 +2953,7 @@ document.querySelectorAll('.page-tab[data-tab]').forEach(tab => {
     else { cg.style.display = 'none'; cf.style.display = 'none'; document.getElementById('loadMoreCollsWrap').style.display = 'none'; }
     const dg = document.getElementById('directorsGrid');
     const dsr = document.getElementById('directorSortRow');
-    if (label === 'directors') { dg.style.display = ''; dsr.style.display = 'flex'; dsr.style.flexDirection = 'column'; renderDirectors(); sizeSelect(document.getElementById('directorSortSelect')); sizeSelect(document.getElementById('dirCatMobile')); }
+    if (label === 'directors') { dg.style.display = ''; dsr.style.display = 'flex'; dsr.style.flexDirection = 'column'; renderDirectors(); sizeSelect(document.getElementById('directorSortSelect')); sizeSelect(document.getElementById('dirCatMobile')); if (typeof currentVersion !== 'undefined') applyVersion(); }
     else {
       dg.style.display = 'none';
       document.getElementById('loadMoreDirsWrap').style.display = 'none';
@@ -3396,6 +3434,48 @@ document.querySelectorAll('#sortDropdown-sort, #collSortSelect, #directorSortSel
 });
 document.fonts.ready.then(() => {
   document.querySelectorAll('#sortDropdown-sort, #genrePillsMobile').forEach(sel => sizeSelect(sel));
+});
+
+/* ─── VERSION SWITCHER ─── */
+let currentVersion = 'v1';
+
+function applyVersion() {
+  const isV2 = currentVersion === 'v2';
+  const catPills = document.getElementById('directorCatPills');
+  const catMobile = document.getElementById('dirCatMobileWrap');
+  const sortRow = document.getElementById('directorSortRow');
+  const dirTag = document.querySelector('.director-tag');
+  const dirSelected = dirTag !== null;
+
+  const dg = document.getElementById('directorsGrid');
+  if (isV2) {
+    catPills.style.display = 'none';
+    catMobile.classList.add('dir-cat-hidden');
+    sortRow.classList.add('v2-mode');
+    dg.style.paddingTop = '8px';
+    if (!dirSelected) {
+      sortRow.classList.remove('dir-selected');
+    }
+  } else {
+    sortRow.classList.remove('v2-mode');
+    dg.style.paddingTop = '8px';
+    if (!dirSelected) {
+      catPills.style.display = '';
+      catMobile.classList.remove('dir-cat-hidden');
+      document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = '';
+    }
+  }
+}
+
+document.querySelectorAll('.version-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const version = btn.dataset.version;
+    if (version === currentVersion) return;
+    currentVersion = version;
+    document.querySelectorAll('.version-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    applyVersion();
+  });
 });
 </script>
 
