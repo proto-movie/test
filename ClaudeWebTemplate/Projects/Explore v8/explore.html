@@ -237,34 +237,6 @@
     .nav-dropdown a:hover { color: #323232; background: #F8F8F8; }
     .nav-dropdown-sep { height: 1px; background: #E8E8E8; margin: 4px 0; }
 
-    /* ─── VERSION SWITCHER ─── */
-    .version-switcher {
-      display: flex;
-      align-items: center;
-      background: #F0F0F0;
-      border-radius: 6px;
-      padding: 2px;
-      gap: 0;
-    }
-    .version-btn {
-      padding: 5px 13px;
-      font-size: 11px;
-      font-weight: 500;
-      font-family: Riforma, sans-serif;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      border-radius: 4px;
-      color: rgba(0,0,0,0.4);
-      transition: background 0.15s, color 0.15s;
-      cursor: pointer;
-    }
-    .version-btn.is-active {
-      background: #fff;
-      color: #323232;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .version-btn:hover:not(.is-active) { color: rgba(0,0,0,0.65); }
-
     /* ─── PAGE TITLE ─── */
     .page-hero {
       padding: 32px 0 20px;
@@ -1516,8 +1488,6 @@
     #filterBtnMobile.filter-btn-mobile-hidden { display: none !important; }
     #dirCatMobileWrap.dir-cat-hidden { display: none !important; }
     #directorSortRow.dir-selected { padding-top: 16px !important; }
-    #directorSortRow.v2-mode { flex-direction: row !important; align-items: center; padding-top: 0 !important; padding-bottom: 0; }
-    #directorSortRow.v2-mode .coll-filter-sort-row { margin-left: auto; padding: 0; }
     @media (max-width: 809px) { #filterBtn { display: none !important; } }
     @media (max-width: 809px) { .filter-bar { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; } }
     @media (max-width: 809px) { .filter-controls { justify-content: flex-end; margin-top: 0; } }
@@ -1544,7 +1514,8 @@
       #directorFilmsGrid .film-card:hover .card-audio-btn { opacity: 0; pointer-events: none; }
       .director-card:hover .card-img { transform: none; }
     }
-  </style>
+
+      </style>
 </head>
 <body>
 
@@ -1649,7 +1620,7 @@
         <input class="search-inline-input" id="searchInput" type="text" placeholder="Search" autocomplete="off">
       </div>
       <a href="#" class="nav-avatar" aria-label="Profile">
-        <img src="../../brand_assets/avatar.png" alt="Profile">
+        <img src="data:image/png;base64,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" alt="Profile">
       </a>
       <div class="nav-hamburger-wrap">
         <button class="nav-hamburger" onclick="toggleDropdown(event)" aria-label="More" aria-expanded="false" id="navHamburger">
@@ -1692,17 +1663,11 @@
   <div class="wrap">
     <div class="page-hero">
       <h1 class="page-title">Browse</h1>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div class="version-switcher" id="versionSwitcher">
-          <button class="version-btn is-active" data-version="v1">v1</button>
-          <button class="version-btn" data-version="v2">v2</button>
-        </div>
-        <button class="filter-btn" id="filterBtnMobile" style="display:none;" aria-label="Filters">
-          <svg width="18" height="18" viewBox="4 2 16 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="filter-icon" style="flex-shrink:0"><line x1="8" y1="6" x2="8" y2="19"/><line x1="16" y1="6" x2="16" y2="19"/><circle cx="8" cy="9" r="3"/><circle cx="16" cy="16" r="3"/></svg>
-          <span style="font-family:Riforma,sans-serif;font-weight:500;">Filters</span>
-          <span id="filterBtnCountMobile" class="filter-btn-count"></span>
-        </button>
-      </div>
+      <button class="filter-btn" id="filterBtnMobile" style="display:none;" aria-label="Filters">
+        <svg width="18" height="18" viewBox="4 2 16 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="filter-icon" style="flex-shrink:0"><line x1="8" y1="6" x2="8" y2="19"/><line x1="16" y1="6" x2="16" y2="19"/><circle cx="8" cy="9" r="3"/><circle cx="16" cy="16" r="3"/></svg>
+        <span style="font-family:Riforma,sans-serif;font-weight:500;">Filters</span>
+        <span id="filterBtnCountMobile" class="filter-btn-count"></span>
+      </button>
     </div>
 
     <div class="page-tabs">
@@ -1925,7 +1890,7 @@ const ALL_FILMS = [
   {title:"The General",director:"Buster Keaton, Clyde Bruckman",year:"1926",country:"United States",image:"https://assets.mubicdn.net/images/film/12/image-w448.jpg?1745490937",fX:0.480501,fY:0.141089,genres:["Action", "Adventure", "Comedy", "Silent"],synopsis:"After being rejected by the Confederate military, not realizing it was due to his crucial civilian role, an engineer must single-handedly recapture his beloved locomotive after it is seized by Union spies and return it through enemy lines.",ourTake:"Regularly hailed as one of the greatest comedies ever committed to celluloid, Buster Keaton’s slapstick jewel uses a real-life incident from the American Civil War as the backdrop for bold and ingenious physical comedy. With a wildly climactic chase scene that earned its place in cinema history.",rating:8.9,previewURL:"https://trailers.mubicdn.net/12/optimised/240p-t-the-general_en_us_1164_720_1504325619.mp4",artwork:"https://images.mubicdn.net/images/artworks/485030/cache-485030-1663577465/images-original.png",slug:"the-general"},
   {title:"Shiva Baby",director:"Emma Seligman",year:"2020",country:"United States",image:"https://assets.mubicdn.net/images/film/254618/image-w448.jpg?1745496747",fX:0.344011,fY:0.457921,genres:["Comedy", "Drama", "LGBTQ+"],synopsis:"College student Danielle is faced with a series of awkward encounters at a day-long shiva, a Jewish gathering during a time of mourning. Amongst overbearing relatives, she is rattled by the appearance of an ex-girlfriend and of her secret sugar daddy, who unexpectedly arrives with his wife and baby.",ourTake:"A truly unforgettable debut, Emma Seligman’s acclaimed Shiva Baby finds the sweet spot between distress and hilarity. Led by a commanding performance from Rachel Sennott, the film’s masterful formal construction heightens its darkly comedic, sex positive take on family, religion, and sugar daddies.",rating:8.2,previewURL:"https://trailers.mubicdn.net/254618/optimised/240p-t-shiva-baby-2020_en_us_1622116122.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/321420/cache-321420-1623316730/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/217550/cache-217550-1622040381/images-original.jpg",slug:"shiva-baby-2020"},
   {title:"Sherlock Jr.",director:"Buster Keaton",year:"1924",country:"United States",image:"https://assets.mubicdn.net/images/film/1527/image-w448.jpg?1745490247",fX:0.48,fY:0.26,genres:["Silent", "Comedy", "Action"],synopsis:"A film projectionist longs to be a detective, and puts his meager skills to work when he is framed by a rival for stealing his girlfriend’s father’s pocketwatch.",ourTake:"With mathematical precision and more than a dash of visionary genius, Buster Keaton created one of the most indelible images in film history when he stepped inside a cinema screen in Sherlock Jr. and clowned around in its images. A century has done nothing to dim its flickering magic.",rating:9.1,previewURL:"https://trailers.mubicdn.net/1527/optimised/240p-t-sherlock-jr_en_us_1948.474_1280_720_1588904482.mp4",artwork:"https://images.mubicdn.net/images/artworks/915431/cache-915431-1770204410/images-original.png",slug:"sherlock-jr"},
-  {title:"It Was Just an Accident",director:"Jafar Panahi",year:"2025",country:"Iran, France",image:"https://assets.mubicdn.net/images/film/441162/image-w448.jpg?1747995632",fX:0.522284,fY:0.420792,genres:["Crime", "Thriller", "Drama", "Mystery"],synopsis:"When an auto mechanic encounters the man who may have been his torturer in prison, he kidnaps him to exact vengeance. But since the sole clue to Eghbal’s identity is the squeak of his prosthetic leg, Vahid turns to other now-freed victims for confirmation. And the danger only escalates.",ourTake:"Jafar Panahi won the Palme d’Or for this tour-de-force morality tale, which ignites the pursuit of truth with dark comedy and impassioned urgency. Driving through obstinate barriers of authoritarianism and censorship, this is a defining work of political cinema from one of Iran’s great auteurs.",rating:8.7,previewURL:"https://trailers.mubicdn.net/441162/optimised/240p-t-it-was-just-an-accident_en_us_1772767374.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/941331/cache-941331-1772793963/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/779408/cache-779408-1762811339/images-original.png",slug:"it-was-just-an-accident"},
+  {title:"It Was Just an Accident",director:"Jafar Panahi",year:"2025",country:"Iran, France",image:"https://assets.mubicdn.net/images/film/441162/image-w448.jpg?1747995632",fX:0.522284,fY:0.420792,genres:["Crime", "Thriller", "Drama", "Mystery"],synopsis:"When an auto mechanic encounters the man who may have been his torturer in prison, he kidnaps him to exact vengeance. But since the sole clue to Eghbal’s identity is the squeak of his prosthetic leg, Vahid turns to other now-freed victims for confirmation. And the danger only escalates.",ourTake:"Jafar Panahi won the Palme d’Or for this tour-de-force morality tale, which ignites the pursuit of truth with dark comedy and impassioned urgency. Driving through obstinate barriers of authoritarianism and censorship, this is a defining work of political cinema from one of Iran’s great auteurs.",rating:8.7,previewURL:"https://trailers.mubicdn.net/441162/optimised/240p-t-it-was-just-an-accident_en_us_1772767374.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/990325/cache-990325-1779098566/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/779408/cache-779408-1762811339/images-original.png",slug:"it-was-just-an-accident"},
   {title:"Self-Portrait as a Coffee-Pot",series:true,director:"William Kentridge",year:"2024",country:"South Africa, United States",image:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",fX:0.961003,fY:0.725248,genres:["Documentary", "TV Mini-series"],synopsis:"South African artist William Kentridge investigates life in the studio. He imagines his studio as an enlarged head, where multiple dialogues occur between the artist and himself. Kentridge begins interviewing his double. Soon, the whole studio is populated by Kentridge’s many selves.",ourTake:"Step inside the roving creative imagination of William Kentridge with this exclusive nine-part series. An ode to procrastination, pacing, and messy desks, this playful first episode sees the South African artist invoke a doppelgänger with whom to squabble over the intangible seeds of inspiration.",rating:9.2,previewURL:"https://trailers.mubicdn.net/419520/optimised/240p-t-self-portrait-as-a-coffee-pot-episode-1_en_us_1729185407.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/723159/cache-723159-1729210212/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/764420/cache-764420-1742912614/images-original.png",slug:"self-portrait-as-a-coffee-pot-episode-1"},
   {title:"Don't Let Them Shoot the Kite",director:"Tunç Başaran",year:"1989",country:"Turkey",image:"https://assets.mubicdn.net/images/film/90703/image-w448.jpg?1745503277",fX:0.543175,fY:0.433168,genres:["Drama"],synopsis:"Barış, a five-year-old boy, lives in prison with his detained mother. Within the high security walls, he forms an unexpected bond with İnci, a young political prisoner. Their special relationship opens up a new world for Barış and impacts the lives of other women prisoners.",ourTake:"Camaraderie and fleeting joys soften harsh realities in Don’t Let Them Shoot the Kite, which reemerges as a Turkish classic in this fresh 4K restoration. Capturing the profound resilience of its characters through a child’s tender gaze, Tunç Başaran’s prizewinner is a testament to enduring spirit.",rating:9.1,previewURL:"https://trailers.mubicdn.net/90703/optimised/240p-t-ucurtmayi-vurmasinlar_en_us_1732364100.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/743404/cache-743404-1732012188/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/744787/cache-744787-1732296789/images-original.png",slug:"ucurtmayi-vurmasinlar"},
   {title:"High & Low - John Galliano",director:"Kevin Macdonald",year:"2023",country:"United Kingdom",image:"https://assets.mubicdn.net/images/film/380148/image-w448.jpg?1745501368",fX:0.518106,fY:0.363861,genres:["Documentary", "Biography", "LGBTQ+"],synopsis:"Fashion designer John Galliano was widely recognized as one of the most influential names in 1990s and 2000s couture until his career abruptly ended in 2011. Candid footage—plus conversations with Naomi Campbell, Kate Moss, Anna Wintour and more—trace Galliano’s turbulent career through the decades.",ourTake:"Reliving triumphs and controversies, fashion designer John Galliano takes center stage in this grippingly nuanced portrait from Oscar®-winner Kevin Macdonald. Star-studded interviews and rare archival footage reveal the toxicity behind exquisite glamor and spectacle, both on and off the runway.",rating:8.7,previewURL:"https://trailers.mubicdn.net/380148/optimised/240p-t-high-low-john-galliano_en_us_1714126241.mp4",titleTreatment:"https://images.mubicdn.net/images/artworks/682249/cache-682249-1713881270/images-original.png",artwork:"https://images.mubicdn.net/images/artworks/635851/cache-635851-1709570115/images-original.jpg",slug:"high-low-john-galliano"},
@@ -2913,12 +2878,10 @@ function selectDirector(name) {
     row.innerHTML = '';
     dg.style.display = '';
     document.getElementById('loadMoreDirsWrap').style.display = isMobile() && visibleDirsCount < currentDirs.length ? '' : 'none';
+    document.getElementById('directorCatPills').style.display = '';
+    document.getElementById('dirCatMobileWrap').classList.remove('dir-cat-hidden');
     document.getElementById('directorSortRow').classList.remove('dir-selected');
-    if (typeof currentVersion === 'undefined' || currentVersion !== 'v2') {
-      document.getElementById('directorCatPills').style.display = '';
-      document.getElementById('dirCatMobileWrap').classList.remove('dir-cat-hidden');
-      document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = '';
-    }
+    document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = '';
   });
   tag.appendChild(document.createTextNode(name + ' '));
   tag.appendChild(btn);
@@ -2953,7 +2916,7 @@ document.querySelectorAll('.page-tab[data-tab]').forEach(tab => {
     else { cg.style.display = 'none'; cf.style.display = 'none'; document.getElementById('loadMoreCollsWrap').style.display = 'none'; }
     const dg = document.getElementById('directorsGrid');
     const dsr = document.getElementById('directorSortRow');
-    if (label === 'directors') { dg.style.display = ''; dsr.style.display = 'flex'; dsr.style.flexDirection = 'column'; renderDirectors(); sizeSelect(document.getElementById('directorSortSelect')); sizeSelect(document.getElementById('dirCatMobile')); if (typeof currentVersion !== 'undefined') applyVersion(); }
+    if (label === 'directors') { dg.style.display = ''; dsr.style.display = 'flex'; dsr.style.flexDirection = 'column'; renderDirectors(); sizeSelect(document.getElementById('directorSortSelect')); sizeSelect(document.getElementById('dirCatMobile')); }
     else {
       dg.style.display = 'none';
       document.getElementById('loadMoreDirsWrap').style.display = 'none';
@@ -3263,6 +3226,7 @@ document.addEventListener('keydown', e => {
     if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', false); }
     closeSearch();
     closeMobDrawer();
+    closeSettingsModal();
   }
 });
 
@@ -3436,47 +3400,6 @@ document.fonts.ready.then(() => {
   document.querySelectorAll('#sortDropdown-sort, #genrePillsMobile').forEach(sel => sizeSelect(sel));
 });
 
-/* ─── VERSION SWITCHER ─── */
-let currentVersion = 'v1';
-
-function applyVersion() {
-  const isV2 = currentVersion === 'v2';
-  const catPills = document.getElementById('directorCatPills');
-  const catMobile = document.getElementById('dirCatMobileWrap');
-  const sortRow = document.getElementById('directorSortRow');
-  const dirTag = document.querySelector('.director-tag');
-  const dirSelected = dirTag !== null;
-
-  const dg = document.getElementById('directorsGrid');
-  if (isV2) {
-    catPills.style.display = 'none';
-    catMobile.classList.add('dir-cat-hidden');
-    sortRow.classList.add('v2-mode');
-    dg.style.paddingTop = '8px';
-    if (!dirSelected) {
-      sortRow.classList.remove('dir-selected');
-    }
-  } else {
-    sortRow.classList.remove('v2-mode');
-    dg.style.paddingTop = '8px';
-    if (!dirSelected) {
-      catPills.style.display = '';
-      catMobile.classList.remove('dir-cat-hidden');
-      document.querySelector('#directorSortRow .coll-filter-sort-row').style.display = '';
-    }
-  }
-}
-
-document.querySelectorAll('.version-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const version = btn.dataset.version;
-    if (version === currentVersion) return;
-    currentVersion = version;
-    document.querySelectorAll('.version-btn').forEach(b => b.classList.remove('is-active'));
-    btn.classList.add('is-active');
-    applyVersion();
-  });
-});
 </script>
 
 <div id="filmDetailView">
