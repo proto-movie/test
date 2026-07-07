@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Watchlist — MUBI</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <style>
+    @font-face { font-family: 'Riforma'; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-weight: 500; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-weight: bold; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-style: italic; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2'); }
+
+    html { overflow-y: scroll; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Riforma, Helvetica, Arial, sans-serif;
+      background: #fff;
+      color: #323232;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; padding: 0; }
+
+    /* ─── CONTAINER ─── */
+    main { padding-top: 0; }
+    .wrap { width: 100%; padding: 0 20px; margin: 0 auto; }
+    @media (min-width: 381px)  { .wrap { padding: 0 22px; max-width: 836px; } }
+    @media (min-width: 1186px) { .wrap { max-width: 1124px; } }
+    @media (min-width: 1562px) { .wrap { max-width: 1500px; } }
+
+    /* ─── HEADER / NAV ─── */
+    .site-header {
+      position: relative;
+      z-index: 1001;
+      background: #fff;
+      border-bottom: 1px solid #EAEAEA;
+      height: 60px;
+    }
+    @media (min-width: 1186px) { .site-header { height: 50px; } }
+
+    .nav-desktop { display: none; }
+    @media (min-width: 1186px) {
+      .nav-desktop {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 22px;
+        max-width: 1124px;
+        margin: 0 auto;
+      }
+    }
+    @media (min-width: 1562px) { .nav-desktop { max-width: 1500px; } }
+
+    .nav-logo { flex-shrink: 0; padding-right: 40px; display: flex; align-items: center; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      align-self: flex-end;
+      margin-bottom: 7px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .nav-link {
+      display: block;
+      padding: 0 15px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      line-height: 24px;
+      color: rgba(0,0,0,0.45);
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { color: #323232; }
+    .nav-link.is-active { color: #323232; }
+
+    .nav-avatar {
+      display: flex; align-items: center;
+      padding: 0 8px 0 15px;
+    }
+    .nav-avatar img {
+      width: 22px; height: 22px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .nav-hamburger {
+      display: flex; align-items: center;
+      padding: 0 8px 0 8px;
+      color: rgba(0,0,0,0.45);
+    }
+    .nav-hamburger:hover { color: #323232; }
+    .nav-hamburger-wrap { position: relative; }
+
+    /* ─── MOBILE NAV ─── */
+    .nav-mobile {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 12px;
+      position: relative;
+    }
+    @media (min-width: 810px) and (max-width: 1185px) { .nav-mobile { max-width: 836px; margin: 0 auto; padding: 0 22px; } }
+    @media (min-width: 1186px) { .nav-mobile { display: none; } }
+    .nav-mobile-left { display: flex; align-items: center; gap: 2px; z-index: 1; }
+    .nav-mobile-logo {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center;
+    }
+    .nav-mobile-right { margin-left: auto; }
+    .search-icon-btn { display: flex; align-items: center; padding: 0 8px; color: rgba(0,0,0,0.45); }
+    .search-icon-btn:hover { color: #323232; }
+    .search-inline { display: none; }
+    @media (min-width: 1186px) { .search-inline { display: flex; align-items: center; } }
+
+    /* ─── MOBILE DRAWER ─── */
+    .mob-drawer { position: fixed; inset: 0; z-index: 9999; pointer-events: none; }
+    .mob-drawer.open { pointer-events: auto; }
+    .mob-drawer-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.6);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-overlay { opacity: 1; }
+    .mob-drawer-panel {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: calc(100% - 60px);
+      max-width: 350px;
+      background: #fff;
+      overflow-y: auto;
+      padding: 20px 0 120px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-panel { transform: translateX(0); }
+    .mob-drawer-close {
+      position: absolute;
+      top: 20px;
+      left: calc(min(100% - 60px, 350px) + 20px);
+      color: #fff;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-close { opacity: 1; }
+    .mob-drawer-link {
+      display: block;
+      padding: 0 25px;
+      font-family: Riforma, sans-serif;
+      font-size: 20px;
+      line-height: 42px;
+      color: #7d7d7d;
+      transition: color 0.1s;
+    }
+    .mob-drawer-link:hover { color: #323232; }
+    .mob-drawer-link.is-active { color: #323232; }
+    .mob-drawer-sep { border-top: 1px solid #EAEAEA; margin: 10px 0; }
+
+    /* ─── HAMBURGER DROPDOWN ─── */
+    .nav-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: #fff;
+      border: 1px solid #E0E0E0;
+      min-width: 200px;
+      z-index: 200;
+    }
+    .nav-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -6px; right: 16px;
+      width: 12px; height: 12px;
+      background: #fff;
+      transform: rotate(45deg);
+      border-left: 1px solid #E0E0E0;
+      border-top: 1px solid #E0E0E0;
+    }
+    .nav-dropdown.open { display: block; }
+    .nav-dropdown a {
+      display: block;
+      padding: 9px 16px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #666;
+      white-space: nowrap;
+    }
+    .nav-dropdown a:hover { color: #323232; background: #F8F8F8; }
+    .nav-dropdown-sep { height: 1px; background: #E8E8E8; margin: 4px 0; }
+
+    /* ─── PAGE TITLE (centered, per Browse's .page-title styling) ─── */
+    .page-hero-center {
+      padding: 32px 0 20px;
+      text-align: center;
+    }
+    .page-title {
+      font-family: Riforma, sans-serif;
+      font-size: 32px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      color: #323232;
+    }
+    @media (max-width: 809px) { .page-title { font-size: 24px; } }
+
+    /* ─── FOOTER ─── */
+    .site-footer { border-top: 1px solid #EAEAEA; margin-top: 100px; }
+    .site-footer .wrap { padding-top: 40px; padding-bottom: 48px; }
+    .footer-top { display: flex; gap: 48px; margin-bottom: 40px; flex-wrap: wrap; }
+    .footer-logo-col { flex-shrink: 0; }
+    .footer-logo-col svg { display: block; }
+    .footer-cols { display: flex; gap: 32px; flex-wrap: wrap; flex: 1; }
+    .footer-col { min-width: 120px; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 8px; }
+    .footer-col a { font-family: Riforma, sans-serif; font-size: 14px; font-weight: 400; color: #7d7d7d; }
+    .footer-col a:hover { color: #323232; }
+    .footer-bottom {
+      display: flex; align-items: center; gap: 20px;
+      border-top: 1px solid #EAEAEA;
+      padding-top: 20px;
+    }
+    .footer-social { display: flex; gap: 14px; }
+    .footer-social a { color: #7d7d7d; display: flex; align-items: center; }
+    .footer-social a:hover { color: #323232; }
+    .footer-copy { font-family: Riforma, sans-serif; font-size: 14px; color: #aaa; margin-left: auto; }
+  </style>
+</head>
+<body>
+
+<div class="mob-drawer" id="mobDrawer" role="dialog" aria-modal="true" aria-label="Navigation">
+  <div class="mob-drawer-overlay" onclick="closeMobDrawer()"></div>
+  <div class="mob-drawer-panel">
+    <nav>
+      <a href="mubi-showing.html" class="mob-drawer-link">Now Showing</a>
+      <a href="explore.html" class="mob-drawer-link">Browse</a>
+      <a href="watchlist.html" class="mob-drawer-link is-active">Watchlist</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="#" class="mob-drawer-link">Notebook</a>
+      <a href="film-database-v2.html" class="mob-drawer-link">Film Database</a>
+      <a href="#" class="mob-drawer-link">Notebook Magazine</a>
+      <a href="#" class="mob-drawer-link">MUBI Editions</a>
+      <a href="#" class="mob-drawer-link">SHOP</a>
+      <a href="#" class="mob-drawer-link">Gift MUBI</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="#" class="mob-drawer-link">About</a>
+      <a href="#" class="mob-drawer-link">Students</a>
+      <a href="#" class="mob-drawer-link">Contribute</a>
+      <a href="#" class="mob-drawer-link">Jobs</a>
+      <a href="#" class="mob-drawer-link">Terms &amp; Privacy</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="#" class="mob-drawer-link">Earn 1 month free</a>
+      <a href="#" class="mob-drawer-link">Viewing History</a>
+      <a href="#" class="mob-drawer-link">Settings</a>
+      <a href="#" class="mob-drawer-link">Help</a>
+      <a href="#" class="mob-drawer-link">Log Out</a>
+    </nav>
+  </div>
+  <button class="mob-drawer-close" onclick="closeMobDrawer()" aria-label="Close menu">
+    <svg viewBox="0 0 11 11" stroke="currentColor" stroke-width="1.5" width="20"><path d="M1,1 L10,10"/><path d="M10,1 L1,10"/></svg>
+  </button>
+</div>
+
+<header class="site-header">
+  <div class="nav-mobile">
+    <div class="nav-mobile-left">
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="openMobDrawer()" aria-label="Open menu" id="navHamburgerMob">
+          <span class="material-icons" style="font-size:20px;">menu</span>
+        </button>
+      </div>
+      <button class="search-icon-btn" id="searchOpenBtnMob" aria-label="Search">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    <a href="mubi-showing.html" class="nav-mobile-logo" aria-label="MUBI">
+      <svg viewBox="0 0 800 240" width="65" style="vertical-align:top" aria-hidden="true">
+        <g fill="#000000">
+          <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+          <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+          <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+          <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+          <circle cx="766.5"  cy="118.11" r="33.13"/>
+          <circle cx="595.89" cy="118.11" r="33.13"/>
+          <circle cx="681.2"  cy="118.11" r="33.13"/>
+          <circle cx="595.89" cy="33.13"  r="33.13"/>
+          <circle cx="681.2"  cy="33.13"  r="33.13"/>
+          <circle cx="595.89" cy="203.1"  r="33.13"/>
+          <circle cx="681.2"  cy="203.1"  r="33.13"/>
+        </g>
+      </svg>
+    </a>
+    <div class="nav-mobile-right"></div>
+  </div>
+
+  <div class="nav-desktop">
+    <div class="nav-logo">
+      <a href="mubi-showing.html" aria-label="MUBI">
+        <svg viewBox="0 0 800 240" width="75" style="vertical-align:top" aria-hidden="true">
+          <g fill="#000000">
+            <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+            <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+            <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+            <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+            <circle cx="766.5"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="118.11" r="33.13"/>
+            <circle cx="681.2"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="33.13"  r="33.13"/>
+            <circle cx="681.2"  cy="33.13"  r="33.13"/>
+            <circle cx="595.89" cy="203.1"  r="33.13"/>
+            <circle cx="681.2"  cy="203.1"  r="33.13"/>
+          </g>
+        </svg>
+      </a>
+    </div>
+
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="mubi-showing.html" class="nav-link">Now Showing</a>
+      <a href="explore.html" class="nav-link">Browse</a>
+      <a href="watchlist.html" class="nav-link is-active">Watchlist</a>
+    </nav>
+
+    <div style="flex: 1;"></div>
+
+    <nav class="nav-links" aria-label="Secondary navigation">
+      <div class="search-inline" id="searchInline">
+        <button class="search-icon-btn" id="searchOpenBtn" aria-label="Search">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+      <a href="#" class="nav-avatar" aria-label="Profile">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWBAMAAADOL2zRAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAwUExURf///5mZmczMzLOzs56enq2trcDAwMfHx6amprq6utzc3Pn5+ebm5tLS0uzs7PLy8qLPHf4AAAYhSURBVGje7ZpPaBxVHMe/JrQ1u5uEb3Y22S2J7c6m2S30kE0sthVKR8RKxOKKB0sEkz1ERBA3TbX2YjdUohbFDZ70stUetCisoEV6MeKherJVD0IFU+lFTy3au4fZfzPz/s10UZC8S5th58N7v3/vve9vYPduYIu1xQrD2r/sf7J3LSJrik/6H9WSEVl7mPE9yTtWRNYk/W/myHI0VoVcDzyZicaqkQ95n5TI1WisIn0GyzMyq0qfwXIkRyKzvAZbITkWjeX4l1QjORqNRf80nLtjpTx5cHcsa7YzDtwlKzD+Zyynh6yqiDXWQ9ZID1nR1pgT2t6KxFoRshTFECGXqFqknLVXjGI6AmuF6V+v+EJs9NOfFIuUs0pcAO547b4JXOPR0KwppvDJ9WEPa3z4lY0B+SKlrAJ39p1OokYyOWOfuJ8kz3z5/a6EfIuEfBMa7z9NZMkxAMAlktPf/TECShcpY+Udjg/QQpYcAQDsIDl9gzvjZDIkq0BODFXnUCLT1wEkiiSP7OB0jORyONYiaTWGECNJvu+iOIGvsU2+30JRu54FLrgOXCu6/15FvEYGjj9qlpvX6yf9Mb/8niK/ESqv1fkNWdArx9EQrCk1yrMD61gF/8tF399lc1bN9+r8Dd+DVWNW3r+bHffPM2PMylE3LGPWipYljApEiAhZVIhYeT1KWCsgvG/oh7Vsxlo0YAWvSmJWYGNMzs6WDM4o0CbQm/tuAUDiw6IujaBJoNRvaI8rngkvm7C6zbV6C10jsag0GJTmegveEZ9UGQwqc/lRQDyrMBgU5hpBcAwX5QaD3FypTQELg47UYJAn40ud9x/ocsEdaUpCmoxzHSOVONE1s0VZSkKWjFZnhf0kFzqsmKyGQVa75jsvZ0mOuv+dzNwCzjd/sq5jNUt9qoHY7AvuEh3OlAgA2E7OdSa2qmM13XQOqDTXmeAc+mbaM7zantiohjXVtlaM5E4AiB9smW6Y7rNBcbRCbPpx4G+S3PDE1nZmLpYm2q7010MEtRL3QIMK3/6Fuz2sftYRqwPYJjQ+hKZPAiiOIP5jw8Ma2tdarCMyPoRF4jEAH9UhH9dEpQLCqFdh2uEbiHyIduykDuV61H/Sh8iN92lZqAjKDkRuXAi+G7/odcMXAkdC5MZOhbnc2jpu8vFm/akeBoA+gSMhKF6jQDz3GgAMVZsRNuS0ZrvoeibukH6pDYKQGAfu0KoDuElmGgDwVcsjsVbNWAwGBQTyxhOIl9xrUKlVfLJMVVlHM7PqAG4Ej3QQZPZV7CDJ3Rgkn3ZLajW10ffwJoAKD33LhVYaJRUs917cwG1mCjyCfj6Dn48BQOnBpg9qE8BnDTRrRVrByjUj9Vp6E7k6BpINf2z8vtEdrZaCVXBvUPjrA320lkhSxzKI+nbkl+WsSZI8YsY6r2FlSXLajPV5IIkErN1mrHsDR3MEzxJ1M1a/CWvDjNVnwsK/z0oYsNI9ZCV7xMr+lyxNDvWKVQjL0tSvMH5M6+pqCFZKwcqHYA1q9g67SnLTPIfGdPu2YW4PBK4esANBYVi/tgWkGATF3nfNWPfozkx2lTxjxvomcCPys06Ru8xYWVplNSv/lHuoN9kf13T3jilmjFBxg3uaTTZMWLGgbgWBGlo324ZG9ayq2WZ7O9iRgUDU3mXmxlU9q9a6d6pN75jc3StGxo8JpDkIOuRdCoDqNFHWs/YYRX5WID9C1MvJmJgrbcDKm5SwAZFiKNaZzhkUCROdyS5RGxVxJ/CpgFxLq4etzxLWJMljOi+KpHKI5dV0QxOoIkUaEtl3XsW6KRZ+ZfpqSjGxIUfct4WsEzCvnpap7jtJ5cRijqRLAWlH9B2lzpE21e8dku4lWTAuSbu2kLdOMsJVJqoymVzMKvjVx67sqUjle3Uf5nCQdSFsH6bdH3rRj/pY3gmQsdq97UNeRaig7HHDVjeuHuny5uX207UwrL2dztXMDy7pz5Oa1py0L9rdxUzNrudmu1R9qxyyJ33ibDetuznxeuj+tm2/eqC90KNt8fzR4+VI33XY9vP7z7qLOkWS1hsHn1P9Wv9N4NLSUtm2X15aKut+ufUN5RbLP/4Bz8uwCKSeBacAAAAASUVORK5CYII=" alt="Profile">
+      </a>
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="toggleDropdown(event)" aria-label="More" aria-expanded="false" id="navHamburger">
+          <span class="material-icons" style="font-size:20px;">menu</span>
+        </button>
+        <div class="nav-dropdown" id="navDropdown">
+          <a href="#">Notebook</a>
+          <a href="film-database-v2.html">Film Database</a>
+          <a href="#">Notebook Magazine</a>
+          <a href="#">MUBI Editions</a>
+          <a href="#">SHOP</a>
+          <a href="#">Gift MUBI</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">About</a>
+          <a href="#">Students</a>
+          <a href="#">Contribute</a>
+          <a href="#">Jobs</a>
+          <a href="#">Terms &amp; Privacy</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">Earn 1 month free</a>
+          <a href="#">Viewing History</a>
+          <a href="#">Settings</a>
+          <a href="#">Help</a>
+          <a href="#">Log Out</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="page-hero-center">
+      <h1 class="page-title">Watchlist</h1>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-logo-col">
+        <a href="mubi-showing.html" aria-label="MUBI">
+          <svg viewBox="0 0 800 240" width="52" aria-hidden="true">
+            <g fill="#7d7d7d">
+              <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+              <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+              <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+              <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+              <circle cx="766.5" cy="118.11" r="33.13"/><circle cx="595.89" cy="118.11" r="33.13"/><circle cx="681.2" cy="118.11" r="33.13"/>
+              <circle cx="595.89" cy="33.13" r="33.13"/><circle cx="681.2" cy="33.13" r="33.13"/>
+              <circle cx="595.89" cy="203.1" r="33.13"/><circle cx="681.2" cy="203.1" r="33.13"/>
+            </g>
+          </svg>
+        </a>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Ways to Watch</a></li>
+            <li><a href="#">Help</a></li>
+            <li><a href="#">Contribute</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <ul>
+            <li><a href="#">Memberships</a></li>
+            <li><a href="#">Students</a></li>
+            <li><a href="#">Gift MUBI</a></li>
+            <li><a href="#">Jobs</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <ul>
+            <li><a href="#">Funding Policy</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Cookie Preferences</a></li>
+            <li><a href="#">Terms</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <ul>
+            <li><a href="#">MUBI GO</a></li>
+            <li><a href="#">NOTEBOOK</a></li>
+            <li><a href="#">EDITIONS</a></li>
+            <li><a href="#">SHOP</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></a>
+        <a href="#" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" aria-label="TikTok"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.2 8.2 0 0 0 4.79 1.52V6.76a4.85 4.85 0 0 1-1.02-.07z"/></svg></a>
+        <a href="#" aria-label="X / Twitter"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+        <a href="#" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58zM9.75 15.02V8.98L15.5 12z"/></svg></a>
+      </div>
+      <p class="footer-copy">© 2025 MUBI Inc. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('navDropdown');
+  const open = dd.classList.toggle('open');
+  document.getElementById('navHamburger').setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('navDropdown');
+  if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', 'false'); }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const dd = document.getElementById('navDropdown');
+    if (dd) { dd.classList.remove('open'); document.getElementById('navHamburger').setAttribute('aria-expanded', 'false'); }
+    closeMobDrawer();
+  }
+});
+
+function openMobDrawer() {
+  document.getElementById('mobDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobDrawer() {
+  document.getElementById('mobDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+
+</body>
+</html>
