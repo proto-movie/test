@@ -504,7 +504,7 @@
     .row-section { margin-bottom: 20px; }
     .row-section:last-child { margin-bottom: 0; }
 
-    .row-header { padding: 0 0 10px; display: flex; align-items: center; justify-content: space-between; }
+    .row-header { padding: 0 0 10px; display: flex; align-items: center; justify-content: flex-start; }
     .row-title {
       font-family: Riforma, sans-serif;
       font-size: 14px;
@@ -512,6 +512,21 @@
       text-transform: uppercase;
       color: #323232;
     }
+    .row-see-all {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      text-transform: uppercase;
+      color: #999;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 6px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .row-section:hover .row-see-all { opacity: 1; }
 
     .row-grid {
       display: grid;
@@ -792,6 +807,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-bottom: 6px;
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .film-card:hover .card-eyebrow,
@@ -879,6 +895,24 @@
       font-weight: 700;
       color: rgba(255,255,255,0.9);
     }
+
+    /* Continue Watching tiles show playback progress instead of director/country/year. */
+    .card-progress-track {
+      width: 180px;
+      height: 6px;
+      margin-top: 6px;
+      margin-bottom: 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.35);
+      overflow: hidden;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .card-progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: #fff;
+    }
+    .film-card:hover .card-progress-track { transform: translateX(-14px); }
 
     /* ─── MOBILE DRAWER ─── */
     .mob-drawer {
@@ -987,6 +1021,65 @@
     }
     .nav-dropdown a:hover { background: #f5f5f5; color: #323232; }
     .nav-dropdown-sep { border-top: 1px solid #EAEAEA; margin: 5px 0; }
+
+    .nav-avatar-wrap { position: relative; }
+    .nav-profile-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 14px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.08);
+      min-width: 300px;
+      padding: 8px 0;
+      z-index: 100;
+    }
+    .nav-profile-dropdown.open { display: block; }
+    .nav-profile-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 12px; height: 12px;
+      background: #fff;
+      box-shadow: -2px -2px 4px rgba(0,0,0,0.06);
+    }
+    .nav-profile-dropdown-label {
+      font-family: Riforma, sans-serif;
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: #B0B0B0;
+      padding: 8px 20px 6px;
+    }
+    .nav-profile-item {
+      display: flex; align-items: center; gap: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 9px 20px;
+      background: none; border: none; cursor: pointer;
+      text-align: left;
+      font-family: Riforma, sans-serif;
+      transition: background 0.1s;
+    }
+    .nav-profile-item:hover { background: #f5f5f5; }
+    .nav-profile-item.is-active { background: #f0f2fa; }
+    .nav-profile-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid transparent;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+    .nav-profile-item.is-active .nav-profile-avatar { border-color: #001489; }
+    .nav-profile-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .nav-profile-name { font-size: 14px; font-weight: 600; color: #323232; }
+    .nav-profile-item.is-active .nav-profile-name { color: #001489; }
+    .nav-profile-desc {
+      font-size: 12px; color: #8A8A8A;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
 
     /* ─── FOOTER ─── */
     .site-footer {
@@ -1234,10 +1327,52 @@
     .settings-tab-panel { display: none; flex: 1; min-height: 0; min-width: 0; }
     .settings-tab-panel.is-active { display: flex; }
     .settings-tab-panel--stacked.is-active { flex-direction: column; }
+    .ns-user-select {
+      display: flex; align-items: center; gap: 20px;
+      padding: 22px 24px;
+      border-bottom: 1px solid #EAEAEA;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+    .ns-user-select-label {
+      font-family: Riforma, sans-serif;
+      font-size: 13px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: #8A8A8A;
+      flex-shrink: 0;
+    }
+    .ns-user-list { display: flex; gap: 20px; flex-shrink: 0; }
+    .ns-user-btn {
+      display: flex; align-items: center; gap: 14px;
+      background: none; border: none; cursor: pointer;
+      font-family: Riforma, sans-serif;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .ns-user-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid transparent;
+      box-sizing: border-box;
+      flex-shrink: 0;
+      transition: border-color 0.15s;
+    }
+    .ns-user-btn:hover .ns-user-avatar { border-color: #D0D0D0; }
+    .ns-user-btn.is-active .ns-user-avatar { border-color: #001489; }
+    .ns-user-text { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+    .ns-user-name {
+      font-size: 16px; font-weight: 600; color: #323232;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+    .ns-user-btn.is-active .ns-user-name { color: #001489; }
+    .ns-user-desc {
+      font-size: 14px; font-weight: 400; color: #666;
+      white-space: nowrap;
+    }
     .ns-type-toggle {
       display: flex; gap: 8px;
-      padding: 12px 20px;
-      border-bottom: 1px solid #EAEAEA;
+      margin-top: 10px;
       flex-shrink: 0;
     }
     .ns-type-toggle-btn {
@@ -1593,16 +1728,20 @@
       </div>
     </div>
     <div class="settings-tab-panel settings-tab-panel--stacked" data-settings-panel="films-series">
-      <div class="ns-type-toggle" id="filmsSeriesTypeToggle">
-        <button class="ns-type-toggle-btn is-active" data-ns-type="all">All</button>
-        <button class="ns-type-toggle-btn" data-ns-type="film">Films</button>
-        <button class="ns-type-toggle-btn" data-ns-type="series">Series</button>
+      <div class="ns-user-select" id="nsUserSelect">
+        <span class="ns-user-select-label">Select a User</span>
+        <div class="ns-user-list" id="nsUserList"></div>
       </div>
       <div class="settings-columns" id="settingsColumns">
         <div class="settings-column" data-column="catalog">
           <div class="settings-column-head">
             <div class="settings-column-title"><span>Catalog</span><span class="settings-column-count" id="settingsCatalogCount"></span></div>
             <input type="text" class="settings-search" id="settingsSearchCatalog" placeholder="Search catalog" autocomplete="off">
+            <div class="ns-type-toggle" id="filmsSeriesTypeToggle">
+              <button class="ns-type-toggle-btn is-active" data-ns-type="all">All</button>
+              <button class="ns-type-toggle-btn" data-ns-type="film">Films</button>
+              <button class="ns-type-toggle-btn" data-ns-type="series">Series</button>
+            </div>
           </div>
           <div class="settings-list" id="settingsListCatalog"></div>
         </div>
@@ -1721,9 +1860,15 @@
         </button>
         <input class="search-inline-input" id="searchInput" type="text" placeholder="Search" autocomplete="off">
       </div>
-      <a href="#" class="nav-avatar" aria-label="Profile">
-        <img src="data:image/png;base64,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" alt="Profile">
-      </a>
+      <div class="nav-avatar-wrap">
+        <a href="#" class="nav-avatar" aria-label="Profile" id="navAvatarBtn" onclick="toggleProfileDropdown(event)">
+          <img id="navAvatarImg" src="data:image/png;base64,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" alt="Profile">
+        </a>
+        <div class="nav-profile-dropdown" id="navProfileDropdown">
+          <div class="nav-profile-dropdown-label">Select a User</div>
+          <div id="navProfileList"></div>
+        </div>
+      </div>
       <div class="nav-hamburger-wrap">
         <button class="nav-hamburger" onclick="toggleDropdown(event)" aria-label="More" aria-expanded="false" id="navHamburger">
           <span class="material-icons">menu</span>
@@ -2166,8 +2311,10 @@ function renderGrid() {
 
   // Continue Watching / Your Watchlist reflect what's actually been set in the Films & Series
   // settings tab — the row is left out of the page entirely when its list is empty.
-  const continueWatchingFilms = nsState.continueWatching.map(nsFilmBySlug).filter(Boolean);
-  const watchlistFilms = nsState.watchlist.map(nsFilmBySlug).filter(Boolean);
+  // Capped to a single lane (4, matching .row-grid's widest breakpoint) — extra
+  // watched-in-progress/watchlisted films beyond that just aren't shown here.
+  const continueWatchingFilms = nsState.continueWatching.map(nsFilmBySlug).filter(Boolean).slice(0, 4);
+  const watchlistFilms = nsState.watchlist.map(nsFilmBySlug).filter(Boolean).slice(0, 4);
   // "Suggested for You" only makes sense once the user has watched something or has
   // something in progress — otherwise there's no signal to base a suggestion on.
   const showSuggestedForYou = nsState.watched.length > 0 || nsState.continueWatching.length > 0;
@@ -2178,7 +2325,7 @@ function renderGrid() {
   const laneOfLanesColls = NS_COLLECTIONS.slice(0, 4);
 
   const rows = [
-    ...(continueWatchingFilms.length ? [{ title: 'CONTINUE WATCHING', films: continueWatchingFilms }] : []),
+    ...(continueWatchingFilms.length ? [{ title: 'CONTINUE WATCHING', films: continueWatchingFilms, isContinueWatching: true }] : []),
     ...(watchlistFilms.length ? [{ title: 'YOUR WATCHLIST', films: watchlistFilms }] : []),
     // Real film sets from api.mubi.com/v4/collections/<slug> — verified live against
     // mubi.com/en/gb/showing. Uses the taller "doubletile" card format (418px).
@@ -2204,16 +2351,16 @@ function renderGrid() {
     if (row.isSpotlight) return spotlightSectionHTML(row.spotlightColl, rowIdx);
     if (row.isCollections) return `
     <div class="row-section">
-      <div class="row-header"><span class="row-title">${row.title}</span></div>
+      <div class="row-header"><span class="row-title">${row.title}</span><span class="row-see-all">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></span></div>
       <div class="row-grid">
         ${row.colls.map(collTileHTML).join('')}
       </div>
     </div>
   `;
-    const { title, films: rowFilms, doubletile } = row;
+    const { title, films: rowFilms, doubletile, isContinueWatching } = row;
     return `
     <div class="row-section${doubletile ? ' row-section--doubletile' : ''}">
-      <div class="row-header"><span class="row-title">${title}</span></div>
+      <div class="row-header"><span class="row-title">${title}</span><span class="row-see-all">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></span></div>
       <div class="row-grid">
         ${rowFilms.map(film => {
           const posX = Math.round(film.fX * 100);
@@ -2233,7 +2380,9 @@ function renderGrid() {
                   ${titleTreatment
                     ? `<img class="card-title-treatment" src="${titleTreatment}" alt="${film.title}">`
                     : `<div class="card-title">${film.title}</div>`}
-                  <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
+                  ${isContinueWatching
+                    ? `<div class="card-progress-track"><div class="card-progress-fill" style="width:90px"></div></div>`
+                    : `<div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>`}
                 </div>
               </div>
               <div class="card-synopsis-block"><div class="card-actions"><button class="card-watch-btn"><span class="material-icons" style="font-size:18px;line-height:1;">play_arrow</span>Watch</button><button class="card-icon-btn"><span class="material-icons" style="font-size:18px;">add</span></button><button class="card-icon-btn"><span class="material-icons" style="font-size:18px;">star_border</span></button></div><p class="card-synopsis">${film.ourTake || ''}</p><div class="card-meta-icons"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.0801 5C21.5881 5.00004 22 5.41188 22 5.91992V18.0801C22 18.5881 21.5881 19 21.0801 19H2.91992C2.41188 19 2.00004 18.5881 2 18.0801V5.91992C2.00004 5.41188 2.41188 5.00004 2.91992 5H21.0801ZM6.76953 8L6.11035 12.4004H7.46289C7.56556 12.1584 7.73847 11.9563 7.98047 11.7949C8.22237 11.6338 8.5081 11.5528 8.83789 11.5527C9.23382 11.5527 9.56195 11.6887 9.82227 11.96C10.0825 12.2312 10.2128 12.5978 10.2129 13.0596C10.2129 13.5069 10.0825 13.881 9.82227 14.1816C9.56202 14.4822 9.22689 14.6327 8.81641 14.6328C8.43514 14.6328 8.11602 14.5283 7.85938 14.3193C7.60276 14.1104 7.44103 13.8484 7.375 13.5332H6C6.03669 13.9731 6.1704 14.3675 6.40137 14.7158C6.63235 15.0641 6.95147 15.3372 7.3584 15.5352C7.7654 15.7332 8.25174 15.832 8.81641 15.832C9.35891 15.832 9.83772 15.7107 10.252 15.4688C10.6661 15.2268 10.9888 14.8964 11.2197 14.4785C11.4506 14.0606 11.5664 13.584 11.5664 13.0488C11.5664 12.5796 11.4709 12.1447 11.2803 11.7451C11.0896 11.3456 10.8109 11.023 10.4443 10.7773C10.0777 10.5317 9.61919 10.4092 9.06934 10.4092C8.72467 10.4092 8.41246 10.4654 8.13379 10.5791C7.85514 10.6928 7.63496 10.8377 7.47363 11.0137L7.82617 9.23242H11.0381V8H6.76953ZM13.4473 14.1162C13.1906 14.1162 12.9795 14.1971 12.8145 14.3584C12.6496 14.5197 12.5674 14.7176 12.5674 14.9521C12.5674 15.1794 12.6495 15.3739 12.8145 15.5352C12.9794 15.6965 13.1906 15.7773 13.4473 15.7773C13.7037 15.7773 13.9142 15.6962 14.0791 15.5352C14.2441 15.3739 14.3271 15.1794 14.3271 14.9521C14.3271 14.7175 14.2441 14.5197 14.0791 14.3584C13.9142 14.1971 13.7038 14.1163 13.4473 14.1162ZM16.6035 8L14.7451 8.8252V9.90332L16.0098 9.60645V15.7002H17.4727V8H16.6035Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.0801 5C21.5881 5.00004 22 5.41188 22 5.91992V18.0801C22 18.5881 21.5881 19 21.0801 19H2.91992C2.41188 19 2.00004 18.5881 2 18.0801V5.91992C2.00004 5.41188 2.41188 5.00004 2.91992 5H21.0801ZM5.67969 8.33105V15.7656H6.95996V12.5264H10.0996V15.7656H11.3799V8.33105H10.0996V11.4219H6.95996V8.33105H5.67969ZM12.7393 8.33105V15.7656H15.1299C15.9495 15.7656 16.6244 15.6115 17.1543 15.3037C17.6843 14.9957 18.0783 14.5636 18.335 14.0078C18.5916 13.452 18.7197 12.7983 18.7197 12.0479C18.7197 11.2976 18.5915 10.6445 18.335 10.0889C18.0783 9.5331 17.6843 9.10095 17.1543 8.79297C16.6244 8.48521 15.9495 8.33108 15.1299 8.33105H12.7393ZM15.0693 9.48828C15.6559 9.48828 16.12 9.59163 16.46 9.79688C16.7998 10.0022 17.0428 10.2965 17.1895 10.6787C17.336 11.0609 17.4101 11.5172 17.4102 12.0479C17.4102 12.586 17.3361 13.045 17.1895 13.4238C17.0428 13.8025 16.7998 14.0932 16.46 14.2949C16.12 14.4966 15.6559 14.5977 15.0693 14.5977H14.0195V9.48828H15.0693Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4C7.6 4 4 7.6 4 12C4 16.4 7.6 20 12 20C16.4 20 20 16.4 20 12C20 7.6 16.4 4 12 4ZM14.9857 14.9108L11.4195 12.9397C11.1573 12.7983 11 12.547 11 12.2721V8.58899C11.0087 8.26701 11.3059 8 11.6643 8C12.0227 8 12.3198 8.26701 12.3198 8.58899V12.0837L15.6762 13.8977C15.9909 14.0705 16.0958 14.4396 15.9035 14.7223C15.7112 14.9972 15.3004 15.0836 14.9857 14.9108Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.8691 5.13105C18.1495 4.9411 18.5209 4.95926 18.7822 5.17499C20.8605 7.07374 22 9.50664 22 12.0441C21.9503 14.6405 20.8208 17.0972 18.8867 18.8166C18.7564 18.9389 18.574 19.0001 18.3916 19.0002C18.2438 19.0002 18.0954 18.9656 17.9736 18.8781C17.7041 18.6856 17.6696 18.3528 17.9043 18.1428C19.6452 16.5942 20.6608 14.3819 20.7041 12.0441C20.6586 9.66556 19.6089 7.41878 17.8174 5.8664C17.5827 5.65642 17.6084 5.32355 17.8691 5.13105ZM11.5303 5.08808C11.7042 4.98308 11.9396 4.97421 12.1309 5.06171C12.3132 5.14928 12.4346 5.32445 12.4346 5.51679V18.4748C12.4346 18.6671 12.3132 18.8423 12.1309 18.9299C12.044 18.9736 11.9567 18.9914 11.8525 18.9914L11.7676 18.9953C11.6841 18.9843 11.6033 18.9557 11.5303 18.9123L6.86914 14.8H2.58301C2.26143 14.8 2.00027 14.5729 2 14.2844V9.12128C2.0001 8.84135 2.26133 8.60566 2.58301 8.60566H6.86914L11.5303 5.08808ZM15.2002 7.76484C15.4037 7.57658 15.719 7.5843 15.9131 7.78242C18.1927 10.1112 18.235 13.8374 16.0088 16.218C15.9045 16.3229 15.7739 16.3752 15.6348 16.3752C15.5131 16.3752 15.3914 16.3317 15.2871 16.2443C15.0871 16.0519 15.0783 15.7366 15.2695 15.5266C17.1385 13.538 17.1 10.4151 15.1826 8.47382C15.091 8.37796 15.0408 8.24932 15.0439 8.1164C15.0472 7.98327 15.1039 7.85615 15.2002 7.76484Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.56208 22C3.46596 22 3.36929 21.9747 3.28329 21.9242C3.10792 21.8254 3 21.6401 3 21.4385V4.56208C3 4.25212 3.25294 4 3.56208 4H20.4379C20.7499 4 21 4.25212 21 4.56208V18.0087C21 18.3204 20.7499 18.5714 20.4379 18.5714H9.43973L3.84537 21.9231C3.75768 21.9747 3.661 22 3.56208 22ZM17.0621 11.6411C17.3729 11.6411 17.6253 11.3901 17.6253 11.0785C17.6253 10.7697 17.3729 10.517 17.0621 10.517H6.9368C6.62765 10.517 6.37472 10.7697 6.37472 11.0785C6.37472 11.3901 6.62765 11.6411 6.9368 11.6411H17.0621ZM17.0621 14.7411C17.3752 14.7411 17.6253 14.4901 17.6253 14.1791C17.6253 13.8702 17.3752 13.617 17.0621 13.617H6.9368C6.62765 13.617 6.37472 13.8702 6.37472 14.1791C6.37472 14.4901 6.62765 14.7411 6.9368 14.7411H17.0621Z" fill="#323232"/></svg></div></div>
@@ -2278,15 +2427,26 @@ function toggleDropdown(e) {
   const btn = document.getElementById('navHamburger');
   const open = dd.classList.toggle('open');
   btn.setAttribute('aria-expanded', open);
+  document.getElementById('navProfileDropdown').classList.remove('open');
+}
+/* ─── PROFILE DROPDOWN (Select a User) ─── */
+function toggleProfileDropdown(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.getElementById('navDropdown').classList.remove('open');
+  document.getElementById('navHamburger').setAttribute('aria-expanded', 'false');
+  document.getElementById('navProfileDropdown').classList.toggle('open');
 }
 document.addEventListener('click', () => {
   document.getElementById('navDropdown').classList.remove('open');
   document.getElementById('navHamburger').setAttribute('aria-expanded', 'false');
+  document.getElementById('navProfileDropdown').classList.remove('open');
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.getElementById('navDropdown').classList.remove('open');
     document.getElementById('navHamburger').setAttribute('aria-expanded', 'false');
+    document.getElementById('navProfileDropdown').classList.remove('open');
   }
 });
 
@@ -2687,6 +2847,97 @@ function nsRenderAll() {
   nsRenderColumn('continueWatching');
   nsRenderColumn('watched');
 }
+
+// "Select a User" swaps the Films & Series columns to a preset persona's watchlist/
+// continueWatching/watched lists, for demoing what different kinds of users would see.
+function nsCatalogSlugs(start, count) {
+  return NS_CATALOG.slice(start, start + count).map(f => f._slug);
+}
+const NS_DEMO_USERS = [
+  {
+    name: 'Ava Chen',
+    desc: 'New to MUBI, hasn’t watched anything',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces',
+    watchlist: [], continueWatching: [], watched: [],
+  },
+  {
+    name: 'Diego Ramos',
+    desc: 'Started watching, one watchlisted',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces',
+    watchlist: nsCatalogSlugs(0, 1),
+    continueWatching: nsCatalogSlugs(1, 1),
+    watched: [],
+  },
+  {
+    name: 'Priya Nair',
+    desc: '~20 films watched and watchlisted',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces',
+    watchlist: nsCatalogSlugs(2, 20),
+    continueWatching: nsCatalogSlugs(22, 3),
+    watched: nsCatalogSlugs(25, 20),
+  },
+  {
+    name: 'Mark',
+    desc: 'Power user, hundreds of films',
+    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=faces',
+    watchlist: nsCatalogSlugs(45, 250),
+    continueWatching: nsCatalogSlugs(295, 5),
+    watched: nsCatalogSlugs(300, 300),
+  },
+];
+let nsActiveDemoUser = null;
+function nsRenderUserSelect() {
+  document.getElementById('nsUserList').innerHTML = NS_DEMO_USERS.map((u, i) => `
+    <button class="ns-user-btn${nsActiveDemoUser === i ? ' is-active' : ''}" data-ns-user-idx="${i}" type="button">
+      <img class="ns-user-avatar" src="${u.avatar}" alt="${u.name}">
+      <span class="ns-user-text">
+        <span class="ns-user-name">${u.name}</span>
+        <span class="ns-user-desc">${u.desc}</span>
+      </span>
+    </button>
+  `).join('');
+}
+function nsRenderProfileDropdown() {
+  document.getElementById('navProfileList').innerHTML = NS_DEMO_USERS.map((u, i) => `
+    <button class="nav-profile-item${nsActiveDemoUser === i ? ' is-active' : ''}" data-ns-user-idx="${i}" type="button">
+      <img class="nav-profile-avatar" src="${u.avatar}" alt="${u.name}">
+      <span class="nav-profile-text">
+        <span class="nav-profile-name">${u.name}</span>
+        <span class="nav-profile-desc">${u.desc}</span>
+      </span>
+    </button>
+  `).join('');
+}
+// Shared by both the nav avatar dropdown and the Films & Series "Select a User" row —
+// picking a persona in either place updates the same underlying state.
+function nsApplyDemoUser(idx) {
+  const user = NS_DEMO_USERS[idx];
+  if (!user) return;
+  nsActiveDemoUser = idx;
+  nsState.watchlist = [...user.watchlist];
+  nsState.continueWatching = [...user.continueWatching];
+  nsState.watched = [...user.watched];
+  nsSaveState();
+  nsCloseDetails();
+  nsRenderAll();
+  nsRenderUserSelect();
+  nsRenderProfileDropdown();
+  renderGrid();
+  const navAvatarImg = document.getElementById('navAvatarImg');
+  if (navAvatarImg) navAvatarImg.src = user.avatar;
+}
+document.getElementById('nsUserList').addEventListener('click', e => {
+  const btn = e.target.closest('.ns-user-btn');
+  if (!btn) return;
+  nsApplyDemoUser(Number(btn.dataset.nsUserIdx));
+});
+document.getElementById('navProfileList').addEventListener('click', e => {
+  const btn = e.target.closest('.nav-profile-item');
+  if (!btn) return;
+  nsApplyDemoUser(Number(btn.dataset.nsUserIdx));
+  document.getElementById('navProfileDropdown').classList.remove('open');
+});
+nsRenderProfileDropdown();
 
 function nsUpdateSelectionHighlight() {
   document.querySelectorAll('#settingsColumns .settings-row').forEach(row => {
@@ -3244,6 +3495,7 @@ function openSettingsModal() {
   document.getElementById('settingsModal').classList.add('is-open');
   document.body.style.overflow = 'hidden';
   nsRenderAll();
+  nsRenderUserSelect();
   nsRenderSlotPicker('marquee');
   nsRenderSlotPicker('spotlight');
   document.getElementById('numberOfRows').value = nsState.numberOfRows;
