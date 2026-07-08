@@ -606,8 +606,15 @@
       gap: 32px;
     }
     .hero-info-bottom--tile-nav .hero-info-bottom-text { flex: 1; min-width: 0; }
-    .hero-info-bottom--tile-nav .hero-our-take { max-width: 360px; }
     .hero-info-bottom--tile-nav .hero-marquee-nav-tiles { flex-shrink: 0; }
+    /* Synopsis moves above the Watch/Add buttons (left-aligned) instead of sitting beside
+       them, now that the column itself is narrower to make room for the tiles on the right. */
+    .hero-info-bottom--tile-nav .hero-bottom-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .hero-info-bottom--tile-nav .hero-our-take { max-width: 468px; margin-left: 0; order: -1; }
 
     .btn-primary {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -1067,7 +1074,7 @@
        in the top-left corner of each tile ahead of the card's own overlay/title. */
     .card-rank-badge {
       position: absolute;
-      top: 0; left: 0;
+      top: -0.22em; left: 0;
       font-family: Riforma, sans-serif;
       font-weight: 700;
       font-size: clamp(64px, 9vw, 108px);
