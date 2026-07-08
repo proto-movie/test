@@ -1063,6 +1063,21 @@
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
+    /* Top 10 row (Page Settings > Layout > Top 10) — big, faded rank numeral, 1-4, stamped
+       in the top-left corner of each tile ahead of the card's own overlay/title. */
+    .card-rank-badge {
+      position: absolute;
+      top: 0; left: 0;
+      font-family: Riforma, sans-serif;
+      font-weight: 700;
+      font-size: clamp(64px, 9vw, 108px);
+      line-height: 1;
+      color: #fff;
+      opacity: 0.45;
+      z-index: 5;
+      pointer-events: none;
+    }
+
     .card-img-wrap::before {
       content: '';
       position: absolute; inset: 0;
@@ -2144,7 +2159,7 @@
               <label class="ns-switch"><input type="checkbox" id="allDoubleTilesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
             <div class="ns-field" style="padding-left:18px; padding-right:18px;">
-              <div class="ns-field-label">Number of Rows to Display</div>
+              <div class="ns-field-label">Number of Collections to Display After 2nd Spotlight</div>
               <div class="ns-slider-row">
                 <input type="range" min="1" max="25" class="ns-slider" id="numberOfRows">
                 <span class="ns-slider-value" id="numberOfRowsValue">25</span>
@@ -2157,6 +2172,10 @@
             <div class="ns-toggle-row" id="laneOfLanesDoubleTileRow" style="display:none; padding-left:18px; padding-right:18px;">
               <span class="ns-toggle-label">Double Tile</span>
               <label class="ns-switch"><input type="checkbox" id="laneOfLanesDoubleTileToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            </div>
+            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
+              <span class="ns-toggle-label">Top 10</span>
+              <label class="ns-switch"><input type="checkbox" id="topTenToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
           </div>
         </div>
@@ -2815,6 +2834,24 @@ const CURATORS_SPOTLIGHT_FILMS = [
     fX:0.48, fY:0.59, rating:4.5, ourTake:"Packing the deepest secrets of the universe into its modest running time, this suggestive and painterly animated short glimpses unknowable mysteries. An unexpected blend of gorgeously bright-hued design and eldritch cosmic horror, God is Shy peers into the abyss—and finds it gazing back."},
 ];
 
+/* ─── TOP 10 — settings-driven, opt-in row (Page Settings > Layout > Top 10) ───
+   Real MUBI viewing data (see top10.png "Views Within Date Range"), ranked by views —
+   top 4 titles only, matching .row-grid's widest breakpoint. */
+const TOP_TEN_FILMS = [
+  { title:"The Secret Agent", director:"Kleber Mendonça Filho", year:2025, country:"France, Brazil", slug:"the-secret-agent",
+    image:"https://assets.mubicdn.net/images/film/411498/image-w448.jpg?1771581654", titleTreatment:"https://images.mubicdn.net/images/artworks/951729/cache-951729-1773679193/images-original.png",
+    fX:0.42, fY:0.34, rating:4.4, ourTake:"Nominated for four Oscars® including Best Picture, Kleber Mendonça Filho’s anarchic political thriller stars Wagner Moura in a risky cat-and-mouse hunt. Mixing taut suspense with sly absurdism, this epoch-defining marvel reconstructs memories of the Brazilian military dictatorship in vivid colors."},
+  { title:"La grazia", director:"Paolo Sorrentino", year:2025, country:"Italy", slug:"la-grazia",
+    image:"https://assets.mubicdn.net/images/film/437598/image-w448.jpg?1751620976", titleTreatment:"https://images.mubicdn.net/images/artworks/901637/cache-901637-1767781959/images-original.png",
+    fX:0.48, fY:0.49, rating:4.6, ourTake:"Unfolding within the splendorous walls of grand palaces and presidential homes, Paolo Sorrentino’s stylish drama ruminates on fatherhood, legacy, and doubt. Winner of the Best Actor prize at Venice, Toni Servillo captivates as a national leader shaken by the weight of an impossible moral dilemma."},
+  { title:"Sirât", director:"Oliver Laxe", year:2025, country:"Spain, France", slug:"sirat",
+    image:"https://assets.mubicdn.net/images/film/301059/image-w448.jpg?1769615497", titleTreatment:"https://images.mubicdn.net/images/artworks/907759/cache-907759-1768995180/images-original.png",
+    fX:0.43, fY:0.32, rating:4.2, ourTake:"Traversing scorched landscapes of liminal danger and apocalyptic revelry, Oliver Laxe won the Cannes Jury Prize with this thrillingly unpredictable road movie. Galvanized by earth-shaking sounds of gear-grinding techno, Sirāt is an audacious encounter with powerful forces—both sublime and absurd."},
+  { title:"Father Mother Sister Brother", director:"Jim Jarmusch", year:2025, country:"United States, United Kingdom", slug:"father-mother-sister-brother",
+    image:"https://assets.mubicdn.net/images/film/398054/image-w448.jpg?1770218943", titleTreatment:"https://images.mubicdn.net/images/artworks/991705/cache-991705-1779296307/images-original.png",
+    fX:0.5, fY:0.39, rating:4.0, ourTake:"Iconic auteur Jim Jarmusch’s acclaimed return to anthology filmmaking abounds with wryly resonant observations on the family unit. Sketching finely detailed portraits with its starry ensemble cast (including a gloriously rumpled Tom Waits), this offbeat triptych finds universals in idiosyncrasies."},
+];
+
 /* ─── ROW 1-25 — each a randomly-picked real MUBI collection with its real films ───
    Pulled from api.mubi.com/v4/collections/<slug>. Row numbering (1-25) is kept;
    only the underlying collection/films per row are randomized. */
@@ -3088,7 +3125,7 @@ function nsOurTake(film) {
 // merge (see nsMergeWatchNext) can render Continue Watching / Your Watchlist row markup
 // on demand without duplicating the template.
 function filmRowSectionHTML(row) {
-  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab } = row;
+  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab, isTopTen } = row;
   const emptySlotCount = capacity ? Math.max(0, capacity - rowFilms.length) : 0;
   return `
     <div class="row-section${doubletile ? ' row-section--doubletile' : ''}${isNewToMubi ? ' new-to-mubi-section' : ''}${emptySlotCount ? ' row-section--has-empty' : ''}${(showMergeFab || showUnmergeFab) ? ' row-section--has-merge-fab' : ''}">
@@ -3130,6 +3167,7 @@ function filmRowSectionHTML(row) {
                 ? `<img class="new-to-mubi-arrow new-to-mubi-arrow--right" src="../../brand_assets/icon_arrowRight.svg" alt="">`
                 : ''}
               <div class="card-img-wrap">
+                ${isTopTen ? `<span class="card-rank-badge">${filmIdx + 1}</span>` : ''}
                 <img class="card-img" src="${film.image}"
                   alt="${film.title}"
                   loading="lazy"
@@ -3251,8 +3289,14 @@ function renderGrid() {
       titleTreatment: 'https://images.mubicdn.net/images/artworks/682249/cache-682249-1713881270/images-original.png' },
   ];
 
+  // Top 10 is a settings-driven, opt-in row (Page Settings > Layout > Top 10) — sits
+  // directly under the marquee, ranked 1-4 by real MUBI viewing data (see TOP_TEN_FILMS /
+  // top10.png). When "New to MUBI?" (Essential Viewing) is also showing, that one keeps
+  // the very top spot and Top 10 drops in right below it instead.
+  const topTenRow = nsState.topTen ? { title: 'TOP 10', films: TOP_TEN_FILMS.slice(0, 4), isTopTen: true } : null;
   const rows = [
     ...(isNewToMubi ? [{ title: 'ESSENTIAL VIEWING', films: essentialViewingFilms, doubletile: true, isNewToMubi: true }] : []),
+    ...(topTenRow ? [topTenRow] : []),
     ...(watchNextFilms && watchNextFilms.length ? [{ title: 'WATCH NEXT', films: watchNextFilms, showUnmergeFab: true }] : [
       ...(continueWatchingFilms.length ? [{ title: 'CONTINUE WATCHING', films: continueWatchingFilms, isContinueWatching: true, showMergeFab: canMergeWatchNext }] : []),
       ...(watchlistFilms.length ? [{ title: 'YOUR WATCHLIST', films: watchlistFilms }] : []),
@@ -3700,7 +3744,7 @@ const NS_STORAGE_KEY = 'ns_settings_state_v1';
 function nsLoadState() {
   try { return JSON.parse(localStorage.getItem(NS_STORAGE_KEY)) || {}; } catch (e) { return {}; }
 }
-const nsState = Object.assign({ watchlist: [], continueWatching: [], watched: [], marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 25, laneOfLanes: false, laneOfLanesDoubleTile: false, allDoubleTiles: false, activeDemoUserIdx: null, marqueeDisplayCount: 3, marqueeNavStyle: 'rotation', watchNextMerged: false, meta: {} }, nsLoadState());
+const nsState = Object.assign({ watchlist: [], continueWatching: [], watched: [], marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 25, laneOfLanes: false, laneOfLanesDoubleTile: false, allDoubleTiles: false, topTen: false, activeDemoUserIdx: null, marqueeDisplayCount: 3, marqueeNavStyle: 'rotation', watchNextMerged: false, meta: {} }, nsLoadState());
 
 // Dark mode is a personal display preference, not "content" — kept in its own localStorage
 // key rather than nsState, so it isn't pushed to the shared Google Sheet (see NS_SHEET_API_URL
@@ -4302,6 +4346,10 @@ document.getElementById('allDoubleTilesToggle').addEventListener('change', e => 
   nsState.allDoubleTiles = e.target.checked;
   nsSaveState();
 });
+document.getElementById('topTenToggle').addEventListener('change', e => {
+  nsState.topTen = e.target.checked;
+  nsSaveState();
+});
 document.getElementById('numberOfRows').addEventListener('input', e => {
   let v = parseInt(e.target.value, 10);
   if (isNaN(v)) v = 25;
@@ -4602,6 +4650,7 @@ function openSettingsModal() {
   document.getElementById('numberOfRowsValue').textContent = nsState.numberOfRows;
   document.getElementById('darkModeToggle').checked = document.documentElement.dataset.theme === 'dark';
   document.getElementById('allDoubleTilesToggle').checked = !!nsState.allDoubleTiles;
+  document.getElementById('topTenToggle').checked = !!nsState.topTen;
   document.getElementById('laneOfLanesToggle').checked = !!nsState.laneOfLanes;
   document.getElementById('laneOfLanesDoubleTileToggle').checked = !!nsState.laneOfLanesDoubleTile;
   document.getElementById('laneOfLanesDoubleTileRow').style.display = nsState.laneOfLanes ? '' : 'none';
