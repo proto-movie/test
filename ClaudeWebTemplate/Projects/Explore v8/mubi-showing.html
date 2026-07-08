@@ -54,7 +54,7 @@
     :root[data-theme="dark"] .now-showing-title { color: var(--dm-text); }
     :root[data-theme="dark"] .row-see-all,
     :root[data-theme="dark"] .now-showing-count { color: var(--dm-text-dim); }
-    :root[data-theme="dark"] .row-grid { background: var(--dm-seam); border-top-color: var(--dm-seam); border-bottom-color: var(--dm-seam); }
+    :root[data-theme="dark"] .row-grid { background: var(--dm-bg); border-top-color: var(--dm-bg); border-bottom-color: var(--dm-bg); }
     :root[data-theme="dark"] .film-card--empty .card-img-wrap { background: linear-gradient(var(--dm-seam) 0%, var(--dm-bg) 100%); }
     :root[data-theme="dark"] .card-img-wrap { background: var(--dm-seam); }
     :root[data-theme="dark"] .card-synopsis-block { background: var(--dm-surface); box-shadow: 0 4px 14px rgba(0,0,0,0.6); }
@@ -2143,6 +2143,21 @@
               <span class="ns-toggle-label">Make All Tiles Double Tiles</span>
               <label class="ns-switch"><input type="checkbox" id="allDoubleTilesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
+            <div class="ns-field" style="padding-left:18px; padding-right:18px;">
+              <div class="ns-field-label">Number of Rows to Display</div>
+              <div class="ns-slider-row">
+                <input type="range" min="1" max="25" class="ns-slider" id="numberOfRows">
+                <span class="ns-slider-value" id="numberOfRowsValue">25</span>
+              </div>
+            </div>
+            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
+              <span class="ns-toggle-label">Lane of Lanes</span>
+              <label class="ns-switch"><input type="checkbox" id="laneOfLanesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            </div>
+            <div class="ns-toggle-row" id="laneOfLanesDoubleTileRow" style="display:none; padding-left:18px; padding-right:18px;">
+              <span class="ns-toggle-label">Double Tile</span>
+              <label class="ns-switch"><input type="checkbox" id="laneOfLanesDoubleTileToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            </div>
           </div>
         </div>
       </div>
@@ -2212,28 +2227,6 @@
             <input type="text" class="settings-search" id="collectionsBrowseSearch" placeholder="Search collections" autocomplete="off">
           </div>
           <div class="settings-list" id="collectionsBrowseList"></div>
-        </div>
-        <div class="settings-column" data-column="nowShowingSettings">
-          <div class="settings-column-head">
-            <div class="settings-column-title"><span>Now Showing Settings</span></div>
-          </div>
-          <div class="settings-list">
-            <div class="ns-field">
-              <div class="ns-field-label">Number of Rows to Display</div>
-              <div class="ns-slider-row">
-                <input type="range" min="1" max="25" class="ns-slider" id="numberOfRows">
-                <span class="ns-slider-value" id="numberOfRowsValue">25</span>
-              </div>
-            </div>
-            <div class="ns-toggle-row">
-              <span class="ns-toggle-label">Lane of Lanes</span>
-              <label class="ns-switch"><input type="checkbox" id="laneOfLanesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-            <div class="ns-toggle-row" id="laneOfLanesDoubleTileRow" style="display:none;">
-              <span class="ns-toggle-label">Double Tile</span>
-              <label class="ns-switch"><input type="checkbox" id="laneOfLanesDoubleTileToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-          </div>
         </div>
         <div class="settings-details" id="collectionsDetails">
           <div class="settings-details-head">
