@@ -419,9 +419,9 @@
       max-width: 78vw;
       aspect-ratio: 1593 / 986;
     }
-    @media (min-width: 810px)  { .hero-trad-tile, .hero-trad-center-overlay { min-width: 936px; } }
-    @media (min-width: 1186px) { .hero-trad-tile, .hero-trad-center-overlay { min-width: 1224px; } }
-    @media (min-width: 1562px) { .hero-trad-tile, .hero-trad-center-overlay { min-width: 1620px; } }
+    @media (min-width: 810px)  { .hero-trad-tile, .hero-trad-center-overlay { min-width: 896px; max-width: 896px; } }
+    @media (min-width: 1186px) { .hero-trad-tile, .hero-trad-center-overlay { min-width: 1184px; max-width: 1184px; } }
+    @media (min-width: 1562px) { .hero-trad-tile, .hero-trad-center-overlay { min-width: 1580px; max-width: 1580px; } }
     .hero-trad-tile {
       position: relative;
       flex-shrink: 0;
@@ -462,6 +462,20 @@
       position: absolute; inset: 0;
       background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 45%, transparent 72%);
     }
+    /* The centre tile sits under .hero-trad-center-overlay's own top-grad/grad (stacked on
+       top, so the video reads dark too — see the overlay markup below), which doubles its
+       darkening versus a single layer. The peeking tiles never get that second overlay layer,
+       so they'd otherwise look visibly lighter next to the centre both at rest and mid-slide.
+       Match that same combined darkness here with pre-composited alpha (1-(1-a)^2) instead of
+       a second stacked div, since data-role rotates across the same 3 recycled DOM nodes. */
+    .hero-trad-tile[data-role="prev"] .hero-trad-top-grad,
+    .hero-trad-tile[data-role="next"] .hero-trad-top-grad {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.7975) 0%, transparent 100%);
+    }
+    .hero-trad-tile[data-role="prev"] .hero-trad-grad,
+    .hero-trad-tile[data-role="next"] .hero-trad-grad {
+      background: linear-gradient(to top, rgba(0,0,0,0.9375) 0%, rgba(0,0,0,0.36) 45%, transparent 72%);
+    }
     .hero-trad-title {
       position: absolute; top: 0; left: 0; right: 0;
       padding: 120px 48px 0;
@@ -483,12 +497,12 @@
        Bump padding-left to that measured constant so the title/director/watch button
        line up with the MUBI logo exactly, at every width from here up. */
     @media (min-width: 1186px) {
-      .hero-trad-title { padding-left: 73px; }
-      .hero-trad-bottom { padding-left: 73px; }
+      .hero-trad-title { padding-left: 53px; }
+      .hero-trad-bottom { padding-left: 53px; }
     }
     @media (min-width: 1562px) {
-      .hero-trad-title { padding-left: 83px; }
-      .hero-trad-bottom { padding-left: 83px; }
+      .hero-trad-title { padding-left: 62px; }
+      .hero-trad-bottom { padding-left: 62px; }
     }
     /* Director/year — two stacked lines, matching the Subtle Rotation hero's
        .hero-meta-director-row / .hero-meta-country-row instead of one inline row. */
@@ -2790,6 +2804,10 @@
              Kept as a second <video> (rather than moving the original) so Subtle Rotation /
              Tile Navigation still have theirs when Traditional isn't the active style. -->
         <video class="hero-trad-center-video" id="heroTradCenterVideo" src="../../brand_assets/drivemycar-crop.mp4" autoplay muted loop playsinline></video>
+        <!-- Stacked above the video (not just the still tile below) so the video is also
+             darkened for text legibility once it fades in. -->
+        <div class="hero-trad-top-grad" aria-hidden="true"></div>
+        <div class="hero-trad-grad" aria-hidden="true"></div>
         <div class="hero-trad-title" id="heroTradTitle">
           <img
             id="heroTradTitleImg"
