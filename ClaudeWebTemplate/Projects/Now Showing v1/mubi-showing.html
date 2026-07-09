@@ -276,7 +276,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      z-index: 3;
+      z-index: 15;
     }
     .hero-marquee-dot {
       width: 6px; height: 6px;
@@ -381,11 +381,10 @@
     }
 
     /* ─── "TRADITIONAL" MARQUEE — a classic 3-up carousel: a fixed 1593×986 centre slide
-       flanked by narrow "peeking" slivers of the previous/next marquee pick, separated by
-       a thin white line (the stage's own background showing through its column-gap — same
-       seam technique as .row-grid elsewhere). Only shown when Navigation Style is set to
-       "Traditional" (see .hero--traditional below) — Subtle Rotation and Tile Navigation
-       are untouched by any of this. */
+       flanked by narrow "peeking" slivers of the previous/next marquee pick, sitting flush
+       against it with no seam. Only shown when Navigation Style is set to "Traditional"
+       (see .hero--traditional below) — Subtle Rotation and Tile Navigation are untouched
+       by any of this. */
     .hero-traditional { display: none; }
     .hero--traditional .hero-bg,
     .hero--traditional .hero-info { display: none; }
@@ -394,8 +393,7 @@
       .hero--traditional.hero { height: auto; padding-bottom: 0; overflow: visible; }
     }
     /* Full-bleed to the viewport, not just the page's own max-width wrap — so the tile row
-       is always at least as wide as the nav bar/content above it, however wide the screen.
-       overflow:hidden here (not on -inner) masks the inner row while it's mid-slide. */
+       is always at least as wide as the nav bar/content above it, however wide the screen. */
     .hero-trad-stage {
       position: relative;
       left: 50%;
@@ -407,18 +405,12 @@
       display: flex;
       justify-content: center;
       align-items: stretch;
-      column-gap: 2px;
-      background: #fff;
-      transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease;
     }
-    /* Whole-carousel slide — the entire row (both peeks + centre) moves as one unit in the
-       direction of travel, "next" exits/enters right-to-left and "prev" mirrors it. The
-       manual .hero-trad-parallax rule below layers a second, faster-moving transform on
-       just the centre slide's own image/video for a bit of depth on top of that. */
-    .hero-trad-stage-inner.hero-trad-slide-out-next { transform: translateX(-6%); opacity: 0; }
-    .hero-trad-stage-inner.hero-trad-slide-out-prev { transform: translateX(6%); opacity: 0; }
-    .hero-trad-stage-inner.hero-trad-slide-in-next { transform: translateX(6%); opacity: 0; }
-    .hero-trad-stage-inner.hero-trad-slide-in-prev { transform: translateX(-6%); opacity: 0; }
+    /* Basic 3-card carousel slide (see nsRenderTraditionalCarousel): a temporary
+       position:fixed track holding two full-width row snapshots (current tiles, and the
+       tiles as they'll look after rotating) slides the whole rigid row left/right — nothing
+       resizes. Sits below .site-header's z-index:10 so the nav never gets covered mid-slide. */
+    .hero-trad-track { z-index: 5; pointer-events: none; }
     .hero-trad-center {
       position: relative;
       flex-shrink: 0;
@@ -428,52 +420,57 @@
       overflow: hidden;
       background: #A5A3AB;
     }
+    /* min-width mirrors .nav-desktop/.wrap's own max-width at each tier, so the centre
+       slide is always at least as wide as the nav bar/page content above it — never
+       narrower, at any viewport width. */
+    @media (min-width: 810px)  { .hero-trad-center { min-width: 836px; } }
+    @media (min-width: 1186px) { .hero-trad-center { min-width: 1124px; } }
+    @media (min-width: 1562px) { .hero-trad-center { min-width: 1500px; } }
+    /* The images/video snap back to visible instantly when the sliding track is removed
+       (see nsRenderTraditionalCarousel) — the track already showed this exact frame, so
+       there's nothing to visibly fade. Only the text overlays get a real transition, since
+       they weren't part of the track and popping straight in reads as a flash. */
+    .hero-trad-title, .hero-trad-bottom, .hero-trad-our-take {
+      transition: opacity 1s ease;
+    }
     .hero-trad-center-img,
     .hero-trad-center-video {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       object-fit: cover;
-      transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease;
     }
     .hero-trad-center-video { z-index: 1; opacity: 0; animation: videoFadeIn 1s ease forwards; animation-delay: 3s; }
-    /* Parallax: the centre slide's own image/video moves a bit further than the row it
-       sits in, so it reads as a nearer layer sliding past the peeks behind it. */
-    .hero-trad-center-img.hero-trad-parallax-out-next,
-    .hero-trad-center-video.hero-trad-parallax-out-next { transform: translateX(-8%); }
-    .hero-trad-center-img.hero-trad-parallax-out-prev,
-    .hero-trad-center-video.hero-trad-parallax-out-prev { transform: translateX(8%); }
-    .hero-trad-center-img.hero-trad-parallax-in-next,
-    .hero-trad-center-video.hero-trad-parallax-in-next { transform: translateX(8%); }
-    .hero-trad-center-img.hero-trad-parallax-in-prev,
-    .hero-trad-center-video.hero-trad-parallax-in-prev { transform: translateX(-8%); }
     /* Fades the nav bar's dark backdrop into whatever's directly beneath it, regardless of
        how bright the slide's own image/video is — same purpose as .hero-grad-2, just scoped
        to each tile instead of one full-bleed background. */
     .hero-trad-top-grad {
-      position: absolute; top: 0; left: 0; right: 0; height: 140px;
+      position: absolute; top: 0; left: 0; right: 0; height: 340px;
       background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
       pointer-events: none;
-      z-index: 2;
+      z-index: 20;
     }
     .hero-trad-grad {
       position: absolute; inset: 0;
       background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 45%, transparent 72%);
       pointer-events: none;
-      z-index: 2;
+      z-index: 20;
     }
     .hero-trad-title {
       position: absolute; top: 0; left: 0; right: 0;
-      padding: 160px 48px 0;
+      padding: 120px 48px 0;
       color: #fff;
-      z-index: 3;
+      z-index: 21;
     }
-    .hero-trad-title-img { display: block; max-height: 117px; max-width: 676px; width: auto; height: auto; object-fit: contain; object-position: left center; }
-    .hero-trad-title-text { font-family: Riforma, sans-serif; font-size: 44px; font-weight: 500; text-transform: uppercase; }
+    .hero-trad-title-img { display: block; max-height: 140px; max-width: 800px; width: auto; height: auto; object-fit: contain; object-position: left center; }
+    /* Same proportional scale-down as .hero-title-img--wide, for banner-style logos (>3:1)
+       so they don't dominate next to squarer/stacked ones as the carousel rotates. */
+    .hero-trad-title-img--wide { max-height: 103px; max-width: 600px; }
+    .hero-trad-title-text { font-family: Riforma, sans-serif; font-size: 52px; font-weight: 500; text-transform: uppercase; }
     .hero-trad-bottom {
       position: absolute; left: 0; right: 0; bottom: 0;
-      padding: 0 48px 40px;
+      padding: 0 48px 64px;
       color: #fff;
-      z-index: 3;
+      z-index: 21;
     }
     /* Director/year — two stacked lines, matching the Subtle Rotation hero's
        .hero-meta-director-row / .hero-meta-country-row instead of one inline row. */
@@ -487,9 +484,9 @@
     /* Centred, sitting higher up the slide rather than tucked at the bottom next to the
        Watch button — a caption over the middle of the image instead of a footnote. */
     .hero-trad-our-take {
-      position: absolute; left: 50%; bottom: 64px;
+      position: absolute; left: 50%; bottom: 69px;
       transform: translateX(-50%);
-      width: 100%; max-width: 620px;
+      width: 100%; max-width: 680px;
       padding: 0 24px;
       font-family: Riforma, sans-serif;
       font-size: 15px;
@@ -498,7 +495,7 @@
       text-align: left;
       color: #fff;
       text-shadow: 0 1px 10px rgba(0,0,0,0.8);
-      z-index: 3;
+      z-index: 21;
     }
     /* Peeking slides: same height as the centre slide, much narrower — just enough to hint
        there's a previous/next film without competing with it. flex:1 1 0% (not a max-width
@@ -515,19 +512,24 @@
     .hero-trad-peek-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .hero-trad-peek-scrim { position: absolute; inset: 0; background: rgba(0,0,0,0.45); transition: background 0.2s ease; pointer-events: none; z-index: 1; }
     .hero-trad-peek:hover .hero-trad-peek-scrim { background: rgba(0,0,0,0.6); }
+    /* Sits toward the peek's inner edge (the side toward the centre slide) rather than dead
+       centre in the tile — same "closer to the middle" convention as .new-to-mubi-arrow. */
     .hero-trad-arrow {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 44px; height: 44px;
+      position: absolute; top: 50%;
+      transform: translateY(-50%);
+      width: 60px; height: 60px;
       border-radius: 50%;
-      background: #000;
+      background: rgba(0,0,0,0.45);
       color: #fff;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer;
-      z-index: 2;
+      z-index: 25;
       transition: background 0.15s ease;
     }
-    .hero-trad-arrow:hover { background: #262626; }
+    .hero-trad-arrow--prev { right: 16px; }
+    .hero-trad-arrow--next { left: 16px; }
+    .hero-trad-arrow:hover { background: rgba(0,0,0,0.65); }
+    .hero-trad-arrow .material-icons { font-size: 32px; }
     @media (max-width: 809px) { .hero-trad-peek { display: none; } }
 
     /* Image container: extends UP behind the transparent header */
@@ -4771,10 +4773,10 @@ let nsMarqueeRotationTimer = null;
 
 // Wide banner-style title treatments (>3:1) get scaled down via .hero-title-img--wide so
 // they don't visually dominate next to squarer/stacked logos as the marquee rotates.
-function nsCheckHeroTitleAspect(img) {
+function nsCheckHeroTitleAspect(img, wideClass = 'hero-title-img--wide') {
   const check = () => {
     if (!img.naturalWidth || !img.naturalHeight) return;
-    img.classList.toggle('hero-title-img--wide', (img.naturalWidth / img.naturalHeight) > 3);
+    img.classList.toggle(wideClass, (img.naturalWidth / img.naturalHeight) > 3);
   };
   if (img.complete) check();
   else img.addEventListener('load', check, { once: true });
@@ -4934,7 +4936,9 @@ function nsStartMarqueeRotation() {
   // so there's nothing to rotate.
   if (nsState.marqueeDisplayCount !== 3) return;
   if (nsState.marquee.length <= 1) return;
-  nsMarqueeIdx = nsState.marquee.length - 1; // matches the pick nsApplyMarqueeToHero just showed
+  // Does NOT reset nsMarqueeIdx — this also gets called right after a manual arrow step
+  // (see nsStepMarquee) to resume auto-rotation from wherever the user just navigated to;
+  // resetting it here would immediately undo that step on the very next tick.
   nsMarqueeRotationTimer = setInterval(() => {
     nsMarqueeIdx = (nsMarqueeIdx + 1) % nsState.marquee.length;
     nsShowMarqueeFilm(nsState.marquee[nsMarqueeIdx], true, 'next');
@@ -4959,8 +4963,10 @@ document.getElementById('heroTradPeekNext').addEventListener('click', () => nsSt
 // (only when active) fills in the centre slide plus the previous/next picks' peek slivers.
 // `direction` ('next' | 'prev' | null) is who's asking: null means "just show this film"
 // (initial load, or a style switch) and swaps content with no motion; 'next'/'prev' means
-// this came from the rotation timer or an arrow click, so it plays a slide first.
-const NS_TRAD_SLIDE_MS = 500; // matches .hero-trad-stage-inner's own transition duration
+// this came from the rotation timer or an arrow click, so it plays the rotating-carousel
+// flight below — the pressed side's peek grows into the middle, the old centre shrinks
+// into the opposite peek, and a fresh peek flies in from the revealed edge.
+const NS_TRAD_FLIP_MS = 550;
 function nsRenderTraditionalCarousel(activeSlug, direction = null) {
   const heroEl = document.querySelector('.hero');
   const isTraditional = nsState.marqueeDisplayCount === 3 && nsState.marqueeNavStyle === 'traditional' && nsState.marquee.length > 0;
@@ -4988,6 +4994,7 @@ function nsRenderTraditionalCarousel(activeSlug, direction = null) {
       titleImg.alt = film.title;
       titleImg.style.display = '';
       titleText.style.display = 'none';
+      nsCheckHeroTitleAspect(titleImg, 'hero-trad-title-img--wide');
     } else {
       titleImg.style.display = 'none';
       titleText.style.display = 'block';
@@ -4999,40 +5006,119 @@ function nsRenderTraditionalCarousel(activeSlug, direction = null) {
 
   if (!direction) { fillContent(); return; }
 
-  // The whole row slides as one unit (.hero-trad-stage-inner); the centre slide's own
-  // image/video additionally gets a bigger "parallax" offset so it reads as a nearer
-  // layer moving past the peeks rather than everything panning at one flat rate.
-  const stageInner = document.getElementById('heroTradStageInner');
-  const parallaxEls = [document.getElementById('heroTradCenterImg'), document.getElementById('heroTradCenterVideo')];
-  const outClass = direction === 'next' ? 'hero-trad-slide-out-next' : 'hero-trad-slide-out-prev';
-  const inClass = direction === 'next' ? 'hero-trad-slide-in-next' : 'hero-trad-slide-in-prev';
-  const parallaxOutClass = direction === 'next' ? 'hero-trad-parallax-out-next' : 'hero-trad-parallax-out-prev';
-  const parallaxInClass = direction === 'next' ? 'hero-trad-parallax-in-next' : 'hero-trad-parallax-in-prev';
-  stageInner.classList.add(outClass);
-  parallaxEls.forEach(el => el.classList.add(parallaxOutClass));
+  // Basic 3-card carousel: the row (peek + centre + peek, each keeping its own fixed size —
+  // nothing resizes) slides rigidly left or right as one unit. Built as two full-width
+  // snapshots — the current tiles and the tiles as they'll look after rotating — sitting
+  // side by side in a fixed-position track; translating the track by one row-width reveals
+  // the new row from the appropriate edge while the old one exits the other side.
+  const stageEl = document.querySelector('.hero-trad-stage');
+  const peekLeftEl = document.getElementById('heroTradPeekPrev');
+  const centerEl = document.querySelector('.hero-trad-center');
+  const peekRightEl = document.getElementById('heroTradPeekNext');
+  const rStage = stageEl.getBoundingClientRect();
+  const rPeekLeft = peekLeftEl.getBoundingClientRect();
+  const rCenter = centerEl.getBoundingClientRect();
+  const rPeekRight = peekRightEl.getBoundingClientRect();
+
+  const oldImgs = {
+    left: document.getElementById('heroTradPeekPrevImg').src,
+    center: document.getElementById('heroTradCenterImg').src,
+    right: document.getElementById('heroTradPeekNextImg').src,
+  };
+  const n = nsState.marquee.length;
+  const idx = nsState.marquee.indexOf(activeSlug);
+  // The film that'll need to appear in whichever peek slot is freshly revealed — two picks
+  // away from the current centre, in the direction of travel.
+  const incomingFilm = n > 2 ? nsFilmBySlug(nsState.marquee[(idx + (direction === 'next' ? 2 : -2) + n) % n]) : null;
+  const incomingImg = incomingFilm && incomingFilm.image ? nsHeroImageURL(incomingFilm.image) : oldImgs.left;
+  // 'next': old centre becomes new left peek, old right peek becomes new centre, a fresh
+  // pick becomes new right peek. 'prev' is the mirror.
+  const newImgs = direction === 'next'
+    ? { left: oldImgs.center, center: oldImgs.right, right: incomingImg }
+    : { left: incomingImg, center: oldImgs.left, right: oldImgs.right };
+
+  function buildRow(imgs) {
+    const row = document.createElement('div');
+    Object.assign(row.style, { display: 'flex', width: rStage.width + 'px', height: rStage.height + 'px', flexShrink: '0', background: '#fff' });
+    [[imgs.left, rPeekLeft.width], [imgs.center, rCenter.width], [imgs.right, rPeekRight.width]].forEach(([src, w]) => {
+      const tile = document.createElement('div');
+      Object.assign(tile.style, { position: 'relative', width: w + 'px', height: rStage.height + 'px', flexShrink: '0', overflow: 'hidden', background: '#A5A3AB' });
+      const img = document.createElement('img');
+      img.src = src;
+      Object.assign(img.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', objectFit: 'cover', display: 'block' });
+      tile.appendChild(img);
+      row.appendChild(tile);
+    });
+    return row;
+  }
+
+  const track = document.createElement('div');
+  track.className = 'hero-trad-track';
+  Object.assign(track.style, { position: 'fixed', top: rStage.top + 'px', left: rStage.left + 'px', display: 'flex' });
+  const oldRow = buildRow(oldImgs);
+  const newRow = buildRow(newImgs);
+  if (direction === 'next') {
+    track.append(oldRow, newRow);
+    track.style.transform = 'translateX(0)';
+  } else {
+    track.append(newRow, oldRow);
+    track.style.transform = `translateX(-${rStage.width}px)`;
+  }
+  document.body.appendChild(track);
+
+  // Only the content that's actually being replaced (images/video/text) hides underneath
+  // the sliding track — the gradients, arrows, and dots stay put and fully visible the
+  // whole time (they're all above the track's z-index), so the nav bar never loses its
+  // backdrop and the dots never flicker out mid-transition.
+  // Images snap back instantly (the track already showed this exact frame, so there's
+  // nothing to visibly fade) — only the text overlays get a real transition (see the CSS),
+  // since popping straight in with no prior on-screen equivalent reads as a flash.
+  const videoEl = document.getElementById('heroTradCenterVideo');
+  const imageEls = [
+    document.getElementById('heroTradCenterImg'),
+    document.getElementById('heroTradPeekPrevImg'), document.getElementById('heroTradPeekNextImg'),
+  ];
+  const textEls = [
+    document.getElementById('heroTradTitle'), document.getElementById('heroTradBottom'), document.getElementById('heroTradOurTake'),
+  ];
+  imageEls.forEach(el => { el.style.opacity = '0'; });
+  textEls.forEach(el => { el.style.opacity = '0'; });
+  // The video's own videoFadeIn animation has `forwards` fill, so once it's finished it
+  // keeps forcing opacity:1 indefinitely — a plain inline opacity:0 can't override a running
+  // animation. Clearing the animation first releases its grip so the fade-out actually shows.
+  videoEl.style.animation = 'none';
+  videoEl.style.opacity = '0';
+
+  requestAnimationFrame(() => {
+    track.style.transition = `transform ${NS_TRAD_FLIP_MS}ms cubic-bezier(0.22,1,0.36,1)`;
+    track.style.transform = direction === 'next' ? `translateX(-${rStage.width}px)` : 'translateX(0)';
+  });
+
   setTimeout(() => {
     fillContent();
-    stageInner.classList.remove(outClass);
-    parallaxEls.forEach(el => el.classList.remove(parallaxOutClass));
-    stageInner.classList.add(inClass);
-    parallaxEls.forEach(el => el.classList.add(parallaxInClass));
-    // Force the browser to paint the "just arrived from the other side" position before
-    // transitioning it back to rest — otherwise the add/remove would collapse into one
-    // no-op frame and skip the slide-in entirely.
-    void heroEl.offsetWidth;
-    requestAnimationFrame(() => {
-      stageInner.classList.remove(inClass);
-      parallaxEls.forEach(el => el.classList.remove(parallaxInClass));
-    });
-  }, NS_TRAD_SLIDE_MS);
+    track.remove();
+    imageEls.forEach(el => { el.style.opacity = '1'; });
+    textEls.forEach(el => { el.style.opacity = ''; });
+    // The dots/countdown are also driven by nsShowMarqueeFilm's own applyFilm(), but that
+    // only fires after its slower 1s crossfade+preload delay — re-render them here too so
+    // they advance in step with this carousel's much faster slide instead of lagging behind.
+    nsRenderMarqueeDots(activeSlug);
+    // Hand opacity back to the animation and restart it from scratch — the video fades
+    // back in fresh over the new still, same trick as nsReplayHeroVideoFadeIn uses.
+    videoEl.style.opacity = '';
+    nsReplayHeroVideoFadeIn();
+  }, NS_TRAD_FLIP_MS);
 }
 
 function nsApplyMarqueeToHero() {
-  // Use the most recently added marquee pick, not the first ever — that's
-  // the one the user actually just chose, even if earlier slots are still filled.
-  const slug = nsState.marquee[nsState.marquee.length - 1];
-  if (!slug) return;
-  nsShowMarqueeFilm(slug);
+  if (!nsState.marquee.length) return;
+  // Subtle Rotation / Tile Navigation start on the most recently added marquee pick, not
+  // the first ever — that's the one the user actually just chose, even if earlier slots
+  // are still filled. Traditional always starts at index 0 instead, so its dots/timer
+  // begin on the left and progress rightward in the same direction slides come in from.
+  const startIdx = nsState.marqueeNavStyle === 'traditional' ? 0 : nsState.marquee.length - 1;
+  nsMarqueeIdx = startIdx;
+  nsShowMarqueeFilm(nsState.marquee[startIdx]);
   nsStartMarqueeRotation();
 }
 
