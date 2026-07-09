@@ -401,65 +401,71 @@
       transform: translateX(-50%);
       overflow: hidden;
     }
+    /* nsCenterTraditionalFilmstrip() sets this row's own transform so the middle (2nd) tile
+       sits centred in the stage — the outer two, being the exact same width, mostly hang off
+       past the stage's overflow:hidden edges and only peek a sliver into view. Sliding by
+       exactly one tile-width (see nsRenderTraditionalCarousel) is what lands a peek in the
+       centre at the size it already was — nothing ever resizes mid-slide. */
     .hero-trad-stage-inner {
       display: flex;
-      justify-content: center;
       align-items: stretch;
     }
-    /* Basic 3-card carousel slide (see nsRenderTraditionalCarousel): a temporary
-       position:fixed track holding two full-width row snapshots (current tiles, and the
-       tiles as they'll look after rotating) slides the whole rigid row left/right — nothing
-       resizes. Sits below .site-header's z-index:10 so the nav never gets covered mid-slide. */
-    .hero-trad-track { z-index: 5; pointer-events: none; }
-    .hero-trad-center {
-      position: relative;
-      flex-shrink: 0;
+    /* Shared size for both the filmstrip tiles above and .hero-trad-center-overlay below —
+       min-width goes a bit beyond .nav-desktop/.wrap's own max-width at each tier (not just
+       matching it), so the centre slide always reads as visibly wider than the nav bar/page
+       content above it, at any viewport. */
+    .hero-trad-tile, .hero-trad-center-overlay {
       width: 1593px;
       max-width: 78vw;
       aspect-ratio: 1593 / 986;
+    }
+    @media (min-width: 810px)  { .hero-trad-tile, .hero-trad-center-overlay { min-width: 936px; } }
+    @media (min-width: 1186px) { .hero-trad-tile, .hero-trad-center-overlay { min-width: 1224px; } }
+    @media (min-width: 1562px) { .hero-trad-tile, .hero-trad-center-overlay { min-width: 1620px; } }
+    .hero-trad-tile {
+      position: relative;
+      flex-shrink: 0;
       overflow: hidden;
       background: #A5A3AB;
+      cursor: pointer;
     }
-    /* min-width mirrors .nav-desktop/.wrap's own max-width at each tier, so the centre
-       slide is always at least as wide as the nav bar/page content above it — never
-       narrower, at any viewport width. */
-    @media (min-width: 810px)  { .hero-trad-center { min-width: 836px; } }
-    @media (min-width: 1186px) { .hero-trad-center { min-width: 1124px; } }
-    @media (min-width: 1562px) { .hero-trad-center { min-width: 1500px; } }
-    /* The images/video snap back to visible instantly when the sliding track is removed
-       (see nsRenderTraditionalCarousel) — the track already showed this exact frame, so
-       there's nothing to visibly fade. Only the text overlays get a real transition, since
-       they weren't part of the track and popping straight in reads as a flash. */
+    .hero-trad-tile-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    /* Fixed in the stage's centre (never slides) — whichever physical tile is currently
+       rotated into the centre position sits directly beneath this. */
+    .hero-trad-center-overlay {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 20;
+    }
     .hero-trad-title, .hero-trad-bottom, .hero-trad-our-take {
       transition: opacity 1s ease;
+      pointer-events: auto;
     }
-    .hero-trad-center-img,
     .hero-trad-center-video {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       object-fit: cover;
+      opacity: 0;
+      animation: videoFadeIn 1s ease forwards;
+      animation-delay: 3s;
     }
-    .hero-trad-center-video { z-index: 1; opacity: 0; animation: videoFadeIn 1s ease forwards; animation-delay: 3s; }
     /* Fades the nav bar's dark backdrop into whatever's directly beneath it, regardless of
        how bright the slide's own image/video is — same purpose as .hero-grad-2, just scoped
-       to each tile instead of one full-bleed background. */
+       to the centre tile instead of one full-bleed background. */
     .hero-trad-top-grad {
       position: absolute; top: 0; left: 0; right: 0; height: 340px;
       background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
-      pointer-events: none;
-      z-index: 20;
     }
     .hero-trad-grad {
       position: absolute; inset: 0;
       background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 45%, transparent 72%);
-      pointer-events: none;
-      z-index: 20;
     }
     .hero-trad-title {
       position: absolute; top: 0; left: 0; right: 0;
       padding: 120px 48px 0;
       color: #fff;
-      z-index: 21;
     }
     .hero-trad-title-img { display: block; max-height: 140px; max-width: 800px; width: auto; height: auto; object-fit: contain; object-position: left center; }
     /* Same proportional scale-down as .hero-title-img--wide, for banner-style logos (>3:1)
@@ -470,7 +476,19 @@
       position: absolute; left: 0; right: 0; bottom: 0;
       padding: 0 48px 64px;
       color: #fff;
-      z-index: 21;
+    }
+    /* At each tier the centre tile is wider than .nav-desktop by a fixed amount (see the
+       min-width comment above), so the gap between the tile's own edge and the nav logo's
+       left edge is a constant, viewport-independent offset within that tier — not 48px.
+       Bump padding-left to that measured constant so the title/director/watch button
+       line up with the MUBI logo exactly, at every width from here up. */
+    @media (min-width: 1186px) {
+      .hero-trad-title { padding-left: 73px; }
+      .hero-trad-bottom { padding-left: 73px; }
+    }
+    @media (min-width: 1562px) {
+      .hero-trad-title { padding-left: 83px; }
+      .hero-trad-bottom { padding-left: 83px; }
     }
     /* Director/year — two stacked lines, matching the Subtle Rotation hero's
        .hero-meta-director-row / .hero-meta-country-row instead of one inline row. */
@@ -495,42 +513,29 @@
       text-align: left;
       color: #fff;
       text-shadow: 0 1px 10px rgba(0,0,0,0.8);
-      z-index: 21;
     }
-    /* Peeking slides: same height as the centre slide, much narrower — just enough to hint
-       there's a previous/next film without competing with it. flex:1 1 0% (not a max-width
-       cap) so they always absorb whatever space is left in the 100vw stage after the centre
-       slide, keeping the row full-bleed at any viewport width. */
-    .hero-trad-peek {
-      position: relative;
-      flex: 1 1 0%;
-      min-width: 120px;
-      overflow: hidden;
-      background: #A5A3AB;
-      cursor: pointer;
-    }
-    .hero-trad-peek-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .hero-trad-peek-scrim { position: absolute; inset: 0; background: rgba(0,0,0,0.45); transition: background 0.2s ease; pointer-events: none; z-index: 1; }
-    .hero-trad-peek:hover .hero-trad-peek-scrim { background: rgba(0,0,0,0.6); }
-    /* Sits toward the peek's inner edge (the side toward the centre slide) rather than dead
-       centre in the tile — same "closer to the middle" convention as .new-to-mubi-arrow. */
+    /* Anchored to the stage itself (not any one tile, since which tile is "the peek" now
+       rotates) — near the stage's own edges, closer to the middle than dead-centre-of-a-
+       mostly-offscreen-tile would be, matching the .new-to-mubi-arrow inner-edge convention. */
     .hero-trad-arrow {
       position: absolute; top: 50%;
       transform: translateY(-50%);
       width: 60px; height: 60px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.45);
       color: #fff;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       z-index: 25;
-      transition: background 0.15s ease;
+      opacity: 0.85;
+      transition: opacity 0.15s ease;
     }
-    .hero-trad-arrow--prev { right: 16px; }
-    .hero-trad-arrow--next { left: 16px; }
-    .hero-trad-arrow:hover { background: rgba(0,0,0,0.65); }
-    .hero-trad-arrow .material-icons { font-size: 32px; }
-    @media (max-width: 809px) { .hero-trad-peek { display: none; } }
+    .hero-trad-arrow--prev { left: 16px; }
+    .hero-trad-arrow--next { right: 16px; }
+    .hero-trad-arrow:hover { opacity: 1; }
+    .hero-trad-arrow .material-icons { font-size: 40px; text-shadow: 0 1px 6px rgba(0,0,0,0.6); }
+    @media (max-width: 809px) {
+      .hero-trad-tile[data-role="prev"], .hero-trad-tile[data-role="next"],
+      .hero-trad-arrow { display: none; }
+    }
 
     /* Image container: extends UP behind the transparent header */
     .hero-bg {
@@ -2753,23 +2758,38 @@
        hero above. Hidden unless .hero has the --traditional modifier (see nsRenderTraditionalCarousel). -->
   <div class="hero-traditional" id="heroTraditional">
     <div class="hero-trad-stage">
-    <div class="hero-trad-stage-inner" id="heroTradStageInner">
-      <div class="hero-trad-peek hero-trad-peek--left" id="heroTradPeekPrev" aria-label="Previous film">
-        <img class="hero-trad-peek-img" id="heroTradPeekPrevImg" src="" alt="">
-        <div class="hero-trad-top-grad" aria-hidden="true"></div>
-        <div class="hero-trad-peek-scrim" aria-hidden="true"></div>
-        <button class="hero-trad-arrow hero-trad-arrow--prev" id="heroTradPrevBtn" aria-label="Previous film">
-          <span class="material-icons">chevron_left</span>
-        </button>
+      <!-- Three tiles, all the SAME size (matching .hero-trad-center-overlay below) — the
+           middle one is centred in the stage via nsCenterTraditionalFilmstrip(), so the
+           outer two mostly hang off past the stage's own overflow:hidden edges, only
+           peeking a sliver into view. Sliding by exactly one tile's width is what makes a
+           peek land exactly in the middle, at the same size it already was — no resizing,
+           no "different sized strip" partway through. data-role tracks which of the 3 is
+           currently which (see nsRenderTraditionalCarousel) since the DOM nodes themselves
+           get recycled/reordered rather than re-created on every rotation. -->
+      <div class="hero-trad-stage-inner" id="heroTradStageInner">
+        <div class="hero-trad-tile" data-role="prev" aria-label="Previous film">
+          <img class="hero-trad-tile-img" src="" alt="">
+          <div class="hero-trad-top-grad" aria-hidden="true"></div>
+          <div class="hero-trad-grad" aria-hidden="true"></div>
+        </div>
+        <div class="hero-trad-tile" data-role="center" aria-label="Current film">
+          <img class="hero-trad-tile-img" src="" alt="">
+          <div class="hero-trad-top-grad" aria-hidden="true"></div>
+          <div class="hero-trad-grad" aria-hidden="true"></div>
+        </div>
+        <div class="hero-trad-tile" data-role="next" aria-label="Next film">
+          <img class="hero-trad-tile-img" src="" alt="">
+          <div class="hero-trad-top-grad" aria-hidden="true"></div>
+          <div class="hero-trad-grad" aria-hidden="true"></div>
+        </div>
       </div>
-      <div class="hero-trad-center">
-        <img class="hero-trad-center-img" id="heroTradCenterImg" src="" alt="">
+      <!-- Fixed in place at the stage's centre — never slides. Whichever physical tile is
+           currently rotated into the centre position sits directly beneath this. -->
+      <div class="hero-trad-center-overlay">
         <!-- Mirrors .hero-video — same fixed source, always playing, layered over the still.
              Kept as a second <video> (rather than moving the original) so Subtle Rotation /
              Tile Navigation still have theirs when Traditional isn't the active style. -->
         <video class="hero-trad-center-video" id="heroTradCenterVideo" src="../../brand_assets/drivemycar-crop.mp4" autoplay muted loop playsinline></video>
-        <div class="hero-trad-top-grad" aria-hidden="true"></div>
-        <div class="hero-trad-grad" aria-hidden="true"></div>
         <div class="hero-trad-title" id="heroTradTitle">
           <img
             id="heroTradTitleImg"
@@ -2802,15 +2822,12 @@
           </div>
         </div>
       </div>
-      <div class="hero-trad-peek hero-trad-peek--right" id="heroTradPeekNext" aria-label="Next film">
-        <img class="hero-trad-peek-img" id="heroTradPeekNextImg" src="" alt="">
-        <div class="hero-trad-top-grad" aria-hidden="true"></div>
-        <div class="hero-trad-peek-scrim" aria-hidden="true"></div>
-        <button class="hero-trad-arrow hero-trad-arrow--next" id="heroTradNextBtn" aria-label="Next film">
-          <span class="material-icons">chevron_right</span>
-        </button>
-      </div>
-    </div><!-- /hero-trad-stage-inner -->
+      <button class="hero-trad-arrow hero-trad-arrow--prev" id="heroTradPrevBtn" aria-label="Previous film">
+        <span class="material-icons">chevron_left</span>
+      </button>
+      <button class="hero-trad-arrow hero-trad-arrow--next" id="heroTradNextBtn" aria-label="Next film">
+        <span class="material-icons">chevron_right</span>
+      </button>
     </div><!-- /hero-trad-stage -->
   </div>
 
@@ -4955,8 +4972,36 @@ function nsStepMarquee(dir) {
   nsShowMarqueeFilm(nsState.marquee[nsMarqueeIdx], true, dir > 0 ? 'next' : 'prev');
   nsStartMarqueeRotation();
 }
-document.getElementById('heroTradPeekPrev').addEventListener('click', () => nsStepMarquee(-1));
-document.getElementById('heroTradPeekNext').addEventListener('click', () => nsStepMarquee(1));
+document.getElementById('heroTradPrevBtn').addEventListener('click', () => nsStepMarquee(-1));
+document.getElementById('heroTradNextBtn').addEventListener('click', () => nsStepMarquee(1));
+// The peek tiles' data-role rotates as they get recycled (see nsRenderTraditionalCarousel),
+// so which physical element means "click to go prev/next" changes over time — delegate and
+// read the current role at click time instead of binding to a fixed element once.
+document.getElementById('heroTradStageInner').addEventListener('click', e => {
+  const tile = e.target.closest('.hero-trad-tile');
+  if (!tile) return;
+  if (tile.dataset.role === 'prev') nsStepMarquee(-1);
+  else if (tile.dataset.role === 'next') nsStepMarquee(1);
+});
+
+// Sets .hero-trad-stage-inner's own transform so the middle (2nd) tile sits centred in the
+// stage — measured fresh each time since the tile's actual rendered width depends on the
+// current viewport/breakpoint. Returns the measurements so callers animating a slide don't
+// have to re-measure.
+function nsCenterTraditionalFilmstrip() {
+  const stage = document.querySelector('.hero-trad-stage');
+  const inner = document.getElementById('heroTradStageInner');
+  if (!stage || !inner) return null;
+  const stageWidth = stage.getBoundingClientRect().width;
+  const tileWidth = inner.children[1].getBoundingClientRect().width;
+  const gap = 1; // matches .hero-trad-stage-inner's column-gap
+  const offset = (stageWidth - tileWidth) / 2 - (tileWidth + gap);
+  inner.style.transform = `translateX(${offset}px)`;
+  return { tileWidth, gap, offset };
+}
+window.addEventListener('resize', () => {
+  if (document.querySelector('.hero--traditional')) nsCenterTraditionalFilmstrip();
+});
 
 // "Traditional" Navigation Style — a boxed 3-up carousel (see .hero-traditional markup)
 // instead of the full-bleed hero. Toggles .hero--traditional to swap between them, and
@@ -4973,6 +5018,12 @@ function nsRenderTraditionalCarousel(activeSlug, direction = null) {
   heroEl.classList.toggle('hero--traditional', isTraditional);
   if (!isTraditional) return;
 
+  const inner = document.getElementById('heroTradStageInner');
+
+  // Fills whichever of the 3 tiles currently has each data-role with that role's film, and
+  // the fixed centre overlay with the active film's title/meta/actions/synopsis. Roles
+  // rotate between the physical tiles as they get recycled below, so this always looks up
+  // "whichever tile currently has this role" rather than a fixed element.
   const fillContent = () => {
     const film = nsFilmBySlug(activeSlug);
     if (!film) return;
@@ -4981,9 +5032,10 @@ function nsRenderTraditionalCarousel(activeSlug, direction = null) {
     const prevFilm = n > 1 ? nsFilmBySlug(nsState.marquee[(idx - 1 + n) % n]) : film;
     const nextFilm = n > 1 ? nsFilmBySlug(nsState.marquee[(idx + 1) % n]) : film;
 
-    document.getElementById('heroTradPeekPrevImg').src = prevFilm.image ? nsHeroImageURL(prevFilm.image) : '';
-    document.getElementById('heroTradPeekNextImg').src = nextFilm.image ? nsHeroImageURL(nextFilm.image) : '';
-    document.getElementById('heroTradCenterImg').src = film.image ? nsHeroImageURL(film.image) : '';
+    [...inner.children].forEach(tile => {
+      const f = tile.dataset.role === 'prev' ? prevFilm : tile.dataset.role === 'next' ? nextFilm : film;
+      tile.querySelector('.hero-trad-tile-img').src = f.image ? nsHeroImageURL(f.image) : '';
+    });
 
     const titleTreatment = film.titleTreatment || NS_TITLE_TREATMENTS[film._slug];
     const titleImg = document.getElementById('heroTradTitleImg');
@@ -5004,85 +5056,29 @@ function nsRenderTraditionalCarousel(activeSlug, direction = null) {
     document.getElementById('heroTradOurTake').textContent = film.ourTake || '';
   };
 
-  if (!direction) { fillContent(); return; }
-
-  // Basic 3-card carousel: the row (peek + centre + peek, each keeping its own fixed size —
-  // nothing resizes) slides rigidly left or right as one unit. Built as two full-width
-  // snapshots — the current tiles and the tiles as they'll look after rotating — sitting
-  // side by side in a fixed-position track; translating the track by one row-width reveals
-  // the new row from the appropriate edge while the old one exits the other side.
-  const stageEl = document.querySelector('.hero-trad-stage');
-  const peekLeftEl = document.getElementById('heroTradPeekPrev');
-  const centerEl = document.querySelector('.hero-trad-center');
-  const peekRightEl = document.getElementById('heroTradPeekNext');
-  const rStage = stageEl.getBoundingClientRect();
-  const rPeekLeft = peekLeftEl.getBoundingClientRect();
-  const rCenter = centerEl.getBoundingClientRect();
-  const rPeekRight = peekRightEl.getBoundingClientRect();
-
-  const oldImgs = {
-    left: document.getElementById('heroTradPeekPrevImg').src,
-    center: document.getElementById('heroTradCenterImg').src,
-    right: document.getElementById('heroTradPeekNextImg').src,
-  };
-  const n = nsState.marquee.length;
-  const idx = nsState.marquee.indexOf(activeSlug);
-  // The film that'll need to appear in whichever peek slot is freshly revealed — two picks
-  // away from the current centre, in the direction of travel.
-  const incomingFilm = n > 2 ? nsFilmBySlug(nsState.marquee[(idx + (direction === 'next' ? 2 : -2) + n) % n]) : null;
-  const incomingImg = incomingFilm && incomingFilm.image ? nsHeroImageURL(incomingFilm.image) : oldImgs.left;
-  // 'next': old centre becomes new left peek, old right peek becomes new centre, a fresh
-  // pick becomes new right peek. 'prev' is the mirror.
-  const newImgs = direction === 'next'
-    ? { left: oldImgs.center, center: oldImgs.right, right: incomingImg }
-    : { left: incomingImg, center: oldImgs.left, right: oldImgs.right };
-
-  function buildRow(imgs) {
-    const row = document.createElement('div');
-    Object.assign(row.style, { display: 'flex', width: rStage.width + 'px', height: rStage.height + 'px', flexShrink: '0', background: '#fff' });
-    [[imgs.left, rPeekLeft.width], [imgs.center, rCenter.width], [imgs.right, rPeekRight.width]].forEach(([src, w]) => {
-      const tile = document.createElement('div');
-      Object.assign(tile.style, { position: 'relative', width: w + 'px', height: rStage.height + 'px', flexShrink: '0', overflow: 'hidden', background: '#A5A3AB' });
-      const img = document.createElement('img');
-      img.src = src;
-      Object.assign(img.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', objectFit: 'cover', display: 'block' });
-      tile.appendChild(img);
-      row.appendChild(tile);
-    });
-    return row;
+  if (!direction) {
+    fillContent();
+    nsCenterTraditionalFilmstrip();
+    return;
   }
 
-  const track = document.createElement('div');
-  track.className = 'hero-trad-track';
-  Object.assign(track.style, { position: 'fixed', top: rStage.top + 'px', left: rStage.left + 'px', display: 'flex' });
-  const oldRow = buildRow(oldImgs);
-  const newRow = buildRow(newImgs);
-  if (direction === 'next') {
-    track.append(oldRow, newRow);
-    track.style.transform = 'translateX(0)';
-  } else {
-    track.append(newRow, oldRow);
-    track.style.transform = `translateX(-${rStage.width}px)`;
-  }
-  document.body.appendChild(track);
+  // All 3 tiles are the exact same size — sliding the whole strip by exactly one tile's
+  // width (not the stage's width) is what lands the pressed side's peek dead-centre at the
+  // size it was already rendered at, and shifts the old centre out to the opposite peek
+  // slot at that same size. Nothing ever resizes, so there's no "different-sized strip"
+  // partway through like there was rendering peeks narrower than the centre.
+  const measurements = nsCenterTraditionalFilmstrip();
+  if (!measurements) return;
+  const { tileWidth, gap, offset } = measurements;
 
-  // Only the content that's actually being replaced (images/video/text) hides underneath
-  // the sliding track — the gradients, arrows, and dots stay put and fully visible the
-  // whole time (they're all above the track's z-index), so the nav bar never loses its
-  // backdrop and the dots never flicker out mid-transition.
-  // Images snap back instantly (the track already showed this exact frame, so there's
-  // nothing to visibly fade) — only the text overlays get a real transition (see the CSS),
-  // since popping straight in with no prior on-screen equivalent reads as a flash.
-  const videoEl = document.getElementById('heroTradCenterVideo');
-  const imageEls = [
-    document.getElementById('heroTradCenterImg'),
-    document.getElementById('heroTradPeekPrevImg'), document.getElementById('heroTradPeekNextImg'),
-  ];
+  // The images themselves never hide/fade — they're the same elements sliding continuously,
+  // always visible. Only the fixed text overlay needs to fade, since its *content* jumps
+  // straight to the new film the instant the slide ends (see the CSS transition on these).
   const textEls = [
     document.getElementById('heroTradTitle'), document.getElementById('heroTradBottom'), document.getElementById('heroTradOurTake'),
   ];
-  imageEls.forEach(el => { el.style.opacity = '0'; });
   textEls.forEach(el => { el.style.opacity = '0'; });
+  const videoEl = document.getElementById('heroTradCenterVideo');
   // The video's own videoFadeIn animation has `forwards` fill, so once it's finished it
   // keeps forcing opacity:1 indefinitely — a plain inline opacity:0 can't override a running
   // animation. Clearing the animation first releases its grip so the fade-out actually shows.
@@ -5090,14 +5086,33 @@ function nsRenderTraditionalCarousel(activeSlug, direction = null) {
   videoEl.style.opacity = '0';
 
   requestAnimationFrame(() => {
-    track.style.transition = `transform ${NS_TRAD_FLIP_MS}ms cubic-bezier(0.22,1,0.36,1)`;
-    track.style.transform = direction === 'next' ? `translateX(-${rStage.width}px)` : 'translateX(0)';
+    inner.style.transition = `transform ${NS_TRAD_FLIP_MS}ms ease-in-out`;
+    inner.style.transform = `translateX(${offset + (direction === 'next' ? -(tileWidth + gap) : (tileWidth + gap))}px)`;
   });
 
   setTimeout(() => {
+    // Recycle whichever tile just slid fully out of view into the freshly-revealed edge —
+    // relabelling roles by DOM position (see nsCenterTraditionalFilmstrip: the 2nd child is
+    // always the one centred) is what lets the same 3 elements keep working indefinitely
+    // instead of needing a new one built every rotation. fillContent() below (still keyed
+    // off each tile's role) then fills in the recycled tile's actual image.
+    if (direction === 'next') {
+      const recycled = inner.children[0];
+      inner.children[1].dataset.role = 'prev';
+      inner.children[2].dataset.role = 'center';
+      recycled.dataset.role = 'next';
+      inner.appendChild(recycled);
+    } else {
+      const recycled = inner.children[2];
+      inner.children[0].dataset.role = 'center';
+      inner.children[1].dataset.role = 'next';
+      recycled.dataset.role = 'prev';
+      inner.insertBefore(recycled, inner.children[0]);
+    }
+    inner.style.transition = 'none';
+    inner.style.transform = `translateX(${offset}px)`;
+
     fillContent();
-    track.remove();
-    imageEls.forEach(el => { el.style.opacity = '1'; });
     textEls.forEach(el => { el.style.opacity = ''; });
     // The dots/countdown are also driven by nsShowMarqueeFilm's own applyFilm(), but that
     // only fires after its slower 1s crossfade+preload delay — re-render them here too so
