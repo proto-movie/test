@@ -380,6 +380,155 @@
       to { stroke-dashoffset: 0; }
     }
 
+    /* ─── "TRADITIONAL" MARQUEE — a classic 3-up carousel: a fixed 1593×986 centre slide
+       flanked by narrow "peeking" slivers of the previous/next marquee pick, separated by
+       a thin white line (the stage's own background showing through its column-gap — same
+       seam technique as .row-grid elsewhere). Only shown when Navigation Style is set to
+       "Traditional" (see .hero--traditional below) — Subtle Rotation and Tile Navigation
+       are untouched by any of this. */
+    .hero-traditional { display: none; }
+    .hero--traditional .hero-bg,
+    .hero--traditional .hero-info { display: none; }
+    .hero--traditional .hero-traditional { display: block; }
+    @media (min-width: 810px) {
+      .hero--traditional.hero { height: auto; padding-bottom: 0; overflow: visible; }
+    }
+    /* Full-bleed to the viewport, not just the page's own max-width wrap — so the tile row
+       is always at least as wide as the nav bar/content above it, however wide the screen.
+       overflow:hidden here (not on -inner) masks the inner row while it's mid-slide. */
+    .hero-trad-stage {
+      position: relative;
+      left: 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      overflow: hidden;
+    }
+    .hero-trad-stage-inner {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      column-gap: 2px;
+      background: #fff;
+      transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease;
+    }
+    /* Whole-carousel slide — the entire row (both peeks + centre) moves as one unit in the
+       direction of travel, "next" exits/enters right-to-left and "prev" mirrors it. The
+       manual .hero-trad-parallax rule below layers a second, faster-moving transform on
+       just the centre slide's own image/video for a bit of depth on top of that. */
+    .hero-trad-stage-inner.hero-trad-slide-out-next { transform: translateX(-6%); opacity: 0; }
+    .hero-trad-stage-inner.hero-trad-slide-out-prev { transform: translateX(6%); opacity: 0; }
+    .hero-trad-stage-inner.hero-trad-slide-in-next { transform: translateX(6%); opacity: 0; }
+    .hero-trad-stage-inner.hero-trad-slide-in-prev { transform: translateX(-6%); opacity: 0; }
+    .hero-trad-center {
+      position: relative;
+      flex-shrink: 0;
+      width: 1593px;
+      max-width: 78vw;
+      aspect-ratio: 1593 / 986;
+      overflow: hidden;
+      background: #A5A3AB;
+    }
+    .hero-trad-center-img,
+    .hero-trad-center-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.5s ease;
+    }
+    .hero-trad-center-video { z-index: 1; opacity: 0; animation: videoFadeIn 1s ease forwards; animation-delay: 3s; }
+    /* Parallax: the centre slide's own image/video moves a bit further than the row it
+       sits in, so it reads as a nearer layer sliding past the peeks behind it. */
+    .hero-trad-center-img.hero-trad-parallax-out-next,
+    .hero-trad-center-video.hero-trad-parallax-out-next { transform: translateX(-8%); }
+    .hero-trad-center-img.hero-trad-parallax-out-prev,
+    .hero-trad-center-video.hero-trad-parallax-out-prev { transform: translateX(8%); }
+    .hero-trad-center-img.hero-trad-parallax-in-next,
+    .hero-trad-center-video.hero-trad-parallax-in-next { transform: translateX(8%); }
+    .hero-trad-center-img.hero-trad-parallax-in-prev,
+    .hero-trad-center-video.hero-trad-parallax-in-prev { transform: translateX(-8%); }
+    /* Fades the nav bar's dark backdrop into whatever's directly beneath it, regardless of
+       how bright the slide's own image/video is — same purpose as .hero-grad-2, just scoped
+       to each tile instead of one full-bleed background. */
+    .hero-trad-top-grad {
+      position: absolute; top: 0; left: 0; right: 0; height: 140px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .hero-trad-grad {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 45%, transparent 72%);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .hero-trad-title {
+      position: absolute; top: 0; left: 0; right: 0;
+      padding: 160px 48px 0;
+      color: #fff;
+      z-index: 3;
+    }
+    .hero-trad-title-img { display: block; max-height: 117px; max-width: 676px; width: auto; height: auto; object-fit: contain; object-position: left center; }
+    .hero-trad-title-text { font-family: Riforma, sans-serif; font-size: 44px; font-weight: 500; text-transform: uppercase; }
+    .hero-trad-bottom {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: 0 48px 40px;
+      color: #fff;
+      z-index: 3;
+    }
+    /* Director/year — two stacked lines, matching the Subtle Rotation hero's
+       .hero-meta-director-row / .hero-meta-country-row instead of one inline row. */
+    .hero-trad-meta { display: flex; flex-direction: column; gap: 0; font-family: Riforma, sans-serif; font-size: 14px; margin-bottom: 18px; }
+    .hero-trad-meta .hero-meta-director-row { display: flex; align-items: baseline; gap: 4px; }
+    .hero-trad-meta .hero-meta-label { color: rgba(255,255,255,0.7); text-transform: uppercase; }
+    .hero-trad-meta .hero-meta-director { font-weight: 700; }
+    .hero-trad-country { color: rgba(255,255,255,0.85); text-transform: uppercase; }
+    .hero-trad-bottom-row { display: flex; align-items: flex-end; gap: 32px; }
+    .hero-trad-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    /* Centred, sitting higher up the slide rather than tucked at the bottom next to the
+       Watch button — a caption over the middle of the image instead of a footnote. */
+    .hero-trad-our-take {
+      position: absolute; top: 40%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%; max-width: 620px;
+      padding: 0 24px;
+      font-family: Riforma, sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.55;
+      text-align: center;
+      color: #fff;
+      z-index: 3;
+    }
+    /* Peeking slides: same height as the centre slide, much narrower — just enough to hint
+       there's a previous/next film without competing with it. flex:1 1 0% (not a max-width
+       cap) so they always absorb whatever space is left in the 100vw stage after the centre
+       slide, keeping the row full-bleed at any viewport width. */
+    .hero-trad-peek {
+      position: relative;
+      flex: 1 1 0%;
+      min-width: 120px;
+      overflow: hidden;
+      background: #A5A3AB;
+      cursor: pointer;
+    }
+    .hero-trad-peek-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .hero-trad-peek-scrim { position: absolute; inset: 0; background: rgba(0,0,0,0.45); transition: background 0.2s ease; pointer-events: none; z-index: 1; }
+    .hero-trad-peek:hover .hero-trad-peek-scrim { background: rgba(0,0,0,0.6); }
+    .hero-trad-arrow {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #000;
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 2;
+      transition: background 0.15s ease;
+    }
+    .hero-trad-arrow:hover { background: #262626; }
+    @media (max-width: 809px) { .hero-trad-peek { display: none; } }
+
     /* Image container: extends UP behind the transparent header */
     .hero-bg {
       position: absolute;
@@ -819,7 +968,7 @@
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       object-fit: cover;
-      object-position: center;
+      object-position: center top;
     }
     .spotlight-bg-grad {
       position: absolute; inset: 0;
@@ -2016,6 +2165,72 @@
       justify-content: flex-end;
     }
     .settings-modal-footer .settings-modal-update-btn { width: auto; padding: 10px 28px; }
+    .settings-modal-reset-btn {
+      margin-right: auto;
+      padding: 10px 16px;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #B3261E;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .settings-modal-reset-btn:hover { text-decoration: underline; }
+
+    /* Custom confirm dialog — replaces the browser's native confirm() so destructive
+       actions (like resetting all prototype settings) match the rest of the UI. */
+    .ns-confirm-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .ns-confirm-overlay.is-open { opacity: 1; pointer-events: auto; }
+    .ns-confirm-panel {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -48%) scale(0.97);
+      width: min(400px, 90vw);
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 24px;
+      z-index: 1101;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.2s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease;
+    }
+    .ns-confirm-panel.is-open { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+    .ns-confirm-title {
+      font-family: Riforma, sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: #141414;
+      margin-bottom: 8px;
+    }
+    .ns-confirm-message {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #5a5a5a;
+      margin-bottom: 24px;
+    }
+    .ns-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .ns-confirm-btn {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .ns-confirm-btn--cancel { background: none; border: 1px solid #D0D0D0; color: #323232; }
+    .ns-confirm-btn--cancel:hover { border-color: #323232; }
+    .ns-confirm-btn--ok { background: #B3261E; border: 1px solid #B3261E; color: #fff; }
+    .ns-confirm-btn--ok:hover { background: #96201a; border-color: #96201a; }
     .settings-details {
       position: absolute; top: 0; right: 0; bottom: 0;
       width: 320px; max-width: 92%;
@@ -2071,6 +2286,11 @@
     .ns-number-input:focus { border-color: #001489; }
     .ns-toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #F0F0F0; }
     .ns-toggle-label { font-family: Riforma, sans-serif; font-size: 14px; color: #323232; }
+    .ns-toggle-desc { font-family: 'DM Sans', sans-serif; font-size: 12px; color: #8A8A8A; margin-top: 3px; }
+    .ns-toggle-group { border-bottom: 1px solid #F0F0F0; }
+    .ns-toggle-group .ns-toggle-row { border-bottom: none; }
+    .ns-toggle-group .ns-toggle-row:first-child { padding-bottom: 10px; }
+    .ns-toggle-group .ns-toggle-row + .ns-toggle-row { padding-top: 0; padding-bottom: 14px; }
     .ns-switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; display: block; }
     .ns-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
     .ns-switch-track { position: absolute; inset: 0; background: #D0D0D0; border-radius: 22px; transition: background 0.2s; cursor: pointer; }
@@ -2126,6 +2346,15 @@
   <div class="profile-grid" id="profileGrid"></div>
 </div>
 <div class="settings-overlay" id="settingsOverlay"></div>
+<div class="ns-confirm-overlay" id="nsConfirmOverlay"></div>
+<div class="ns-confirm-panel" id="nsConfirmPanel" role="alertdialog" aria-modal="true" aria-label="Confirm">
+  <div class="ns-confirm-title">Are you sure?</div>
+  <p class="ns-confirm-message" id="nsConfirmMessage"></p>
+  <div class="ns-confirm-actions">
+    <button class="ns-confirm-btn ns-confirm-btn--cancel" id="nsConfirmCancel">Cancel</button>
+    <button class="ns-confirm-btn ns-confirm-btn--ok" id="nsConfirmOk">OK</button>
+  </div>
+</div>
 <div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Settings">
   <div class="settings-modal-head">
     <div class="settings-modal-title-row">
@@ -2172,13 +2401,18 @@
                 <span class="ns-slider-value" id="numberOfRowsValue">25</span>
               </div>
             </div>
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <span class="ns-toggle-label">Lane of Lanes</span>
-              <label class="ns-switch"><input type="checkbox" id="laneOfLanesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-            <div class="ns-toggle-row" id="laneOfLanesDoubleTileRow" style="display:none; padding-left:18px; padding-right:18px;">
-              <span class="ns-toggle-label">Double Tile</span>
-              <label class="ns-switch"><input type="checkbox" id="laneOfLanesDoubleTileToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            <div class="ns-toggle-group">
+              <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
+                <div>
+                  <span class="ns-toggle-label">Lane of Lanes</span>
+                  <div class="ns-toggle-desc">A lane of collection titles.</div>
+                </div>
+                <label class="ns-switch"><input type="checkbox" id="laneOfLanesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+              </div>
+              <div class="ns-toggle-row" id="laneOfLanesDoubleTileRow" style="display:none; padding-left:34px; padding-right:18px;">
+                <span class="ns-toggle-label">Double Tile</span>
+                <label class="ns-switch"><input type="checkbox" id="laneOfLanesDoubleTileToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+              </div>
             </div>
             <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
               <span class="ns-toggle-label">Top 10</span>
@@ -2221,6 +2455,7 @@
               <div class="ns-type-toggle" id="marqueeNavStyleToggle" style="flex-wrap:wrap;">
                 <button class="ns-type-toggle-btn is-active" data-ns-nav="rotation">Subtle Rotation</button>
                 <button class="ns-type-toggle-btn" data-ns-nav="tiles">Tile Navigation</button>
+                <button class="ns-type-toggle-btn" data-ns-nav="traditional">Traditional</button>
               </div>
             </div>
           </div>
@@ -2323,6 +2558,7 @@
     </div>
   </div>
   <div class="settings-modal-footer">
+    <button class="settings-modal-reset-btn" id="resetPrototypeSettingsBtn">Reset Prototype Settings</button>
     <button class="settings-details-save settings-modal-update-btn" id="updateNowShowingBtn">Update Now Showing</button>
   </div>
 </div>
@@ -2509,6 +2745,72 @@
     <div class="hero-marquee-nav-tiles" id="heroMarqueeNavTiles"></div>
     </div><!-- /hero-info-bottom -->
   </div><!-- /hero-info -->
+
+  <!-- "Traditional" Navigation Style only — a boxed 3-up carousel instead of the full-bleed
+       hero above. Hidden unless .hero has the --traditional modifier (see nsRenderTraditionalCarousel). -->
+  <div class="hero-traditional" id="heroTraditional">
+    <div class="hero-trad-stage">
+    <div class="hero-trad-stage-inner" id="heroTradStageInner">
+      <div class="hero-trad-peek hero-trad-peek--left" id="heroTradPeekPrev" aria-label="Previous film">
+        <img class="hero-trad-peek-img" id="heroTradPeekPrevImg" src="" alt="">
+        <div class="hero-trad-top-grad" aria-hidden="true"></div>
+        <div class="hero-trad-peek-scrim" aria-hidden="true"></div>
+        <button class="hero-trad-arrow hero-trad-arrow--prev" id="heroTradPrevBtn" aria-label="Previous film">
+          <span class="material-icons">chevron_left</span>
+        </button>
+      </div>
+      <div class="hero-trad-center">
+        <img class="hero-trad-center-img" id="heroTradCenterImg" src="" alt="">
+        <!-- Mirrors .hero-video — same fixed source, always playing, layered over the still.
+             Kept as a second <video> (rather than moving the original) so Subtle Rotation /
+             Tile Navigation still have theirs when Traditional isn't the active style. -->
+        <video class="hero-trad-center-video" id="heroTradCenterVideo" src="../../brand_assets/drivemycar-crop.mp4" autoplay muted loop playsinline></video>
+        <div class="hero-trad-top-grad" aria-hidden="true"></div>
+        <div class="hero-trad-grad" aria-hidden="true"></div>
+        <div class="hero-trad-title" id="heroTradTitle">
+          <img
+            id="heroTradTitleImg"
+            class="hero-trad-title-img"
+            src=""
+            alt=""
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+          >
+          <p class="hero-trad-title-text" id="heroTradTitleText" style="display:none;"></p>
+        </div>
+        <p class="hero-trad-our-take" id="heroTradOurTake"></p>
+        <div class="hero-trad-bottom" id="heroTradBottom">
+          <div class="hero-trad-meta">
+            <div class="hero-meta-director-row">
+              <span class="hero-meta-label">Directed by</span>
+              <span class="hero-meta-director" id="heroTradDirector"></span>
+            </div>
+            <div class="hero-trad-country" id="heroTradCountryRow"></div>
+          </div>
+          <div class="hero-trad-bottom-row">
+            <div class="hero-trad-actions">
+              <a href="#" class="btn-primary">
+                <svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor" aria-hidden="true"><path d="M0 0L10 6L0 12V0Z"/></svg>
+                Watch
+              </a>
+              <a href="#" class="btn-outline" aria-label="Add to Watchlist">
+                <span class="material-icons">add</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-trad-peek hero-trad-peek--right" id="heroTradPeekNext" aria-label="Next film">
+        <img class="hero-trad-peek-img" id="heroTradPeekNextImg" src="" alt="">
+        <div class="hero-trad-top-grad" aria-hidden="true"></div>
+        <div class="hero-trad-peek-scrim" aria-hidden="true"></div>
+        <button class="hero-trad-arrow hero-trad-arrow--next" id="heroTradNextBtn" aria-label="Next film">
+          <span class="material-icons">chevron_right</span>
+        </button>
+      </div>
+    </div><!-- /hero-trad-stage-inner -->
+    </div><!-- /hero-trad-stage -->
+  </div>
+
   <div class="hero-marquee-dots" id="heroMarqueeDots"></div>
 </div>
 
@@ -2716,6 +3018,16 @@ function cardSynopsisBlockHTML(film) {
   return `<div class="card-synopsis-block"><div class="card-actions"><button class="card-watch-btn"><span class="material-icons" style="font-size:18px;line-height:1;">play_arrow</span>Watch</button><button class="card-icon-btn"><span class="material-icons" style="font-size:18px;">add</span></button><button class="card-icon-btn"><span class="material-icons" style="font-size:18px;">star_border</span></button></div><p class="card-synopsis">${nsOurTake(film)}</p><div class="card-meta-icons"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.0801 5C21.5881 5.00004 22 5.41188 22 5.91992V18.0801C22 18.5881 21.5881 19 21.0801 19H2.91992C2.41188 19 2.00004 18.5881 2 18.0801V5.91992C2.00004 5.41188 2.41188 5.00004 2.91992 5H21.0801ZM6.76953 8L6.11035 12.4004H7.46289C7.56556 12.1584 7.73847 11.9563 7.98047 11.7949C8.22237 11.6338 8.5081 11.5528 8.83789 11.5527C9.23382 11.5527 9.56195 11.6887 9.82227 11.96C10.0825 12.2312 10.2128 12.5978 10.2129 13.0596C10.2129 13.5069 10.0825 13.881 9.82227 14.1816C9.56202 14.4822 9.22689 14.6327 8.81641 14.6328C8.43514 14.6328 8.11602 14.5283 7.85938 14.3193C7.60276 14.1104 7.44103 13.8484 7.375 13.5332H6C6.03669 13.9731 6.1704 14.3675 6.40137 14.7158C6.63235 15.0641 6.95147 15.3372 7.3584 15.5352C7.7654 15.7332 8.25174 15.832 8.81641 15.832C9.35891 15.832 9.83772 15.7107 10.252 15.4688C10.6661 15.2268 10.9888 14.8964 11.2197 14.4785C11.4506 14.0606 11.5664 13.584 11.5664 13.0488C11.5664 12.5796 11.4709 12.1447 11.2803 11.7451C11.0896 11.3456 10.8109 11.023 10.4443 10.7773C10.0777 10.5317 9.61919 10.4092 9.06934 10.4092C8.72467 10.4092 8.41246 10.4654 8.13379 10.5791C7.85514 10.6928 7.63496 10.8377 7.47363 11.0137L7.82617 9.23242H11.0381V8H6.76953ZM13.4473 14.1162C13.1906 14.1162 12.9795 14.1971 12.8145 14.3584C12.6496 14.5197 12.5674 14.7176 12.5674 14.9521C12.5674 15.1794 12.6495 15.3739 12.8145 15.5352C12.9794 15.6965 13.1906 15.7773 13.4473 15.7773C13.7037 15.7773 13.9142 15.6962 14.0791 15.5352C14.2441 15.3739 14.3271 15.1794 14.3271 14.9521C14.3271 14.7175 14.2441 14.5197 14.0791 14.3584C13.9142 14.1971 13.7038 14.1163 13.4473 14.1162ZM16.6035 8L14.7451 8.8252V9.90332L16.0098 9.60645V15.7002H17.4727V8H16.6035Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.0801 5C21.5881 5.00004 22 5.41188 22 5.91992V18.0801C22 18.5881 21.5881 19 21.0801 19H2.91992C2.41188 19 2.00004 18.5881 2 18.0801V5.91992C2.00004 5.41188 2.41188 5.00004 2.91992 5H21.0801ZM5.67969 8.33105V15.7656H6.95996V12.5264H10.0996V15.7656H11.3799V8.33105H10.0996V11.4219H6.95996V8.33105H5.67969ZM12.7393 8.33105V15.7656H15.1299C15.9495 15.7656 16.6244 15.6115 17.1543 15.3037C17.6843 14.9957 18.0783 14.5636 18.335 14.0078C18.5916 13.452 18.7197 12.7983 18.7197 12.0479C18.7197 11.2976 18.5915 10.6445 18.335 10.0889C18.0783 9.5331 17.6843 9.10095 17.1543 8.79297C16.6244 8.48521 15.9495 8.33108 15.1299 8.33105H12.7393ZM15.0693 9.48828C15.6559 9.48828 16.12 9.59163 16.46 9.79688C16.7998 10.0022 17.0428 10.2965 17.1895 10.6787C17.336 11.0609 17.4101 11.5172 17.4102 12.0479C17.4102 12.586 17.3361 13.045 17.1895 13.4238C17.0428 13.8025 16.7998 14.0932 16.46 14.2949C16.12 14.4966 15.6559 14.5977 15.0693 14.5977H14.0195V9.48828H15.0693Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4C7.6 4 4 7.6 4 12C4 16.4 7.6 20 12 20C16.4 20 20 16.4 20 12C20 7.6 16.4 4 12 4ZM14.9857 14.9108L11.4195 12.9397C11.1573 12.7983 11 12.547 11 12.2721V8.58899C11.0087 8.26701 11.3059 8 11.6643 8C12.0227 8 12.3198 8.26701 12.3198 8.58899V12.0837L15.6762 13.8977C15.9909 14.0705 16.0958 14.4396 15.9035 14.7223C15.7112 14.9972 15.3004 15.0836 14.9857 14.9108Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.8691 5.13105C18.1495 4.9411 18.5209 4.95926 18.7822 5.17499C20.8605 7.07374 22 9.50664 22 12.0441C21.9503 14.6405 20.8208 17.0972 18.8867 18.8166C18.7564 18.9389 18.574 19.0001 18.3916 19.0002C18.2438 19.0002 18.0954 18.9656 17.9736 18.8781C17.7041 18.6856 17.6696 18.3528 17.9043 18.1428C19.6452 16.5942 20.6608 14.3819 20.7041 12.0441C20.6586 9.66556 19.6089 7.41878 17.8174 5.8664C17.5827 5.65642 17.6084 5.32355 17.8691 5.13105ZM11.5303 5.08808C11.7042 4.98308 11.9396 4.97421 12.1309 5.06171C12.3132 5.14928 12.4346 5.32445 12.4346 5.51679V18.4748C12.4346 18.6671 12.3132 18.8423 12.1309 18.9299C12.044 18.9736 11.9567 18.9914 11.8525 18.9914L11.7676 18.9953C11.6841 18.9843 11.6033 18.9557 11.5303 18.9123L6.86914 14.8H2.58301C2.26143 14.8 2.00027 14.5729 2 14.2844V9.12128C2.0001 8.84135 2.26133 8.60566 2.58301 8.60566H6.86914L11.5303 5.08808ZM15.2002 7.76484C15.4037 7.57658 15.719 7.5843 15.9131 7.78242C18.1927 10.1112 18.235 13.8374 16.0088 16.218C15.9045 16.3229 15.7739 16.3752 15.6348 16.3752C15.5131 16.3752 15.3914 16.3317 15.2871 16.2443C15.0871 16.0519 15.0783 15.7366 15.2695 15.5266C17.1385 13.538 17.1 10.4151 15.1826 8.47382C15.091 8.37796 15.0408 8.24932 15.0439 8.1164C15.0472 7.98327 15.1039 7.85615 15.2002 7.76484Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.56208 22C3.46596 22 3.36929 21.9747 3.28329 21.9242C3.10792 21.8254 3 21.6401 3 21.4385V4.56208C3 4.25212 3.25294 4 3.56208 4H20.4379C20.7499 4 21 4.25212 21 4.56208V18.0087C21 18.3204 20.7499 18.5714 20.4379 18.5714H9.43973L3.84537 21.9231C3.75768 21.9747 3.661 22 3.56208 22ZM17.0621 11.6411C17.3729 11.6411 17.6253 11.3901 17.6253 11.0785C17.6253 10.7697 17.3729 10.517 17.0621 10.517H6.9368C6.62765 10.517 6.37472 10.7697 6.37472 11.0785C6.37472 11.3901 6.62765 11.6411 6.9368 11.6411H17.0621ZM17.0621 14.7411C17.3752 14.7411 17.6253 14.4901 17.6253 14.1791C17.6253 13.8702 17.3752 13.617 17.0621 13.617H6.9368C6.62765 13.617 6.37472 13.8702 6.37472 14.1791C6.37472 14.4901 6.62765 14.7411 6.9368 14.7411H17.0621Z" fill="#323232"/></svg></div></div>`;
 }
 
+// Some scraped collections' title-treatment logo (and/or background image) point at a
+// since-expired MUBI CDN cache path and 404 — when that happens, fall back to the plain
+// text title instead of leaving the spotlight head blank (see spotlightSectionHTML below).
+function nsSpotlightTreatmentFallback(imgEl) {
+  const h2 = document.createElement('h2');
+  h2.className = 'spotlight-title';
+  h2.textContent = imgEl.dataset.title + (imgEl.dataset.subtitle ? ' ' + imgEl.dataset.subtitle : '');
+  imgEl.replaceWith(h2);
+}
+
 function spotlightSectionHTML(coll, slot = 0) {
   if (!coll) return '';
   const sliderId = `spotlightSlider-${slot}`;
@@ -2730,14 +3042,14 @@ function spotlightSectionHTML(coll, slot = 0) {
     <div class="spotlight-wrap">
       <div class="spotlight-section" aria-label="Spotlight">
         <div class="spotlight-bg">
-          <img class="spotlight-bg-img" src="${coll.img}" alt="">
+          <img class="spotlight-bg-img" src="${coll.img}" alt="" onerror="this.style.display='none'">
           <div class="spotlight-bg-grad" aria-hidden="true"></div>
           <div class="spotlight-bg-color-fade" style="background:linear-gradient(to top, ${coll.color || '#141414'} 0%, transparent 40%)" aria-hidden="true"></div>
         </div>
         <div class="spotlight-head">
           <div class="spotlight-eyebrow">Collection</div>
           ${coll.treatment
-            ? `<img class="spotlight-title-treatment" src="${coll.treatment}" alt="${coll.title}${coll.subtitle ? ' ' + coll.subtitle : ''}">`
+            ? `<img class="spotlight-title-treatment" src="${coll.treatment}" alt="${coll.title}${coll.subtitle ? ' ' + coll.subtitle : ''}" data-title="${coll.title}" data-subtitle="${coll.subtitle || ''}" onerror="nsSpotlightTreatmentFallback(this)">`
             : `<h2 class="spotlight-title">${coll.title}${coll.subtitle ? ' ' + coll.subtitle : ''}</h2>`}
           <p class="spotlight-desc">${coll.desc || `A curated run of ${coll.items} films exploring intimacy, memory, and the textures of everyday life — handpicked by our programming team.`}</p>
         </div>
@@ -3773,7 +4085,7 @@ document.getElementById('darkModeToggle').addEventListener('change', e => {
 // Paste the deployed Apps Script Web App URL here (see brand_assets/google-apps-script.gs
 // for the script + deployment steps) to make the Sheet the shared source of truth.
 // Leave blank to use localStorage only — everything above still works with no setup.
-const NS_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzvZ0bh7Qlf9mA05g683AQdxmTlQ5WGqyxKuJ9nekTBzmuFEtetvbyGauHUNKhYNdvyeQ/exec';
+const NS_SHEET_API_URL = ''; // blank = localStorage only, no shared/cross-device sync — avoids concurrent users clobbering each other's settings
 
 // Set the instant any local edit happens, so a slow/late-arriving sheet fetch (see
 // nsSyncFromSheet below) never clobbers changes made after the page finished loading.
@@ -4444,11 +4756,11 @@ function nsReplayHeroVideoFadeIn() {
   // permanently hides the still image underneath. Restart the CSS animation so the
   // freshly-updated still is visible again for a beat before the (unchanged) video
   // fades back in on top of it.
-  const video = document.querySelector('.hero-video');
-  if (!video) return;
-  video.style.animation = 'none';
-  void video.offsetWidth;
-  video.style.animation = '';
+  document.querySelectorAll('.hero-video, .hero-trad-center-video').forEach(video => {
+    video.style.animation = 'none';
+    void video.offsetWidth;
+    video.style.animation = '';
+  });
 }
 
 const HERO_FADE_SELECTOR = '.hero-info-top, .hero-meta, .hero-our-take, #heroStillImg';
@@ -4486,7 +4798,9 @@ function nsPreloadImage(src) {
 function nsRenderMarqueeDots(activeSlug) {
   const container = document.getElementById('heroMarqueeDots');
   if (!container) return;
-  const show = nsState.marqueeDisplayCount === 3 && nsState.marqueeNavStyle === 'rotation' && nsState.marquee.length > 1;
+  const show = nsState.marqueeDisplayCount === 3
+    && (nsState.marqueeNavStyle === 'rotation' || nsState.marqueeNavStyle === 'traditional')
+    && nsState.marquee.length > 1;
   if (!show) { container.innerHTML = ''; return; }
   const activeIdx = nsState.marquee.indexOf(activeSlug);
   container.innerHTML = nsState.marquee.map((slug, i) => {
@@ -4538,9 +4852,14 @@ document.getElementById('heroMarqueeNavTiles').addEventListener('click', e => {
 // Swaps the hero's film-specific content (still, title treatment, meta, our take) to `slug`.
 // When `animate` is true (the default), the text/title fade out, then — only once the new
 // still image and title treatment have actually finished loading — swap and fade back in.
-function nsShowMarqueeFilm(slug, animate = true) {
+function nsShowMarqueeFilm(slug, animate = true, direction = null) {
   const film = nsFilmBySlug(slug);
   if (!film) return;
+
+  // Traditional carousel drives its own directional slide, decoupled from the full-bleed
+  // hero's crossfade below — it should respond the instant an arrow's clicked, not wait on
+  // that crossfade's own delay.
+  nsRenderTraditionalCarousel(slug, direction);
 
   const titleTreatment = film.titleTreatment || NS_TITLE_TREATMENTS[film._slug];
 
@@ -4602,19 +4921,109 @@ function nsShowMarqueeFilm(slug, animate = true) {
 }
 
 // With more than 1 film selected in the marquee, slowly cycle the hero between them.
+// nsMarqueeIdx tracks the currently-shown pick outside this function's own closure so
+// the Traditional carousel's arrows (nsStepMarquee) can read/advance it directly too.
+let nsMarqueeIdx = 0;
 function nsStartMarqueeRotation() {
   clearInterval(nsMarqueeRotationTimer);
   nsMarqueeRotationTimer = null;
-  // Auto-rotates for both "Subtle Rotation" and "Tile Navigation" at Display: 3 — Tile
-  // Navigation's ring just gives the viewer an early manual override, same as clicking a
-  // dot would. "Display: 1" pins the hero to a single film, so there's nothing to rotate.
+  // Auto-rotates for "Subtle Rotation", "Tile Navigation", and "Traditional" at Display: 3
+  // — Tile Navigation's ring and Traditional's arrows just give the viewer an early manual
+  // override, same as clicking a dot would. "Display: 1" pins the hero to a single film,
+  // so there's nothing to rotate.
   if (nsState.marqueeDisplayCount !== 3) return;
   if (nsState.marquee.length <= 1) return;
-  let idx = nsState.marquee.length - 1; // matches the pick nsApplyMarqueeToHero just showed
+  nsMarqueeIdx = nsState.marquee.length - 1; // matches the pick nsApplyMarqueeToHero just showed
   nsMarqueeRotationTimer = setInterval(() => {
-    idx = (idx + 1) % nsState.marquee.length;
-    nsShowMarqueeFilm(nsState.marquee[idx]);
+    nsMarqueeIdx = (nsMarqueeIdx + 1) % nsState.marquee.length;
+    nsShowMarqueeFilm(nsState.marquee[nsMarqueeIdx], true, 'next');
   }, NS_MARQUEE_ROTATE_MS);
+}
+
+// Traditional carousel's peeking-tile arrows — jumps straight to the previous/next pick,
+// then restarts the rotation timer from there so auto-advance keeps going afterward
+// instead of stopping (unlike Tile Navigation's manual click, which does stop it).
+function nsStepMarquee(dir) {
+  const n = nsState.marquee.length;
+  if (n <= 1) return;
+  nsMarqueeIdx = (nsMarqueeIdx + dir + n) % n;
+  nsShowMarqueeFilm(nsState.marquee[nsMarqueeIdx], true, dir > 0 ? 'next' : 'prev');
+  nsStartMarqueeRotation();
+}
+document.getElementById('heroTradPeekPrev').addEventListener('click', () => nsStepMarquee(-1));
+document.getElementById('heroTradPeekNext').addEventListener('click', () => nsStepMarquee(1));
+
+// "Traditional" Navigation Style — a boxed 3-up carousel (see .hero-traditional markup)
+// instead of the full-bleed hero. Toggles .hero--traditional to swap between them, and
+// (only when active) fills in the centre slide plus the previous/next picks' peek slivers.
+// `direction` ('next' | 'prev' | null) is who's asking: null means "just show this film"
+// (initial load, or a style switch) and swaps content with no motion; 'next'/'prev' means
+// this came from the rotation timer or an arrow click, so it plays a slide first.
+const NS_TRAD_SLIDE_MS = 500; // matches .hero-trad-stage-inner's own transition duration
+function nsRenderTraditionalCarousel(activeSlug, direction = null) {
+  const heroEl = document.querySelector('.hero');
+  const isTraditional = nsState.marqueeDisplayCount === 3 && nsState.marqueeNavStyle === 'traditional' && nsState.marquee.length > 0;
+  heroEl.classList.toggle('hero--traditional', isTraditional);
+  if (!isTraditional) return;
+
+  const fillContent = () => {
+    const film = nsFilmBySlug(activeSlug);
+    if (!film) return;
+    const n = nsState.marquee.length;
+    const idx = nsState.marquee.indexOf(activeSlug);
+    const prevFilm = n > 1 ? nsFilmBySlug(nsState.marquee[(idx - 1 + n) % n]) : film;
+    const nextFilm = n > 1 ? nsFilmBySlug(nsState.marquee[(idx + 1) % n]) : film;
+
+    document.getElementById('heroTradPeekPrevImg').src = prevFilm.image ? nsHeroImageURL(prevFilm.image) : '';
+    document.getElementById('heroTradPeekNextImg').src = nextFilm.image ? nsHeroImageURL(nextFilm.image) : '';
+    document.getElementById('heroTradCenterImg').src = film.image ? nsHeroImageURL(film.image) : '';
+
+    const titleTreatment = film.titleTreatment || NS_TITLE_TREATMENTS[film._slug];
+    const titleImg = document.getElementById('heroTradTitleImg');
+    const titleText = document.getElementById('heroTradTitleText');
+    titleText.textContent = film.title;
+    if (titleTreatment) {
+      titleImg.src = titleTreatment;
+      titleImg.alt = film.title;
+      titleImg.style.display = '';
+      titleText.style.display = 'none';
+    } else {
+      titleImg.style.display = 'none';
+      titleText.style.display = 'block';
+    }
+    document.getElementById('heroTradDirector').textContent = film.director || '';
+    document.getElementById('heroTradCountryRow').textContent = [film.country, film.year].filter(Boolean).join(' ');
+    document.getElementById('heroTradOurTake').textContent = film.ourTake || '';
+  };
+
+  if (!direction) { fillContent(); return; }
+
+  // The whole row slides as one unit (.hero-trad-stage-inner); the centre slide's own
+  // image/video additionally gets a bigger "parallax" offset so it reads as a nearer
+  // layer moving past the peeks rather than everything panning at one flat rate.
+  const stageInner = document.getElementById('heroTradStageInner');
+  const parallaxEls = [document.getElementById('heroTradCenterImg'), document.getElementById('heroTradCenterVideo')];
+  const outClass = direction === 'next' ? 'hero-trad-slide-out-next' : 'hero-trad-slide-out-prev';
+  const inClass = direction === 'next' ? 'hero-trad-slide-in-next' : 'hero-trad-slide-in-prev';
+  const parallaxOutClass = direction === 'next' ? 'hero-trad-parallax-out-next' : 'hero-trad-parallax-out-prev';
+  const parallaxInClass = direction === 'next' ? 'hero-trad-parallax-in-next' : 'hero-trad-parallax-in-prev';
+  stageInner.classList.add(outClass);
+  parallaxEls.forEach(el => el.classList.add(parallaxOutClass));
+  setTimeout(() => {
+    fillContent();
+    stageInner.classList.remove(outClass);
+    parallaxEls.forEach(el => el.classList.remove(parallaxOutClass));
+    stageInner.classList.add(inClass);
+    parallaxEls.forEach(el => el.classList.add(parallaxInClass));
+    // Force the browser to paint the "just arrived from the other side" position before
+    // transitioning it back to rest — otherwise the add/remove would collapse into one
+    // no-op frame and skip the slide-in entirely.
+    void heroEl.offsetWidth;
+    requestAnimationFrame(() => {
+      stageInner.classList.remove(inClass);
+      parallaxEls.forEach(el => el.classList.remove(parallaxInClass));
+    });
+  }, NS_TRAD_SLIDE_MS);
 }
 
 function nsApplyMarqueeToHero() {
@@ -4625,6 +5034,48 @@ function nsApplyMarqueeToHero() {
   nsShowMarqueeFilm(slug);
   nsStartMarqueeRotation();
 }
+
+// Custom confirm dialog — resolves true/false instead of blocking like window.confirm().
+let nsConfirmResolve = null;
+function nsConfirm(message) {
+  document.getElementById('nsConfirmMessage').textContent = message;
+  document.getElementById('nsConfirmOverlay').classList.add('is-open');
+  document.getElementById('nsConfirmPanel').classList.add('is-open');
+  return new Promise(resolve => { nsConfirmResolve = resolve; });
+}
+function nsConfirmClose(result) {
+  document.getElementById('nsConfirmOverlay').classList.remove('is-open');
+  document.getElementById('nsConfirmPanel').classList.remove('is-open');
+  if (nsConfirmResolve) { nsConfirmResolve(result); nsConfirmResolve = null; }
+}
+document.getElementById('nsConfirmCancel').addEventListener('click', () => nsConfirmClose(false));
+document.getElementById('nsConfirmOk').addEventListener('click', () => nsConfirmClose(true));
+document.getElementById('nsConfirmOverlay').addEventListener('click', () => nsConfirmClose(false));
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('nsConfirmPanel').classList.contains('is-open')) {
+    e.stopImmediatePropagation(); // also blocks the other document-level Escape handlers
+    nsConfirmClose(false);
+  }
+}, { capture: true }); // must run before closeSettingsModal()'s bubble-phase Escape handler
+
+document.getElementById('resetPrototypeSettingsBtn').addEventListener('click', async () => {
+  const ok = await nsConfirm('Reset all prototype settings to defaults? This clears your local changes and the shared settings sheet for everyone.');
+  if (!ok) return;
+  localStorage.removeItem(NS_STORAGE_KEY);
+  localStorage.removeItem(NS_THEME_STORAGE_KEY);
+  const finish = () => location.reload();
+  // Push the now-empty state to the shared Sheet too — otherwise the reload's own
+  // nsSyncFromSheet() call would just pull the old (pre-reset) state right back.
+  if (NS_SHEET_API_URL) {
+    fetch(NS_SHEET_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({}),
+    }).then(finish, finish);
+  } else {
+    finish();
+  }
+});
 
 document.getElementById('updateNowShowingBtn').addEventListener('click', () => {
   nsSaveState();
