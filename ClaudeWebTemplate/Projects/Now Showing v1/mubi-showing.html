@@ -577,6 +577,123 @@
       .hero-trad-arrow { display: none; }
     }
 
+    /* ─── "TRADITIONAL ROUNDED" — a duplicate of Traditional (same carousel markup/JS,
+       see nsRenderTraditionalCarousel) with its own visual treatment: tiles sit close under
+       the nav, capped to the page's own content width (.wrap's max-width, not wider than it
+       like plain Traditional) then bumped up ~20% from that, rounded corners, and a real
+       20px gap between them instead of sitting flush. .hero--traditional-rounded is toggled
+       alongside .hero--traditional, so it only ever layers on top of it. */
+    .hero--traditional-rounded .hero-trad-stage { margin-top: 40px; }
+    .hero--traditional-rounded.hero { margin-bottom: 60px; }
+    .hero--traditional-rounded .hero-trad-stage-inner { gap: 20px; }
+    .hero--traditional-rounded .hero-trad-tile,
+    .hero--traditional-rounded .hero-trad-center-overlay {
+      max-width: 62vw;
+      border-radius: 24px;
+      overflow: hidden;
+    }
+    /* .wrap's own max-width per tier (836/1124/1500), taken down 20% — plain Traditional
+       instead goes a bit *beyond* .wrap's width at each tier. */
+    @media (min-width: 810px) {
+      .hero--traditional-rounded .hero-trad-tile,
+      .hero--traditional-rounded .hero-trad-center-overlay { min-width: 669px; max-width: 669px; }
+    }
+    @media (min-width: 1186px) {
+      .hero--traditional-rounded .hero-trad-tile,
+      .hero--traditional-rounded .hero-trad-center-overlay { min-width: 899px; max-width: 899px; }
+    }
+    @media (min-width: 1562px) {
+      .hero--traditional-rounded .hero-trad-tile,
+      .hero--traditional-rounded .hero-trad-center-overlay { min-width: 1200px; max-width: 1200px; }
+    }
+
+    /* Title/synopsis/meta baked directly onto the two PEEKING tiles (see the markup — every
+       .hero-trad-tile carries its own .hero-trad-card-info) so they carry real info and
+       slide with the card instead of sitting blank. The centre tile is the one exception:
+       its info still comes from the fixed overlay (unchanged from plain Traditional), because
+       the overlay is also where the looping video mirror lives, already correctly layered
+       there as video → gradient → text — a stacking order that can't be reproduced by
+       out-z-indexing the overlay from inside a tile, since .hero-trad-stage-inner's own
+       slide `transform` (set in JS) makes it a stacking context of its own, trapping any
+       z-index set on its descendants below the overlay regardless of the value. The tile
+       hands off to the overlay the instant it becomes centre (see the [data-role="center"]
+       rule below) — both are filled from the same data in fillContent(), so the handoff is
+       invisible. display:none by default so plain Traditional doesn't show 3x duplicated
+       titles on its tiles. */
+    .hero-trad-card-info { display: none; }
+    .hero--traditional-rounded .hero-trad-card-info { display: contents; }
+    .hero--traditional-rounded .hero-trad-tile[data-role="center"] .hero-trad-card-info { display: none; }
+    /* Title/title-treatment pulled up into the true top-left corner, and director/country
+       pulled into the same tighter left inset — the base padding (120px top, 48-62px left)
+       was tuned for plain Traditional's much taller fixed box. Applies to both the peeking
+       tiles' own info and the overlay's (for the centre card), so all 3 read consistently. */
+    .hero--traditional-rounded .hero-trad-tile .hero-trad-title,
+    .hero--traditional-rounded .hero-trad-center-overlay .hero-trad-title { padding: 24px 24px 0 24px; }
+    .hero--traditional-rounded .hero-trad-tile .hero-trad-bottom,
+    .hero--traditional-rounded .hero-trad-center-overlay .hero-trad-bottom { padding: 0 24px 24px; }
+    /* Base .hero-trad-our-take is centred (left:50% + translateX(-50%)) — anchor it to the
+       card's right side instead, so it reads as a caption sitting over the right portion of
+       the (now much narrower) card rather than spanning its full width. */
+    .hero--traditional-rounded .hero-trad-tile .hero-trad-our-take,
+    .hero--traditional-rounded .hero-trad-center-overlay .hero-trad-our-take {
+      left: auto; right: 24px;
+      transform: none;
+      text-align: left;
+      width: auto; max-width: 55%;
+    }
+    /* <video> elements are composited on their own layer by the browser and ignore an
+       ancestor's overflow:hidden clip-path — .hero-trad-center-overlay's own border-radius
+       (matching the tiles) never actually clipped the video's corners. Needs its own
+       border-radius to round correctly. */
+    .hero--traditional-rounded .hero-trad-center-video { border-radius: 24px; }
+
+    /* Arrows — a circular prev/next pair anchored to the centre card's own bottom-right
+       corner instead of the stage's left/right edges. display:contents by default (see the
+       markup) keeps plain Traditional's arrows exactly as they were — full-stage-edge,
+       untouched. The `right` offset mirrors each tier's own half-tile-width above so the
+       pair always lands at the same card, regardless of viewport. */
+    .hero-trad-arrow-group { display: contents; }
+    .hero--traditional-rounded .hero-trad-arrow-group {
+      display: flex;
+      gap: 10px;
+      position: absolute;
+      bottom: 24px;
+      z-index: 30;
+    }
+    @media (min-width: 810px)  { .hero--traditional-rounded .hero-trad-arrow-group { right: calc(50% - 335px + 24px); } }
+    @media (min-width: 1186px) { .hero--traditional-rounded .hero-trad-arrow-group { right: calc(50% - 450px + 24px); } }
+    @media (min-width: 1562px) { .hero--traditional-rounded .hero-trad-arrow-group { right: calc(50% - 600px + 24px); } }
+    .hero--traditional-rounded .hero-trad-arrow-group .hero-trad-arrow {
+      position: static;
+      top: auto; left: auto; right: auto; transform: none;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.45);
+      opacity: 1;
+    }
+    .hero--traditional-rounded .hero-trad-arrow-group .hero-trad-arrow:hover { background: rgba(0,0,0,0.65); }
+    .hero--traditional-rounded .hero-trad-arrow-group .hero-trad-arrow .material-icons { font-size: 26px; text-shadow: none; }
+
+    /* No rotation countdown/dots for Traditional Rounded — arrows are the only navigation. */
+    .hero--traditional-rounded .hero-marquee-dots { display: none; }
+
+    /* Top navigation recoloured to match the Browse (explore.html) page's own nav palette
+       — dark text/icons over a plain white bar — instead of the white-on-photo treatment
+       the rest of Now Showing uses, since Traditional Rounded no longer runs a full-bleed
+       hero image behind it. Toggled via body.marquee-nav-browse (see nsRenderTraditionalCarousel). */
+    body.marquee-nav-browse .site-header { background: #fff; }
+    body.marquee-nav-browse .nav-link { color: rgba(0,0,0,0.45); }
+    body.marquee-nav-browse .nav-link:hover,
+    body.marquee-nav-browse .nav-link.is-active { color: #323232; }
+    body.marquee-nav-browse .nav-hamburger,
+    body.marquee-nav-browse .search-icon-btn { color: rgba(0,0,0,0.45); }
+    body.marquee-nav-browse .nav-hamburger:hover,
+    body.marquee-nav-browse .search-icon-btn:hover { color: #323232; }
+    body.marquee-nav-browse .nav-cta { color: #323232; border-color: rgba(0,0,0,0.3); }
+    body.marquee-nav-browse .nav-cta:hover { background: rgba(0,0,0,0.05); border-color: #323232; }
+    body.marquee-nav-browse .nav-logo svg,
+    body.marquee-nav-browse .nav-mobile-logo svg { filter: brightness(0); }
+
     /* "Vertical Parallax" Navigation Style — .hero-vparallax-track is a tall spacer (N
        films x 100vh, set inline by nsRenderVerticalParallax); .hero-vparallax-sticky pins
        to the viewport for that whole scroll distance, so scrolling only moves the
@@ -647,13 +764,22 @@
     @media (min-width: 1562px) {
       .hero-vparallax-dots { right: max(0px, calc((100% - 1500px) / 2 + 22px)); }
     }
-    /* Overrides the rotation mode's filling-pill treatment (32x6 translucent bar, no fill
-       animation since vparallax has no timer) — same elongated pill shape, just rotated to
-       match the vertical dot column, and solid white instead of translucent. */
+    /* Same elongated-pill + fill-bar pattern as the rotation mode's dots, just rotated to a
+       vertical bar — but the fill isn't a fixed-duration CSS animation counting down a timer,
+       it's set directly from scroll position (see nsUpdateVParallaxScroll), growing bottom-up
+       as the next film's image approaches being fully in view. */
     .hero-vparallax-dots .hero-marquee-dot.is-active {
       width: 6px; height: 32px;
+    }
+    .hero-vparallax-dot-fill {
+      position: absolute;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
       background: #fff;
-      overflow: visible;
+      border-radius: 3px;
+      transform: scaleY(0);
+      transform-origin: top center;
+      will-change: transform;
     }
     .hero-vparallax-info-layer {
       position: absolute; inset: 0;
@@ -2623,6 +2749,7 @@
                 <button class="ns-type-toggle-btn is-active" data-ns-nav="rotation">Subtle Rotation</button>
                 <button class="ns-type-toggle-btn" data-ns-nav="tiles">Tile Navigation</button>
                 <button class="ns-type-toggle-btn" data-ns-nav="traditional">Traditional</button>
+                <button class="ns-type-toggle-btn" data-ns-nav="traditionalRounded">Traditional Rounded</button>
                 <button class="ns-type-toggle-btn" data-ns-nav="vparallax">Vertical Parallax</button>
               </div>
             </div>
@@ -2931,16 +3058,64 @@
           <img class="hero-trad-tile-img" src="" alt="">
           <div class="hero-trad-top-grad" aria-hidden="true"></div>
           <div class="hero-trad-grad" aria-hidden="true"></div>
+          <div class="hero-trad-card-info">
+            <div class="hero-trad-title">
+              <img class="hero-trad-title-img" src="" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <p class="hero-trad-title-text" style="display:none;"></p>
+            </div>
+            <p class="hero-trad-our-take"></p>
+            <div class="hero-trad-bottom">
+              <div class="hero-trad-meta">
+                <div class="hero-meta-director-row">
+                  <span class="hero-meta-label">Directed by</span>
+                  <span class="hero-meta-director"></span>
+                </div>
+                <div class="hero-trad-country"></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="hero-trad-tile" data-role="center" aria-label="Current film">
           <img class="hero-trad-tile-img" src="" alt="">
           <div class="hero-trad-top-grad" aria-hidden="true"></div>
           <div class="hero-trad-grad" aria-hidden="true"></div>
+          <div class="hero-trad-card-info">
+            <div class="hero-trad-title">
+              <img class="hero-trad-title-img" src="" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <p class="hero-trad-title-text" style="display:none;"></p>
+            </div>
+            <p class="hero-trad-our-take"></p>
+            <div class="hero-trad-bottom">
+              <div class="hero-trad-meta">
+                <div class="hero-meta-director-row">
+                  <span class="hero-meta-label">Directed by</span>
+                  <span class="hero-meta-director"></span>
+                </div>
+                <div class="hero-trad-country"></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="hero-trad-tile" data-role="next" aria-label="Next film">
           <img class="hero-trad-tile-img" src="" alt="">
           <div class="hero-trad-top-grad" aria-hidden="true"></div>
           <div class="hero-trad-grad" aria-hidden="true"></div>
+          <div class="hero-trad-card-info">
+            <div class="hero-trad-title">
+              <img class="hero-trad-title-img" src="" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <p class="hero-trad-title-text" style="display:none;"></p>
+            </div>
+            <p class="hero-trad-our-take"></p>
+            <div class="hero-trad-bottom">
+              <div class="hero-trad-meta">
+                <div class="hero-meta-director-row">
+                  <span class="hero-meta-label">Directed by</span>
+                  <span class="hero-meta-director"></span>
+                </div>
+                <div class="hero-trad-country"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <!-- Fixed in place at the stage's centre — never slides. Whichever physical tile is
@@ -2986,12 +3161,18 @@
           </div>
         </div>
       </div>
-      <button class="hero-trad-arrow hero-trad-arrow--prev" id="heroTradPrevBtn" aria-label="Previous film">
-        <span class="material-icons">chevron_left</span>
-      </button>
-      <button class="hero-trad-arrow hero-trad-arrow--next" id="heroTradNextBtn" aria-label="Next film">
-        <span class="material-icons">chevron_right</span>
-      </button>
+      <!-- display:contents by default (see CSS) — plain Traditional's arrows sit directly
+           in .hero-trad-stage exactly as before. Traditional Rounded gives this group its
+           own box, moving both buttons as a circular pair to the centre card's bottom-right
+           corner instead. -->
+      <div class="hero-trad-arrow-group">
+        <button class="hero-trad-arrow hero-trad-arrow--prev" id="heroTradPrevBtn" aria-label="Previous film">
+          <span class="material-icons">chevron_left</span>
+        </button>
+        <button class="hero-trad-arrow hero-trad-arrow--next" id="heroTradNextBtn" aria-label="Next film">
+          <span class="material-icons">chevron_right</span>
+        </button>
+      </div>
     </div><!-- /hero-trad-stage -->
   </div>
 
@@ -5145,6 +5326,9 @@ function nsStartMarqueeRotation() {
   // scroll position IS the navigation (see nsUpdateVParallaxScroll).
   if (nsState.marqueeDisplayCount !== 3) return;
   if (nsState.marqueeNavStyle === 'vparallax') return;
+  // Traditional Rounded drops the countdown dots entirely (see CSS) in favor of the arrow
+  // pair alone, so it doesn't auto-rotate on a hidden timer either — navigation is arrows-only.
+  if (nsState.marqueeNavStyle === 'traditionalRounded') return;
   if (nsState.marquee.length <= 1) return;
   // Does NOT reset nsMarqueeIdx — this also gets called right after a manual arrow step
   // (see nsStepMarquee) to resume auto-rotation from wherever the user just navigated to;
@@ -5187,7 +5371,9 @@ function nsCenterTraditionalFilmstrip() {
   if (!stage || !inner) return null;
   const stageWidth = stage.getBoundingClientRect().width;
   const tileWidth = inner.children[1].getBoundingClientRect().width;
-  const gap = 1; // matches .hero-trad-stage-inner's column-gap
+  // Reads the real gap instead of a fixed guess — plain Traditional has none (flush tiles),
+  // Traditional Rounded sets a 20px gap (see .hero--traditional-rounded .hero-trad-stage-inner).
+  const gap = parseFloat(getComputedStyle(inner).columnGap) || 0;
   const offset = (stageWidth - tileWidth) / 2 - (tileWidth + gap);
   inner.style.transform = `translateX(${offset}px)`;
   return { tileWidth, gap, offset };
@@ -5207,8 +5393,13 @@ window.addEventListener('resize', () => {
 const NS_TRAD_FLIP_MS = 550;
 function nsRenderTraditionalCarousel(activeSlug, direction = null) {
   const heroEl = document.querySelector('.hero');
-  const isTraditional = nsState.marqueeDisplayCount === 3 && nsState.marqueeNavStyle === 'traditional' && nsState.marquee.length > 0;
+  const isRounded = nsState.marqueeNavStyle === 'traditionalRounded';
+  const isTraditional = nsState.marqueeDisplayCount === 3
+    && (nsState.marqueeNavStyle === 'traditional' || isRounded)
+    && nsState.marquee.length > 0;
   heroEl.classList.toggle('hero--traditional', isTraditional);
+  heroEl.classList.toggle('hero--traditional-rounded', isTraditional && isRounded);
+  document.body.classList.toggle('marquee-nav-browse', isTraditional && isRounded);
   if (!isTraditional) return;
 
   const inner = document.getElementById('heroTradStageInner');
@@ -5217,6 +5408,35 @@ function nsRenderTraditionalCarousel(activeSlug, direction = null) {
   // the fixed centre overlay with the active film's title/meta/actions/synopsis. Roles
   // rotate between the physical tiles as they get recycled below, so this always looks up
   // "whichever tile currently has this role" rather than a fixed element.
+  // Fills whichever title/meta/synopsis elements live under `root` — the fixed overlay
+  // (by id, for plain Traditional's crossfade) or one of the 3 sliding tiles (by class, for
+  // Traditional Rounded's own baked-in-and-slides-with-the-card version, see
+  // .hero-trad-card-info). Both share the exact same classes, so the same fill logic works
+  // for either root unchanged.
+  const fillTitleBlock = (root, f) => {
+    const titleImg = root.querySelector('.hero-trad-title-img');
+    const titleText = root.querySelector('.hero-trad-title-text');
+    if (!titleImg || !titleText) return;
+    const titleTreatment = f.titleTreatment || NS_TITLE_TREATMENTS[f._slug];
+    titleText.textContent = f.title;
+    if (titleTreatment) {
+      titleImg.src = titleTreatment;
+      titleImg.alt = f.title;
+      titleImg.style.display = '';
+      titleText.style.display = 'none';
+      nsCheckHeroTitleAspect(titleImg, 'hero-trad-title-img--wide');
+    } else {
+      titleImg.style.display = 'none';
+      titleText.style.display = 'block';
+    }
+    const director = root.querySelector('.hero-meta-director');
+    const country = root.querySelector('.hero-trad-country');
+    const ourTake = root.querySelector('.hero-trad-our-take');
+    if (director) director.textContent = f.director || '';
+    if (country) country.textContent = [f.country, f.year].filter(Boolean).join(' ');
+    if (ourTake) ourTake.textContent = f.ourTake || '';
+  };
+
   const fillContent = () => {
     const film = nsFilmBySlug(activeSlug);
     if (!film) return;
@@ -5228,25 +5448,10 @@ function nsRenderTraditionalCarousel(activeSlug, direction = null) {
     [...inner.children].forEach(tile => {
       const f = tile.dataset.role === 'prev' ? prevFilm : tile.dataset.role === 'next' ? nextFilm : film;
       tile.querySelector('.hero-trad-tile-img').src = f.image ? nsHeroImageURL(f.image) : '';
+      fillTitleBlock(tile, f);
     });
 
-    const titleTreatment = film.titleTreatment || NS_TITLE_TREATMENTS[film._slug];
-    const titleImg = document.getElementById('heroTradTitleImg');
-    const titleText = document.getElementById('heroTradTitleText');
-    titleText.textContent = film.title;
-    if (titleTreatment) {
-      titleImg.src = titleTreatment;
-      titleImg.alt = film.title;
-      titleImg.style.display = '';
-      titleText.style.display = 'none';
-      nsCheckHeroTitleAspect(titleImg, 'hero-trad-title-img--wide');
-    } else {
-      titleImg.style.display = 'none';
-      titleText.style.display = 'block';
-    }
-    document.getElementById('heroTradDirector').textContent = film.director || '';
-    document.getElementById('heroTradCountryRow').textContent = [film.country, film.year].filter(Boolean).join(' ');
-    document.getElementById('heroTradOurTake').textContent = film.ourTake || '';
+    fillTitleBlock(document.querySelector('.hero-trad-center-overlay'), film);
   };
 
   if (!direction) {
@@ -5385,7 +5590,7 @@ function nsRenderVerticalParallax() {
 
   const dotsEl = document.getElementById('heroVParallaxDots');
   dotsEl.innerHTML = films.length > 1
-    ? films.map(() => `<div class="hero-marquee-dot"></div>`).join('')
+    ? films.map(() => `<div class="hero-marquee-dot"><div class="hero-vparallax-dot-fill"></div></div>`).join('')
     : '';
 
   const infoLayer = document.getElementById('heroVParallaxInfoLayer');
@@ -5461,7 +5666,11 @@ function nsUpdateVParallaxScroll() {
     // 1 film (or a track that hasn't laid out yet) — nothing to scroll through, just show it.
     if (bgLayer) bgLayer.style.transform = 'translateY(0)';
     document.querySelectorAll('.hero-vparallax-info-item').forEach((el, i) => { el.classList.toggle('is-visible', i === 0); });
-    document.querySelectorAll('#heroVParallaxDots .hero-marquee-dot').forEach((dot, i) => dot.classList.toggle('is-active', i === 0));
+    document.querySelectorAll('#heroVParallaxDots .hero-marquee-dot').forEach((dot, i) => {
+      dot.classList.toggle('is-active', i === 0);
+      const fill = dot.querySelector('.hero-vparallax-dot-fill');
+      if (fill) fill.style.transform = 'scaleY(0)';
+    });
     nsVParallaxPlayVideo(0);
     return;
   }
@@ -5497,8 +5706,13 @@ function nsUpdateVParallaxScroll() {
     el.classList.toggle('is-visible', i === activeIdx);
   });
 
+  // Dots track the image's own position (idx/within), not the text's anticipatory activeIdx
+  // — the fill grows 0..1 across the current film's dwell and reaches full right as the next
+  // image becomes fully in view (idx increments), which is what "progress" should mean here.
   document.querySelectorAll('#heroVParallaxDots .hero-marquee-dot').forEach((dot, i) => {
-    dot.classList.toggle('is-active', i === activeIdx);
+    dot.classList.toggle('is-active', i === idx);
+    const fill = dot.querySelector('.hero-vparallax-dot-fill');
+    if (fill) fill.style.transform = `scaleY(${i === idx ? within : 0})`;
   });
 }
 
@@ -5523,7 +5737,7 @@ function nsApplyMarqueeToHero() {
   // the first ever — that's the one the user actually just chose, even if earlier slots
   // are still filled. Traditional always starts at index 0 instead, so its dots/timer
   // begin on the left and progress rightward in the same direction slides come in from.
-  const startIdx = nsState.marqueeNavStyle === 'traditional' ? 0 : nsState.marquee.length - 1;
+  const startIdx = (nsState.marqueeNavStyle === 'traditional' || nsState.marqueeNavStyle === 'traditionalRounded') ? 0 : nsState.marquee.length - 1;
   nsMarqueeIdx = startIdx;
   nsShowMarqueeFilm(nsState.marquee[startIdx]);
   nsStartMarqueeRotation();
