@@ -225,6 +225,13 @@
       cursor: pointer;
       text-decoration: none;
     }
+    /* Briefly rings whichever tile was linked to from elsewhere (see nsHighlightSharedCollection) —
+       this page has no single-collection view of its own, so the tile itself is the destination. */
+    .coll-tile--shared { animation: nsCollTileShared 1.6s ease; }
+    @keyframes nsCollTileShared {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,20,137,0); }
+      15%, 60% { box-shadow: 0 0 0 4px rgba(0,20,137,0.8); }
+    }
     .coll-tile-left {
       flex: 1;
       padding: 14px;
@@ -438,7 +445,7 @@ function renderCollections() {
       : col.subtitle
         ? `<div class="coll-tile-title">${col.title}<span class="coll-tile-subtitle">${col.subtitle}</span></div>`
         : `<div class="coll-tile-title coll-tile-title--solo">${col.title}</div>`;
-    return `<a class="coll-tile" href="#" aria-label="${col.title}">
+    return `<a class="coll-tile" href="#" data-slug="${col.slug}" aria-label="${col.title}">
       <div class="coll-tile-left" style="background:${col.color}">
         <div>${left}</div>
         <div class="coll-tile-count"><svg width="24" height="18" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.4121 0C21.0432 0 21.5546 0.511527 21.5547 1.14258V14.4248C21.5546 15.0559 21.0432 15.5674 20.4121 15.5674H1.14258C0.511562 15.5673 5.76033e-05 15.0558 0 14.4248V1.14258C0.00013309 0.511609 0.511609 0.00013335 1.14258 0H20.4121ZM8.38281 11.1768L15.3682 7.68359L8.38281 4.19141V11.1768Z" fill="white"/><mask id="ci-mask" fill="white"><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282"/></mask><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282" stroke="white" stroke-width="2.395" mask="url(#ci-mask)"/></svg>${col.items}</div>
@@ -447,8 +454,22 @@ function renderCollections() {
     </a>`;
   }).join('');
   fitCollTileText();
+  nsHighlightSharedCollection();
 }
 renderCollections();
+
+// Arriving from a collection tile elsewhere in the prototype (e.g. mubi-showing.html's
+// "?slug=" links) — scroll straight to that collection's tile and flash a highlight ring
+// so it's obvious which one was linked to, since this page otherwise just shows the full grid.
+function nsHighlightSharedCollection() {
+  const slug = new URLSearchParams(location.search).get('slug');
+  if (!slug) return;
+  const tile = document.querySelector(`.coll-tile[data-slug="${CSS.escape(slug)}"]`);
+  if (!tile) return;
+  tile.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  tile.classList.add('coll-tile--shared');
+  tile.addEventListener('animationend', () => tile.classList.remove('coll-tile--shared'), { once: true });
+}
 
 function toggleDropdown(e) {
   e.stopPropagation();
