@@ -626,17 +626,27 @@
     .hero-vparallax-bg-item video.is-playing { opacity: 1; }
     .hero-vparallax-bg-item .hero-grad-1,
     .hero-vparallax-bg-item .hero-grad-2 { z-index: 1; }
-    /* Top-left, unlike .hero-marquee-dots (bottom-centre) — same dot shape/size, reused. */
+    /* Right edge + vertical centre, unlike .hero-marquee-dots (bottom-centre) — same dot
+       shape/size, reused. The right inset mirrors .hero-info's own right/padding formula at
+       each tier so the dots line up with the nav hamburger button above them. */
     .hero-vparallax-dots {
       position: absolute;
-      top: 22px; left: 22px;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
       z-index: 4;
     }
-    @media (min-width: 1186px) { .hero-vparallax-dots { top: 40px; left: 60px; } }
+    @media (min-width: 810px) { .hero-vparallax-dots { right: 22px; } }
+    @media (min-width: 1186px) {
+      .hero-vparallax-dots { right: max(0px, calc((100% - 1124px) / 2 + 22px)); }
+    }
+    @media (min-width: 1562px) {
+      .hero-vparallax-dots { right: max(0px, calc((100% - 1500px) / 2 + 22px)); }
+    }
     /* Overrides the rotation mode's filling-pill treatment (32x6 translucent bar, no fill
        animation since vparallax has no timer) — same elongated pill shape, just rotated to
        match the vertical dot column, and solid white instead of translucent. */
