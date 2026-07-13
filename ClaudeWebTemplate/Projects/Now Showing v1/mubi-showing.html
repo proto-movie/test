@@ -5588,6 +5588,32 @@ function nsStandinVideoForSlug(slug) {
   for (let i = 0; i < slug.length; i++) hash = (hash * 31 + slug.charCodeAt(i)) | 0;
   return NS_STANDIN_VIDEOS[Math.abs(hash) % NS_STANDIN_VIDEOS.length];
 }
+// Slug -> stand-in video, rebuilt (see nsRebuildStandinVideoAssignment) any time the
+// marquee's own film list changes — guarantees no two films CURRENTLY in the marquee ever
+// share a video (their independent hashes could otherwise collide), while still keeping
+// each film's own pick stable across re-renders. nsTradPreviewURL reads from this first,
+// falling back to the plain per-slug hash for any film not currently in the marquee list.
+let nsStandinVideoAssignment = {};
+function nsRebuildStandinVideoAssignment(slugs) {
+  const assignment = {};
+  const used = new Set();
+  slugs.forEach(slug => {
+    let hash = 0;
+    for (let i = 0; i < slug.length; i++) hash = (hash * 31 + slug.charCodeAt(i)) | 0;
+    let idx = Math.abs(hash) % NS_STANDIN_VIDEOS.length;
+    let tries = 0;
+    // Walks forward to the next free slot on a collision — guarantees every slug gets a
+    // distinct video as long as there are at least as many videos (4) as slugs; beyond
+    // that, videos start repeating since there's nothing else to assign.
+    while (used.has(idx) && tries < NS_STANDIN_VIDEOS.length) {
+      idx = (idx + 1) % NS_STANDIN_VIDEOS.length;
+      tries++;
+    }
+    used.add(idx);
+    assignment[slug] = NS_STANDIN_VIDEOS[idx];
+  });
+  nsStandinVideoAssignment = assignment;
+}
 // Default hero (.hero-video, Subtle Rotation/Tile Navigation's fixed background clip) was
 // always the same hardcoded "Drive My Car" crop regardless of which film's info/still is
 // showing on top of it — genuinely randomised per page load instead, from the same 4-video
@@ -5597,11 +5623,13 @@ function nsStandinVideoForSlug(slug) {
 const heroVideoEl = document.querySelector('.hero-video');
 if (heroVideoEl) heroVideoEl.src = NS_STANDIN_VIDEOS[Math.floor(Math.random() * NS_STANDIN_VIDEOS.length)];
 
-// Marquee preview video for a film — always one of the 4 local stand-in videos (see
-// nsStandinVideoForSlug), picked per-film so different films in the marquee show different
-// clips. No longer pulls from real MUBI trailer URLs.
+// Marquee preview video for a film — one of the 4 local stand-in videos, de-duplicated
+// against whichever other films are currently in the marquee (see
+// nsRebuildStandinVideoAssignment) so no two of them show the same clip at once. No longer
+// pulls from real MUBI trailer URLs.
 function nsTradPreviewURL(film) {
-  return nsStandinVideoForSlug(film._slug || film.title || 'x');
+  const slug = film._slug || film.title || 'x';
+  return nsStandinVideoAssignment[slug] || nsStandinVideoForSlug(slug);
 }
 
 // Traditional Rounded's per-card video (see .hero-trad-tile-video) — plays a few seconds
@@ -6175,6 +6203,9 @@ window.addEventListener('resize', nsOnVParallax2Scroll, { passive: true });
 
 function nsApplyMarqueeToHero() {
   if (!nsState.marquee.length) return;
+  // Rebuild before anything below reads nsTradPreviewURL, so every render this triggers
+  // (Traditional's tiles, both Vertical Parallax variants) sees the de-duplicated picks.
+  nsRebuildStandinVideoAssignment(nsState.marquee);
   // Vertical Parallax builds/rebuilds its own 3-segment structure straight from the whole
   // marquee list — it isn't "active slug" driven like the other 3, so it's handled here
   // independently of the startIdx/nsShowMarqueeFilm dispatch below (which it also safely
