@@ -57,6 +57,11 @@
     :root[data-theme="dark"] .row-see-all,
     :root[data-theme="dark"] .now-showing-count { color: var(--dm-text-dim); }
     :root[data-theme="dark"] .row-grid { background: var(--dm-bg); border-top-color: var(--dm-bg); border-bottom-color: var(--dm-bg); }
+    /* "New to MUBI?" sits over its own full-bleed photo background (see .new-to-mubi-bg),
+       so its row-grid must stay fully transparent even in dark mode — otherwise the general
+       dark .row-grid rule above (equal specificity, but this is more specific) paints a
+       visible --dm-bg seam behind/between the tiles. */
+    :root[data-theme="dark"] .new-to-mubi-section .row-grid { background: transparent; border-top-color: transparent; border-bottom-color: transparent; }
     :root[data-theme="dark"] .film-card--empty .card-img-wrap { background: linear-gradient(var(--dm-seam) 0%, var(--dm-bg) 100%); }
     :root[data-theme="dark"] .card-img-wrap { background: var(--dm-seam); }
     :root[data-theme="dark"] .card-synopsis-block { background: var(--dm-surface); box-shadow: 0 4px 14px rgba(0,0,0,0.6); }
@@ -310,6 +315,53 @@
       to { transform: scaleX(1); }
     }
 
+    /* "Subtle with Arrows" Navigation Style — a duplicate of Subtle Rotation with a manual
+       prev/next pair overlaid on the hero, revealed only on hover instead of sitting visible
+       at rest (keeps the "subtle" full-bleed hero uncluttered until the viewer actually
+       reaches for it). Scoped under .hero--rotation-arrows (toggled by nsRenderMarqueeArrows
+       only when this style is active), so the buttons stay inert/invisible for every other
+       style even though the markup itself is always present. */
+    /* Black gradients bleeding in from the screen edges — the hover affordance itself,
+       instead of a circle behind each arrow. Wider than the arrow's own hit area so the
+       icon reads as sitting "in" the darkened edge rather than floating over plain image. */
+    .hero-arrow-edge-fade {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 200px;
+      max-width: 16vw;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      /* Sits just above the video/still (.hero-bg is z-index:0) but below .hero-info
+         (z-index:2) and everything else in the UI layer, so it only ever darkens the
+         video itself — never the synopsis, buttons, dots, or nav tiles on top of it. */
+      z-index: 1;
+    }
+    .hero--rotation-arrows:hover .hero-arrow-edge-fade { opacity: 1; }
+    .hero-arrow-edge-fade--left { left: 0; background: linear-gradient(to right, rgba(0,0,0,0.35) 0%, transparent 100%); }
+    .hero-arrow-edge-fade--right { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.35) 0%, transparent 100%); }
+    .hero-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 52px; height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      color: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.15s ease;
+      z-index: 16;
+    }
+    .hero--rotation-arrows:hover .hero-arrow { opacity: 1; pointer-events: auto; }
+    .hero-arrow:hover { transform: translateY(-50%) scale(1.15); }
+    .hero-arrow--prev { left: 24px; }
+    .hero-arrow--next { right: 24px; }
+    .hero-arrow .material-icons { font-size: 40px; filter: drop-shadow(0 1px 6px rgba(0,0,0,0.6)); }
+    @media (max-width: 809px) { .hero-arrow, .hero-arrow-edge-fade { display: none; } }
+
     /* "Tile Navigation" marquee display mode — small clickable poster thumbnails, one per
        marquee pick, so the viewer picks which film shows instead of it auto-rotating.
        Sits in normal flow below the buttons/synopsis (left-aligned with them), pushing
@@ -456,11 +508,12 @@
       cursor: pointer;
     }
     .hero-trad-tile-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-    /* Traditional Rounded only (see nsScheduleTradCenterVideo/nsStopTradCenterVideo) — each
-       card carries its own video, muted/looped, hidden until JS marks it .is-playing once
-       that card has been centred for a few seconds, and hidden again the instant a new
-       slide starts. Plain Traditional never adds .is-playing, so this sits inert there —
-       it already has its own single shared video on the fixed centre overlay instead. */
+    /* Only the centred card's video ever plays — starting 3s after it actually settles in
+       the middle (see nsScheduleTradCenterVideo) — so peeking tiles just show their still
+       image. Once started, a video is a normal child of its (still sliding) tile: if a new
+       slide begins while it's playing, it keeps playing and slides right along with the
+       tile out to a peek slot, fading out only once that slide has settled (see
+       nsStopTradCenterVideo, called from nsRenderTraditionalCarousel's settle callback). */
     .hero-trad-tile-video {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
@@ -483,6 +536,11 @@
       transition: opacity 1s ease;
       pointer-events: auto;
     }
+    /* Slower, smoother crossfade specifically between one film's title/title-treatment and
+       the next's (see the fade-out-swap-fade-in cycle in nsRenderTraditionalCarousel's
+       settle callback) — .hero-trad-bottom/.hero-trad-our-take keep the plain 1s above,
+       swapping instantly alongside it. */
+    .hero-trad-title { transition: opacity 1.4s ease-in-out; }
     .hero-trad-center-video {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
@@ -490,6 +548,7 @@
       opacity: 0;
       animation: videoFadeIn 1s ease forwards;
       animation-delay: 3s;
+      transition: opacity 1s ease;
     }
     /* Fades the nav bar's dark backdrop into whatever's directly beneath it, regardless of
        how bright the slide's own image/video is — same purpose as .hero-grad-2, just scoped
@@ -502,20 +561,14 @@
       position: absolute; inset: 0;
       background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 45%, transparent 72%);
     }
-    /* The centre tile sits under .hero-trad-center-overlay's own top-grad/grad (stacked on
-       top, so the video reads dark too — see the overlay markup below), which doubles its
-       darkening versus a single layer. The peeking tiles never get that second overlay layer,
-       so they'd otherwise look visibly lighter next to the centre both at rest and mid-slide.
-       Match that same combined darkness here with pre-composited alpha (1-(1-a)^2) instead of
-       a second stacked div, since data-role rotates across the same 3 recycled DOM nodes. */
-    .hero-trad-tile[data-role="prev"] .hero-trad-top-grad,
-    .hero-trad-tile[data-role="next"] .hero-trad-top-grad {
-      background: linear-gradient(to bottom, rgba(0,0,0,0.7975) 0%, transparent 100%);
-    }
-    .hero-trad-tile[data-role="prev"] .hero-trad-grad,
-    .hero-trad-tile[data-role="next"] .hero-trad-grad {
-      background: linear-gradient(to top, rgba(0,0,0,0.9375) 0%, rgba(0,0,0,0.36) 45%, transparent 72%);
-    }
+    /* Every tile (peek AND centre alike) carries the exact same gradient strength via its
+       own top-grad/grad — no more special-cased "boost" on the peeks trying to visually
+       match a doubled centre. Since the gradient is each tile's own child element, it
+       slides with that tile automatically; nothing is fixed in place over the middle of
+       the stage, so there's no more "darker in the middle" patch during a slide. The fixed
+       .hero-trad-center-overlay no longer carries its own duplicate top-grad/grad either
+       (see its markup) — it now relies on whichever tile is currently centred underneath
+       for darkening, same as the peeks. */
     .hero-trad-title {
       position: absolute; top: 0; left: 0; right: 0;
       padding: 120px 48px 0;
@@ -765,56 +818,10 @@
     :root[data-theme="dark"] body.marquee-nav-browse .nav-logo svg,
     :root[data-theme="dark"] body.marquee-nav-browse .nav-mobile-logo svg { filter: none; }
 
-    /* "Vertical Parallax" Navigation Style — .hero-vparallax-track is a tall spacer (N
-       films x 100vh, set inline by nsRenderVerticalParallax); .hero-vparallax-sticky pins
-       to the viewport for that whole scroll distance, so scrolling only moves the
-       background filmstrip and crossfades the text — the rest of the page doesn't scroll
-       until the track runs out and the sticky element releases on its own. */
-    .hero-vparallax { display: none; }
-    /* Direct-child combinator, not descendant — .hero-vparallax's own segments reuse the
-       .hero-info class (for visual consistency / free responsive padding) and are nested
-       several levels deeper, so a plain descendant selector here would hide those too. */
-    .hero--vparallax > .hero-bg,
-    .hero--vparallax > .hero-info { display: none; }
-    .hero--vparallax .hero-vparallax { display: block; }
-    .hero--vparallax.hero { height: auto; padding-bottom: 0; overflow: visible; }
-    .hero-vparallax-track { position: relative; }
-    .hero-vparallax-sticky {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow: hidden;
-    }
-    .hero-vparallax-bg-layer {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      will-change: transform;
-    }
-    .hero-vparallax-bg-item {
-      position: absolute;
-      left: 0; right: 0;
-      height: 100vh;
-      overflow: hidden;
-      background: #A5A3AB;
-    }
-    .hero-vparallax-bg-item img {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-    }
-    .hero-vparallax-bg-item video {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      opacity: 0;
-      transition: opacity 1s ease;
-    }
-    /* Toggled by nsVParallaxPlayVideo once each film scrolls fully into view, rather than a
-       fixed animation-delay from page load — films 2/3 aren't on screen yet at load time. */
-    .hero-vparallax-bg-item video.is-playing { opacity: 1; }
-    .hero-vparallax-bg-item .hero-grad-1,
-    .hero-vparallax-bg-item .hero-grad-2 { z-index: 1; }
-    /* Right edge + vertical centre, unlike .hero-marquee-dots (bottom-centre) — same dot
+    /* Vertical Parallax's dots/info-layer — used by "Vertical Parallax V2" (the only
+       surviving variant; the original single-speed V1 was removed, see
+       nsRenderVerticalParallax2/nsUpdateVParallax2Scroll for the rest of its markup/CSS).
+       Right edge + vertical centre, unlike .hero-marquee-dots (bottom-centre) — same dot
        shape/size, reused. The right inset mirrors .hero-info's own right/padding formula at
        each tier so the dots line up with the nav hamburger button above them. */
     .hero-vparallax-dots {
@@ -873,14 +880,13 @@
       pointer-events: auto;
     }
 
-    /* "Vertical Parallax V2" — a duplicate of Vertical Parallax with one key difference:
-       each film's background is its own independently-transformed layer stacked at the
-       SAME position (z-index order, not offset by i*100vh) instead of one shared layer
-       that translates as a whole. During a transition the incoming film slides in from
-       below over a full 100vh of travel (fast), while the outgoing film beneath it only
-       drifts up a fraction of that distance (slow) before being fully covered — a two-speed
-       parallax cue, versus V1's single-speed filmstrip scrub. Reuses V1's dots/info-layer/
-       info-item classes verbatim (see nsRenderVerticalParallax2/nsUpdateVParallax2Scroll). */
+    /* "Vertical Parallax V2" — each film's background is its own independently-transformed
+       layer stacked at the SAME position (z-index order, not offset by i*100vh) instead of
+       one shared layer that translates as a whole. During a transition the incoming film
+       slides in from below over a full 100vh of travel (fast), while the outgoing film
+       beneath it only drifts up a fraction of that distance (slow) before being fully
+       covered — a two-speed parallax cue. Reuses the .hero-vparallax-dots/-info-layer/
+       -info-item classes above verbatim (see nsRenderVerticalParallax2/nsUpdateVParallax2Scroll). */
     .hero-vparallax-v2 { display: none; }
     .hero--vparallax-v2 > .hero-bg,
     .hero--vparallax-v2 > .hero-info { display: none; }
@@ -1318,21 +1324,119 @@
       grid-template-columns: 1fr;
       column-gap: 4px;
       row-gap: 1px;
-      background: #EAEAEA;
-      border-top: 1px solid #EAEAEA;
-      border-bottom: 1px solid #EAEAEA;
+      background: transparent;
+      border-top: 1px solid transparent;
+      border-bottom: 1px solid transparent;
     }
     @media (min-width: 810px)  { .row-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (min-width: 1186px) { .row-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (min-width: 1562px) { .row-grid { grid-template-columns: repeat(4, 1fr); } }
 
+    /* "Increase Col Spacing" (Page Settings > Layout) — widens the gap between tiles.
+       Grid's own 1fr columns absorb that extra gap by shrinking each tile proportionally, so
+       tiles read narrower with more margin between them with no separate width rule needed. */
+    :root[data-col-spacing="true"] .row-grid { column-gap: 16px; }
+
     /* Rows with placeholder empty slots (Continue Watching / Your Watchlist under 4 items)
        skip the row-grid's usual 1px grey seam so the placeholders don't read as outlined. */
     .row-section--has-empty .row-grid { background: transparent; border-top: none; border-bottom: none; }
 
-    /* Hide overflow cards so rows never wrap */
-    @media (min-width: 810px) and (max-width: 1185px) { .row-grid .film-card:nth-child(n+3) { display: none; } }
-    @media (min-width: 1186px) and (max-width: 1561px) { .row-grid .film-card:nth-child(n+4) { display: none; } }
+    /* Hide overflow cards so rows never wrap — skipped for .row-grid--carousel, which is
+       meant to hold every item (paged via nsUpdateRowCarousel, not clipped by nth-child). */
+    @media (min-width: 810px) and (max-width: 1185px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+3) { display: none; } }
+    @media (min-width: 1186px) and (max-width: 1561px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+4) { display: none; } }
+    @media (min-width: 1562px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+5) { display: none; } }
+    /* Essential Viewing ("New to MUBI?") is also a plain .row-grid (not .row-grid--carousel),
+       so the generic per-breakpoint hiding above was clipping it down to one lane too — but
+       its column count is set dynamically via JS (see the isNewToMubi block in renderGrid) to
+       match essentialViewingFilms's actual length exactly, so it must never be capped here. */
+    .new-to-mubi-section .row-grid .film-card { display: block !important; }
+
+    /* ─── CAROUSEL ROWS (Page Settings > Layout) ───
+       Qualifying rows (more than 4 items — see renderGrid's row.carousel flag) drop "See All"
+       for a single peeking tile + hover-reveal arrow on the right edge only; pressing it
+       slides the row left to reveal the next 4 (see nsUpdateRowCarousel / the
+       row-carousel-arrow click handler). Unlike .spotlight-slider-wrap (which can bleed via
+       position:absolute since its section has a fixed height regardless), row-sections stack
+       in normal flow — .row-carousel-wrap has to stay in flow to contribute real height, so it
+       uses the left:50%/width:100vw/transform:translateX(-50%) full-bleed trick (same one
+       "New to MUBI?" uses) instead. .row-carousel-inner re-centers the normal content
+       max-width/padding inside that bleed, so the "fully shown" tiles land exactly where
+       non-carousel tiles would; .row-grid--carousel's own tile-width formula is a straight
+       copy of .spotlight-slider's (itself already a match of .row-grid's per-breakpoint math). */
+    .row-carousel-wrap {
+      position: relative;
+      left: 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      /* No local overflow:hidden — it would also clip the hover synopsis dropdown, which
+         extends below a normal (non-doubletile) tile via top:100% and is taller than this
+         wrap's own (image-height-only) box. The page-level `html { overflow-x: hidden }`
+         (see its own comment) already keeps the bled-out/peeking tiles from causing a
+         horizontal scrollbar, so nothing extra is needed here to hide them off-viewport. */
+    }
+    /* `transform` above creates a new stacking context, which traps a hovered .film-card's
+       own z-index:20 inside it — without this, the hover dropdown can no longer rise above
+       the next row-section (a plain sibling box that would otherwise just paint after it in
+       DOM order), since that elevation never escapes the wrap's own isolated context. */
+    .row-carousel-wrap:has(.film-card:hover) { z-index: 20; }
+    .row-carousel-inner {
+      max-width: 100%;
+      padding: 0 20px;
+      margin: 0 auto;
+      position: relative;
+    }
+    @media (min-width: 810px)  { .row-carousel-inner { max-width: 836px; padding: 0 22px; } }
+    @media (min-width: 1186px) { .row-carousel-inner { max-width: 1124px; } }
+    @media (min-width: 1562px) { .row-carousel-inner { max-width: 1500px; } }
+    .row-grid--carousel {
+      display: grid;
+      /* .row-grid's own breakpoint rules (grid-template-columns: repeat(N,1fr)) still match
+         this element too (it keeps the base .row-grid class) — reset that back to none so
+         only this rule's own auto-flow/auto-columns sizing takes effect, otherwise the
+         explicit N-column track fights the auto-columns track and nothing ever peeks. */
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: calc(100vw - 40px);
+      column-gap: 4px;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @media (min-width: 810px)  { .row-grid--carousel { grid-auto-columns: calc((836px - 44px - 4px) / 2); } }
+    @media (min-width: 1186px) { .row-grid--carousel { grid-auto-columns: calc((1124px - 44px - 8px) / 3); } }
+    @media (min-width: 1562px) { .row-grid--carousel { grid-auto-columns: calc((1500px - 44px - 12px) / 4); } }
+
+    /* Whichever tile currently bleeds past .row-carousel-inner's edge (tagged live by
+       nsUpdateRowCarousel, since which tile that is shifts with viewport width and paging
+       position) — faded and inert like every other peeking-tile convention on this page. */
+    /* Not pointer-events:none — that would stop it from ever registering as a hover/mouseover
+       target at all, which is exactly what needs to happen to reveal its arrow (see the
+       mouseover delegation in JS). Click-through to the film page is blocked in JS instead
+       (see the filmGrid click handler) so it stays functionally inert either way. */
+    .row-carousel-wrap .film-card.row-carousel-peek .card-img-wrap { opacity: 0.35; }
+    .row-carousel-wrap .film-card.row-carousel-peek .card-overlay,
+    .row-carousel-wrap .film-card.row-carousel-peek .card-synopsis-block { display: none; }
+    .row-carousel-wrap .coll-tile.row-carousel-peek { opacity: 0.35; }
+
+    /* Plain white chevrons, matching .spotlight-arrow exactly — hidden until nsRowCarousel's
+       hover-delegation (on #filmGrid) adds .is-visible while the peeking tile under it is
+       hovered, per "hover the peeking tile to reveal its arrow." */
+    .row-carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 21px; height: 34px;
+      z-index: 5;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .row-carousel-arrow img { display: block; width: 100%; height: 100%; }
+    .row-carousel-arrow.is-visible { opacity: 1; pointer-events: auto; }
+    @media (max-width: 809px) { .row-carousel-arrow { display: none; } }
 
     /* ─── SPOTLIGHT — collection banner + horizontal film slider ─── */
     /* .spotlight-head/.spotlight-slider-wrap live inside #filmGrid, so their text/slider
@@ -1460,6 +1564,15 @@
     @media (min-width: 1186px) { .spotlight-slider { grid-auto-columns: calc((1124px - 44px - 8px) / 3); } }
     @media (min-width: 1562px) { .spotlight-slider { grid-auto-columns: calc((1500px - 44px - 12px) / 4); } }
 
+    /* "Increase Col Spacing" applied to the spotlight filmstrip too — same 16px column-gap
+       as .row-grid above. grid-auto-columns' own subtracted term is gap × (columns-1), so it
+       has to be recomputed per tier (1/2/3 gaps at 16px = 16/32/48) to keep tiles filling the
+       row edge-to-edge instead of overflowing by the extra gap width. */
+    :root[data-col-spacing="true"] .spotlight-slider { column-gap: 16px; }
+    @media (min-width: 810px)  { :root[data-col-spacing="true"] .spotlight-slider { grid-auto-columns: calc((836px - 44px - 16px) / 2); } }
+    @media (min-width: 1186px) { :root[data-col-spacing="true"] .spotlight-slider { grid-auto-columns: calc((1124px - 44px - 32px) / 3); } }
+    @media (min-width: 1562px) { :root[data-col-spacing="true"] .spotlight-slider { grid-auto-columns: calc((1500px - 44px - 48px) / 4); } }
+
     /* Plain white chevrons, no button/background — matching the essential-viewing peeking-
        tile arrow convention rather than a filled circular control. */
     .spotlight-arrow {
@@ -1502,14 +1615,19 @@
       position: relative;
       cursor: pointer;
       z-index: 0;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .film-card:hover { z-index: 20; }
+    /* Whole tile scales up as one unit on hover — the image/gradient/dropdown's own
+       independent zooms below are turned off so they don't ALSO scale and compound/overshoot. */
+    .film-card:hover { z-index: 20; transform: scale(1.05); }
 
-    /* Image wrapper: 371×209 (≈16:9) */
+    /* Image wrapper: 371×209 (≈16:9) — overflow:hidden crops the scaled-up tile/image
+       cleanly to this box rather than letting it spill past its own edges. */
     .card-img-wrap {
       position: relative;
       aspect-ratio: 371 / 209;
       background: #d0d0d0;
+      overflow: hidden;
       transition: box-shadow 0.35s ease;
     }
     .film-card:hover .card-img-wrap { box-shadow: 0 4px 14px rgba(0,0,0,0.45); }
@@ -1634,11 +1752,11 @@
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    /* Top 10 row (Page Settings > Layout > Top 10) — big, faded rank numeral, 1-4, stamped
-       in the top-left corner of each tile ahead of the card's own overlay/title. */
+    /* Top Picks row (Page Settings > Layout > Top Picks) — big, faded rank numeral, 1-4,
+       stamped in the top-left corner of each tile ahead of the card's own overlay/title. */
     .card-rank-badge {
       position: absolute;
-      top: -10px; left: 0;
+      top: -12px; left: 0;
       font-family: Riforma, sans-serif;
       font-weight: 700;
       font-size: clamp(64px, 9vw, 108px);
@@ -1658,7 +1776,7 @@
       z-index: 1;
       pointer-events: none;
     }
-    .film-card:hover .card-img-wrap::before { transform: scale(1.08); }
+    .film-card:hover .card-img-wrap::before { transform: none; }
 
     .card-img {
       position: absolute;
@@ -1668,7 +1786,7 @@
       transform-origin: center center;
       transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
     }
-    .film-card:hover .card-img { transform: scale(1.08); }
+    .film-card:hover .card-img { transform: none; }
 
     /* Text overlay — metadata only, no background */
     .card-overlay {
@@ -1745,27 +1863,13 @@
 
     /* MUBI Releases / Curator's Spotlight — on hover, the synopsis panel (watch button,
        synopsis text, meta icons) overlays the bottom half of the tile itself instead of
-       dropping below it, and the WHOLE tile (.film-card, not just the image inside it)
-       scales up slightly as one unit — so the white panel, being a child, scales exactly
-       in lockstep and always matches the tile's actual (scaled) bottom half. The image's
-       own independent zoom and the gradient's own independent zoom are both turned off
-       here, since the parent scale already provides the "grow" motion for everything at
-       once — letting them ALSO scale independently would compound and overshoot the tile. */
+       dropping below it, so the white panel, being a child, scales exactly in lockstep with
+       the tile's own whole-card hover scale (see .film-card:hover above) and always matches
+       its actual (scaled) bottom half. */
     .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block {
       top: auto;
       bottom: 0;
       height: 50%;
-    }
-    .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-img,
-    .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-img-wrap::before,
-    .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-synopsis-block {
-      transform: none;
-    }
-    .row-section--doubletile:not(.new-to-mubi-section) .film-card {
-      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover {
-      transform: scale(1.05);
     }
     /* Landscape "hover still" — fades in over the poster-cropped default image, framed
        more openly (centered, not focal-point-cropped) for a more cinematic hover reveal. */
@@ -1777,6 +1881,18 @@
       object-position: center center;
       opacity: 0;
       transition: opacity 0.4s ease;
+    }
+    /* Rounded Tile Corners (Page Settings > Appearance) — a personal display preference like
+       Dark Mode, so it's its own [data-rounded-tiles] attribute rather than nsState (see
+       nsApplyRoundedTiles). .card-img-wrap is shared by every film tile, single or double, so
+       one rule clips the image/hover-still/badges/gradient uniformly across both. The hover
+       synopsis panel is a separate sibling (not clipped by .card-img-wrap's own overflow), so
+       it needs matching radius of its own — full corners for the normal dropdown-style panel,
+       bottom-only for the doubletile overlay variant since it only covers the tile's lower half. */
+    :root[data-rounded-tiles="true"] .card-img-wrap { border-radius: 16px; }
+    :root[data-rounded-tiles="true"] .card-synopsis-block { border-radius: 16px; }
+    :root[data-rounded-tiles="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block {
+      border-radius: 0 0 16px 16px;
     }
     .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-img { opacity: 0; }
     .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-hover-still { opacity: 1; }
@@ -1802,7 +1918,7 @@
       flex-direction: column;
     }
     .film-card:hover .card-synopsis-block {
-      transform: scaleX(1.08);
+      transform: none;
       opacity: 1;
       pointer-events: auto;
     }
@@ -2798,6 +2914,10 @@
               <span class="ns-toggle-label">Dark Mode</span>
               <label class="ns-switch"><input type="checkbox" id="darkModeToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
+            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
+              <span class="ns-toggle-label">Rounded Tile Corners</span>
+              <label class="ns-switch"><input type="checkbox" id="roundedTilesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            </div>
           </div>
         </div>
         <div class="settings-column" style="border-right:none;">
@@ -2808,6 +2928,20 @@
             <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
               <span class="ns-toggle-label">Make All Tiles Double Tiles</span>
               <label class="ns-switch"><input type="checkbox" id="allDoubleTilesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            </div>
+            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
+              <div>
+                <span class="ns-toggle-label">Increase Col Spacing</span>
+                <div class="ns-toggle-desc">Narrower tiles, more margin between columns.</div>
+              </div>
+              <label class="ns-switch"><input type="checkbox" id="colSpacingToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            </div>
+            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
+              <div>
+                <span class="ns-toggle-label">Carousel Rows</span>
+                <div class="ns-toggle-desc">Rows with more than 4 items page by 4 with peeking-tile arrows instead of See All.</div>
+              </div>
+              <label class="ns-switch"><input type="checkbox" id="carouselRowsToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
             <div class="ns-field" style="padding-left:18px; padding-right:18px;">
               <div class="ns-field-label">Number of Collections to Display After 2nd Spotlight</div>
@@ -2830,7 +2964,10 @@
               </div>
             </div>
             <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <span class="ns-toggle-label">Top 10</span>
+              <div>
+                <span class="ns-toggle-label">Top Picks</span>
+                <div class="ns-toggle-desc">Replaces Your Watchlist and MUBI Releases on the page.</div>
+              </div>
               <label class="ns-switch"><input type="checkbox" id="topTenToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
           </div>
@@ -2869,10 +3006,10 @@
               <div class="ns-field-label">Navigation Style (Display: 3)</div>
               <div class="ns-type-toggle" id="marqueeNavStyleToggle" style="flex-wrap:wrap;">
                 <button class="ns-type-toggle-btn is-active" data-ns-nav="rotation">Subtle Rotation</button>
+                <button class="ns-type-toggle-btn" data-ns-nav="rotationArrows">Subtle with Arrows</button>
                 <button class="ns-type-toggle-btn" data-ns-nav="tiles">Tile Navigation</button>
                 <button class="ns-type-toggle-btn" data-ns-nav="traditional">Traditional</button>
                 <button class="ns-type-toggle-btn" data-ns-nav="traditionalRounded">Traditional Rounded</button>
-                <button class="ns-type-toggle-btn" data-ns-nav="vparallax">Vertical Parallax</button>
                 <button class="ns-type-toggle-btn" data-ns-nav="vparallax2">Vertical Parallax V2</button>
               </div>
             </div>
@@ -3284,10 +3421,6 @@
              Kept as a second <video> (rather than moving the original) so Subtle Rotation /
              Tile Navigation still have theirs when Traditional isn't the active style. -->
         <video class="hero-trad-center-video" id="heroTradCenterVideo" src="../../videos/Aftersun.mp4" autoplay muted loop playsinline></video>
-        <!-- Stacked above the video (not just the still tile below) so the video is also
-             darkened for text legibility once it fades in. -->
-        <div class="hero-trad-top-grad" aria-hidden="true"></div>
-        <div class="hero-trad-grad" aria-hidden="true"></div>
         <div class="hero-trad-title" id="heroTradTitle">
           <img
             id="heroTradTitleImg"
@@ -3335,24 +3468,12 @@
     </div><!-- /hero-trad-stage -->
   </div>
 
-  <!-- "Vertical Parallax" Navigation Style only — hidden unless .hero has the --vparallax
-       modifier (see nsRenderVerticalParallax). .hero-vparallax-track is a tall (N x 100vh)
-       spacer; .hero-vparallax-sticky pins to the viewport while the track scrolls past
-       underneath it, then releases naturally once the track runs out — no scroll-jacking. -->
-  <div class="hero-vparallax" id="heroVParallax">
-    <div class="hero-vparallax-track" id="heroVParallaxTrack">
-      <div class="hero-vparallax-sticky">
-        <div class="hero-vparallax-bg-layer" id="heroVParallaxBgLayer"></div>
-        <div class="hero-vparallax-dots" id="heroVParallaxDots"></div>
-        <div class="hero-vparallax-info-layer" id="heroVParallaxInfoLayer"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- "Vertical Parallax V2" Navigation Style only — hidden unless .hero has the
-       --vparallax-v2 modifier (see nsRenderVerticalParallax2). Same tall-spacer/sticky
-       mechanism as V1 above, but the bg layer holds independently-transformed per-item
-       layers instead of one shared translating strip (see nsUpdateVParallax2Scroll). -->
+       --vparallax-v2 modifier (see nsRenderVerticalParallax2). .hero-vparallax-v2-track is a
+       tall (N x 100vh) spacer; .hero-vparallax-v2-sticky pins to the viewport while the track
+       scrolls past underneath it, then releases naturally once the track runs out — no
+       scroll-jacking. The bg layer holds independently-transformed per-item layers instead of
+       one shared translating strip (see nsUpdateVParallax2Scroll). -->
   <div class="hero-vparallax-v2" id="heroVParallax2">
     <div class="hero-vparallax-v2-track" id="heroVParallax2Track">
       <div class="hero-vparallax-v2-sticky">
@@ -3364,6 +3485,23 @@
   </div>
 
   <div class="hero-marquee-dots" id="heroMarqueeDots"></div>
+
+  <!-- "Subtle with Arrows" Navigation Style only — a duplicate of Subtle Rotation (same
+       full-bleed hero/crossfade, see nsShowMarqueeFilm) with a manual prev/next pair added
+       on top. Only reveals on hover (see .hero--rotation-arrows) and only actually shows/
+       hides via that class when nsState.marqueeNavStyle === 'rotationArrows' (see
+       nsRenderMarqueeArrows) — otherwise sits inert in the DOM like Traditional's own arrows
+       do for other styles. The edge fades sit behind the arrows themselves (no circle
+       background on the arrows here — the gradient coming off the screen edge is the
+       affordance instead). -->
+  <div class="hero-arrow-edge-fade hero-arrow-edge-fade--left" aria-hidden="true"></div>
+  <div class="hero-arrow-edge-fade hero-arrow-edge-fade--right" aria-hidden="true"></div>
+  <button class="hero-arrow hero-arrow--prev" id="heroArrowPrevBtn" aria-label="Previous film">
+    <span class="material-icons">chevron_left</span>
+  </button>
+  <button class="hero-arrow hero-arrow--next" id="heroArrowNextBtn" aria-label="Next film">
+    <span class="material-icons">chevron_right</span>
+  </button>
 </div>
 
 <!-- ─── NOW SHOWING ─── -->
@@ -3655,6 +3793,14 @@ const MUBI_RELEASES_FILMS = [
     image:"https://assets.mubicdn.net/images/film/436826/image-w448.jpg?1747926473", titleTreatment:"https://images.mubicdn.net/images/artworks/982441/cache-982441-1777021473/images-original.png",
     fX:0.46, fY:0.42, rating:4.1, ourTake:"Cascading through time, Mascha Schilinski’s incomparable Cannes prizewinner orchestrates echoes of past experience into transcendent poetic cinema. Surfacing evocative, gilded imagery from the shadows of femininity, Sound of Falling confirms the tremendous talents of its ambitious writer-director.",
     award:{text:"Cannes Jury Prize", image:"https://images.mubicdn.net/images/carousel_takeover/432/cache-1125095-1775798235/prize_image_en_us-original.png"}},
+  { title:"It Was Just an Accident", director:"Jafar Panahi", year:2025, country:"Iran, France", slug:"it-was-just-an-accident",
+  image:"https://assets.mubicdn.net/images/film/441162/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Jafar Panahi's Palme d'Or winner follows a group of former political prisoners who recognize the man who once tortured them, and must decide what justice looks like. Tense, morally knotty, and unmistakably urgent filmmaking."},
+  { title:"Left-Handed Girl", director:"Tsou Shih-Ching", year:2025, country:"Taiwan, France", slug:"left-handed-girl",
+  image:"https://assets.mubicdn.net/images/film/349492/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A single mother and her two daughters navigate a Taipei night market's simmering secrets in this vivid, big-hearted family drama. Left-Handed Girl announces a confident new voice, balancing tenderness and superstition with a light touch."},
+  { title:"Zodiac Killer Project", director:"Charlie Shackleton", year:2025, country:"United States, United Kingdom", slug:"zodiac-killer-project",
+  image:"https://assets.mubicdn.net/images/film/431238/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"When rights fell through on his true-crime documentary, director Charlie Shackleton made something stranger: a droll, self-interrogating essay film about the documentary he couldn't make. A sly dissection of the genre's tics and tropes."},
+  { title:"Kontinental '25", director:"Radu Jude", year:2025, country:"Romania, Switzerland", slug:"kontinental-25",
+  image:"https://assets.mubicdn.net/images/film/433335/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Radu Jude turns a bailiff's eviction of a homeless man, which ends in tragedy, into a mordant, digressive portrait of contemporary Cluj. It finds the director's caustic wit fully intact, indicting a Europe too busy to reckon with its guilt."},
 ];
 
 const NEW_ON_MUBI_FILMS = [
@@ -3670,6 +3816,14 @@ const NEW_ON_MUBI_FILMS = [
   { title:"Heaven's Gate", director:"Michael Cimino", year:1980, country:"United States", slug:"heaven-s-gate-1980",
     image:"https://assets.mubicdn.net/images/film/493/image-w448.jpg?1779175663", titleTreatment:null,
     fX:0.54, fY:0.46, rating:3.9, ourTake:"While the film’s runaway budget contributed to a studio’s collapse, Michael Cimino’s ambitious epic remains a stunning work of novelistic filmmaking. Thronging with stars of 1970s cinema, Heaven’s Gate may be quintessentially American, but achieves the sweep and detail of great Russian literature."},
+  { title:"Klute", director:"Alan J. Pakula", year:1971, country:"United States", slug:"klute",
+  image:"https://assets.mubicdn.net/images/film/7751/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Jane Fonda won her first Oscar as a call girl entangled in a missing-persons case alongside Donald Sutherland's taciturn detective. Alan J. Pakula's Klute simmers with paranoid, neon-lit dread, launching his essential '70s conspiracy trilogy."},
+  { title:"The Conversation", director:"Francis Ford Coppola", year:1974, country:"United States", slug:"the-conversation",
+  image:"https://assets.mubicdn.net/images/film/1946/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Gene Hackman plays a surveillance expert unraveled by guilt over a job gone wrong in Francis Ford Coppola's paranoid masterwork. A masterclass in sound design and dread, as chillingly relevant now as during its Watergate-era release."},
+  { title:"The Last Detail", director:"Hal Ashby", year:1973, country:"United States", slug:"the-last-detail",
+  image:"https://assets.mubicdn.net/images/film/2591/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Jack Nicholson leads two sailors escorting a hapless young prisoner to the brig, determined to show him a good time first, in Hal Ashby's foul-mouthed, tender road movie. It finds aching humanity in institutional cruelty alike."},
+  { title:"The Parallax View", director:"Alan J. Pakula", year:1974, country:"United States", slug:"the-parallax-view",
+  image:"https://assets.mubicdn.net/images/film/10004/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Warren Beatty plays a journalist who stumbles into a shadowy corporation recruiting assassins in Alan J. Pakula's icy, immaculately composed conspiracy thriller. It distills '70s institutional paranoia into pure, dread-soaked cinema."},
 ];
 
 const TRENDING_FILMS = [
@@ -3688,6 +3842,14 @@ const TRENDING_FILMS = [
     image:"https://assets.mubicdn.net/images/film/400360/image-w448.jpg?1757575671", titleTreatment:"https://images.mubicdn.net/images/artworks/920723/cache-920723-1770742695/images-original.png",
     fX:0.77, fY:0.4, rating:4.6, ourTake:"Eskil Vogt and Joachim Trier—the writer-director dream team behind The Worst Person in the World—return with this stunningly observed family drama. Winner of the Best International Feature Oscar®, and featuring an all-star cast, Sentimental Value traces the fault lines between vanity, art, and life.",
     award:{text:"Cannes Gran Prix", image:"https://images.mubicdn.net/images/carousel_takeover/391/cache-1111887-1770034391/prize_image_en_us-original.png"}},
+  { title:"Hamnet", director:"Chloé Zhao", year:2025, country:"United Kingdom, United States", slug:"hamnet",
+  image:"https://assets.mubicdn.net/images/film/375425/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Chloé Zhao adapts Maggie O'Farrell's acclaimed novel, imagining the grief that drove Shakespeare's wife Agnes after the death of their young son. Hamnet is a lush, aching portrait of a marriage tested by unbearable loss."},
+  { title:"The History of Sound", director:"Oliver Hermanus", year:2025, country:"United States, United Kingdom", slug:"the-history-of-sound",
+  image:"https://assets.mubicdn.net/images/film/323321/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Two young men crisscross wartime New England recording the folk songs of ordinary people, falling in love along the way, in Oliver Hermanus's wistful, elegiac drama. It listens closely for the ache buried in memory and melody alike."},
+  { title:"The Plague", director:"Charlie Polinger", year:2025, country:"United States, Romania", slug:"the-plague-2025",
+  image:"https://assets.mubicdn.net/images/film/427367/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A mysterious illness sweeps through a summer swim camp, curdling boyhood cruelty into something feral, in Charlie Polinger's unsettling debut. The Plague turns adolescent pack behavior into creeping, sun-bleached body horror."},
+  { title:"Vertigo", director:"Alfred Hitchcock", year:1958, country:"United States", slug:"vertigo",
+  image:"https://assets.mubicdn.net/images/film/339/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Alfred Hitchcock's obsessive, vertiginous masterpiece follows a retired detective who falls dangerously in love with a woman he's tailing, then tries to remake her in a dead woman's image. Cinema's most unsettling meditation on desire and control."},
 ];
 
 const CURATORS_SPOTLIGHT_FILMS = [
@@ -3703,9 +3865,17 @@ const CURATORS_SPOTLIGHT_FILMS = [
   { title:"God is Shy", director:"Jocelyn Charles", year:2025, country:"France", slug:"god-is-shy",
     image:"https://assets.mubicdn.net/images/film/445143/image-w448.jpg?1780999338", titleTreatment:null,
     fX:0.48, fY:0.59, rating:4.5, ourTake:"Packing the deepest secrets of the universe into its modest running time, this suggestive and painterly animated short glimpses unknowable mysteries. An unexpected blend of gorgeously bright-hued design and eldritch cosmic horror, God is Shy peers into the abyss—and finds it gazing back."},
+  { title:"Amour", director:"Michael Haneke", year:2012, country:"France, Austria", slug:"amour-2012",
+  image:"https://assets.mubicdn.net/images/film/97160/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Michael Haneke's Palme d'Or and Oscar-winning drama watches an elderly couple's devotion tested to its absolute limit after a stroke changes everything. Unflinching, profoundly moving, and among the most clear-eyed films about mortality."},
+  { title:"The Tree of Life", director:"Terrence Malick", year:2011, country:"United States, Italy", slug:"the-tree-of-life",
+  image:"https://assets.mubicdn.net/images/film/36141/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Terrence Malick weaves a 1950s Texas childhood together with the birth of the universe itself in this rapturous, cosmic meditation on grace and nature. Audacious filmmaking that dares to ask its questions at the scale of creation."},
+  { title:"Moonlight", director:"Barry Jenkins", year:2016, country:"United States", slug:"moonlight-2016",
+  image:"https://assets.mubicdn.net/images/film/152823/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Barry Jenkins's Oscar-winning triptych follows a Black gay man through childhood, adolescence, and adulthood in Miami, each chapter recasting who he might become. Tender, lyrical, and quietly radical in its portrait of masculinity and desire."},
+  { title:"Persona", director:"Ingmar Bergman", year:1966, country:"Sweden", slug:"persona",
+  image:"https://assets.mubicdn.net/images/film/299/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Ingmar Bergman's shape-shifting psychodrama traps a mute actress and her nurse in a seaside house until their identities start to bleed together, in cinema's most radical study of selfhood dissolving."},
 ];
 
-/* ─── TOP 10 — settings-driven, opt-in row (Page Settings > Layout > Top 10) ───
+/* ─── TOP PICKS — settings-driven, opt-in row (Page Settings > Layout > Top Picks) ───
    Real MUBI viewing data (see top10.png "Views Within Date Range"), ranked by views —
    top 4 titles only, matching .row-grid's widest breakpoint. */
 const TOP_TEN_FILMS = [
@@ -3721,6 +3891,24 @@ const TOP_TEN_FILMS = [
   { title:"Father Mother Sister Brother", director:"Jim Jarmusch", year:2025, country:"United States, United Kingdom", slug:"father-mother-sister-brother",
     image:"https://assets.mubicdn.net/images/film/398054/image-w448.jpg?1770218943", titleTreatment:"https://images.mubicdn.net/images/artworks/991705/cache-991705-1779296307/images-original.png",
     fX:0.5, fY:0.39, rating:4.0, ourTake:"Iconic auteur Jim Jarmusch’s acclaimed return to anthology filmmaking abounds with wryly resonant observations on the family unit. Sketching finely detailed portraits with its starry ensemble cast (including a gloriously rumpled Tom Waits), this offbeat triptych finds universals in idiosyncrasies."},
+  // Ranks 5-8, read straight off top10.png (UK Views Within Date Range, May 2026) — reusing
+  // each film's existing object from elsewhere in this file rather than re-fetching, since
+  // all four already appear (with real MUBI metadata) in TRENDING_FILMS / THE MUBI TOP 1000 /
+  // SUMMER IN THE CITIES / MUBI_RELEASES_FILMS respectively.
+  { title:"No Other Choice", director:"Park Chan-wook", year:2025, country:"South Korea", slug:"no-other-choice",
+    image:"https://assets.mubicdn.net/images/film/255497/image-w448.jpg?1753801050", titleTreatment:"https://images.mubicdn.net/images/artworks/947983/cache-947983-1773255621/images-original.png",
+    fX:0.51, fY:0.63, rating:4.4, ourTake:"Desperate times call for desperate measures in this wild satirical ride from Korean master Park Chan-wook, starring Lee Byung-hun as a trampled worker with nothing to lose. An unruly blend of ingenious visuals and twisted humor, No Other Choice delivers a brutal takedown of the cutthroat job market.",
+    award:{text:"Golden Globe Awards Nominee", image:"https://images.mubicdn.net/images/carousel_takeover/405/cache-1118170-1772835067/prize_image_en_us-original.png"}},
+  { title:"Sentimental Value", director:"Joachim Trier", year:2025, country:"Norway, Germany", slug:"sentimental-value",
+    image:"https://assets.mubicdn.net/images/film/400360/image-w448.jpg?1757575671", titleTreatment:"https://images.mubicdn.net/images/artworks/920723/cache-920723-1770742695/images-original.png",
+    fX:0.77, fY:0.4, rating:4.6, ourTake:"Eskil Vogt and Joachim Trier—the writer-director dream team behind The Worst Person in the World—return with this stunningly observed family drama. Winner of the Best International Feature Oscar®, and featuring an all-star cast, Sentimental Value traces the fault lines between vanity, art, and life.",
+    award:{text:"Cannes Gran Prix", image:"https://images.mubicdn.net/images/carousel_takeover/391/cache-1111887-1770034391/prize_image_en_us-original.png"}},
+  { title:"Do the Right Thing", director:"Spike Lee", year:1989, country:"United States", slug:"do-the-right-thing",
+    image:"https://assets.mubicdn.net/images/film/286/image-w448.jpg?1766595328", titleTreatment:"https://images.mubicdn.net/images/artworks/899380/cache-899380-1766595010/images-original.png", fX:0.81, fY:0.22, rating:4.3, award:null, ourTake:"Spike Lee’s polemical masterpiece has lost none of its righteous power in the decades since its release. A panoramic, heatwave-burnished tale of racial tension, community, and state violence that throbs with fevered urgency, Do the Right Thing is one of the great American films. Fight the power!"},
+  { title:"Sound of Falling", director:"Mascha Schilinski", year:2025, country:"Germany", slug:"sound-of-falling",
+    image:"https://assets.mubicdn.net/images/film/436826/image-w448.jpg?1747926473", titleTreatment:"https://images.mubicdn.net/images/artworks/982441/cache-982441-1777021473/images-original.png",
+    fX:0.46, fY:0.42, rating:4.1, ourTake:"Cascading through time, Mascha Schilinski’s incomparable Cannes prizewinner orchestrates echoes of past experience into transcendent poetic cinema. Surfacing evocative, gilded imagery from the shadows of femininity, Sound of Falling confirms the tremendous talents of its ambitious writer-director.",
+    award:{text:"Cannes Jury Prize", image:"https://images.mubicdn.net/images/carousel_takeover/432/cache-1125095-1775798235/prize_image_en_us-original.png"}},
 ];
 
 /* ─── ROW 1-25 — each a randomly-picked real MUBI collection with its real films ───
@@ -3736,6 +3924,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/23061/image-w448.jpg?1754923644", titleTreatment:null, fX:0.23, fY:0.42, rating:3.6, award:null, ourTake:"Everyday dreamers imagine their attachments scattering to the breeze and becoming someone else in these tableaux of summertime Berlin. As Angela Schanelec threads serendipities—music, movement, tenderness—into ennui’s enervating haze, she outlines the pattern for her critically acclaimed cinema."},
     { title:"Do the Right Thing", director:"Spike Lee", year:1989, country:"United States", slug:"do-the-right-thing",
       image:"https://assets.mubicdn.net/images/film/286/image-w448.jpg?1766595328", titleTreatment:"https://images.mubicdn.net/images/artworks/899380/cache-899380-1766595010/images-original.png", fX:0.81, fY:0.22, rating:4.3, award:null, ourTake:"Spike Lee’s polemical masterpiece has lost none of its righteous power in the decades since its release. A panoramic, heatwave-burnished tale of racial tension, community, and state violence that throbs with fevered urgency, Do the Right Thing is one of the great American films. Fight the power!"},
+    { title:"Dog Day Afternoon", director:"Sidney Lumet", year:1975, country:"United States", slug:"dog-day-afternoon",
+  image:"https://assets.mubicdn.net/images/film/2031/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Al Pacino sweats through a botched Brooklyn bank job that curdles into a media circus in Sidney Lumet's sweltering true-crime classic. As the crowd outside chants his name, Dog Day Afternoon turns a hundred-degree afternoon into a referendum on fame, desperation, and love."},
+    { title:"Kids", director:"Larry Clark", year:1995, country:"United States", slug:"kids",
+  image:"https://assets.mubicdn.net/images/film/292/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Larry Clark's provocateur debut trails a pack of skater kids through one blistering New York summer day, high on hormones and low on consequence. Shot with documentary nerve, Kids remains a raw, unblinking snapshot of adolescence unsupervised."},
+    { title:"Chungking Express", director:"Wong Kar Wai", year:1994, country:"Hong Kong", slug:"chungking-express",
+  image:"https://assets.mubicdn.net/images/film/226/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Wong Kar-wai's woozy, neon-drenched diptych finds two lovelorn cops adrift in a humid Hong Kong summer, one nursing pineapple cans, the other unknowingly serenaded by California Dreamin'. Chungking Express bottles the fizzy ache of urban longing like nothing else."},
+    { title:"Wild Style", director:"Charlie Ahearn", year:1982, country:"United States", slug:"wild-style",
+  image:"https://assets.mubicdn.net/images/film/35279/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Shot on the sun-baked rooftops and handball courts of the South Bronx, Charlie Ahearn's scrappy hip-hop landmark captures graffiti writers, DJs, and MCs inventing a culture in real time. A joyous time capsule of a scene before the world had a name for it."},
   ]},
   { collectionTitle: "CANNES TAKEOVER", films: [
     { title:"Heaven's Gate", director:"Michael Cimino", year:1980, country:"United States", slug:"heaven-s-gate-1980",
@@ -3746,6 +3942,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/445143/image-w448.jpg?1780999338", titleTreatment:null, fX:0.48, fY:0.59, rating:4.5, award:null, ourTake:"Packing the deepest secrets of the universe into its modest running time, this suggestive and painterly animated short glimpses unknowable mysteries. An unexpected blend of gorgeously bright-hued design and eldritch cosmic horror, God is Shy peers into the abyss—and finds it gazing back."},
     { title:"Titane", director:"Julia Ducournau", year:2021, country:"France, Belgium", slug:"titane",
       image:"https://assets.mubicdn.net/images/film/244680/image-w448.jpg?1745497559", titleTreatment:"https://images.mubicdn.net/images/artworks/446663/cache-446663-1643041783/images-original.png", fX:0.46, fY:0.44, rating:3.7, award:{text:"Cannes Film Festival Palme d'Or", image:"https://images.mubicdn.net/images/carousel_takeover/64/cache-751428-1642684006/prize_image_en_us-original.png"}, ourTake:"Exploding in a gnarled helix of chrome and flesh, Julia Ducournau’s Palme d’Or–winner is a jaw-dropping blast of Cronenbergian gothic. Conceptually audacious and dripping with insouciant attitude, Titane ignites a Molotov cocktail of gender politics, familial compassion, and female desire."},
+    { title:"Anatomy of a Fall", director:"Justine Triet", year:2023, country:"France", slug:"anatomy-of-a-fall",
+  image:"https://assets.mubicdn.net/images/film/372157/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Justine Triet's ferociously intelligent courtroom drama took the Palme d'Or by picking apart a marriage with forensic precision. Sandra Hüller is spellbinding as a novelist cross-examined in open court, every ambiguity left thrillingly, deliberately unresolved."},
+    { title:"The Zone of Interest", director:"Jonathan Glazer", year:2023, country:"United Kingdom, Poland", slug:"the-zone-of-interest",
+  image:"https://assets.mubicdn.net/images/film/228969/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Jonathan Glazer's Cannes Grand Prix winner stages unspeakable horror just out of frame, following a commandant's family tending roses beside Auschwitz's wall. The Zone of Interest is a chilling study in domestic denial, its banality more terrifying than any atrocity."},
+    { title:"Shoplifters", director:"Hirokazu Koreeda", year:2018, country:"Japan", slug:"shoplifters",
+  image:"https://assets.mubicdn.net/images/film/200178/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Hirokazu Koreeda's Palme d'Or winner gathers a family of petty thieves and castoffs into one ramshackle Tokyo home, bound by something truer than blood. Shoplifters sneaks up tenderly, then breaks your heart: what really makes a family?"},
+    { title:"The Square", director:"Ruben Östlund", year:2017, country:"Sweden, Germany", slug:"the-square-2017",
+  image:"https://assets.mubicdn.net/images/film/156028/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Ruben Östlund's Palme d'Or-winning satire skewers the contemporary art world's moral vanity through a hapless museum curator's escalating disasters. Equal parts cringe comedy and social experiment, The Square finds savage laughs between ideals and instinct."},
   ]},
   { collectionTitle: "THE MUBI TOP 1000", films: [
     { title:"Perfect Days", director:"Wim Wenders", year:2023, country:"Japan, Germany", slug:"perfect-days",
@@ -3756,6 +3960,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/339480/image-w448.jpg?1745499781", titleTreatment:"https://images.mubicdn.net/images/artworks/536079/cache-536079-1681983432/images-original.png", fX:0.26, fY:0.41, rating:4.6, award:{text:"Oscar Nominated Best International Feature Film", image:"https://images.mubicdn.net/images/carousel_takeover/148/cache-869456-1681398048/prize_image_en_us-original.png"}, ourTake:"Both a Cannes prizewinner and Oscar® nominee for Best International Film, the exquisitely acted Close evokes the fragile beauty of boyhood. Set among the flower fields of the Belgian countryside, Lukas Dhont’s profoundly empathetic look at adolescent intimacy reveals the trappings of masculinity."},
     { title:"Sentimental Value", director:"Joachim Trier", year:2025, country:"Norway, Germany", slug:"sentimental-value",
       image:"https://assets.mubicdn.net/images/film/400360/image-w448.jpg?1757575671", titleTreatment:"https://images.mubicdn.net/images/artworks/920723/cache-920723-1770742695/images-original.png", fX:0.77, fY:0.4, rating:4.6, award:{text:"Cannes Gran Prix", image:"https://images.mubicdn.net/images/carousel_takeover/391/cache-1111887-1770034391/prize_image_en_us-original.png"}, ourTake:"Eskil Vogt and Joachim Trier—the writer-director dream team behind The Worst Person in the World—return with this stunningly observed family drama. Winner of the Best International Feature Oscar®, and featuring an all-star cast, Sentimental Value traces the fault lines between vanity, art, and life."},
+    { title:"Persona", director:"Ingmar Bergman", year:1966, country:"Sweden", slug:"persona",
+  image:"https://assets.mubicdn.net/images/film/299/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Ingmar Bergman's shape-shifting psychodrama traps a mute actress and her nurse in a seaside house until their identities start to bleed together. Persona remains cinema's most radical study of selfhood dissolving, its opening reel alone rewriting what film could do."},
+    { title:"Stalker", director:"Andrei Tarkovsky", year:1979, country:"Soviet Union", slug:"stalker",
+  image:"https://assets.mubicdn.net/images/film/115/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Andrei Tarkovsky leads three men into the Zone, a forbidden wilderness said to grant your deepest wish, in this hypnotic, sepia-and-emerald odyssey. Stalker moves at the pace of dripping water and thinks in centuries, spiritual endurance as much as film."},
+    { title:"Tokyo Story", director:"Yasujirô Ozu", year:1953, country:"Japan", slug:"tokyo-story",
+  image:"https://assets.mubicdn.net/images/film/284/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Yasujirô Ozu's quietly devastating masterpiece follows an elderly couple visiting their grown children, only to find themselves gently, unbearably in the way. Tokyo Story observes family erosion with tenderness that never once feels manipulative."},
+    { title:"In the Mood for Love", director:"Wong Kar Wai", year:2000, country:"Hong Kong, France", slug:"in-the-mood-for-love",
+  image:"https://assets.mubicdn.net/images/film/198/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Wong Kar-wai's aching masterwork follows two neighbors, each betrayed by an unfaithful spouse, circling a love they refuse to consummate. Bathed in cheongsams and Nat King Cole, restraint itself becomes the most sensuous special effect in cinema."},
   ]},
   { collectionTitle: "GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS", films: [
     { title:"Titane", director:"Julia Ducournau", year:2021, country:"France, Belgium", slug:"titane",
@@ -3766,6 +3978,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/224497/image-w448.jpg?1745495788", titleTreatment:null, fX:0.51, fY:0.45, rating:4.6, award:null, ourTake:"Céline Sciamma turns the male gaze over its head to present its female version: a feminist tale of lesbian desire, aching romanticism, and creative collaboration. The result is an instant classic, glistening with sumptuous images and an unforgettable duo: Adèle Haenel and Noémie Merlant."},
     { title:"Son of Saul", director:"László Nemes", year:2015, country:"Hungary, France", slug:"son-of-saul",
       image:"https://assets.mubicdn.net/images/film/126430/image-w448.jpg?1776072787", titleTreatment:null, fX:0.54, fY:0.63, rating:4.1, award:null, ourTake:"One of the most acclaimed debuts in recent memory, this is visceral, immediate cinema. Told in disorienting over-the-shoulder cinematography, Son of Saul captures the chaos and atrocity of the Holocaust like you’ve never seen before. Prizewinner at the Cannes Film Festival and the Academy Awards®."},
+    { title:"The Mysterious Gaze of the Flamingo", director:"Diego Céspedes", year:2025, country:"Chile, France", slug:"the-mysterious-gaze-of-the-flamingo",
+  image:"https://assets.mubicdn.net/images/film/440746/image-w448.jpg?1778689885", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Winner of Un Certain Regard at Cannes, this queer fairy tale crossed with a Chilean Western turns a mining town into a chosen-family hangout, glowing with resilience against hard times."},
+    { title:"Farewell My Concubine", director:"Chen Kaige", year:1993, country:"China, Hong Kong", slug:"farewell-my-concubine",
+  image:"https://assets.mubicdn.net/images/film/3463/image-w448.jpg?1745489578", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"The 1993 Palme d'Or winner spans decades of Peking Opera and political upheaval, its taboo-breaking love triangle still among the boldest gestures in Chinese cinema."},
+    { title:"Ida", director:"Paweł Pawlikowski", year:2013, country:"Poland, Denmark", slug:"ida",
+  image:"https://assets.mubicdn.net/images/film/109808/image-w448.jpg?1745491701", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A novice nun learns a devastating family secret in this hushed, black-and-white road movie that won the Oscar for Best Foreign Language Film — austere, exquisite, unforgettable."},
+    { title:"The Substance", director:"Coralie Fargeat", year:2024, country:"United States, United Kingdom", slug:"the-substance",
+  image:"https://assets.mubicdn.net/images/film/332868/image-w448.jpg?1745502662", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Demi Moore goes full body-horror in Coralie Fargeat's Oscar-winning takedown of beauty culture — gloriously grotesque, and impossible to look away from."},
   ]},
   { collectionTitle: "FEATURED ON THE MUBI PODCAST", films: [
     { title:"Kes", director:"Ken Loach", year:1969, country:"United Kingdom", slug:"kes",
@@ -3776,6 +3996,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/1502/image-w448.jpg?1745500656", titleTreatment:"https://images.mubicdn.net/images/artworks/677866/cache-677866-1712832643/images-original.png", fX:0.58, fY:0.32, rating:4.6, award:null, ourTake:"In 1984, German New Wave icon Wim Wenders swept up at Cannes with his dreamy tale of the American southwest. Powered by an eloquent script from playwright Sam Shepard—and starring Harry Dean Stanton, Dean Stockwell & Nastassja Kinski—it casts a doleful, poetic eye on America as only an outsider can."},
     { title:"Queer", director:"Luca Guadagnino", year:2024, country:"United States, Italy", slug:"queer",
       image:"https://assets.mubicdn.net/images/film/391610/image-w448.jpg?1745502917", titleTreatment:"https://images.mubicdn.net/images/artworks/754022/cache-754022-1736857258/images-original.png", fX:0.52, fY:0.65, rating:3.9, award:{text:"Venice Film Festival", image:"https://images.mubicdn.net/images/carousel_takeover/304/cache-1029887-1737121219/prize_image_en_us-original.png"}, ourTake:"Starring an astonishing Daniel Craig as a lovestruck sensualist, Luca Guadagnino’s audacious adaptation of William Burroughs’s infamous novel is suffused with romantic longing. Under the sway of infatuation’s exquisite pains and entrancing pleasures, Queer travels to the mesmerizing ends of love."},
+    { title:"Thelma", director:"Joachim Trier", year:2017, country:"Norway, France", slug:"thelma-2017",
+  image:"https://assets.mubicdn.net/images/film/163014/image-w448.jpg?1745493682", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A slow-burn Scandinavian spin on Carrie, Trier's supernatural romance unearths the demons a devout young woman has spent her whole life suppressing."},
+    { title:"My Father's Shadow", director:"Akinola Davies Jr.", year:2025, country:"United Kingdom, Nigeria", slug:"my-father-s-shadow",
+  image:"https://assets.mubicdn.net/images/film/410994/image-w448.jpg?1745503807", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"The first Nigerian film ever selected for Cannes' Official Selection, this tender father-son odyssey through Lagos glows with lyricism and quiet ache."},
+    { title:"Pictures of Ghosts", director:"Kleber Mendonça Filho", year:2023, country:"Brazil", slug:"pictures-of-ghosts",
+  image:"https://assets.mubicdn.net/images/film/376310/image-w448.jpg?1745501345", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Mendonça Filho turns memory into essay film, wandering Recife's vanished cinemas to resurrect the ghosts — and urban legends — of his hometown."},
+    { title:"Die My Love", director:"Lynne Ramsay", year:2025, country:"United States, United Kingdom", slug:"die-my-love",
+  image:"https://assets.mubicdn.net/images/film/360569/image-w448.jpg?1778585747", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Jennifer Lawrence and Robert Pattinson tear into a frenzied portrait of new motherhood unraveling — Lynne Ramsay at her most uncompromising."},
   ]},
   { collectionTitle: "AND THE OSCAR GOES TO...", films: [
     { title:"I Am Love", director:"Luca Guadagnino", year:2009, country:"Italy", slug:"i-am-love",
@@ -3786,6 +4014,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/327/image-w448.jpg?1745502234", titleTreatment:null, fX:0.69, fY:0.28, rating:4.0, award:null, ourTake:"As a screenwriter, Charlie Kaufman’s style of reality-bending comedy made him a superstar. With Adaptation, he turned a case of writer’s block into a brilliantly weird and weirdly touching comic tribute to living life as a movie—and earned an Oscar® nod for both himself and his imaginary twin!"},
     { title:"The Adventures of Priscilla, Queen of the Desert", director:"Stephan Elliott", year:1994, country:"Australia, United Kingdom", slug:"the-adventures-of-priscilla-queen-of-the-desert",
       image:"https://assets.mubicdn.net/images/film/19644/image-w448.jpg?1768837463", titleTreatment:null, fX:0.55, fY:0.31, rating:4.1, award:null, ourTake:"Spangling the rugged outback with sequins and feathers, this loud and proud queer picaresque sashays to the heart of Australia, leaving dreary prejudice in the rearview mirror. You’ll never want to part ways with this fiercely charismatic hangout movie—a life-affirming love letter to chosen family."},
+    { title:"Dancer in the Dark", director:"Lars von Trier", year:2000, country:"Denmark, Sweden", slug:"dancer-in-the-dark",
+  image:"https://assets.mubicdn.net/images/film/479/image-w448.jpg?1745490704", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Björk sings her way through tragedy in von Trier's delirious musical fantasia, a Palme d'Or winner that turns heartbreak into pure, overpowering spectacle."},
+    { title:"Amores Perros", director:"Alejandro González Iñárritu", year:2000, country:"Mexico", slug:"amores-perros",
+  image:"https://assets.mubicdn.net/images/film/123/image-w448.jpg?1781621283", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Iñárritu's ferocious debut, a triptych of intersecting lives after a car crash, announced a new golden age of Mexican cinema — and a young Gael García Bernal."},
+    { title:"Breaking the Waves", director:"Lars von Trier", year:1996, country:"Denmark, France", slug:"breaking-the-waves",
+  image:"https://assets.mubicdn.net/images/film/108/image-w448.jpg?1745499977", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Emily Watson gives an uncompromising performance of faith and self-sacrifice in the first chapter of von Trier's Golden Heart trilogy."},
+    { title:"Finding Vivian Maier", director:"John Maloof, Charlie Siskel", year:2013, country:"United States", slug:"finding-vivian-maier",
+  image:"https://assets.mubicdn.net/images/film/108396/image-w448.jpg?1745491658", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A box of undeveloped negatives reveals a secretive nanny's genius for street photography in this Oscar-nominated detective story about art and obscurity."},
   ]},
   { collectionTitle: "IN THE MOOD FOR LOVE", films: [
     { title:"Past Lives", director:"Celine Song", year:2023, country:"United States, South Korea", slug:"past-lives",
@@ -3796,6 +4032,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/391610/image-w448.jpg?1745502917", titleTreatment:"https://images.mubicdn.net/images/artworks/754022/cache-754022-1736857258/images-original.png", fX:0.52, fY:0.65, rating:3.9, award:{text:"Venice Film Festival", image:"https://images.mubicdn.net/images/carousel_takeover/304/cache-1029887-1737121219/prize_image_en_us-original.png"}, ourTake:"Starring an astonishing Daniel Craig as a lovestruck sensualist, Luca Guadagnino’s audacious adaptation of William Burroughs’s infamous novel is suffused with romantic longing. Under the sway of infatuation’s exquisite pains and entrancing pleasures, Queer travels to the mesmerizing ends of love."},
     { title:"Bones and All", director:"Luca Guadagnino", year:2022, country:"United States, Italy", slug:"bones-and-all",
       image:"https://assets.mubicdn.net/images/film/292832/image-w448.jpg?1745498657", titleTreatment:"https://images.mubicdn.net/images/artworks/877644/cache-877644-1761157334/images-original.png", fX:0.32, fY:0.28, rating:3.8, award:null, ourTake:"Luxuriating in the sweet taste of first love, Luca Guadagnino’s blood-soaked cannibal romance sizzles with the scorching chemistry between Timothée Chalamet and Taylor Russell. Visceral yet tender-hearted, this wild road trip through the sweeping highways of America is sure to get under your skin."},
+    { title:"Mario", director:"Marcel Gisler", year:2018, country:"Switzerland", slug:"mario-2018",
+  image:"https://assets.mubicdn.net/images/film/198763/image-w448.jpg?1745494766", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Two rising footballers fall for each other in a locker room built on machismo — a tender, urgent reckoning with the game's last taboo."},
+    { title:"End of the Century", director:"Lucio Castro", year:2019, country:"Argentina", slug:"end-of-the-century-2019",
+  image:"https://assets.mubicdn.net/images/film/230351/image-w448.jpg?1745501337", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Two strangers' Barcelona hookup blurs into memory and maybe-fantasy in this hazy, warm almost-love-story, equal parts Before Sunrise and something stranger."},
+    { title:"Wheel of Fortune and Fantasy", director:"Ryusuke Hamaguchi", year:2021, country:"Japan", slug:"wheel-of-fortune-and-fantasy",
+  image:"https://assets.mubicdn.net/images/film/294241/image-w448.jpg?1745503592", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Three tales of coincidence and desire unfold with Hamaguchi's singular patience in this Silver Bear winner — as good as anything he's ever made."},
+    { title:"Transit", director:"Christian Petzold", year:2018, country:"Germany, France", slug:"transit-2018",
+  image:"https://assets.mubicdn.net/images/film/179875/image-w448.jpg?1745494064", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Petzold transposes a WWII refugee novel into an eerie, timeless present — a scintillating melodrama of love stalked by history's return."},
   ]},
   { collectionTitle: "MODERN MASTERPIECES", films: [
     { title:"The Assistant", director:"Kitty Green", year:2019, country:"United States", slug:"the-assistant-2019",
@@ -3806,6 +4050,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/116508/image-w448.jpg?1745492011", titleTreatment:null, fX:0.7, fY:0.33, rating:4.3, award:null, ourTake:"Collaborating once more with Harun Farocki and lead actor Nina Hoss, Christian Petzold carefully crafts this cleverly plotted, smotheringly suspenseful postwar drama. An especially impressive combination of throwback thriller and genre elements with substantial thematic weight."},
     { title:"Jerichow", director:"Christian Petzold", year:2008, country:"Germany", slug:"jerichow",
       image:"https://assets.mubicdn.net/images/film/3827/image-w448.jpg?1745491885", titleTreatment:null, fX:0.66, fY:0.36, rating:3.9, award:null, ourTake:"Starring Nina Hoss, Jerichow is an elegantly crafted genre exercise that plays with the rules of the thriller. Partially adapting James M. Cain’s The Postman Always Rings Twice, this is an absorbing, noir-tinged tale of lust, envy, and deceit, which offers a biting critique of capitalist ambition."},
+    { title:"Pacifiction", director:"Albert Serra", year:2022, country:"France, Spain", slug:"pacifiction",
+  image:"https://assets.mubicdn.net/images/film/304154/image-w448.jpg?1745498766", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Cahiers du cinéma's best film of 2022: a hypnotic, paranoid epic set in sun-drenched Tahiti, anchored by a career-best Benoît Magimel."},
+    { title:"BPM (Beats Per Minute)", director:"Robin Campillo", year:2017, country:"France", slug:"120-battements-par-minute",
+  image:"https://assets.mubicdn.net/images/film/170214/image-w448.jpg?1745493689", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Campillo relives his own ACT UP Paris years in this pulsing, furious, ultimately devastating chronicle of AIDS activism in the '90s."},
+    { title:"Tabu", director:"Miguel Gomes", year:2012, country:"Portugal, Germany", slug:"tabu",
+  image:"https://assets.mubicdn.net/images/film/46622/image-w448.jpg?1745491046", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Equal parts silent-cinema homage and colonial fever dream, Gomes' two-part reverie on memory and old age is bewitching and utterly singular."},
+    { title:"Cemetery of Splendour", director:"Apichatpong Weerasethakul", year:2015, country:"Thailand, United Kingdom", slug:"cemetery-of-splendour",
+  image:"https://assets.mubicdn.net/images/film/119706/image-w448.jpg?1767803237", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Soldiers fall into an inexplicable sleeping sickness in Weerasethakul's trance-like, tender ode to dreams, spirits, and the quotidian sublime."},
   ]},
   { collectionTitle: "FUNNY HA HA", films: [
     { title:"Phantoms of July", director:"Julian Radlmaier", year:2025, country:"Germany", slug:"phantoms-of-july",
@@ -3816,6 +4068,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/314/image-w448.jpg?1780480407", titleTreatment:"https://images.mubicdn.net/images/artworks/997393/cache-997393-1780400150/images-original.png", fX:0.37, fY:0.32, rating:3.8, award:null, ourTake:"An incomparable ensemble—ranging from Matthew McConaughey to Parker Posey—drives agreeably loose plotting through a day in the life of the American teenager in Linklater’s cult classic. Though made in ’93 and set in ’76, Dazed and Confused remains peerless on the subject of high school & rock music."},
     { title:"Father Mother Sister Brother", director:"Jim Jarmusch", year:2025, country:"United States, United Kingdom", slug:"father-mother-sister-brother",
       image:"https://assets.mubicdn.net/images/film/398054/image-w448.jpg?1770218943", titleTreatment:"https://images.mubicdn.net/images/artworks/991705/cache-991705-1779296307/images-original.png", fX:0.5, fY:0.39, rating:4.0, award:{text:"Venice", image:"https://images.mubicdn.net/images/carousel_takeover/454/cache-1132998-1778864397/prize_image_en_us-original.png"}, ourTake:"Iconic auteur Jim Jarmusch’s acclaimed return to anthology filmmaking abounds with wryly resonant observations on the family unit. Sketching finely detailed portraits with its starry ensemble cast (including a gloriously rumpled Tom Waits), this offbeat triptych finds universals in idiosyncrasies."},
+    { title:"Gregory's Girl", director:"Bill Forsyth", year:1980, country:"United Kingdom", slug:"gregory-s-girl",
+  image:"https://assets.mubicdn.net/images/film/10144/image-w448.jpg?1745500911", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Teenage chemistry fizzes in classrooms and on the football pitch in this beloved Scottish coming-of-age comedy, all gawky charm and gentle wit."},
+    { title:"Dear Diary", director:"Nanni Moretti", year:1993, country:"Italy, France", slug:"dear-diary",
+  image:"https://assets.mubicdn.net/images/film/1340/image-w448.jpg?1745492276", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Moretti scoots around Rome on his Vespa, blending droll slapstick with sincere autobiography in this Cannes-prizewinning cult travelogue."},
+    { title:"Dracula", director:"Radu Jude", year:2025, country:"Romania, Austria", slug:"dracula-2025",
+  image:"https://assets.mubicdn.net/images/film/433332/image-w448.jpg?1771419170", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Radu Jude force-feeds the Dracula myth through the meat grinder of AI slop and influencer culture — anarchic, obscene, and very, very funny."},
+    { title:"Kill the Jockey", director:"Luis Ortega", year:2024, country:"Argentina, Spain", slug:"el-jockey",
+  image:"https://assets.mubicdn.net/images/film/391722/image-w448.jpg?1767002769", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A deadpan jockey's life spins wildly off-course in this surreal, sports-and-crime mashup from the director of El Ángel."},
   ]},
   { collectionTitle: "TRULY, MADLY, DEEPLY", films: [
     { title:"Damage", director:"Louis Malle", year:1992, country:"United Kingdom, France", slug:"damage",
@@ -3826,12 +4086,28 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/240424/image-w448.jpg?1745496760", titleTreatment:null, fX:0.48, fY:0.34, rating:3.9, award:null, ourTake:"Christian Petzold puts a unique spin on an ancient myth in this urban fairytale, combining legend, romance and architecture to magnetic effect. We dare you not to swoon at the chemistry between Paula Beer and Franz Rogowski, who prove themselves to be one of the greatest contemporary cinematic duos."},
     { title:"Something Wild", director:"Jonathan Demme", year:1986, country:"United States", slug:"something-wild",
       image:"https://assets.mubicdn.net/images/film/26916/image-w448.jpg?1747920011", titleTreatment:null, fX:0.51, fY:0.52, rating:3.9, award:null, ourTake:"Jonathan Demme’s off-kilter comedy turns the cliché of the philandering husband inside out to celebrate the thrill of broken rules and skirted responsibilities. Jeff Daniels and Melanie Griffith sizzle as the dynamic duo at the heart of this groovy escapade, doing their best to outrun the past."},
+    { title:"Touki Bouki", director:"Djibril Diop Mambéty", year:1973, country:"Senegal", slug:"touki-bouki",
+  image:"https://assets.mubicdn.net/images/film/2036/image-w448.jpg?1745490817", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A cool, dreaming couple plots their escape from Dakar to Paris in Mambéty's landmark debut — Cannes-lauded, dazzlingly edited, endlessly influential."},
+    { title:"Sick of Myself", director:"Kristoffer Borgli", year:2022, country:"Norway, Sweden", slug:"sick-of-myself-2022",
+  image:"https://assets.mubicdn.net/images/film/339521/image-w448.jpg?1745499783", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A woman starves for attention — literally — in this wickedly dark comedy about a toxic relationship gone gloriously, grotesquely wrong."},
+    { title:"Keep the Lights On", director:"Ira Sachs", year:2012, country:"United States", slug:"keep-the-lights-on",
+  image:"https://assets.mubicdn.net/images/film/93058/image-w448.jpg?1745491047", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Sachs mines his own relationship history for this sensitive, unsparing portrait of love's slow unraveling over the better part of a decade."},
+    { title:"Ema", director:"Pablo Larraín", year:2019, country:"Chile", slug:"ema-2019",
+  image:"https://assets.mubicdn.net/images/film/224483/image-w448.jpg?1745495637", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Dance becomes weapon and confession in Larraín's combustible study of desire and regret, scored by an electrifying Nicolas Jaar soundtrack."},
   ]},
   { collectionTitle: "Outstretched Hands: Two by Ken Loach", films: [
     { title:"Hidden Agenda", director:"Ken Loach", year:1990, country:"United Kingdom", slug:"hidden-agenda",
       image:"https://assets.mubicdn.net/images/film/39064/image-w448.jpg?1776787181", titleTreatment:null, fX:0.79, fY:0.33, rating:3.8, award:null, ourTake:"A trenchant Ken Loach looks the British justice system dead in the eye with this sinister, stomach-churning thriller. Starring powerhouse duo Brian Cox and Frances McDormand as investigators hounded into a maze of corruption, Hidden Agenda lances political hypocrisy with formidable precision."},
     { title:"Kes", director:"Ken Loach", year:1969, country:"United Kingdom", slug:"kes",
       image:"https://assets.mubicdn.net/images/film/2682/image-w448.jpg?1745490613", titleTreatment:null, fX:0.55, fY:0.42, rating:4.4, award:null, ourTake:"With all the heart-stopping precision of a falcon stooping for prey, this perfect work of social realism finds—and dives for—hope amid hardship. Authenticated by actual locations and a breathtakingly true performance from then-unknown David Bradley, Ken Loach’s soulful portrait of boyhood soars."},
+    { title:"I, Daniel Blake", director:"Ken Loach", year:2016, country:"United Kingdom, France", slug:"i-daniel-blake",
+  image:"https://assets.mubicdn.net/images/film/153002/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Ken Loach's Palme d'Or-winning howl of righteous anger follows a widowed carpenter tangled in Britain's welfare bureaucracy after a heart attack. I, Daniel Blake indicts a system that reduces dignity to a form filled out correctly."},
+    { title:"Sorry We Missed You", director:"Ken Loach", year:2019, country:"United Kingdom, France", slug:"sorry-we-missed-you",
+  image:"https://assets.mubicdn.net/images/film/205619/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Ken Loach turns his unblinking eye on the gig economy, following a delivery driver whose 'be your own boss' van lease turns into indentured servitude. Sorry We Missed You is a slow-building gut-punch about a family fraying under precarious work."},
+    { title:"The Wind that Shakes the Barley", director:"Ken Loach", year:2006, country:"Ireland, United Kingdom", slug:"the-wind-that-shakes-the-barley",
+  image:"https://assets.mubicdn.net/images/film/1476/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Ken Loach won his first Palme d'Or with this incandescent account of two Irish brothers who take up arms against British rule, only to find the peace treaty tears them further apart. History rendered as raw, fraternal tragedy."},
+    { title:"Sweet Sixteen", director:"Ken Loach", year:2002, country:"United Kingdom, Germany", slug:"sweet-sixteen",
+  image:"https://assets.mubicdn.net/images/film/420/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Ken Loach follows a Scottish teenager scheming to build a better life for his mother before her release from prison, his hopeful plans curdling into something far darker. Social realism at its most heartbreaking, led by a phenomenal newcomer."},
   ]},
   { collectionTitle: "WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK", films: [
     { title:"The Mysterious Gaze of the Flamingo", director:"Diego Céspedes", year:2025, country:"Chile, France", slug:"the-mysterious-gaze-of-the-flamingo",
@@ -3842,6 +4118,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/15624/image-w448.jpg?1750435159", titleTreatment:null, fX:0.49, fY:0.17, rating:4.2, award:null, ourTake:"An in depth investigation into the subtext of a century of cinema, The Celluloid Closet is full of sensitive observations about the portrayal of homosexuality in Hollywood. Full of interviews with actors such as Tom Hanks and Susan Sarandon, this documentary is as entertaining as it is insightful."},
     { title:"The Handmaiden", director:"Park Chan-wook", year:2016, country:"South Korea", slug:"the-handmaiden",
       image:"https://assets.mubicdn.net/images/film/149904/image-w448.jpg?1745492652", titleTreatment:null, fX:0.61, fY:0.31, rating:4.4, award:null, ourTake:"Park Chan-wook’s distinctive flair for stylish visuals and jaw-dropping plot twists shines through in this deliciously subversive erotic thriller, set during the Japanese occupation of Korea. As seductive as it is bone-chilling, The Handmaiden is a many-splendored gem full of cinematic pleasures."},
+    { title:"Paris Is Burning", director:"Jennie Livingston", year:1990, country:"United States", slug:"paris-is-burning",
+  image:"https://assets.mubicdn.net/images/film/21477/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Jennie Livingston's landmark documentary immerses itself in 1980s Harlem's ball culture, where Black and Latino queer and trans communities built dazzling houses of chosen family. Exuberant, sorrowful, and endlessly influential even now."},
+    { title:"My Own Private Idaho", director:"Gus Van Sant", year:1991, country:"United States", slug:"my-own-private-idaho",
+  image:"https://assets.mubicdn.net/images/film/249/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"River Phoenix and Keanu Reeves drift through the Pacific Northwest as hustlers chasing love, home, and a father who never comes in Gus Van Sant's woozy, Shakespeare-inflected road movie. It remains a tender, narcoleptic ache of a film."},
+    { title:"Pariah", director:"Dee Rees", year:2011, country:"United States", slug:"pariah-2011",
+  image:"https://assets.mubicdn.net/images/film/36647/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Dee Rees's tender, semi-autobiographical debut follows a Brooklyn teenager quietly coming into her own queerness while her family looks the other way. Pariah captures the ache of code-switching between selves with rare specificity."},
+    { title:"Carol", director:"Todd Haynes", year:2015, country:"United States, United Kingdom", slug:"carol-2015",
+  image:"https://assets.mubicdn.net/images/film/119702/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Todd Haynes drapes 1950s New York in gorgeous, forbidden longing as a department-store clerk falls for an elegant older woman trapped in a loveless marriage. Adapted from Patricia Highsmith, Carol dares, quietly, to end in hope."},
   ]},
   { collectionTitle: "REFRAMING: WOMEN DIRECTORS", films: [
     { title:"Not a Pretty Picture", director:"Martha Coolidge", year:1976, country:"United States", slug:"not-a-pretty-picture",
@@ -3852,6 +4136,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/99648/image-w448.jpg?1775051179", titleTreatment:null, fX:0.75, fY:0.38, rating:3.8, award:null, ourTake:"Named after the rallying cry of liberation fighters in Angola, Sarah Maldoror’s seminal debut delves into the bitter chasm between colonizers and the colonized. Favoring abstract montage and a thumping jazz score over stolid realism, this potent short foregrounds the mental effects of torture."},
     { title:"Sound of Falling", director:"Mascha Schilinski", year:2025, country:"Germany", slug:"sound-of-falling",
       image:"https://assets.mubicdn.net/images/film/436826/image-w448.jpg?1747926473", titleTreatment:"https://images.mubicdn.net/images/artworks/982441/cache-982441-1777021473/images-original.png", fX:0.46, fY:0.42, rating:4.1, award:{text:"Cannes Jury Prize", image:"https://images.mubicdn.net/images/carousel_takeover/432/cache-1125095-1775798235/prize_image_en_us-original.png"}, ourTake:"Cascading through time, Mascha Schilinski’s incomparable Cannes prizewinner orchestrates echoes of past experience into transcendent poetic cinema. Surfacing evocative, gilded imagery from the shadows of femininity, Sound of Falling confirms the tremendous talents of its ambitious writer-director."},
+    { title:"The Non-Actor", director:"Eliza Barry Callahan", year:2025, country:"United States", slug:"the-non-actor",
+  image:"https://assets.mubicdn.net/images/film/432956/image-w448.jpg?1783462670", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Maya Hawke and Victoria Pedretti anchor this graceful, autobiographical debut short about the tangled border between self and sensation."},
+    { title:"Good One", director:"India Donaldson", year:2024, country:"United States", slug:"good-one",
+  image:"https://assets.mubicdn.net/images/film/397502/image-w448.jpg?1757067360", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A camping trip with dad and his oldest friend turns quietly seismic in Donaldson's keenly observed debut, carried by a poignant Lily Collias."},
+    { title:"Dorian Gray in the Mirror of the Yellow Press", director:"Ulrike Ottinger", year:1984, country:"West Germany", slug:"dorian-gray-in-the-mirror-of-the-yellow-press",
+  image:"https://assets.mubicdn.net/images/film/91811/image-w448.jpg?1745490858", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Delphine Seyrig is deliciously devious in Ottinger's prescient, image-drunk satire of tabloid fame — camp, sharp, and ahead of its time."},
+    { title:"Rafiki", director:"Wanuri Kahiu", year:2018, country:"Kenya, South Africa", slug:"rafiki-2018",
+  image:"https://assets.mubicdn.net/images/film/203274/image-w448.jpg?1745494917", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Banned at home yet dazzling at Cannes, this vibrant lesbian teen romance was the first Kenyan film to premiere at the festival."},
   ]},
   { collectionTitle: "ADAPTATIONS", films: [
     { title:"Submarino", director:"Thomas Vinterberg", year:2010, country:"Denmark, Sweden", slug:"submarino",
@@ -3862,6 +4154,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/43741/image-w448.jpg?1773063961", titleTreatment:null, fX:0.47, fY:0.52, rating:4.0, award:null, ourTake:"Dark nights of the soul unspool in an homage to the late Yoshihiro Tatsumi, who mastered the art of manga as the black rain of world war fell across Japan. Adapting his autobiographical novel A Drifting Life to screen, this animation shares with the acclaimed epic a convulsive, dynamic intensity."},
     { title:"American Fiction", director:"Cord Jefferson", year:2023, country:"United States", slug:"american-fiction",
       image:"https://assets.mubicdn.net/images/film/385929/image-w448.jpg?1762360003", titleTreatment:null, fX:0.46, fY:0.17, rating:4.1, award:null, ourTake:"Nominated for Best Picture at the Oscars®, Cord Jefferson’s hilarious debut delivers a brilliant mix of satire and family drama. Taking aim at the racial blind spots of the publishing world, American Fiction gleefully exposes the industry’s ravenous appetite for stereotypical storytelling."},
+    { title:"The Woman in the Fifth", director:"Paweł Pawlikowski", year:2011, country:"France, Poland", slug:"the-woman-in-the-fifth",
+  image:"https://assets.mubicdn.net/images/film/43760/image-w448.jpg?1771423790", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Before Ida and Cold War, Pawlikowski made this beguiling, unsettling romantic thriller starring Kristin Scott Thomas and Ethan Hawke."},
+    { title:"Burning", director:"Lee Chang-dong", year:2018, country:"South Korea", slug:"burning-2018",
+  image:"https://assets.mubicdn.net/images/film/182499/image-w448.jpg?1745500840", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Lee Chang-dong twists a slim Murakami story into a slow-simmering, sinister study of class, obsession, and vanishing women."},
+    { title:"The Zone of Interest", director:"Jonathan Glazer", year:2023, country:"United Kingdom, Poland", slug:"the-zone-of-interest",
+  image:"https://assets.mubicdn.net/images/film/228969/image-w448.jpg?1754306682", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Glazer adapts Martin Amis with chilling restraint, staying just outside the camp walls for an Oscar-winning horror of banal domesticity."},
+    { title:"Persepolis", director:"Marjane Satrapi, Vincent Paronnaud", year:2007, country:"France, United States", slug:"persepolis",
+  image:"https://assets.mubicdn.net/images/film/91/image-w448.jpg?1745490949", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Satrapi animates her own graphic memoir of growing up during the Iranian Revolution — funny, furious, and rendered in gorgeous black-and-white."},
   ]},
   { collectionTitle: "Pleasures of the Flesh: Films by Luca Guadagnino", films: [
     { title:"Bones and All", director:"Luca Guadagnino", year:2022, country:"United States, Italy", slug:"bones-and-all",
@@ -3870,6 +4170,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/20273/image-w448.jpg?1745501140", titleTreatment:null, fX:0.28, fY:0.44, rating:4.0, award:null, ourTake:"Dazzling the senses, I Am Love revives the lavish, elegant, emotionally expressive style of classic ’50s melodramas and proves their timeless vitality. It also confirms Tilda Swinton—who learned both Italian and Russian for the role(!)—as one of the best, most unpredictable actors."},
     { title:"Queer", director:"Luca Guadagnino", year:2024, country:"United States, Italy", slug:"queer",
       image:"https://assets.mubicdn.net/images/film/391610/image-w448.jpg?1745502917", titleTreatment:"https://images.mubicdn.net/images/artworks/754022/cache-754022-1736857258/images-original.png", fX:0.52, fY:0.65, rating:3.9, award:{text:"Venice Film Festival", image:"https://images.mubicdn.net/images/carousel_takeover/304/cache-1029887-1737121219/prize_image_en_us-original.png"}, ourTake:"Starring an astonishing Daniel Craig as a lovestruck sensualist, Luca Guadagnino’s audacious adaptation of William Burroughs’s infamous novel is suffused with romantic longing. Under the sway of infatuation’s exquisite pains and entrancing pleasures, Queer travels to the mesmerizing ends of love."},
+    { title:"Call Me by Your Name", director:"Luca Guadagnino", year:2017, country:"Italy, France", slug:"call-me-by-your-name",
+  image:"https://assets.mubicdn.net/images/film/154692/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Luca Guadagnino bathes a languid Italian summer in golden light as a teenager and his father's graduate student fall into an intoxicating, doomed romance. Call Me by Your Name lingers in every peach, every glance, every unbearable goodbye."},
+    { title:"A Bigger Splash", director:"Luca Guadagnino", year:2015, country:"Italy, France", slug:"a-bigger-splash-2015",
+  image:"https://assets.mubicdn.net/images/film/119725/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A rock star's Mediterranean idyll is upended by her ex and his mysterious daughter in Luca Guadagnino's sun-scorched remake of La Piscine. Tilda Swinton and Ralph Fiennes duel deliciously in this slow-simmering cauldron of jealousy and appetite."},
+    { title:"Suspiria", director:"Luca Guadagnino", year:2018, country:"Italy, United States", slug:"suspiria-2018",
+  image:"https://assets.mubicdn.net/images/film/154612/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Luca Guadagnino reimagines Argento's giallo classic as a bleak, blood-soaked fever dream set inside a Berlin dance academy run by witches. Dakota Johnson dances into possession in this sprawling Suspiria, as much political horror as body horror."},
+    { title:"Challengers", director:"Luca Guadagnino", year:2024, country:"United States, Italy", slug:"challengers",
+  image:"https://assets.mubicdn.net/images/film/391577/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Luca Guadagnino serves up a scorching tennis love triangle, volleying between a coach, her husband, and the man they both once loved. Zendaya commands Challengers' propulsive games of desire and ambition like she was born on the baseline."},
   ]},
   { collectionTitle: "Father Mother Sister Brother: Family Stories", films: [
     { title:"Father Mother Sister Brother", director:"Jim Jarmusch", year:2025, country:"United States, United Kingdom", slug:"father-mother-sister-brother",
@@ -3880,6 +4188,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/259/image-w448.jpg?1745492285", titleTreatment:null, fX:0.63, fY:0.32, rating:4.2, award:null, ourTake:"Coagulating into a deft critique of conservative Argentina, murky water, red wine, and blood trickle across Lucrecia Martel’s miasmic, impressive debut. The first entry in a loose trilogy set in her native Salta, La ciénaga made an indelible mark on global art cinema at the turn of the millennium."},
     { title:"The Mastermind", director:"Kelly Reichardt", year:2025, country:"United States", slug:"the-mastermind",
       image:"https://assets.mubicdn.net/images/film/422583/image-w448.jpg?1765544027", titleTreatment:"https://images.mubicdn.net/images/artworks/886806/cache-886806-1765797028/images-original.png", fX:0.35, fY:0.01, rating:3.4, award:{text:"Cannes Film Festival", image:"https://images.mubicdn.net/images/carousel_takeover/376/cache-1099208-1764609163/prize_image_en_us-original.png"}, ourTake:"With an artful eye and jazzy unpredictability, Kelly Reichardt unravels the threads of the heist film in this standout from Cannes. As an antihero kicking about on the brink of the ‘70s, Josh O’Connor is unmissable, lending rumpled discontent to this ironic, wry vision of American individualism."},
+    { title:"The Farewell", director:"Lulu Wang", year:2019, country:"United States, China", slug:"the-farewell-2019",
+  image:"https://assets.mubicdn.net/images/film/225379/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Lulu Wang's bittersweet dramedy follows a Chinese-American family united by a lie: keeping grandma's terminal diagnosis secret from her. Awkwafina anchors The Farewell's tender collision of collectivism and individualism with wit and grief."},
+    { title:"A Separation", director:"Asghar Farhadi", year:2011, country:"Iran", slug:"a-separation",
+  image:"https://assets.mubicdn.net/images/film/38332/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Asghar Farhadi's Oscar-winning drama begins with a divorce and unravels into a moral labyrinth involving class, faith, and a hired caregiver. A Separation is a tautly constructed puzzle box where every character is right, and the truth is worse."},
+    { title:"Nobody Knows", director:"Hirokazu Koreeda", year:2004, country:"Japan", slug:"nobody-knows",
+  image:"https://assets.mubicdn.net/images/film/1031/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Hirokazu Koreeda's devastating drama, based on a true story, follows four siblings abandoned by their mother and left to fend for themselves in a Tokyo apartment. Nobody Knows watches childhood erode with unsentimental tenderness."},
+    { title:"Aftersun", director:"Charlotte Wells", year:2022, country:"United Kingdom, United States", slug:"aftersun",
+  image:"https://assets.mubicdn.net/images/film/340287/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Charlotte Wells's astonishing debut reconstructs a father-daughter holiday in Turkey through the fog of adult memory, each camcorder frame hiding a sadness the child can't yet see. A heartbreaking act of remembrance, led by Paul Mescal."},
   ]},
   { collectionTitle: "THIS IS NOT A COMING OUT STORY", films: [
     { title:"Crossing", director:"Levan Akin", year:2024, country:"Sweden, Turkey", slug:"crossing-2023-levan-akin",
@@ -3890,6 +4206,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/332978/image-w448.jpg?1746718753", titleTreatment:"https://images.mubicdn.net/images/artworks/849389/cache-849389-1754999024/images-original.png", fX:0.31, fY:0.44, rating:3.7, award:{text:"Berlinale", image:"https://images.mubicdn.net/images/carousel_takeover/344/cache-1076935-1754902925/prize_image_en_us-original.png"}, ourTake:"Rising star Emma Mackey stuns in this searing adaptation of Deborah Levy’s acclaimed novel about sensual longing and animal instincts. Intoxicated by the sun and salt sensations of the Andalusian coast, her hot-headed heroine swims clear of her mother’s stinging gaze in a break for self-realization."},
     { title:"The Celluloid Closet", director:"Rob Epstein, Jeffrey Friedman", year:1995, country:"Germany, France", slug:"the-celluloid-closet",
       image:"https://assets.mubicdn.net/images/film/15624/image-w448.jpg?1750435159", titleTreatment:null, fX:0.49, fY:0.17, rating:4.2, award:null, ourTake:"An in depth investigation into the subtext of a century of cinema, The Celluloid Closet is full of sensitive observations about the portrayal of homosexuality in Hollywood. Full of interviews with actors such as Tom Hanks and Susan Sarandon, this documentary is as entertaining as it is insightful."},
+    { title:"Naz + Maalik", director:"Jay Dockendorf", year:2014, country:"United States", slug:"naz-maalik",
+  image:"https://assets.mubicdn.net/images/film/120675/image-w448.jpg?1748619650", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Two closeted lovers hustle through a single New York summer's day in this breezy, loose-limbed debut about the price of tenderness in hiding."},
+    { title:"I Am Divine", director:"Jeffrey Schwarz", year:2013, country:"United States", slug:"i-am-divine",
+  image:"https://assets.mubicdn.net/images/film/88955/image-w448.jpg?1745501361", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"John Waters' muse gets the joyful documentary treatment she deserves — vulgar, vivacious, and packed with glorious archival footage of the drag icon."},
+    { title:"Passages", director:"Ira Sachs", year:2023, country:"France, Germany", slug:"passages-2022",
+  image:"https://assets.mubicdn.net/images/film/325455/image-w448.jpg?1745499517", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Franz Rogowski wreaks gorgeous havoc on a marriage in Ira Sachs' acerbically funny, refreshingly frank love triangle."},
+    { title:"The Five Devils", director:"Léa Mysius", year:2022, country:"France", slug:"les-cinq-diables",
+  image:"https://assets.mubicdn.net/images/film/289223/image-w448.jpg?1745500884", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A girl who can smell memory into being unlocks her mother's hidden queer past in Mysius' witchy, genre-defying coming-of-age tale."},
   ]},
   { collectionTitle: "BY THE BOOK: AUTEUR ADAPTATIONS", films: [
     { title:"American Fiction", director:"Cord Jefferson", year:2023, country:"United States", slug:"american-fiction",
@@ -3900,12 +4224,28 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/87308/image-w448.jpg?1745491892", titleTreatment:null, fX:0.35, fY:0.35, rating:3.8, award:null, ourTake:"This fresh and contentious adaptation from Andrea Arnold (American Honey) sheds the classic Brontë novel of its Gothic and Romantic trimmings to get at the raw passions simmering underneath. One thing’s for sure: Watching this film is as brutally exhilarating as a storm on the Yorkshire Moors!"},
     { title:"The Silence of the Lambs", director:"Jonathan Demme", year:1991, country:"United States", slug:"the-silence-of-the-lambs",
       image:"https://assets.mubicdn.net/images/film/528/image-w448.jpg?1757512229", titleTreatment:null, fX:0.47, fY:0.32, rating:4.2, award:null, ourTake:"Disturbing and captivating in equal measures, The Silence of the Lambs ranks as one of the best psychological thriller-horrors of all times. Winning 5 Oscars® (including Best Film, Director, Actor and Actress), this now cult film stars Jodie Foster, as well as Anthony Hopkins at his most terrifying."},
+    { title:"Our Grand Despair", director:"Seyfi Teoman", year:2011, country:"Turkey, Germany", slug:"our-grand-despair",
+  image:"https://assets.mubicdn.net/images/film/36637/image-w448.jpg?1745490216", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Adapted from Barış Bıçakçı's beloved novel, this bittersweet Ankara-set triangle was Teoman's swan song — soulful, funny, and quietly devastating."},
+    { title:"The Tin Drum", director:"Volker Schlöndorff", year:1979, country:"West Germany, France", slug:"the-tin-drum",
+  image:"https://assets.mubicdn.net/images/film/789/image-w448.jpg?1745492283", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Sharing the Palme d'Or with Apocalypse Now, Schlöndorff's scandalous take on Günter Grass remains one of German cinema's most audacious adaptations."},
+    { title:"Crash", director:"David Cronenberg", year:1996, country:"Canada", slug:"crash",
+  image:"https://assets.mubicdn.net/images/film/982/image-w448.jpg?1745491095", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Cronenberg turns J.G. Ballard's most scandalous novel into a cold, transgressive reckoning with car crashes, sex, and desire — one of the great '90s provocations."},
+    { title:"The Invisible Life of Eurídice Gusmão", director:"Karim Aïnouz", year:2019, country:"Brazil, Germany", slug:"the-invisible-life-of-euridice-gusmao",
+  image:"https://assets.mubicdn.net/images/film/234146/image-w448.jpg?1745495962", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Two sisters separated by lies live out an epic, decades-spanning melodrama in Aïnouz's ravishing, Cannes-winning anti-patriarchal saga."},
   ]},
   { collectionTitle: "THE CHER EFFECT: A DOUBLE BILL", films: [
     { title:"Mermaids", director:"Richard Benjamin", year:1990, country:"United States", slug:"mermaids",
       image:"https://assets.mubicdn.net/images/film/17214/image-w448.jpg?1745489671", titleTreatment:null, fX:0.7, fY:0.51, rating:4.2, award:null, ourTake:"Juxtaposing the bewildering experience of newfound desire with the proud sensuality of adults, Mermaids portrays coming of age as a lifelong adventure. Come for Cher’s glamorous sass and Winona Ryder’s hilariously raunchy internal monologue; stay for Bob Hoskins’s radiant charm."},
     { title:"Moonstruck", director:"Norman Jewison", year:1987, country:"United States", slug:"moonstruck",
       image:"https://assets.mubicdn.net/images/film/9487/image-w448.jpg?1745490768", titleTreatment:"https://images.mubicdn.net/images/artworks/900250/cache-900250-1769542080/images-original.png", fX:0.26, fY:0.38, rating:4.1, award:null, ourTake:"Love drives people nuts in Norman Jewison’s deliciously farcical comedy, which tears into absurd social mores with glee. Cher won the Oscar® for her warm performance as a woman swept off her feet by Nicolas Cage’s wolfish lover, their offbeat romance glinting in the romantic New York City moonlight."},
+    { title:"Silkwood", director:"Mike Nichols", year:1983, country:"United States", slug:"silkwood",
+  image:"https://assets.mubicdn.net/images/film/16442/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Cher earned an Oscar nomination as the acerbic roommate of a nuclear plant whistleblower in Mike Nichols's based-on-a-true-story drama. Silkwood is a slow-burning, quietly furious portrait of corporate cover-up and working-class solidarity."},
+    { title:"Mask", director:"Peter Bogdanovich", year:1985, country:"United States", slug:"mask",
+  image:"https://assets.mubicdn.net/images/film/25620/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Cher won Best Actress at Cannes for this fierce, funny portrait of a biker mom raising a son with a severe craniofacial condition. Peter Bogdanovich's Mask refuses pity at every turn, choosing raucous love and Springsteen needle drops instead."},
+    { title:"Suspect", director:"Peter Yates", year:1987, country:"United States", slug:"suspect",
+  image:"https://assets.mubicdn.net/images/film/5217/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Cher plays a weary public defender pulled into an unlikely alliance with a juror to clear a homeless deaf-mute murder suspect in this twisty Peter Yates thriller. Suspect pairs courtroom procedure with genuine paranoia to snappy effect."},
+    { title:"The Witches of Eastwick", director:"George Miller", year:1987, country:"United States", slug:"the-witches-of-eastwick",
+  image:"https://assets.mubicdn.net/images/film/11318/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Cher, Susan Sarandon, and Michelle Pfeiffer conjure the devil himself, a gleefully diabolical Jack Nicholson, in George Miller's frothy supernatural comedy. It turns small-town repression into a wickedly fun feminist fable."},
   ]},
   { collectionTitle: "FEAR ON FILM", films: [
     { title:"The Neon Demon", director:"Nicolas Winding Refn", year:2016, country:"Denmark, France", slug:"the-neon-demon",
@@ -3916,6 +4256,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/528/image-w448.jpg?1757512229", titleTreatment:null, fX:0.47, fY:0.32, rating:4.2, award:null, ourTake:"Disturbing and captivating in equal measures, The Silence of the Lambs ranks as one of the best psychological thriller-horrors of all times. Winning 5 Oscars® (including Best Film, Director, Actor and Actress), this now cult film stars Jodie Foster, as well as Anthony Hopkins at his most terrifying."},
     { title:"The Killing of a Sacred Deer", director:"Yorgos Lanthimos", year:2017, country:"Ireland, United Kingdom", slug:"the-killing-of-a-sacred-deer",
       image:"https://assets.mubicdn.net/images/film/155443/image-w448.jpg?1745501246", titleTreatment:null, fX:0.38, fY:0.49, rating:3.9, award:null, ourTake:"It was only a matter of time before Yorgos Lanthimos tipped the caustic ironies of Dogtooth into full-blown horror. Starring Colin Farrell and Nicole Kidman, The Killing of a Sacred Deer transposes the myth of Iphigenia from ancient Greece to modern America for a devilishly deadpan tale of revenge."},
+    { title:"Deep Red", director:"Dario Argento", year:1975, country:"Italy", slug:"deep-red",
+  image:"https://assets.mubicdn.net/images/film/20399/image-w448.jpg?1745492712", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"One of giallo's defining set-piece showcases, Argento's stylish shocker casts David Hemmings as a very Blow-Up-adjacent witness to murder."},
+    { title:"Luz", director:"Tilman Singer", year:2018, country:"Germany", slug:"luz",
+  image:"https://assets.mubicdn.net/images/film/197335/image-w448.jpg?1759252508", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Before Cuckoo, Tilman Singer reinvented possession horror in this strobing, disorienting, electronic-scored fever dream of a debut."},
+    { title:"A Field in England", director:"Ben Wheatley", year:2013, country:"United Kingdom", slug:"a-field-in-england",
+  image:"https://assets.mubicdn.net/images/film/107205/image-w448.jpg?1745491617", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Deserters and alchemists collide in a mushroom-addled English Civil War nightmare — Wheatley's strangest, most hallucinatory swing."},
+    { title:"Antichrist", director:"Lars von Trier", year:2009, country:"Denmark, Germany", slug:"antichrist",
+  image:"https://assets.mubicdn.net/images/film/2098/image-w448.jpg?1745491069", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Charlotte Gainsbourg won Best Actress at Cannes for this harrowing, controversial descent into grief, guilt, and the terror of nature itself."},
   ]},
   { collectionTitle: "THE SUMMER BLUES", films: [
     { title:"Passing Summer", director:"Angela Schanelec", year:2001, country:"Germany", slug:"passing-summer",
@@ -3926,6 +4274,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/198112/image-w448.jpg?1745495637", titleTreatment:null, fX:0.38, fY:0.23, rating:3.3, award:null, ourTake:"Like Passages, this luminous drama from Ira Sachs dives into a web of interlocking relationships unsettled by the sudden tides of life. Led by the queen of angst Isabelle Huppert, Frankie muses on love and art, the small comforts that bring a levity to the weight of mortality."},
     { title:"Hot Milk", director:"Rebecca Lenkiewicz", year:2025, country:"United Kingdom", slug:"hot-milk-2023",
       image:"https://assets.mubicdn.net/images/film/332978/image-w448.jpg?1746718753", titleTreatment:"https://images.mubicdn.net/images/artworks/849389/cache-849389-1754999024/images-original.png", fX:0.31, fY:0.44, rating:3.7, award:{text:"Berlinale", image:"https://images.mubicdn.net/images/carousel_takeover/344/cache-1076935-1754902925/prize_image_en_us-original.png"}, ourTake:"Rising star Emma Mackey stuns in this searing adaptation of Deborah Levy’s acclaimed novel about sensual longing and animal instincts. Intoxicated by the sun and salt sensations of the Andalusian coast, her hot-headed heroine swims clear of her mother’s stinging gaze in a break for self-realization."},
+    { title:"Unrelated", director:"Joanna Hogg", year:2007, country:"United Kingdom", slug:"unrelated",
+  image:"https://assets.mubicdn.net/images/film/2102/image-w448.jpg?1752872716", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Joanna Hogg's remarkable debut watches a woman adrift among a family's teenagers on a Tuscan holiday — precise, uncomfortable, quietly devastating."},
+    { title:"Silvia Prieto", director:"Martín Rejtman", year:1999, country:"Argentina", slug:"silvia-prieto",
+  image:"https://assets.mubicdn.net/images/film/23535/image-w448.jpg?1745489773", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A woman resolves to change her life by summer's end in this deadpan, minimalist comedy of doppelgängers and drifting identity."},
+    { title:"Gasoline Rainbow", director:"Bill Ross IV, Turner Ross", year:2023, country:"United States", slug:"gasoline-rainbow",
+  image:"https://assets.mubicdn.net/images/film/385392/image-w448.jpg?1745501631", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Five teenagers chase the ocean in a dying van in this free-wheeling, real-feeling ode to the last great summer before adulthood."},
+    { title:"Alcarràs", director:"Carla Simón", year:2022, country:"Spain, Italy", slug:"alcarras",
+  image:"https://assets.mubicdn.net/images/film/332332/image-w448.jpg?1745499506", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A family's last peach harvest becomes an elegy for a vanishing way of life in Simón's Golden Bear-winning ensemble portrait."},
   ]},
   { collectionTitle: "FILM FESTIVAL FAVORITES", films: [
     { title:"Sunset", director:"László Nemes", year:2018, country:"Hungary, France", slug:"sunset-2017",
@@ -3936,6 +4292,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/87313/image-w448.jpg?1745490991", titleTreatment:null, fX:0.51, fY:0.0, rating:4.2, award:null, ourTake:"This beautiful, unsettling documentary from the adventurous maverick Michael Glawogger travels from Thailand to Bangladesh to Mexico to view how the oldest profession differs across cultures. The candid, intimate experiences of sex workers form the empathetic center of this remarkable film."},
     { title:"The Consequences of Love", director:"Paolo Sorrentino", year:2004, country:"Italy", slug:"the-consequences-of-love",
       image:"https://assets.mubicdn.net/images/film/3719/image-w448.jpg?1745489584", titleTreatment:null, fX:0.46, fY:0.32, rating:4.1, award:null, ourTake:"A breakout film for Paolo Sorrentino, this stylish thriller begins with a meticulous stillness that gradually ruptures into a whirlwind of violence and secrets. Projecting pure sophisticated suavity, Toni Servillo masterfully commands this enigmatic character story of midlife yearning and regrets."},
+    { title:"Ennio", director:"Giuseppe Tornatore", year:2021, country:"Italy", slug:"ennio",
+  image:"https://assets.mubicdn.net/images/film/290680/image-w448.jpg?1748647422", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Tornatore's loving documentary tribute lets Ennio Morricone narrate his own legend, with Eastwood and more singing his praises."},
+    { title:"Infinite Football", director:"Corneliu Porumboiu", year:2018, country:"Romania", slug:"infinite-football",
+  image:"https://assets.mubicdn.net/images/film/197006/image-w448.jpg?1745494706", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A Romanian bureaucrat's obsessive quest to redesign the rules of soccer becomes a droll, deadpan meditation on utopia and limitation."},
+    { title:"So Long, My Son", director:"Wang Xiaoshuai", year:2019, country:"China", slug:"so-long-my-son",
+  image:"https://assets.mubicdn.net/images/film/226228/image-w448.jpg?1745495694", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A Berlinale prizewinner, this sweeping generational saga traces one family's decades of loss under China's one-child policy."},
+    { title:"I Am Not a Witch", director:"Rungano Nyoni", year:2017, country:"Zambia, United Kingdom", slug:"i-am-not-a-witch",
+  image:"https://assets.mubicdn.net/images/film/170782/image-w448.jpg?1745493708", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A young girl is exiled to a 'witch camp' in Nyoni's tragicomic, visually dazzling festival darling — a fierce critique dressed as fable."},
   ]},
   { collectionTitle: "SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS", films: [
     { title:"Good Time", director:"Josh Safdie, Benny Safdie", year:2017, country:"United States", slug:"good-time",
@@ -3946,6 +4310,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/422583/image-w448.jpg?1765544027", titleTreatment:"https://images.mubicdn.net/images/artworks/886806/cache-886806-1765797028/images-original.png", fX:0.35, fY:0.01, rating:3.4, award:{text:"Cannes Film Festival", image:"https://images.mubicdn.net/images/carousel_takeover/376/cache-1099208-1764609163/prize_image_en_us-original.png"}, ourTake:"With an artful eye and jazzy unpredictability, Kelly Reichardt unravels the threads of the heist film in this standout from Cannes. As an antihero kicking about on the brink of the ‘70s, Josh O’Connor is unmissable, lending rumpled discontent to this ironic, wry vision of American individualism."},
     { title:"Sorry, Baby", director:"Eva Victor", year:2025, country:"United States, France", slug:"sorry-baby-2025",
       image:"https://assets.mubicdn.net/images/film/431122/image-w448.jpg?1758281044", titleTreatment:"https://images.mubicdn.net/images/artworks/876795/cache-876795-1761056701/images-original.png", fX:0.46, fY:0.41, rating:4.2, award:null, ourTake:"Salting psychological trauma with sly humor and a mackerel kitten, this bracing debut from comedian Eva Victor puts roses in the cheeks. Recalling Kenneth Lonergan’s dramas with piercing honesty and confident tread, this tale of self-compassion and companionship is an adagio in New England snow."},
+    { title:"Minari", director:"Lee Isaac Chung", year:2020, country:"United States", slug:"minari",
+  image:"https://assets.mubicdn.net/images/film/240093/image-w448.jpg?1745503633", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A Korean-American family chases the American dream on an Arkansas farm — six Oscar nods, and a golden statue for Youn Yuh-jung."},
+    { title:"Priscilla", director:"Sofia Coppola", year:2023, country:"United States, Italy", slug:"priscilla",
+  image:"https://assets.mubicdn.net/images/film/354432/image-w448.jpg?1745501476", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Cailee Spaeny is revelatory as Priscilla Presley in Coppola's sumptuous, melancholy portrait of fame's gilded, lonesome cage."},
+    { title:"Aftersun", director:"Charlotte Wells", year:2022, country:"United Kingdom, United States", slug:"aftersun",
+  image:"https://assets.mubicdn.net/images/film/340287/image-w448.jpg?1745499810", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Paul Mescal and newcomer Frankie Corio break hearts as father and daughter on a bittersweet holiday, remembered in fragments."},
+    { title:"Shiva Baby", director:"Emma Seligman", year:2020, country:"United States", slug:"shiva-baby-2020",
+  image:"https://assets.mubicdn.net/images/film/254618/image-w448.jpg?1745496747", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A sugar baby's exes collide at a shiva in Seligman's stress-comedy debut — tight, funny, and anchored by a magnetic Rachel Sennott."},
   ]},
   { collectionTitle: "“BIG FIVE” OSCAR WINNERS", films: [
     { title:"Thelma & Louise", director:"Ridley Scott", year:1991, country:"United States, United Kingdom", slug:"thelma-louise",
@@ -3956,6 +4328,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/172930/image-w448.jpg?1745495498", titleTreatment:"https://images.mubicdn.net/images/artworks/1005195/cache-1005195-1783085978/images-original.png", fX:0.71, fY:0.5, rating:4.6, award:null, ourTake:"A huge international sensation, Bong Joon Ho’s social thriller won the Palme d’Or as well as four Academy Awards®, including Best Picture! As an unemployed family cleverly integrates itself into an unsuspecting wealthy household, this darkly comic film serves up surprise after nail-biting surprise."},
     { title:"Fargo", director:"Joel Coen", year:1996, country:"United States, United Kingdom", slug:"fargo",
       image:"https://assets.mubicdn.net/images/film/170/image-w448.jpg?1745490955", titleTreatment:null, fX:0.58, fY:0.34, rating:4.3, award:null, ourTake:"Unpredictable in its plot, this noir detective tale, a, cult hit from the Coen brothers, hasn’t aged a day. With an award-winning performance from Frances McDormand, Fargo is an offbeat masterclass in dark humor. Suspense, comedy and social observation have rarely coexisted so naturally on screen."},
+    { title:"In the Heat of the Night", director:"Norman Jewison", year:1967, country:"United States", slug:"in-the-heat-of-the-night",
+  image:"https://assets.mubicdn.net/images/film/15131/image-w448.jpg?1745489659", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Five Oscars, one sweltering night: Sidney Poitier and Rod Steiger spark off each other in Jewison's scorching race-relations thriller."},
+    { title:"The Wrestler", director:"Darren Aronofsky", year:2008, country:"United States, France", slug:"the-wrestler",
+  image:"https://assets.mubicdn.net/images/film/1647/image-w448.jpg?1758117720", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Mickey Rourke claws his way back in this Golden Lion-winning comeback story, shot with the same battered intimacy as its hero."},
+    { title:"The Graduate", director:"Mike Nichols", year:1967, country:"United States", slug:"the-graduate",
+  image:"https://assets.mubicdn.net/images/film/193/image-w448.jpg?1745490304", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Dustin Hoffman drifts into adulthood's anxieties in Nichols' still-fresh generational classic — plastics, seduction, and Simon & Garfunkel."},
+    { title:"The Apartment", director:"Billy Wilder", year:1960, country:"United States", slug:"the-apartment",
+  image:"https://assets.mubicdn.net/images/film/1694/image-w448.jpg?1745489533", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Jack Lemmon lends his apartment key to philandering executives in one of the most beloved romantic comedies ever made."},
   ]},
   { collectionTitle: "AMERICAN INDIES", films: [
     { title:"Ingrid Goes West", director:"Matt Spicer", year:2017, country:"United States", slug:"ingrid-goes-west",
@@ -3966,6 +4346,14 @@ const NUMBERED_ROW_COLLECTIONS = [
       image:"https://assets.mubicdn.net/images/film/23620/image-w448.jpg?1745489776", titleTreatment:null, fX:0.85, fY:0.22, rating:3.7, award:null, ourTake:"Before moving to Oregon, Kelly Reichardt made a fugitive film set in the Florida wetlands—more like the grungy filmmaking of Jim Jarmusch than her later slow cinema. Tailing wastrel lovers on the run, River of Grass shows she has been committed to America’s margins and outcasts from the very start."},
     { title:"Sorry, Baby", director:"Eva Victor", year:2025, country:"United States, France", slug:"sorry-baby-2025",
       image:"https://assets.mubicdn.net/images/film/431122/image-w448.jpg?1758281044", titleTreatment:"https://images.mubicdn.net/images/artworks/876795/cache-876795-1761056701/images-original.png", fX:0.46, fY:0.41, rating:4.2, award:null, ourTake:"Salting psychological trauma with sly humor and a mackerel kitten, this bracing debut from comedian Eva Victor puts roses in the cheeks. Recalling Kenneth Lonergan’s dramas with piercing honesty and confident tread, this tale of self-compassion and companionship is an adagio in New England snow."},
+    { title:"On the Seventh Day", director:"Jim McKay", year:2017, country:"United States", slug:"on-the-seventh-day-2017",
+  image:"https://assets.mubicdn.net/images/film/174204/image-w448.jpg?1745493824", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"An Independent Spirit winner, McKay's humane drama follows an undocumented soccer-loving line cook across one impossible Sunday."},
+    { title:"The Unknown Country", director:"Morrisa Maltz", year:2022, country:"United States", slug:"the-unknown-country",
+  image:"https://assets.mubicdn.net/images/film/333026/image-w448.jpg?1745499533", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Lily Gladstone anchors this dreamlike road movie through motels and diners, blurring documentary and fiction across the American Midwest."},
+    { title:"Certain Women", director:"Kelly Reichardt", year:2016, country:"United States", slug:"certain-women-2016",
+  image:"https://assets.mubicdn.net/images/film/132812/image-w448.jpg?1745492634", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Laura Dern, Kristen Stewart, and Michelle Williams headline Reichardt's spare Montana anthology — and a star-making Lily Gladstone steals it."},
+    { title:"Familiar Touch", director:"Sarah Friedland", year:2024, country:"United States", slug:"familiar-touch",
+  image:"https://assets.mubicdn.net/images/film/419308/image-w448.jpg?1761650599", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Friedland's tender debut lingers on the small sensory details of a life dimmed by dementia — quiet, precise, deeply humane."},
   ]},
 ];
 
@@ -3995,9 +4383,47 @@ function nsOurTake(film) {
 // Renders a single film row-section — pulled out of renderGrid so the Diego "Watch Next"
 // merge (see nsMergeWatchNext) can render Continue Watching / Your Watchlist row markup
 // on demand without duplicating the template.
-function filmRowSectionHTML(row) {
-  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab, isTopTen } = row;
+function filmRowSectionHTML(row, rowIdx) {
+  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab, isTopTen, carousel } = row;
   const emptySlotCount = capacity ? Math.max(0, capacity - rowFilms.length) : 0;
+  const tilesHTML = rowFilms.map((film, filmIdx) => {
+    const posX = Math.round(film.fX * 100);
+    const posY = Math.round(film.fY * 100);
+    const titleTreatment = doubletile ? (film.titleTreatment || NS_TITLE_TREATMENTS[film.slug || slugify(film.title)]) : null;
+    const showProgress = film._progress !== undefined ? film._progress : isContinueWatching;
+    return `
+      <a class="film-card" href="https://mubi.com/films/${film.slug || slugify(film.title)}" target="_self" aria-label="${film.title}">
+        ${isNewToMubi && filmIdx === 0
+          ? `<img class="new-to-mubi-arrow new-to-mubi-arrow--left" src="../../brand_assets/icon_arrowLeft.svg" alt="">`
+          : ''}
+        ${isNewToMubi && filmIdx === rowFilms.length - 1
+          ? `<img class="new-to-mubi-arrow new-to-mubi-arrow--right" src="../../brand_assets/icon_arrowRight.svg" alt="">`
+          : ''}
+        ${isTopTen ? `<span class="card-rank-badge">${filmIdx + 1}</span>` : ''}
+        <div class="card-img-wrap">
+          <img class="card-img" src="${film.image}"
+            alt="${film.title}"
+            loading="lazy"
+            style="object-position:${posX}% ${posY}%">
+          ${doubletile && !isNewToMubi
+            ? `<img class="card-hover-still" src="${nsHeroImageURL(film.image)}" alt="" loading="lazy">`
+            : ''}
+          ${doubletile && film.award
+            ? `<img class="card-award-badge" src="${film.award.image}" alt="${film.award.text}" title="${film.award.text}">`
+            : ''}
+          <div class="card-overlay">
+            ${film.isSeries ? `<div class="card-eyebrow">Series</div>` : ''}
+            ${titleTreatment
+              ? `<img class="card-title-treatment" src="${titleTreatment}" alt="${film.title}">`
+              : `<div class="card-title">${film.title}</div>`}
+            ${showProgress
+              ? `<div class="card-progress-track"><div class="card-progress-fill" style="width:90px"></div></div>`
+              : `<div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>`}
+          </div>
+        </div>
+        ${cardSynopsisBlockHTML(film)}
+      </a>`;
+  }).join('');
   return `
     <div class="row-section${doubletile ? ' row-section--doubletile' : ''}${isNewToMubi ? ' new-to-mubi-section' : ''}${emptySlotCount ? ' row-section--has-empty' : ''}${(showMergeFab || showUnmergeFab) ? ' row-section--has-merge-fab' : ''}">
       ${isNewToMubi ? `<div class="new-to-mubi-bg" style="background-image:url('../../brand_assets/NewToMubiBG_s.jpg')"></div><div class="new-to-mubi-grad"></div>` : ''}
@@ -4018,52 +4444,28 @@ function filmRowSectionHTML(row) {
           <div>
             <span class="row-title">${title}</span>
             <h2 class="new-to-mubi-heading">NEW TO MUBI?</h2>
-            <p class="new-to-mubi-body">Seven essential films and series for anyone new to MUBI.</p>
+            <p class="new-to-mubi-body">Six essential films and series for anyone new to MUBI.</p>
           </div>
         ` : `<span class="row-title">${title}</span>`}
-        ${isNewToMubi ? '' : `<span class="row-see-all">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></span>`}
+        ${isNewToMubi || carousel ? '' : `<span class="row-see-all">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></span>`}
       </div>
+      ${carousel ? `
+      <div class="row-carousel-wrap" id="rowCarousel-${rowIdx}">
+        <div class="row-carousel-inner">
+          <div class="row-grid row-grid--carousel">
+            ${tilesHTML}
+          </div>
+        </div>
+        <button class="row-carousel-arrow row-carousel-arrow--next" data-carousel-target="rowCarousel-${rowIdx}" aria-label="Next">
+          <img src="../../brand_assets/icon_arrowRight.svg" alt="">
+        </button>
+      </div>
+      ` : `
       <div class="row-grid">
-        ${rowFilms.map((film, filmIdx) => {
-          const posX = Math.round(film.fX * 100);
-          const posY = Math.round(film.fY * 100);
-          const titleTreatment = doubletile ? (film.titleTreatment || NS_TITLE_TREATMENTS[film.slug || slugify(film.title)]) : null;
-          const showProgress = film._progress !== undefined ? film._progress : isContinueWatching;
-          return `
-            <a class="film-card" href="https://mubi.com/films/${film.slug || slugify(film.title)}" target="_self" aria-label="${film.title}">
-              ${isNewToMubi && filmIdx === 0
-                ? `<img class="new-to-mubi-arrow new-to-mubi-arrow--left" src="../../brand_assets/icon_arrowLeft.svg" alt="">`
-                : ''}
-              ${isNewToMubi && filmIdx === rowFilms.length - 1
-                ? `<img class="new-to-mubi-arrow new-to-mubi-arrow--right" src="../../brand_assets/icon_arrowRight.svg" alt="">`
-                : ''}
-              <div class="card-img-wrap">
-                ${isTopTen ? `<span class="card-rank-badge">${filmIdx + 1}</span>` : ''}
-                <img class="card-img" src="${film.image}"
-                  alt="${film.title}"
-                  loading="lazy"
-                  style="object-position:${posX}% ${posY}%">
-                ${doubletile && !isNewToMubi
-                  ? `<img class="card-hover-still" src="${nsHeroImageURL(film.image)}" alt="" loading="lazy">`
-                  : ''}
-                ${doubletile && film.award
-                  ? `<img class="card-award-badge" src="${film.award.image}" alt="${film.award.text}" title="${film.award.text}">`
-                  : ''}
-                <div class="card-overlay">
-                  ${film.isSeries ? `<div class="card-eyebrow">Series</div>` : ''}
-                  ${titleTreatment
-                    ? `<img class="card-title-treatment" src="${titleTreatment}" alt="${film.title}">`
-                    : `<div class="card-title">${film.title}</div>`}
-                  ${showProgress
-                    ? `<div class="card-progress-track"><div class="card-progress-fill" style="width:90px"></div></div>`
-                    : `<div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>`}
-                </div>
-              </div>
-              ${cardSynopsisBlockHTML(film)}
-            </a>`;
-        }).join('')}
+        ${tilesHTML}
         ${Array.from({ length: emptySlotCount }).map(() => `<div class="film-card film-card--empty" aria-hidden="true"><div class="card-img-wrap"></div></div>`).join('')}
       </div>
+      `}
     </div>
   `;
 }
@@ -4134,12 +4536,13 @@ function renderGrid() {
   // "Lane of Lanes" is a settings toggle — when on, a row of real Collection tiles (the
   // exact same coll-tile component used in the Explore Collections tab) renders at the
   // very bottom of the page.
-  const laneOfLanesColls = NS_COLLECTIONS.slice(0, 4);
+  const laneOfLanesColls = NS_COLLECTIONS.slice(0, nsState.carouselRows ? 8 : 4);
 
   // "New to MUBI?" only makes sense for a viewer with zero watchlist/continue-watching/
   // watched history — i.e. the Ava Chen persona, or anyone in that same fresh state.
   const isNewToMubi = !nsState.watchlist.length && !nsState.continueWatching.length && !nsState.watched.length;
-  // 6 films: the 4 "shown" tiles plus one extra peeking (faded) tile on each side.
+  // 6 films, matching the row's own "Six essential films" copy: the 4 "shown" tiles plus
+  // one extra peeking (faded) tile on each side, same lane size as the rest of the page.
   // A hand-picked, fixed starter set — not the usual per-persona catalog pull.
   const essentialViewingFilms = [
     { title: 'Die My Love', director: 'Lynne Ramsay', year: 2025, country: 'United States, UK',
@@ -4160,21 +4563,23 @@ function renderGrid() {
       titleTreatment: 'https://images.mubicdn.net/images/artworks/682249/cache-682249-1713881270/images-original.png' },
   ];
 
-  // Top 10 is a settings-driven, opt-in row (Page Settings > Layout > Top 10) — sits
+  // Top Picks is a settings-driven, opt-in row (Page Settings > Layout > Top Picks) — sits
   // directly under the marquee, ranked 1-4 by real MUBI viewing data (see TOP_TEN_FILMS /
   // top10.png). When "New to MUBI?" (Essential Viewing) is also showing, that one keeps
-  // the very top spot and Top 10 drops in right below it instead.
-  const topTenRow = nsState.topTen ? { title: 'TOP 10', films: TOP_TEN_FILMS.slice(0, 4), isTopTen: true } : null;
+  // the very top spot and Top Picks drops in right below it instead. It's meant to replace
+  // Your Watchlist and MUBI Releases (not Continue Watching / Watch Next), so both of those
+  // are hidden from the page while it's on.
+  const topTenRow = nsState.topTen ? { title: 'TOP PICKS', films: TOP_TEN_FILMS.slice(0, nsState.carouselRows ? 8 : 4), isTopTen: true } : null;
   const rows = [
     ...(isNewToMubi ? [{ title: 'ESSENTIAL VIEWING', films: essentialViewingFilms, doubletile: true, isNewToMubi: true }] : []),
     ...(topTenRow ? [topTenRow] : []),
     ...(watchNextFilms && watchNextFilms.length ? [{ title: 'WATCH NEXT', films: watchNextFilms, showUnmergeFab: true }] : [
       ...(continueWatchingFilms.length ? [{ title: 'CONTINUE WATCHING', films: continueWatchingFilms, isContinueWatching: true, showMergeFab: canMergeWatchNext }] : []),
-      ...(watchlistFilms.length ? [{ title: 'YOUR WATCHLIST', films: watchlistFilms }] : []),
+      ...(watchlistFilms.length && !nsState.topTen ? [{ title: 'YOUR WATCHLIST', films: watchlistFilms }] : []),
     ]),
     // Real film sets from api.mubi.com/v4/collections/<slug> — verified live against
     // mubi.com/en/gb/showing. Uses the taller "doubletile" card format (418px).
-    { title: 'MUBI RELEASES', films: MUBI_RELEASES_FILMS, doubletile: true },
+    ...(nsState.topTen ? [] : [{ title: 'MUBI RELEASES', films: MUBI_RELEASES_FILMS, doubletile: true }]),
     // Spotlight #1 (settings-driven) is its own entry right after New on MUBI, so it
     // isn't tied to New on MUBI's own visibility.
     { title: 'NEW ON MUBI', films: NEW_ON_MUBI_FILMS },
@@ -4200,19 +4605,45 @@ function renderGrid() {
   // also switches each tile over to its title-treatment logo instead of plain text wherever
   // one's available (see the titleTreatment lookup in filmRowSectionHTML/collTileHTML).
   // Spotlight is excluded: it's a different component entirely with its own layout.
-  .map(row => (nsState.allDoubleTiles && !row.isSpotlight) ? { ...row, doubletile: true } : row);
+  .map(row => (nsState.allDoubleTiles && !row.isSpotlight) ? { ...row, doubletile: true } : row)
+  // Carousel Rows (Page Settings > Layout) — film rows, Lane of Lanes, and doubletile rows
+  // alike get the peeking-tile pagination UI (see filmRowSectionHTML/the isCollections
+  // branch below) once they actually have more than one lane's worth (4) of content to page
+  // through. Essential Viewing keeps its own fixed 6-tile layout; Spotlight is unrelated.
+  .map(row => {
+    if (!nsState.carouselRows || row.isSpotlight || row.isNewToMubi) return row;
+    const count = row.films ? row.films.length : (row.colls ? row.colls.length : 0);
+    return count > 4 ? { ...row, carousel: true } : row;
+  });
 
   container.innerHTML = rows.map((row, rowIdx) => {
     if (row.isSpotlight) return spotlightSectionHTML(row.spotlightColl, rowIdx);
-    if (row.isCollections) return `
+    if (row.isCollections) {
+      const tilesHTML = row.colls.map(c => collTileHTML(c, row.doubletile)).join('');
+      return row.carousel ? `
+    <div class="row-section${row.doubletile ? ' row-section--doubletile' : ''}">
+      <div class="row-header"><span class="row-title">${row.title}</span></div>
+      <div class="row-carousel-wrap" id="rowCarousel-${rowIdx}">
+        <div class="row-carousel-inner">
+          <div class="row-grid row-grid--carousel">
+            ${tilesHTML}
+          </div>
+        </div>
+        <button class="row-carousel-arrow row-carousel-arrow--next" data-carousel-target="rowCarousel-${rowIdx}" aria-label="Next">
+          <img src="../../brand_assets/icon_arrowRight.svg" alt="">
+        </button>
+      </div>
+    </div>
+  ` : `
     <div class="row-section${row.doubletile ? ' row-section--doubletile' : ''}">
       <div class="row-header"><span class="row-title">${row.title}</span><span class="row-see-all">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></span></div>
       <div class="row-grid">
-        ${row.colls.map(c => collTileHTML(c, row.doubletile)).join('')}
+        ${tilesHTML}
       </div>
     </div>
   `;
-    return filmRowSectionHTML(row);
+    }
+    return filmRowSectionHTML(row, rowIdx);
   }).join('');
 
   // Squareish title-treatment logos (aspect ratio well under 2:1) render much
@@ -4241,15 +4672,21 @@ function renderGrid() {
 
   if (nsState.laneOfLanes) fitCollText();
 
-  // The "New to MUBI?" row's 6 tiles are laid out full-bleed so the outer two can sit
-  // outside the normal content width — match their column width to a normal doubletile
-  // tile elsewhere on the page so all 6 (shown + peeking) are exactly the same size.
+  // Carousel Rows — measure/tag peeking tiles + position arrows for every qualifying row
+  // just rendered (see nsUpdateRowCarousel below).
+  document.querySelectorAll('.row-carousel-wrap').forEach(nsUpdateRowCarousel);
+
+  // The "New to MUBI?" row's tiles are laid out full-bleed so the outer two can sit outside
+  // the normal content width — match their column width to a normal doubletile tile elsewhere
+  // on the page so shown + peeking tiles are all exactly the same size. Column count is read
+  // live off the rendered tiles (not hardcoded) so it always matches essentialViewingFilms's
+  // actual length instead of silently drifting out of sync with it.
   if (isNewToMubi) {
     const refCard = container.querySelector('.row-section--doubletile:not(.new-to-mubi-section) .card-img-wrap');
     const ntmGrid = container.querySelector('.new-to-mubi-section .row-grid');
     if (refCard && ntmGrid) {
       const colWidth = refCard.getBoundingClientRect().width;
-      ntmGrid.style.gridTemplateColumns = `repeat(6, ${colWidth}px)`;
+      ntmGrid.style.gridTemplateColumns = `repeat(${ntmGrid.children.length}, ${colWidth}px)`;
     }
   }
 
@@ -4563,8 +5000,8 @@ const NS_TITLE_TREATMENTS = {"perfect-days":"https://images.mubicdn.net/images/a
 // ID, same "t-" filename prefix), just a 240p rendition instead of 1080p. It's plain scene
 // footage with no baked-in subtitles/title cards/graphics, which is exactly what a muted,
 // looping background clip under our own on-card title/synopsis needs — same non-DRM CDN as
-// the poster images. Used for Traditional Rounded's per-card video (see .hero-trad-tile-video
-// / nsScheduleTradCenterVideo) instead of the placeholder crop.
+// the poster images. Used for each Traditional/Traditional Rounded card's own background
+// video (see .hero-trad-tile-video / nsPlayTradTileVideo) instead of the placeholder crop.
 // The filmstrip has no overflow/scroll of its own (see .spotlight-slider CSS), so paging
 // is done by translating the whole grid instead of scrollBy — track each slider's current
 // offset in a WeakMap and clamp it to how far the strip can actually travel.
@@ -4587,6 +5024,87 @@ document.getElementById('filmGrid').addEventListener('click', e => {
   // The transition takes 0.5s (see .spotlight-slider) — re-measure the peeking tile once
   // it settles, since positionSpotlightArrows() reads live bounding rects.
   setTimeout(positionSpotlightArrows, 500);
+});
+
+// ─── CAROUSEL ROWS (Page Settings > Layout) ───
+// One-directional: exactly one tile ever peeks, on the right, and pressing its arrow slides
+// the whole row left to reveal the next 4 — there's no going back. .row-carousel-inner
+// re-centers the normal content width inside .row-carousel-wrap's full viewport bleed (see
+// its own CSS comment); that inner box's right edge is the "fully shown" zone boundary a
+// tile has to cross to count as peeking.
+const nsRowCarouselOffsets = new WeakMap();
+function nsRowCarouselZoneRect(wrap) {
+  return wrap.querySelector('.row-carousel-inner').getBoundingClientRect();
+}
+function nsUpdateRowCarousel(wrap) {
+  const track = wrap.querySelector('.row-grid--carousel');
+  const tiles = track ? [...track.children] : [];
+  if (!tiles.length) return;
+  const wrapRect = wrap.getBoundingClientRect();
+  const zoneRect = nsRowCarouselZoneRect(wrap);
+  tiles.forEach(t => t.classList.remove('row-carousel-peek'));
+  const nextBtn = wrap.querySelector('.row-carousel-arrow--next');
+  // Only the single tile actually straddling the zone's right edge counts as peeking —
+  // anything further out is just offscreen, clipped by the wrap's own overflow:hidden.
+  const peeking = tiles.find(tile => {
+    const r = tile.getBoundingClientRect();
+    return r.right > zoneRect.right + 1 && r.left < wrapRect.right - 1;
+  });
+  if (peeking) {
+    peeking.classList.add('row-carousel-peek');
+    const r = peeking.getBoundingClientRect();
+    if (nextBtn) nextBtn.style.left = `${Math.round(r.left - wrapRect.left) + 40}px`;
+  }
+}
+window.addEventListener('resize', () => document.querySelectorAll('.row-carousel-wrap').forEach(nsUpdateRowCarousel));
+
+// Paging always advances by exactly 4 items (per-breakpoint visible column count is a
+// separate concern — see .row-grid--carousel's tile-width formula), clamped so the track
+// never scrolls past its own content relative to the "fully shown" zone width. Slides the
+// peeking tile all the way to where tile 1 used to sit (a full 4-tile-step advance).
+function nsAdvanceRowCarousel(wrap) {
+  const track = wrap && wrap.querySelector('.row-grid--carousel');
+  const tiles = track ? [...track.children] : [];
+  if (!tiles.length) return;
+  const tileStep = tiles[0].getBoundingClientRect().width + 4;
+  const zoneWidth = nsRowCarouselZoneRect(wrap).width;
+  const maxOffset = Math.max(0, track.scrollWidth - zoneWidth);
+  const current = nsRowCarouselOffsets.get(track) || 0;
+  const next = Math.min(maxOffset, current + 4 * tileStep);
+  nsRowCarouselOffsets.set(track, next);
+  track.style.transform = `translateX(${-next}px)`;
+  setTimeout(() => nsUpdateRowCarousel(wrap), 520);
+}
+document.getElementById('filmGrid').addEventListener('click', e => {
+  // The peeking tile itself is clickable to advance too, not just its arrow — it's only
+  // ever partially visible, so it's blocked from navigating to the film page (not
+  // pointer-events:none, since that would also block the hover that reveals its arrow).
+  const peek = e.target.closest('.row-carousel-peek');
+  if (peek) {
+    e.preventDefault();
+    nsAdvanceRowCarousel(peek.closest('.row-carousel-wrap'));
+    return;
+  }
+  const btn = e.target.closest('.row-carousel-arrow');
+  if (!btn) return;
+  e.preventDefault();
+  nsAdvanceRowCarousel(document.getElementById(btn.dataset.carouselTarget));
+});
+
+// Hover-reveal: the arrow only appears while the peeking tile itself is hovered (not the
+// whole row) — guarded by relatedTarget containment so moving between children of the same
+// peeking tile doesn't flicker the arrow off and back on.
+document.getElementById('filmGrid').addEventListener('mouseover', e => {
+  const peek = e.target.closest('.row-carousel-peek');
+  if (!peek || peek.contains(e.relatedTarget)) return;
+  const arrow = peek.closest('.row-carousel-wrap')?.querySelector('.row-carousel-arrow--next');
+  if (arrow) arrow.classList.add('is-visible');
+});
+document.getElementById('filmGrid').addEventListener('mouseout', e => {
+  const peek = e.target.closest('.row-carousel-peek');
+  if (!peek || peek.contains(e.relatedTarget)) return;
+  const arrow = peek.closest('.row-carousel-wrap')?.querySelector('.row-carousel-arrow--next');
+  if (arrow) arrow.classList.remove('is-visible');
 });
 
 const NS_CATALOG = (() => {
@@ -4622,7 +5140,7 @@ const NS_STORAGE_KEY = 'ns_settings_state_v1';
 function nsLoadState() {
   try { return JSON.parse(localStorage.getItem(NS_STORAGE_KEY)) || {}; } catch (e) { return {}; }
 }
-const nsState = Object.assign({ watchlist: [], continueWatching: [], watched: [], marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 25, laneOfLanes: false, laneOfLanesDoubleTile: false, allDoubleTiles: false, topTen: false, activeDemoUserIdx: null, marqueeDisplayCount: 3, marqueeNavStyle: 'rotation', watchNextMerged: false, meta: {} }, nsLoadState());
+const nsState = Object.assign({ watchlist: [], continueWatching: [], watched: [], marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 25, laneOfLanes: false, laneOfLanesDoubleTile: false, allDoubleTiles: false, carouselRows: false, topTen: false, activeDemoUserIdx: null, marqueeDisplayCount: 3, marqueeNavStyle: 'rotation', watchNextMerged: false, meta: {} }, nsLoadState());
 
 // Dark mode is a personal display preference, not "content" — kept in its own localStorage
 // key rather than nsState, so it isn't pushed to the shared Google Sheet (see NS_SHEET_API_URL
@@ -4638,6 +5156,35 @@ document.getElementById('darkModeToggle').addEventListener('change', e => {
   const theme = e.target.checked ? 'dark' : 'light';
   localStorage.setItem(NS_THEME_STORAGE_KEY, theme);
   nsApplyTheme(theme);
+});
+
+// Rounded Tile Corners — same personal-display-preference treatment as Dark Mode above.
+const NS_ROUNDED_TILES_STORAGE_KEY = 'ns_rounded_tiles';
+function nsApplyRoundedTiles(enabled) {
+  document.documentElement.dataset.roundedTiles = enabled ? 'true' : 'false';
+  const toggle = document.getElementById('roundedTilesToggle');
+  if (toggle) toggle.checked = !!enabled;
+}
+nsApplyRoundedTiles(localStorage.getItem(NS_ROUNDED_TILES_STORAGE_KEY) === 'true');
+document.getElementById('roundedTilesToggle').addEventListener('change', e => {
+  localStorage.setItem(NS_ROUNDED_TILES_STORAGE_KEY, e.target.checked ? 'true' : 'false');
+  nsApplyRoundedTiles(e.target.checked);
+});
+
+// Increase Col Spacing — same personal-display-preference treatment as Dark Mode/Rounded
+// Tiles above. Widens .row-grid's column-gap (see CSS); grid's own 1fr columns shrink to
+// make room, so tiles read narrower with more margin between them automatically — no
+// per-breakpoint width math needed.
+const NS_COL_SPACING_STORAGE_KEY = 'ns_col_spacing';
+function nsApplyColSpacing(enabled) {
+  document.documentElement.dataset.colSpacing = enabled ? 'true' : 'false';
+  const toggle = document.getElementById('colSpacingToggle');
+  if (toggle) toggle.checked = !!enabled;
+}
+nsApplyColSpacing(localStorage.getItem(NS_COL_SPACING_STORAGE_KEY) === 'true');
+document.getElementById('colSpacingToggle').addEventListener('change', e => {
+  localStorage.setItem(NS_COL_SPACING_STORAGE_KEY, e.target.checked ? 'true' : 'false');
+  nsApplyColSpacing(e.target.checked);
 });
 
 // ─── GOOGLE SHEETS SYNC (optional) ───
@@ -5224,6 +5771,11 @@ document.getElementById('allDoubleTilesToggle').addEventListener('change', e => 
   nsState.allDoubleTiles = e.target.checked;
   nsSaveState();
 });
+document.getElementById('carouselRowsToggle').addEventListener('change', e => {
+  nsState.carouselRows = e.target.checked;
+  nsSaveState();
+  renderGrid();
+});
 document.getElementById('topTenToggle').addEventListener('change', e => {
   nsState.topTen = e.target.checked;
   nsSaveState();
@@ -5325,6 +5877,10 @@ function nsReplayHeroVideoFadeIn() {
 const HERO_FADE_SELECTOR = '.hero-info-top, .hero-meta, .hero-our-take, #heroStillImg';
 const HERO_FADE_MS = 1000;
 const NS_MARQUEE_ROTATE_MS = 12000;
+// Traditional (plain, not Rounded) gets double the time between auto-slides that the
+// other styles get — each card's own background video needs real time to actually be seen
+// before the next slide sweeps it away again.
+const NS_TRAD_ROTATE_MS = Math.round(NS_MARQUEE_ROTATE_MS * 2.8);
 let nsMarqueeRotationTimer = null;
 // Guards nsShowMarqueeFilm's fade against overlapping calls (e.g. clicking a second Tile
 // Navigation tile — or an auto-rotation tick — before a prior pick's fade-in has finished):
@@ -5363,16 +5919,27 @@ function nsRenderMarqueeDots(activeSlug) {
   const container = document.getElementById('heroMarqueeDots');
   if (!container) return;
   const show = nsState.marqueeDisplayCount === 3
-    && (nsState.marqueeNavStyle === 'rotation' || nsState.marqueeNavStyle === 'traditional')
+    && (nsState.marqueeNavStyle === 'rotation' || nsState.marqueeNavStyle === 'rotationArrows' || nsState.marqueeNavStyle === 'traditional')
     && nsState.marquee.length > 1;
   if (!show) { container.innerHTML = ''; return; }
   const activeIdx = nsState.marquee.indexOf(activeSlug);
+  const rotateMs = nsState.marqueeNavStyle === 'traditional' ? NS_TRAD_ROTATE_MS : NS_MARQUEE_ROTATE_MS;
   container.innerHTML = nsState.marquee.map((slug, i) => {
     if (i === activeIdx) {
-      return `<div class="hero-marquee-dot is-active"><div class="hero-marquee-dot-fill" style="animation-duration:${NS_MARQUEE_ROTATE_MS}ms"></div></div>`;
+      return `<div class="hero-marquee-dot is-active"><div class="hero-marquee-dot-fill" style="animation-duration:${rotateMs}ms"></div></div>`;
     }
     return `<div class="hero-marquee-dot"></div>`;
   }).join('');
+}
+
+// "Subtle with Arrows" mode — toggles .hero--rotation-arrows (see CSS), which is what
+// actually lets .hero-arrow reveal on hover; the buttons themselves are static markup
+// present for every style (like Traditional's own arrows are), just inert elsewhere.
+function nsRenderMarqueeArrows() {
+  const heroEl = document.querySelector('.hero');
+  if (!heroEl) return;
+  const show = nsState.marqueeDisplayCount === 3 && nsState.marqueeNavStyle === 'rotationArrows' && nsState.marquee.length > 1;
+  heroEl.classList.toggle('hero--rotation-arrows', show);
 }
 
 // "Tile Navigation" mode — small poster thumbnails, one per marquee pick, that the viewer
@@ -5501,10 +6068,9 @@ function nsStartMarqueeRotation() {
   // Auto-rotates for "Subtle Rotation", "Tile Navigation", and "Traditional" at Display: 3
   // — Tile Navigation's ring and Traditional's arrows just give the viewer an early manual
   // override, same as clicking a dot would. "Display: 1" pins the hero to a single film,
-  // so there's nothing to rotate. "Vertical Parallax" is scroll-driven, not timer-driven —
-  // scroll position IS the navigation (see nsUpdateVParallaxScroll).
+  // so there's nothing to rotate. "Vertical Parallax V2" is scroll-driven, not timer-driven —
+  // scroll position IS the navigation (see nsUpdateVParallax2Scroll).
   if (nsState.marqueeDisplayCount !== 3) return;
-  if (nsState.marqueeNavStyle === 'vparallax') return;
   if (nsState.marqueeNavStyle === 'vparallax2') return;
   // Traditional Rounded drops the countdown dots entirely (see CSS) in favor of the arrow
   // pair alone, so it doesn't auto-rotate on a hidden timer either — navigation is arrows-only.
@@ -5513,10 +6079,11 @@ function nsStartMarqueeRotation() {
   // Does NOT reset nsMarqueeIdx — this also gets called right after a manual arrow step
   // (see nsStepMarquee) to resume auto-rotation from wherever the user just navigated to;
   // resetting it here would immediately undo that step on the very next tick.
+  const rotateMs = nsState.marqueeNavStyle === 'traditional' ? NS_TRAD_ROTATE_MS : NS_MARQUEE_ROTATE_MS;
   nsMarqueeRotationTimer = setInterval(() => {
     nsMarqueeIdx = (nsMarqueeIdx + 1) % nsState.marquee.length;
     nsShowMarqueeFilm(nsState.marquee[nsMarqueeIdx], true, 'next');
-  }, NS_MARQUEE_ROTATE_MS);
+  }, rotateMs);
 }
 
 // Traditional carousel's peeking-tile arrows — jumps straight to the previous/next pick,
@@ -5531,6 +6098,8 @@ function nsStepMarquee(dir) {
 }
 document.getElementById('heroTradPrevBtn').addEventListener('click', () => nsStepMarquee(-1));
 document.getElementById('heroTradNextBtn').addEventListener('click', () => nsStepMarquee(1));
+document.getElementById('heroArrowPrevBtn').addEventListener('click', () => nsStepMarquee(-1));
+document.getElementById('heroArrowNextBtn').addEventListener('click', () => nsStepMarquee(1));
 // The peek tiles' data-role rotates as they get recycled (see nsRenderTraditionalCarousel),
 // so which physical element means "click to go prev/next" changes over time — delegate and
 // read the current role at click time instead of binding to a fixed element once.
@@ -5571,6 +6140,10 @@ window.addEventListener('resize', () => {
 // flight below — the pressed side's peek grows into the middle, the old centre shrinks
 // into the opposite peek, and a fresh peek flies in from the revealed edge.
 const NS_TRAD_FLIP_MS = 550;
+// Fade-out half of the title/title-treatment crossfade (see .hero-trad-title's own
+// transition) — the swap happens right as this elapses, then the fade-in half plays out
+// via the same CSS transition once .hero-content-fading is removed.
+const NS_TRAD_TITLE_FADE_MS = 700;
 let nsTradPreloadedMarqueeKey = null;
 
 // Local stand-in b-roll used wherever a film has no real trailer clip (see nsTradPreviewURL
@@ -5632,12 +6205,11 @@ function nsTradPreviewURL(film) {
   return nsStandinVideoAssignment[slug] || nsStandinVideoForSlug(slug);
 }
 
-// Traditional Rounded's per-card video (see .hero-trad-tile-video) — plays a few seconds
-// after a card has settled in the centre, and stops the instant a new slide starts (so it
-// never keeps playing while sliding out of view). nsStopTradCenterVideo both cancels a
-// still-pending "about to start" timer and halts whichever video is already mid-playback,
-// so it's safe to call unconditionally at the start of every new slide.
-const NS_TRAD_VIDEO_DELAY_MS = 3000;
+// Per-card video (see .hero-trad-tile-video) — starts 3s after a card has actually
+// settled in the centre (not the instant it arrives), and — once playing — keeps playing
+// and sliding with its tile if a new slide starts before it's stopped; nsStopTradCenterVideo
+// only runs once that new slide has itself settled (see nsRenderTraditionalCarousel).
+const NS_TRAD_VIDEO_DELAY_MS = 2000;
 let nsTradVideoTimer = null;
 function nsStopTradCenterVideo() {
   clearTimeout(nsTradVideoTimer);
@@ -5654,7 +6226,7 @@ function nsScheduleTradCenterVideo() {
     const centerVideo = document.querySelector('.hero-trad-tile[data-role="center"] .hero-trad-tile-video');
     if (!centerVideo) return;
     centerVideo.currentTime = 0;
-    centerVideo.play();
+    centerVideo.play().catch(() => {});
     centerVideo.classList.add('is-playing');
   }, NS_TRAD_VIDEO_DELAY_MS);
 }
@@ -5742,14 +6314,16 @@ function nsRenderTraditionalCarousel(activeSlug, direction = null) {
   if (!direction) {
     fillContent();
     nsCenterTraditionalFilmstrip();
-    if (isRounded) nsScheduleTradCenterVideo();
+    nsScheduleTradCenterVideo();
     return;
   }
 
-  // A new slide is about to start — the currently-centred card (if its video had already
-  // started, or was about to) is about to slide out of view, so stop it right away rather
-  // than let it keep playing while sliding away.
-  if (isRounded) nsStopTradCenterVideo();
+  // A new slide is about to start — cancel any still-pending "about to start" timer so it
+  // doesn't fire on the wrong (about to be recycled) tile once this slide settles. The
+  // currently-playing video itself, if any, is left alone here — it keeps playing and
+  // slides right along with its tile; nsStopTradCenterVideo (which fades it out) only runs
+  // once the slide has actually settled, below.
+  clearTimeout(nsTradVideoTimer);
 
   // All 3 tiles are the exact same size — sliding the whole strip by exactly one tile's
   // width (not the stage's width) is what lands the pressed side's peek dead-centre at the
@@ -5818,232 +6392,42 @@ function nsRenderTraditionalCarousel(activeSlug, direction = null) {
     inner.style.transform = `translateX(${offset}px)`;
 
     // Plain Traditional's fixed centre overlay (hidden entirely on Rounded, so this is a
-    // no-op there) swaps straight to the new film's text — no fade in or out.
-    fillTitleBlock(document.querySelector('.hero-trad-center-overlay'), film);
+    // no-op there) — the title/title-treatment specifically now crossfades (see
+    // .hero-trad-title's own transition above) instead of swapping instantly; bottom/our
+    // take still update in step with it, right as the fade-out finishes.
+    const overlayTitleEl = document.querySelector('.hero-trad-center-overlay .hero-trad-title');
+    if (overlayTitleEl) overlayTitleEl.classList.add('hero-content-fading');
+    setTimeout(() => {
+      fillTitleBlock(document.querySelector('.hero-trad-center-overlay'), film);
+      if (overlayTitleEl) overlayTitleEl.classList.remove('hero-content-fading');
+    }, NS_TRAD_TITLE_FADE_MS);
     // The dots/countdown are also driven by nsShowMarqueeFilm's own applyFilm(), but that
     // only fires after its slower 1s crossfade+preload delay — re-render them here too so
     // they advance in step with this carousel's much faster slide instead of lagging behind.
     nsRenderMarqueeDots(activeSlug);
 
-    // The slide has settled on a new centre card — schedule ITS video to start playing
-    // a few seconds from now, same as the initial-load path above.
-    if (isRounded) nsScheduleTradCenterVideo();
+    // The slide has settled — fade out whichever video was still playing/sliding along
+    // with its (now recycled) tile, then schedule the new centre card's video to start
+    // playing a few seconds from now, same as the initial-load path above.
+    nsStopTradCenterVideo();
+    nsScheduleTradCenterVideo();
   }, NS_TRAD_FLIP_MS);
 }
 
-// "Vertical Parallax" Navigation Style — up to 3 films stacked as full-viewport-height
-// segments inside a tall (N x 100vh) scroll spacer. .hero-vparallax-sticky pins to the
+// "Vertical Parallax" Navigation Style (V2 — up to 3 films stacked as full-viewport-height
+// segments inside a tall (N x 100vh) scroll spacer. .hero-vparallax-v2-sticky pins to the
 // viewport for that whole distance (native position:sticky — no scroll-jacking), so
-// scrolling only moves the background filmstrip and crossfades the text; the rest of the
-// page doesn't scroll until the spacer runs out and the sticky element releases on its own.
+// scrolling only moves the background layers and crossfades the text; the rest of the page
+// doesn't scroll until the spacer runs out and the sticky element releases on its own.
 // Built once per settings-apply (unlike the other 3 modes, this isn't "active slug" driven —
-// nsUpdateVParallaxScroll reacts continuously to scroll position across all N films at once).
+// nsUpdateVParallax2Scroll reacts continuously to scroll position across all N films at once).
+// The background is N independently-transformed layers stacked at the same position
+// (z-index order) instead of one shared strip that translates as a whole. During film i's
+// transition into i+1, the incoming layer (i+1, on top) slides up a full 100vh (fast/full
+// travel) while the outgoing layer (i, underneath) only drifts up
+// NS_VPARALLAX2_PARALLAX_RATIO of that distance (slow) before being fully covered — a
+// two-speed depth cue.
 const NS_VPARALLAX_VH_PER_FILM = 175; // scroll distance per film; > 100vh gives real dwell time
-let nsVParallaxCount = 0;
-let nsVParallaxVideoStarted = [];
-// Starts film i's background video once it has scrolled fully into view. Film 0 is on
-// screen from page load, so it plays right away (fading in 2s later, as before). Films 1/2
-// only became visible via scroll just now, so they hold on the still image a few seconds
-// first — the video doesn't even start playing until then — before starting and fading in.
-function nsVParallaxPlayVideo(i) {
-  if (nsVParallaxVideoStarted[i]) return;
-  nsVParallaxVideoStarted[i] = true;
-  const item = document.querySelector(`.hero-vparallax-bg-item[data-vparallax-idx="${i}"]`);
-  const video = item && item.querySelector('video');
-  if (!video) return;
-  const startDelay = i === 0 ? 0 : 3000;
-  setTimeout(() => {
-    video.play().catch(() => {});
-    setTimeout(() => { video.classList.add('is-playing'); }, 2000);
-  }, startDelay);
-}
-function nsRenderVerticalParallax() {
-  const heroEl = document.querySelector('.hero');
-  const isVParallax = nsState.marqueeDisplayCount === 3 && nsState.marqueeNavStyle === 'vparallax' && nsState.marquee.length > 0;
-  heroEl.classList.toggle('hero--vparallax', isVParallax);
-  if (!isVParallax) {
-    nsVParallaxCount = 0;
-    // Release the nav bar back to its normal (non-pinned) position if it was left fixed
-    // from a previous vparallax scroll — otherwise switching nav styles mid-scroll would
-    // leave it stuck.
-    const header = document.querySelector('.site-header');
-    if (header) header.style.position = '';
-    return;
-  }
-
-  const films = nsState.marquee.slice(0, 3).map(nsFilmBySlug).filter(Boolean);
-  nsVParallaxCount = films.length;
-  if (!films.length) return;
-
-  const track = document.getElementById('heroVParallaxTrack');
-  const bgLayer = document.getElementById('heroVParallaxBgLayer');
-  // NS_VPARALLAX_VH_PER_FILM (scroll distance) is deliberately more than 100vh (image
-  // height) — nsUpdateVParallaxScroll holds each image completely still for the first
-  // half of its allotment and only moves it during the second half, so the extra distance
-  // is what gives each film a genuine, unhurried "fully in view" dwell before transitioning.
-  track.style.height = `${films.length * NS_VPARALLAX_VH_PER_FILM}vh`;
-  bgLayer.style.height = `${films.length * 100}vh`;
-
-  nsVParallaxVideoStarted = new Array(films.length).fill(false);
-  bgLayer.innerHTML = films.map((film, i) => `
-    <div class="hero-vparallax-bg-item" data-vparallax-idx="${i}" style="top:${i * 100}vh;">
-      <img src="${film.image ? nsHeroImageURL(film.image) : ''}" alt="">
-      <!-- One of the 4 local stand-in videos (see nsTradPreviewURL), picked per-film so
-           each segment doesn't share the exact same clip. No autoplay attribute —
-           nsVParallaxPlayVideo starts it once this segment has scrolled fully into view,
-           then fades it in shortly after (see .is-playing). -->
-      <video src="${nsTradPreviewURL(film)}" muted loop playsinline></video>
-      <div class="hero-grad-1" aria-hidden="true"></div>
-      <div class="hero-grad-2" aria-hidden="true"></div>
-    </div>`).join('');
-
-  const dotsEl = document.getElementById('heroVParallaxDots');
-  dotsEl.innerHTML = films.length > 1
-    ? films.map(() => `<div class="hero-marquee-dot"><div class="hero-vparallax-dot-fill"></div></div>`).join('')
-    : '';
-
-  const infoLayer = document.getElementById('heroVParallaxInfoLayer');
-  infoLayer.innerHTML = films.map((film, i) => {
-    const titleTreatment = film.titleTreatment || NS_TITLE_TREATMENTS[film._slug];
-    return `
-    <div class="hero-info hero-vparallax-info-item${i === 0 ? ' is-visible' : ''}">
-      <!-- Inline opacity:1 on these 3 shields them from HERO_FADE_SELECTOR — Subtle
-           Rotation/Tiles/Traditional's crossfade targets these same class names (reused
-           here for visual consistency) via querySelectorAll, and inline style always beats
-           a class-based rule, so they can't be left stuck invisible by that unrelated
-           fade cycle. The .is-visible class toggle on the wrapper (above) is what drives
-           the vparallax fade itself. -->
-      <div class="hero-info-top" style="opacity:1;">
-        ${titleTreatment
-          ? `<img class="hero-title-img" src="${titleTreatment}" alt="${film.title}">`
-          : `<p class="hero-title-text">${film.title}</p>`}
-      </div>
-      <div class="hero-info-bottom">
-        <div class="hero-info-bottom-text">
-          <div class="hero-meta" style="opacity:1;">
-            <div class="hero-meta-director-row">
-              <span class="hero-meta-label">Directed by</span>
-              <span class="hero-meta-director">${film.director || ''}</span>
-            </div>
-            <div class="hero-meta-country-row">${[film.country, film.year].filter(Boolean).join(' ')}</div>
-          </div>
-          <div class="hero-bottom-row">
-            <div class="hero-actions">
-              <a href="#" class="btn-primary">
-                <svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor" aria-hidden="true"><path d="M0 0L10 6L0 12V0Z"/></svg>
-                Watch
-              </a>
-              <a href="#" class="btn-outline" aria-label="Add to Watchlist">
-                <span class="material-icons">add</span>
-              </a>
-            </div>
-            <p class="hero-our-take" style="opacity:1;">${film.ourTake || ''}</p>
-          </div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-  infoLayer.querySelectorAll('.hero-title-img').forEach(img => nsCheckHeroTitleAspect(img));
-
-  nsUpdateVParallaxScroll();
-}
-
-// Scroll-driven: background translates 1:1 with scroll position within the pinned track;
-// text crossfades from film i to film i+1 once more than halfway through film i's own
-// 100vh segment; dots reflect whichever film is (or is about to be) more visible.
-function nsUpdateVParallaxScroll() {
-  if (!nsVParallaxCount || !document.querySelector('.hero--vparallax')) return;
-  const n = nsVParallaxCount;
-  const track = document.getElementById('heroVParallaxTrack');
-  if (!track) return;
-
-  const viewportH = window.innerHeight;
-  const rect = track.getBoundingClientRect();
-  const scrollableRange = rect.height - viewportH;
-  const scrolled = scrollableRange > 0 ? Math.min(Math.max(-rect.top, 0), scrollableRange) : 0;
-
-  // Site nav stays pinned (fixed, over the whole vparallax sequence) instead of scrolling
-  // off after its usual ~60px — only released once scrolled all the way to scrollableRange,
-  // i.e. the exact point the last film's image fills (and its bottom edge is in) the
-  // viewport and .hero-vparallax-sticky itself is about to release into normal scrolling.
-  const header = document.querySelector('.site-header');
-  if (header) header.style.position = (scrolled < scrollableRange) ? 'fixed' : '';
-
-  const bgLayer = document.getElementById('heroVParallaxBgLayer');
-
-  if (scrollableRange <= 0) {
-    // 1 film (or a track that hasn't laid out yet) — nothing to scroll through, just show it.
-    if (bgLayer) bgLayer.style.transform = 'translateY(0)';
-    document.querySelectorAll('.hero-vparallax-info-item').forEach((el, i) => { el.classList.toggle('is-visible', i === 0); });
-    document.querySelectorAll('#heroVParallaxDots .hero-marquee-dot').forEach((dot, i) => {
-      dot.classList.toggle('is-active', i === 0);
-      const fill = dot.querySelector('.hero-vparallax-dot-fill');
-      if (fill) fill.style.transform = 'scaleY(0)';
-    });
-    nsVParallaxPlayVideo(0);
-    return;
-  }
-
-  // segPos counts how many of the (n-1) film-to-film transitions have completed (0..n-1),
-  // spread evenly across the whole scrollable distance regardless of NS_VPARALLAX_VH_PER_FILM.
-  // At an integer value k, film k is the current one. within (0..1) is progress through
-  // film k's own dwell: 0..0.5 is a full, motionless "hold" (image AND text both stay
-  // completely still — this is the part that guarantees each film is actually seen fully
-  // in view rather than rushed past), 0.5..1 is the transition into film k+1, during which
-  // the image scrubs continuously with scroll.
-  const overallProgress = scrolled / scrollableRange;
-  const segPos = overallProgress * (n - 1);
-  const idx = Math.min(n - 1, Math.floor(segPos));
-  const within = idx < n - 1 ? (segPos - idx) : 0;
-
-  // Image only moves during the 0.5..1 (transition) half of each film's dwell — held
-  // perfectly still (no motion at all) for the 0..0.5 (hold) half.
-  const moveProgress = within <= 0.5 ? 0 : (within - 0.5) / 0.5;
-  if (bgLayer) bgLayer.style.transform = `translateY(${-(idx + moveProgress) * 100}vh)`;
-
-  // idx has just reached this film once its slide-in transition finishes (moveProgress hit 1
-  // on the previous frame) — that's "fully in view", the cue to start its video.
-  nsVParallaxPlayVideo(idx);
-
-  // Text does NOT scrub with the image — it's a discrete on/off flipped only once the next
-  // film's image has scrolled more than halfway up the viewport (moveProgress > 0.5, i.e.
-  // within > 0.75). The CSS opacity transition on .hero-vparallax-info-item performs the
-  // actual fade at that trigger; further scrolling within the same dwell doesn't move or
-  // fade the text at all, so it reads as "only the image scrolls."
-  const activeIdx = (idx < n - 1 && within > 0.75) ? idx + 1 : idx;
-  document.querySelectorAll('.hero-vparallax-info-item').forEach((el, i) => {
-    el.classList.toggle('is-visible', i === activeIdx);
-  });
-
-  // Dots track the image's own position (idx/within), not the text's anticipatory activeIdx
-  // — the fill grows 0..1 across the current film's dwell and reaches full right as the next
-  // image becomes fully in view (idx increments), which is what "progress" should mean here.
-  document.querySelectorAll('#heroVParallaxDots .hero-marquee-dot').forEach((dot, i) => {
-    dot.classList.toggle('is-active', i === idx);
-    const fill = dot.querySelector('.hero-vparallax-dot-fill');
-    if (fill) fill.style.transform = `scaleY(${i === idx ? within : 0})`;
-  });
-}
-
-let nsVParallaxTicking = false;
-function nsOnVParallaxScroll() {
-  if (!nsVParallaxCount || !document.querySelector('.hero--vparallax')) return;
-  if (nsVParallaxTicking) return;
-  nsVParallaxTicking = true;
-  requestAnimationFrame(() => { nsUpdateVParallaxScroll(); nsVParallaxTicking = false; });
-}
-window.addEventListener('scroll', nsOnVParallaxScroll, { passive: true });
-window.addEventListener('resize', nsOnVParallaxScroll, { passive: true });
-
-// ─── VERTICAL PARALLAX V2 ───
-// Same tall-spacer/sticky/scroll-driven mechanism as V1 (see the big comment above
-// nsRenderVerticalParallax), but the background is N independently-transformed layers
-// stacked at the same position (z-index order) instead of one shared strip that translates
-// as a whole. During film i's transition into i+1, the incoming layer (i+1, on top) slides
-// up a full 100vh (fast/full travel) while the outgoing layer (i, underneath) only drifts
-// up NS_VPARALLAX2_PARALLAX_RATIO of that distance (slow) before being fully covered — the
-// two-speed depth cue V1 doesn't have. Hold/transition timing, dots, and text crossfade
-// logic are otherwise identical to V1.
 const NS_VPARALLAX2_PARALLAX_RATIO = 0.3; // outgoing layer's travel vs. the incoming layer's full 100vh
 let nsVParallax2Count = 0;
 let nsVParallax2VideoStarted = [];
@@ -6204,14 +6588,14 @@ window.addEventListener('resize', nsOnVParallax2Scroll, { passive: true });
 function nsApplyMarqueeToHero() {
   if (!nsState.marquee.length) return;
   // Rebuild before anything below reads nsTradPreviewURL, so every render this triggers
-  // (Traditional's tiles, both Vertical Parallax variants) sees the de-duplicated picks.
+  // (Traditional's tiles, Vertical Parallax V2) sees the de-duplicated picks.
   nsRebuildStandinVideoAssignment(nsState.marquee);
-  // Vertical Parallax builds/rebuilds its own 3-segment structure straight from the whole
+  // Vertical Parallax V2 builds/rebuilds its own 3-segment structure straight from the whole
   // marquee list — it isn't "active slug" driven like the other 3, so it's handled here
   // independently of the startIdx/nsShowMarqueeFilm dispatch below (which it also safely
   // no-ops through, same as the other modes do for each other).
-  nsRenderVerticalParallax();
   nsRenderVerticalParallax2();
+  nsRenderMarqueeArrows();
   // Subtle Rotation / Tile Navigation start on the most recently added marquee pick, not
   // the first ever — that's the one the user actually just chose, even if earlier slots
   // are still filled. Traditional always starts at index 0 instead, so its dots/timer
@@ -6250,6 +6634,7 @@ document.getElementById('resetPrototypeSettingsBtn').addEventListener('click', a
   if (!ok) return;
   localStorage.removeItem(NS_STORAGE_KEY);
   localStorage.removeItem(NS_THEME_STORAGE_KEY);
+  localStorage.removeItem(NS_ROUNDED_TILES_STORAGE_KEY);
   const finish = () => location.reload();
   // Push the now-empty state to the shared Sheet too — otherwise the reload's own
   // nsSyncFromSheet() call would just pull the old (pre-reset) state right back.
@@ -6294,7 +6679,10 @@ function openSettingsModal() {
   document.getElementById('numberOfRows').value = nsState.numberOfRows;
   document.getElementById('numberOfRowsValue').textContent = nsState.numberOfRows;
   document.getElementById('darkModeToggle').checked = document.documentElement.dataset.theme === 'dark';
+  document.getElementById('roundedTilesToggle').checked = document.documentElement.dataset.roundedTiles === 'true';
+  document.getElementById('colSpacingToggle').checked = document.documentElement.dataset.colSpacing === 'true';
   document.getElementById('allDoubleTilesToggle').checked = !!nsState.allDoubleTiles;
+  document.getElementById('carouselRowsToggle').checked = !!nsState.carouselRows;
   document.getElementById('topTenToggle').checked = !!nsState.topTen;
   document.getElementById('laneOfLanesToggle').checked = !!nsState.laneOfLanes;
   document.getElementById('laneOfLanesDoubleTileToggle').checked = !!nsState.laneOfLanesDoubleTile;
