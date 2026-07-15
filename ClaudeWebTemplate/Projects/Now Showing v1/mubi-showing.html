@@ -1345,10 +1345,13 @@
     .row-section--has-empty .row-grid { background: transparent; border-top: none; border-bottom: none; }
 
     /* Hide overflow cards so rows never wrap — skipped for .row-grid--carousel, which is
-       meant to hold every item (paged via nsUpdateRowCarousel, not clipped by nth-child). */
-    @media (min-width: 810px) and (max-width: 1185px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+3) { display: none; } }
-    @media (min-width: 1186px) and (max-width: 1561px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+4) { display: none; } }
-    @media (min-width: 1562px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+5) { display: none; } }
+       meant to hold every item (paged via nsUpdateRowCarousel, not clipped by nth-child).
+       Covers .coll-tile/.genre-tile too (Lane of Lanes / Lane of Genres), not just .film-card
+       — otherwise a row with more than one lane's worth of collection/genre tiles (e.g. Lane
+       of Genres' 8) wraps onto a second grid row instead of staying a single line. */
+    @media (min-width: 810px) and (max-width: 1185px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+3), .row-grid:not(.row-grid--carousel) .coll-tile:nth-child(n+3), .row-grid:not(.row-grid--carousel) .genre-tile:nth-child(n+3) { display: none; } }
+    @media (min-width: 1186px) and (max-width: 1561px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+4), .row-grid:not(.row-grid--carousel) .coll-tile:nth-child(n+4), .row-grid:not(.row-grid--carousel) .genre-tile:nth-child(n+4) { display: none; } }
+    @media (min-width: 1562px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+5), .row-grid:not(.row-grid--carousel) .coll-tile:nth-child(n+5), .row-grid:not(.row-grid--carousel) .genre-tile:nth-child(n+5) { display: none; } }
     /* Essential Viewing ("New to MUBI?") is also a plain .row-grid (not .row-grid--carousel),
        so the generic per-breakpoint hiding above was clipping it down to one lane too — but
        its column count is set dynamically via JS (see the isNewToMubi block in renderGrid) to
@@ -1423,6 +1426,10 @@
        last one wins) — so opacity is added directly to .film-card's own declaration instead
        of competing with it here; .coll-tile has no transition of its own, so it's set here. */
     .row-carousel-wrap .coll-tile { transition: opacity 0.5s ease; }
+    /* .genre-tile already has its own opacity transition (a quick 0.15s hover-dim) — override
+       it to the slower, carousel-appropriate 0.5s here so it fades in at the same pace as
+       everything else sliding into view instead of snapping visible almost immediately. */
+    .row-carousel-wrap .genre-tile { transition: opacity 0.5s ease; }
 
     /* Whichever tile(s) currently bleed past .row-carousel-inner's edges (tagged live by
        nsUpdateRowCarousel — which tile(s) shift with viewport width and paging position) are
@@ -1438,8 +1445,11 @@
 
     /* Clips the real tiles exactly at the page container's own edge — nothing past that point
        is a real tile, only the decorative .row-carousel-peek-hint shape + arrow (both outside
-       this clip, direct children of .row-carousel-inner) hint that there's more. */
-    .row-carousel-clip { overflow: hidden; }
+       this clip, direct children of .row-carousel-inner) hint that there's more. clip-path,
+       not overflow:hidden — overflow clips ALL directions, cutting off the hover synopsis
+       dropdown that extends below a tile via top:100%. clip-path lets left/right stay clipped
+       (0 inset) while top/bottom go effectively unclipped (a huge negative inset). */
+    .row-carousel-clip { clip-path: inset(-9999px 0 -9999px 0); }
 
     /* Same plain chevron as .spotlight-arrow (identical size/icon/no backdrop), just
        recoloured dark grey instead of native white — .spotlight-arrow sits over a dark hero
