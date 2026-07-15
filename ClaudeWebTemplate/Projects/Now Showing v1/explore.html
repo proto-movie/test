@@ -2603,6 +2603,20 @@ function renderGrid(genre) {
 }
 renderGrid();
 
+// Deep-link support: ?genre=<name> pre-selects that genre pill on load — used by
+// mubi-showing.html's Lane of Genres tiles and the Genre Lane row's "See All" link.
+(function () {
+  const genreParam = new URLSearchParams(location.search).get('genre');
+  if (!genreParam) return;
+  const pill = document.querySelector(`#genrePills .genre-pill[data-genre="${CSS.escape(genreParam)}"]`);
+  if (!pill) return;
+  document.querySelectorAll('#genrePills .genre-pill').forEach(p => p.classList.remove('is-active'));
+  pill.classList.add('is-active');
+  const mobileSel = document.getElementById('genrePillsMobile');
+  if (mobileSel) mobileSel.value = pill.dataset.genre || '';
+  renderGrid();
+})();
+
 document.getElementById('loadMoreFilmsBtn').addEventListener('click', () => {
   visibleFilmsCount += PAGE_SIZE;
   const sortVal = (document.getElementById('sortDropdown-sort') || {}).value || 'popularity_quality_score';
@@ -2926,6 +2940,15 @@ document.querySelectorAll('.page-tab[data-tab]').forEach(tab => {
     }
   });
 });
+
+// Deep-link support: ?tab=collections (or directors/films & series) opens that tab on
+// load — used by mubi-showing.html's Lane of Lanes row's "See All" link.
+(function () {
+  const tabParam = new URLSearchParams(location.search).get('tab');
+  if (!tabParam) return;
+  const tab = document.querySelector(`.page-tab[data-tab="${CSS.escape(tabParam)}"]`);
+  if (tab) tab.click();
+})();
 
 document.getElementById('directorSortSelect').addEventListener('change', e => {
   directorSortMode = e.target.value;

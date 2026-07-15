@@ -1,0 +1,827 @@
+row_idx,prototype_collection_title,real_mubi_slug,real_collection_title,verification_status,film_title,film_director,film_year,film_country,film_status
+0,SUMMER IN THE CITIES,summer-in-the-cities-uk,SUMMER IN THE CITIES,verified_discrepancy,Human Traffic,Justin Kerrigan,1999,Ireland,real_and_in_prototype
+0,SUMMER IN THE CITIES,summer-in-the-cities-uk,SUMMER IN THE CITIES,verified_discrepancy,Do the Right Thing,Spike Lee,1989,United States,real_and_in_prototype
+0,SUMMER IN THE CITIES,summer-in-the-cities-uk,SUMMER IN THE CITIES,verified_discrepancy,The Watermelon Woman,Cheryl Dunye,1996,United States,real_but_missing_from_prototype
+0,SUMMER IN THE CITIES,summer-in-the-cities-uk,SUMMER IN THE CITIES,verified_discrepancy,Passing Summer,Angela Schanelec,2001,Germany,real_and_in_prototype
+0,SUMMER IN THE CITIES,summer-in-the-cities-uk,SUMMER IN THE CITIES,verified_discrepancy,Days of the Bagnold Summer,Simon Bird,2019,United Kingdom,real_and_in_prototype
+0,SUMMER IN THE CITIES,summer-in-the-cities-uk,SUMMER IN THE CITIES,verified_discrepancy,Rotting in the Sun,Sebastián Silva,2023,United States,real_but_missing_from_prototype
+0,SUMMER IN THE CITIES,summer-in-the-cities-uk,SUMMER IN THE CITIES,verified_discrepancy,"Oslo, August 31st",Joachim Trier,2011,Norway,real_but_missing_from_prototype
+0,SUMMER IN THE CITIES,summer-in-the-cities-uk,SUMMER IN THE CITIES,verified_discrepancy,Dog Day Afternoon,Sidney Lumet,1975,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+0,SUMMER IN THE CITIES,summer-in-the-cities-uk,SUMMER IN THE CITIES,verified_discrepancy,Kids,Larry Clark,1995,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+0,SUMMER IN THE CITIES,summer-in-the-cities-uk,SUMMER IN THE CITIES,verified_discrepancy,Chungking Express,Wong Kar Wai,1994,Hong Kong,FABRICATED_IN_PROTOTYPE_NOT_REAL
+0,SUMMER IN THE CITIES,summer-in-the-cities-uk,SUMMER IN THE CITIES,verified_discrepancy,Wild Style,Charlie Ahearn,1982,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Amores Perros,Alejandro González Iñárritu,2000,Mexico,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Myth of the American Sleepover,David Robert Mitchell,2010,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Heaven's Gate,Michael Cimino,1980,United States,real_and_in_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,God is Shy,Jocelyn Charles,2025,France,real_and_in_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Bird,Andrea Arnold,2024,United Kingdom,real_and_in_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Swimming Pool,François Ozon,2003,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Titane,Julia Ducournau,2021,France,real_and_in_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Portrait of a Lady on Fire,Céline Sciamma,2019,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Handmaiden,Park Chan-wook,2016,South Korea,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Elevator to the Gallows,Louis Malle,1958,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,"The Adventures of Priscilla, Queen of the Desert",Stephan Elliott,1994,Australia,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Son of Saul,László Nemes,2015,Hungary,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Sirât,Oliver Laxe,2025,Spain,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Blazing Sun,Youssef Chahine,1954,Egypt,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Monangambééé,Sarah Maldoror,1968,Angola,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Mysterious Gaze of the Flamingo,Diego Céspedes,2025,Chile,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Abouna,Mahamat-Saleh Haroun,2002,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Bamako,Abderrahmane Sissako,2006,Mali,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,"Paris, Texas",Wim Wenders,1984,West Germany,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Neon Demon,Nicolas Winding Refn,2016,Denmark,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Sound of Falling,Mascha Schilinski,2025,Germany,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Secret Agent,Kleber Mendonça Filho,2025,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Tatsumi,Eric Khoo,2011,Japan,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,My Father's Shadow,Akinola Davies Jr.,2025,United Kingdom,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Something Wild,Jonathan Demme,1986,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,This Is Not a Film,"Mojtaba Mirtahasebi, Jafar Panahi",2011,Iran,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Edge of Heaven,Fatih Akin,2007,Germany,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Fruits of Passion,Shûji Terayama,1981,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Consequences of Love,Paolo Sorrentino,2004,Italy,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Great Beauty,Paolo Sorrentino,2013,Italy,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Thelma & Louise,Ridley Scott,1991,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,It Was Just an Accident,Jafar Panahi,2025,Iran,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The White Balloon,Jafar Panahi,1995,Iran,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Crimson Gold,Jafar Panahi,2003,Iran,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Mekong Hotel,Apichatpong Weerasethakul,2012,Thailand,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Parasite,Bong Joon Ho,2019,South Korea,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,A Summer's Tale,Éric Rohmer,1996,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Fargo,Joel Coen,1996,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Sentimental Value,Joachim Trier,2025,Norway,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Sibyl,Justine Triet,2019,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Die My Love,Lynne Ramsay,2025,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Việt and Nam,Minh Quý Trương,2024,Vietnam,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Killing of a Sacred Deer,Yorgos Lanthimos,2017,Ireland,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Uncle Boonmee Who Can Recall His Past Lives,Apichatpong Weerasethakul,2010,Thailand,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Good Time,"Josh Safdie, Benny Safdie",2017,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Mastermind,Kelly Reichardt,2025,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,We Need to Talk About Kevin,Lynne Ramsay,2011,United Kingdom,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,"Sorry, Baby",Eva Victor,2025,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Conversation,Francis Ford Coppola,1974,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Good One,India Donaldson,2024,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Time of the Wolf,Michael Haneke,2003,Austria,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Paterson,Jim Jarmusch,2016,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Megalopolis,Francis Ford Coppola,2024,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Frankie,Ira Sachs,2019,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Beating Hearts,Gilles Lellouche,2024,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Babette's Feast,Gabriel Axel,1987,Denmark,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Limbo,Ben Sharrock,2020,United Kingdom,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Ali & Ava,Clio Barnard,2021,United Kingdom,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Fallen Leaves,Aki Kaurismäki,2023,Finland,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Bad for a Moment,Daniel Soares,2024,Portugal,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Only the River Flows,Wei Shujun,2023,China,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,It's Not Me,Leos Carax,2024,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Grand Tour,Miguel Gomes,2024,Portugal,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Eight Mountains,"Felix van Groeningen, Charlotte Vandermeersch",2022,Italy,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Paris Memories,Alice Winocour,2022,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Souvenir: Part II,Joanna Hogg,2021,United Kingdom,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Here After,Magnus von Horn,2015,Sweden,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Girl with the Needle,Magnus von Horn,2024,Denmark,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Trailer of the Film That Will Never Exist: 'Phony Wars',Jean-Luc Godard,2023,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Young Adam,David Mackenzie,2003,United Kingdom,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Substance,Coralie Fargeat,2024,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,It Follows,David Robert Mitchell,2014,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Occupied City,Steve McQueen,2023,United Kingdom,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,One Fine Morning,Mia Hansen-Løve,2022,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Nature of Love,Monia Chokri,2023,Canada,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Close,Lukas Dhont,2022,Belgium,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,On the Road,Walter Salles,2012,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Delinquents,Rodrigo Moreno,2023,Argentina,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Perfect Days,Wim Wenders,2023,Japan,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Decision to Leave,Park Chan-wook,2022,South Korea,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Settlers,Felipe Gálvez,2023,Chile,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Benedetta,Paul Verhoeven,2021,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Worst Person in the World,Joachim Trier,2021,Norway,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Butterfly Vision,Maksym Nakonechnyi,2022,Ukraine,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Unclenching the Fists,Kira Kovalenko,2021,Russia,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Cow,Andrea Arnold,2021,United Kingdom,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Bergman Island,Mia Hansen-Løve,2021,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,"Oslo, August 31st",Joachim Trier,2011,Norway,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Great Freedom,Sebastian Meise,2021,Austria,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Prayers for the Stolen,Tatiana Huezo,2021,Mexico,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Pleasure,Ninja Thyberg,2021,Sweden,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Outer Space,Peter Tscherkassky,1999,Austria,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,"Lingui, the Sacred Bonds",Mahamat-Saleh Haroun,2021,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Annette,Leos Carax,2021,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Lamb,Valdimar Jóhannsson,2021,Iceland,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Beginning,Dea Kulumbegashvili,2020,Georgia,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Matthias & Maxime,Xavier Dolan,2019,Canada,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,"Charles, Dead or Alive",Alain Tanner,1969,Switzerland,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Wild Goose Lake,Yi'nan Diao,2019,China,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Bacurau,"Kleber Mendonça Filho, Juliano Dornelles",2019,Brazil,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Beanpole,Kantemir Balagov,2019,Russia,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Zombi Child,Bertrand Bonello,2019,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Image Book,Jean-Luc Godard,2018,Switzerland,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Under the Silver Lake,David Robert Mitchell,2018,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Boro in the Box,Bertrand Mandico,2011,France,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,We Can't Go Home Again,Nicholas Ray,1973,United States,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Ashes,Apichatpong Weerasethakul,2012,Thailand,real_but_missing_from_prototype
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Anatomy of a Fall,Justine Triet,2023,France,FABRICATED_IN_PROTOTYPE_NOT_REAL
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Zone of Interest,Jonathan Glazer,2023,"United Kingdom, Poland",FABRICATED_IN_PROTOTYPE_NOT_REAL
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,Shoplifters,Hirokazu Koreeda,2018,Japan,FABRICATED_IN_PROTOTYPE_NOT_REAL
+1,CANNES TAKEOVER,cannes-film-festival,CANNES TAKEOVER,verified_discrepancy,The Square,Ruben Östlund,2017,"Sweden, Germany",FABRICATED_IN_PROTOTYPE_NOT_REAL
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Amores Perros,Alejandro González Iñárritu,2000,Mexico,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Blow Out,Brian De Palma,1981,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Bird,Andrea Arnold,2024,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,God is Shy,Jocelyn Charles,2025,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,"To Wong Foo, Thanks for Everything! Julie Newmar",Beeban Kidron,1995,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Portrait of a Lady on Fire,Céline Sciamma,2019,France,real_and_in_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Handmaiden,Park Chan-wook,2016,South Korea,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Kes,Ken Loach,1969,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Elevator to the Gallows,Louis Malle,1958,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Mermaids,Richard Benjamin,1990,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Past Lives,Celine Song,2023,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,La Grazia,Paolo Sorrentino,2025,Italy,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Sirât,Oliver Laxe,2025,Spain,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Mysterious Gaze of the Flamingo,Diego Céspedes,2025,Chile,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,"Paris, Texas",Wim Wenders,1984,West Germany,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Do the Right Thing,Spike Lee,1989,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Secret Agent,Kleber Mendonça Filho,2025,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Submarino,Thomas Vinterberg,2010,Denmark,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Revanche,Götz Spielmann,2008,Austria,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Barbara,Christian Petzold,2012,Germany,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Phoenix,Christian Petzold,2014,Germany,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,My Father's Shadow,Akinola Davies Jr.,2025,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Chapters 1-3 | My Undesirable Friends: Part I - Last Air in Moscow,Julia Loktev,2024,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Chapters 4-5 | My Undesirable Friends: Part I - Last Air in Moscow,Julia Loktev,2024,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,...A Valparaíso,Joris Ivens,1963,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,American Fiction,Cord Jefferson,2023,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Whores' Glory,Michael Glawogger,2011,Austria,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Pompei: Below the Clouds,Gianfranco Rosi,2025,Italy,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Edge of Heaven,Fatih Akin,2007,Germany,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Great Beauty,Paolo Sorrentino,2013,Italy,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,No Other Choice,Park Chan-wook,2025,South Korea,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Wadjda,Haifaa Al-Mansour,2012,Saudi Arabia,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,A Regular Woman,Sherry Hormann,2019,Germany,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Thelma & Louise,Ridley Scott,1991,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,It Was Just an Accident,Jafar Panahi,2025,Iran,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The White Balloon,Jafar Panahi,1995,Iran,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Taxi Tehran,Jafar Panahi,2015,Iran,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Cold Tropics,Kleber Mendonça Filho,2009,Brazil,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Offside,Jafar Panahi,2006,Iran,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Pictures of Ghosts,Kleber Mendonça Filho,2023,Brazil,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Eletrodoméstica,Kleber Mendonça Filho,2005,Brazil,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Parasite,Bong Joon Ho,2019,South Korea,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,A Summer's Tale,Éric Rohmer,1996,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Silence of the Lambs,Jonathan Demme,1991,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Midnight Cowboy,John Schlesinger,1969,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Fargo,Joel Coen,1996,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Sentimental Value,Joachim Trier,2025,Norway,real_and_in_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The General,"Buster Keaton, Clyde Bruckman",1926,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Charade,Stanley Donen,1963,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Sherlock Jr.,Buster Keaton,1924,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Seven Chances,Buster Keaton,1925,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Moonstruck,Norman Jewison,1987,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Nile Hilton Incident,Tarik Saleh,2017,Sweden,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Perfumed Nightmare,Kidlat Tahimik,1977,Philippines,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Gerhard Richter Painting,Corinna Belz,2012,Germany,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,La Ciénaga,Lucrecia Martel,2001,Argentina,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Good Time,"Josh Safdie, Benny Safdie",2017,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Babyteeth,Shannon Murphy,2019,Australia,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Crossing,Levan Akin,2024,Sweden,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Apartment,Billy Wilder,1960,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Soul Kitchen,Fatih Akin,2009,Germany,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Winter in Sokcho,Koya Kamura,2024,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Graduate,Mike Nichols,1967,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Elephant Man,David Lynch,1980,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,We Need to Talk About Kevin,Lynne Ramsay,2011,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Belle de Jour,Luis Buñuel,1967,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,"Sorry, Baby",Eva Victor,2025,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Conversation,Francis Ford Coppola,1974,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Night of the Living Dead,George A. Romero,1968,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Dona Flor and Her Two Husbands,Bruno Barreto,1976,Brazil,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Celluloid Closet,"Rob Epstein, Jeffrey Friedman",1995,Germany,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Times of Harvey Milk,Rob Epstein,1984,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Paterson,Jim Jarmusch,2016,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Beating Hearts,Gilles Lellouche,2024,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Flow,Gints Zilbalodis,2024,Latvia,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Transit,Christian Petzold,2018,Germany,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Orlando,Sally Potter,1992,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Limbo,Ben Sharrock,2020,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,La Cocina,Alonso Ruizpalacios,2024,Mexico,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Fallen Leaves,Aki Kaurismäki,2023,Finland,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Watermelon Woman,Cheryl Dunye,1996,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Nun or Never!,Heta Jäälinoja,2023,Finland,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Eight Mountains,"Felix van Groeningen, Charlotte Vandermeersch",2022,Italy,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Asparagus,Suzan Pitt,1979,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Grand Theft Hamlet,"Pinny Grylls, Sam Crane",2024,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Born in Flames,Lizzie Borden,1983,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Girl with the Needle,Magnus von Horn,2024,Denmark,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,An Urban Allegory,"Alice Rohrwacher, JR",2024,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Dahomey,Mati Diop,2024,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Witches,Elizabeth Sankey,2024,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Don't Let Them Shoot the Kite,Tunç Başaran,1989,Turkey,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Substance,Coralie Fargeat,2024,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Malcolm X,Spike Lee,1992,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Fall,Tarsem Singh,2006,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,One Fine Morning,Mia Hansen-Løve,2022,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Reality+,Coralie Fargeat,2014,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Close,Lukas Dhont,2022,Belgium,real_and_in_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Rewind & Play,Alain Gomis,2022,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Crossing the Bridge - The Sound of Istanbul,Fatih Akin,2005,Germany,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Aftersun,Charlotte Wells,2022,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Perfect Days,Wim Wenders,2023,Japan,real_and_in_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,High & Low - John Galliano,Kevin Macdonald,2023,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Yannick,Quentin Dupieux,2023,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Settlers,Felipe Gálvez,2023,Chile,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Decision to Leave,Park Chan-wook,2022,South Korea,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Meeting the Man: James Baldwin in Paris,Terence Dixon,1970,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Petite Maman,Céline Sciamma,2021,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,I Hired a Contract Killer,Aki Kaurismäki,1990,Germany,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Tavern Man,Aki Kaurismäki,2012,Finland,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Rotting in the Sun,Sebastián Silva,2023,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Worst Person in the World,Joachim Trier,2021,Norway,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,The Five Devils,Léa Mysius,2022,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Alcarràs,Carla Simón,2022,Spain,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Cow,Andrea Arnold,2021,United Kingdom,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Holy Spider,Ali Abbasi,2022,Denmark,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Shiva Baby,Emma Seligman,2020,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Time to Love,Metin Erksan,1965,Turkey,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Free Chol Soo Lee,"Julie Ha, Eugene Yi",2022,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Invisible Demons,Rahul Jain,2021,Finland,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Faya Dayi,Jessica Beshir,2021,Ethiopia,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,"Oslo, August 31st",Joachim Trier,2011,Norway,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Prayers for the Stolen,Tatiana Huezo,2021,Mexico,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Great Freedom,Sebastian Meise,2021,Austria,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Reprise,Joachim Trier,2006,Norway,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,"Lingui, the Sacred Bonds",Mahamat-Saleh Haroun,2021,France,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,First Cow,Kelly Reichardt,2019,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Notturno,Gianfranco Rosi,2020,Italy,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Matthias & Maxime,Xavier Dolan,2019,Canada,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Bacurau,"Kleber Mendonça Filho, Juliano Dornelles",2019,Brazil,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Popeye the Sailor Meets Sindbad the Sailor,Dave Fleischer,1936,United States,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Beanpole,Kantemir Balagov,2019,Russia,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,On Body and Soul,Ildikó Enyedi,2017,Hungary,real_but_missing_from_prototype
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Persona,Ingmar Bergman,1966,Sweden,FABRICATED_IN_PROTOTYPE_NOT_REAL
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Stalker,Andrei Tarkovsky,1979,Soviet Union,FABRICATED_IN_PROTOTYPE_NOT_REAL
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,Tokyo Story,Yasujirô Ozu,1953,Japan,FABRICATED_IN_PROTOTYPE_NOT_REAL
+2,THE MUBI TOP 1000,mubi-top-1000 (also aliased as top-1000),MUBI TOP 1000,verified_discrepancy,In the Mood for Love,Wong Kar Wai,2000,"Hong Kong, France",FABRICATED_IN_PROTOTYPE_NOT_REAL
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Titane,Julia Ducournau,2021,France,real_and_in_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Portrait of a Lady on Fire,Céline Sciamma,2019,France,real_and_in_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The Handmaiden,Park Chan-wook,2016,South Korea,real_and_in_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Father Mother Sister Brother,Jim Jarmusch,2025,United States,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Son of Saul,László Nemes,2015,Hungary,real_and_in_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The Mysterious Gaze of the Flamingo,Diego Céspedes,2025,Chile,real_and_in_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,"Paris, Texas",Wim Wenders,1984,West Germany,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Undine,Christian Petzold,2020,Germany,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Revanche,Götz Spielmann,2008,Austria,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The Edge of Heaven,Fatih Akin,2007,Germany,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Short Sharp Shock,Fatih Akin,1998,Germany,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The Great Beauty,Paolo Sorrentino,2013,Italy,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,It Was Just an Accident,Jafar Panahi,2025,Iran,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The White Balloon,Jafar Panahi,1995,Iran,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The Circle,Jafar Panahi,2000,Iran,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The Mirror,Jafar Panahi,1997,Iran,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Taxi Tehran,Jafar Panahi,2015,Iran,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Closed Curtain,"Jafar Panahi, Kambuzia Partovi",2013,Iran,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Crimson Gold,Jafar Panahi,2003,Iran,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Sentimental Value,Joachim Trier,2025,Norway,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Moonstruck,Norman Jewison,1987,United States,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Uncle Boonmee Who Can Recall His Past Lives,Apichatpong Weerasethakul,2010,Thailand,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The Killing of a Sacred Deer,Yorgos Lanthimos,2017,Ireland,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Winter's Bone,Debra Granik,2010,United States,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,45 Years,Andrew Haigh,2015,United Kingdom,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The Graduate,Mike Nichols,1967,United States,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Belle de Jour,Luis Buñuel,1967,France,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The Conversation,Francis Ford Coppola,1974,United States,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The Wrestler,Darren Aronofsky,2008,United States,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Priscilla,Sofia Coppola,2023,United States,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Transit,Christian Petzold,2018,Germany,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Grand Tour,Miguel Gomes,2024,Portugal,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Dahomey,Mati Diop,2024,France,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,The Substance,Coralie Fargeat,2024,United States,real_and_in_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Close,Lukas Dhont,2022,Belgium,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Bacurau,"Kleber Mendonça Filho, Juliano Dornelles",2019,Brazil,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Félicité,Alain Gomis,2017,France,real_but_missing_from_prototype
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Farewell My Concubine,Chen Kaige,1993,"China, Hong Kong",FABRICATED_IN_PROTOTYPE_NOT_REAL
+3,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",award-winners,"GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS",verified_discrepancy,Ida,Paweł Pawlikowski,2013,"Poland, Denmark",FABRICATED_IN_PROTOTYPE_NOT_REAL
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Amores Perros,Alejandro González Iñárritu,2000,Mexico,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Kes,Ken Loach,1969,United Kingdom,real_and_in_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,"Paris, Texas",Wim Wenders,1984,West Germany,real_and_in_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Queer,Luca Guadagnino,2024,United States,real_and_in_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Do the Right Thing,Spike Lee,1989,United States,real_and_in_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,The Secret Agent,Kleber Mendonça Filho,2025,France,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,My Father's Shadow,Akinola Davies Jr.,2025,United Kingdom,real_and_in_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Lizard,Akinola Davies Jr.,2020,United Kingdom,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Pictures of Ghosts,Kleber Mendonça Filho,2023,Brazil,real_and_in_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Sentimental Value,Joachim Trier,2025,Norway,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Die My Love,Lynne Ramsay,2025,United States,real_and_in_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,The Mastermind,Kelly Reichardt,2025,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Crossing,Levan Akin,2024,Sweden,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,The Elephant Man,David Lynch,1980,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,We Need to Talk About Kevin,Lynne Ramsay,2011,United Kingdom,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,River of Grass,Kelly Reichardt,1994,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Night of the Living Dead,George A. Romero,1968,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,The Driller Killer,Abel Ferrara,1979,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Old Joy,Kelly Reichardt,2006,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Dona Flor and Her Two Husbands,Bruno Barreto,1976,Brazil,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Hot Milk,Rebecca Lenkiewicz,2025,United Kingdom,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Pavements,Alex Ross Perry,2024,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Priscilla,Sofia Coppola,2023,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Twin Peaks: A Limited Event Series,David Lynch,2017,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Twin Peaks,David Lynch,1990,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Grand Theft Hamlet,"Pinny Grylls, Sam Crane",2024,United Kingdom,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,The Here After,Magnus von Horn,2015,Sweden,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,The Girl with the Needle,Magnus von Horn,2024,Denmark,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,The Substance,Coralie Fargeat,2024,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,The Nature of Love,Monia Chokri,2023,Canada,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Close,Lukas Dhont,2022,Belgium,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Dammi,Yann Mounir Demange,2023,France,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Aftersun,Charlotte Wells,2022,United Kingdom,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Crossing the Bridge - The Sound of Istanbul,Fatih Akin,2005,Germany,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Perfect Days,Wim Wenders,2023,Japan,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,High & Low - John Galliano,Kevin Macdonald,2023,United Kingdom,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Decision to Leave,Park Chan-wook,2022,South Korea,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Rotting in the Sun,Sebastián Silva,2023,United States,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Passages,Ira Sachs,2023,France,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Benedetta,Paul Verhoeven,2021,France,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,The Worst Person in the World,Joachim Trier,2021,Norway,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Cow,Andrea Arnold,2021,United Kingdom,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,"Oslo, August 31st",Joachim Trier,2011,Norway,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Reprise,Joachim Trier,2006,Norway,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,"Lingui, the Sacred Bonds",Mahamat-Saleh Haroun,2021,France,real_but_missing_from_prototype
+4,FEATURED ON THE MUBI PODCAST,mubi-podcast,FEATURED ON THE MUBI PODCAST,verified_discrepancy,Thelma,Joachim Trier,2017,"Norway, France",FABRICATED_IN_PROTOTYPE_NOT_REAL
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Amores Perros,Alejandro González Iñárritu,2000,Mexico,real_and_in_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Ghost World,Terry Zwigoff,2001,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Lars and the Real Girl,Craig Gillespie,2007,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Heaven's Gate,Michael Cimino,1980,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,I Am Love,Luca Guadagnino,2009,Italy,real_and_in_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,"The Adventures of Priscilla, Queen of the Desert",Stephan Elliott,1994,Australia,real_and_in_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Adaptation.,Spike Jonze,2002,United States,real_and_in_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Past Lives,Celine Song,2023,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Son of Saul,László Nemes,2015,Hungary,real_and_in_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,The Secret Agent,Kleber Mendonça Filho,2025,France,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Revanche,Götz Spielmann,2008,Austria,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Married to the Mob,Jonathan Demme,1988,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,The Great Beauty,Paolo Sorrentino,2013,Italy,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Thelma & Louise,Ridley Scott,1991,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Nickel Boys,RaMell Ross,2024,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Parasite,Bong Joon Ho,2019,South Korea,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Midnight Cowboy,John Schlesinger,1969,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Fargo,Joel Coen,1996,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,The Silence of the Lambs,Jonathan Demme,1991,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Charade,Stanley Donen,1963,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Sentimental Value,Joachim Trier,2025,Norway,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Magnificent Obsession,Douglas Sirk,1954,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Moonstruck,Norman Jewison,1987,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,When I Saw You,Annemarie Jacir,2012,Palestine,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Irma La Douce,Billy Wilder,1963,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Winter's Bone,Debra Granik,2010,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,45 Years,Andrew Haigh,2015,United Kingdom,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,The Apartment,Billy Wilder,1960,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,The Graduate,Mike Nichols,1967,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,The Elephant Man,David Lynch,1980,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,The Times of Harvey Milk,Rob Epstein,1984,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,The Wrestler,Darren Aronofsky,2008,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Babette's Feast,Gabriel Axel,1987,Denmark,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Orlando,Sally Potter,1992,United Kingdom,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,The Girl with the Needle,Magnus von Horn,2024,Denmark,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,The Substance,Coralie Fargeat,2024,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Malcolm X,Spike Lee,1992,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Close,Lukas Dhont,2022,Belgium,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Aftersun,Charlotte Wells,2022,United Kingdom,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Perfect Days,Wim Wenders,2023,Japan,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,The Worst Person in the World,Joachim Trier,2021,Norway,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Popeye the Sailor Meets Sindbad the Sailor,Dave Fleischer,1936,United States,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,On Body and Soul,Ildikó Enyedi,2017,Hungary,real_but_missing_from_prototype
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Dancer in the Dark,Lars von Trier,2000,"Denmark, Sweden",FABRICATED_IN_PROTOTYPE_NOT_REAL
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Breaking the Waves,Lars von Trier,1996,"Denmark, France",FABRICATED_IN_PROTOTYPE_NOT_REAL
+5,AND THE OSCAR GOES TO...,oscars,AND THE OSCAR GOES TO...,verified_discrepancy,Finding Vivian Maier,"John Maloof, Charlie Siskel",2013,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Lars and the Real Girl,Craig Gillespie,2007,United States,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Shithouse,Cooper Raiff,2020,United States,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,I Am Love,Luca Guadagnino,2009,Italy,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Portrait of a Lady on Fire,Céline Sciamma,2019,France,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,The Handmaiden,Park Chan-wook,2016,South Korea,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Past Lives,Celine Song,2023,United States,real_and_in_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,The Blazing Sun,Youssef Chahine,1954,Egypt,real_and_in_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Queer,Luca Guadagnino,2024,United States,real_and_in_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Bones and All,Luca Guadagnino,2022,United States,real_and_in_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Undine,Christian Petzold,2020,Germany,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Something Wild,Jonathan Demme,1986,United States,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Wuthering Heights,Andrea Arnold,2011,United Kingdom,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Charade,Stanley Donen,1963,United States,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Our Hospitality,"Buster Keaton, John G. Blystone",1923,United States,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Moonstruck,Norman Jewison,1987,United States,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,45 Years,Andrew Haigh,2015,United Kingdom,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,The New Years,Rodrigo Sorogoyen,2024,Spain,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,The Apartment,Billy Wilder,1960,United States,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Babyteeth,Shannon Murphy,2019,Australia,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,The Graduate,Mike Nichols,1967,United States,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Dona Flor and Her Two Husbands,Bruno Barreto,1976,Brazil,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Paterson,Jim Jarmusch,2016,France,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Beating Hearts,Gilles Lellouche,2024,France,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Transit,Christian Petzold,2018,Germany,real_and_in_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,The Watermelon Woman,Cheryl Dunye,1996,United States,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Fallen Leaves,Aki Kaurismäki,2023,Finland,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Ali & Ava,Clio Barnard,2021,United Kingdom,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Matt and Mara,Kazik Radwanski,2024,Canada,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,One Fine Morning,Mia Hansen-Løve,2022,France,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,The Nature of Love,Monia Chokri,2023,Canada,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Passages,Ira Sachs,2023,France,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,The Worst Person in the World,Joachim Trier,2021,Norway,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Shiva Baby,Emma Seligman,2020,United States,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Time to Love,Metin Erksan,1965,Turkey,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Bergman Island,Mia Hansen-Løve,2021,France,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Matthias & Maxime,Xavier Dolan,2019,Canada,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Within Our Gates,Oscar Micheaux,1920,United States,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,On Body and Soul,Ildikó Enyedi,2017,Hungary,real_but_missing_from_prototype
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Mario,Marcel Gisler,2018,Switzerland,FABRICATED_IN_PROTOTYPE_NOT_REAL
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,End of the Century,Lucio Castro,2019,Argentina,FABRICATED_IN_PROTOTYPE_NOT_REAL
+6,IN THE MOOD FOR LOVE,romance,IN THE MOOD FOR LOVE,verified_discrepancy,Wheel of Fortune and Fantasy,Ryusuke Hamaguchi,2021,Japan,FABRICATED_IN_PROTOTYPE_NOT_REAL
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Amores Perros,Alejandro González Iñárritu,2000,Mexico,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Ghost World,Terry Zwigoff,2001,United States,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,The Assistant,Kitty Green,2019,United States,real_and_in_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Swimming Pool,François Ozon,2003,France,real_and_in_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,I Am Love,Luca Guadagnino,2009,Italy,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Titane,Julia Ducournau,2021,France,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,The Handmaiden,Park Chan-wook,2016,South Korea,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Past Lives,Celine Song,2023,United States,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Jerichow,Christian Petzold,2008,Germany,real_and_in_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Phoenix,Christian Petzold,2014,Germany,real_and_in_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Barbara,Christian Petzold,2012,Germany,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,The Great Beauty,Paolo Sorrentino,2013,Italy,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,City Hall,Frederick Wiseman,2020,United States,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Taxi Tehran,Jafar Panahi,2015,Iran,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Parasite,Bong Joon Ho,2019,South Korea,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Neighbouring Sounds,Kleber Mendonça Filho,2012,Brazil,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Uncle Boonmee Who Can Recall His Past Lives,Apichatpong Weerasethakul,2010,Thailand,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Good Time,"Josh Safdie, Benny Safdie",2017,United States,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,45 Years,Andrew Haigh,2015,United Kingdom,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Zama,Lucrecia Martel,2017,Argentina,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,13 Tzameti,Géla Babluani,2005,France,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,We Need to Talk About Kevin,Lynne Ramsay,2011,United Kingdom,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,"Sorry, Baby",Eva Victor,2025,United States,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Old Joy,Kelly Reichardt,2006,United States,real_but_missing_from_prototype
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Pacifiction,Albert Serra,2022,"France, Spain",FABRICATED_IN_PROTOTYPE_NOT_REAL
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,BPM (Beats Per Minute),Robin Campillo,2017,France,FABRICATED_IN_PROTOTYPE_NOT_REAL
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Tabu,Miguel Gomes,2012,"Portugal, Germany",FABRICATED_IN_PROTOTYPE_NOT_REAL
+7,MODERN MASTERPIECES,modern-masterpieces,MODERN MASTERPIECES,verified_discrepancy,Cemetery of Splendour,Apichatpong Weerasethakul,2015,"Thailand, United Kingdom",FABRICATED_IN_PROTOTYPE_NOT_REAL
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Shithouse,Cooper Raiff,2020,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Drop Dead Gorgeous,Michael Patrick Jann,1999,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Self-Criticism of a Bourgeois Dog,Julian Radlmaier,2017,Germany,real_and_in_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Phantoms of July,Julian Radlmaier,2025,Germany,real_and_in_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Dazed and Confused,Richard Linklater,1993,United States,real_and_in_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,"The Adventures of Priscilla, Queen of the Desert",Stephan Elliott,1994,Australia,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Father Mother Sister Brother,Jim Jarmusch,2025,United States,real_and_in_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Adaptation.,Spike Jonze,2002,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Endless Cookie,"Seth Scriver, Peter Scriver",2025,Canada,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Married to the Mob,Jonathan Demme,1988,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,American Fiction,Cord Jefferson,2023,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Something Wild,Jonathan Demme,1986,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,It Was Just an Accident,Jafar Panahi,2025,Iran,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Ingrid Goes West,Matt Spicer,2017,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Parasite,Bong Joon Ho,2019,South Korea,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Fargo,Joel Coen,1996,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,The Practice,Martín Rejtman,2023,Argentina,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Charade,Stanley Donen,1963,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,The General,"Buster Keaton, Clyde Bruckman",1926,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Our Hospitality,"Buster Keaton, John G. Blystone",1923,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Sherlock Jr.,Buster Keaton,1924,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Seven Chances,Buster Keaton,1925,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Moonstruck,Norman Jewison,1987,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Irma La Douce,Billy Wilder,1963,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Pirates,Reggie Yates,2021,United Kingdom,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,The Piano Accident,Quentin Dupieux,2025,France,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,A Dessert for Constance,Sarah Maldoror,1981,France,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,The Apartment,Billy Wilder,1960,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Sexual Drive,Kota Yoshida,2021,Japan,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Soul Kitchen,Fatih Akin,2009,Germany,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,The Graduate,Mike Nichols,1967,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,El Planeta,Amalia Ulman,2021,Spain,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Animals,Sophie Hyde,2019,United Kingdom,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Dona Flor and Her Two Husbands,Bruno Barreto,1976,Brazil,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Pavements,Alex Ross Perry,2024,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Magic Farm,Amalia Ulman,2025,Argentina,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Limbo,Ben Sharrock,2020,United Kingdom,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Fallen Leaves,Aki Kaurismäki,2023,Finland,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Leonor Will Never Die,Martika Ramirez Escobar,2022,Philippines,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Lucky Grandma,Sasie Sealy,2019,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Shanghai Blues,Tsui Hark,1984,Hong Kong,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,"Pepi, Luci, Bom",Pedro Almodóvar,1980,Spain,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Silvia Prieto,Martín Rejtman,1999,Argentina,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Shakti,Martín Rejtman,2019,Argentina,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,An Odd Turn,Francisco Lezama,2024,Argentina,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,The Magic Gloves,Martín Rejtman,2003,Argentina,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Bloodsuckers,Julian Radlmaier,2021,Germany,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,The Nature of Love,Monia Chokri,2023,Canada,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,The Hypnosis,Ernst De Geer,2023,Sweden,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,The Delinquents,Rodrigo Moreno,2023,Argentina,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Yannick,Quentin Dupieux,2023,France,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Tavern Man,Aki Kaurismäki,2012,Finland,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Rotting in the Sun,Sebastián Silva,2023,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,The Worst Person in the World,Joachim Trier,2021,Norway,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Shiva Baby,Emma Seligman,2020,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,The African Desperate,Martine Syms,2022,United States,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,In the Name of Christ,Roger Gnoan M'Bala,1993,Cote d'Ivoire,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Two Shots Fired,Martín Rejtman,2014,Argentina,real_but_missing_from_prototype
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Gregory's Girl,Bill Forsyth,1980,United Kingdom,FABRICATED_IN_PROTOTYPE_NOT_REAL
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Dear Diary,Nanni Moretti,1993,"Italy, France",FABRICATED_IN_PROTOTYPE_NOT_REAL
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Dracula,Radu Jude,2025,"Romania, Austria",FABRICATED_IN_PROTOTYPE_NOT_REAL
+8,FUNNY HA HA,comedies,FUNNY HA HA,verified_discrepancy,Kill the Jockey,Luis Ortega,2024,"Argentina, Spain",FABRICATED_IN_PROTOTYPE_NOT_REAL
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Damage,Louis Malle,1992,United Kingdom,real_and_in_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Portrait of a Lady on Fire,Céline Sciamma,2019,France,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,The Handmaiden,Park Chan-wook,2016,South Korea,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Past Lives,Celine Song,2023,United States,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Queer,Luca Guadagnino,2024,United States,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Bones and All,Luca Guadagnino,2022,United States,real_and_in_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Undine,Christian Petzold,2020,Germany,real_and_in_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Something Wild,Jonathan Demme,1986,United States,real_and_in_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Magnificent Obsession,Douglas Sirk,1954,United States,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Touki Bouki,Djibril Diop Mambéty,1973,Senegal,real_and_in_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Die My Love,Lynne Ramsay,2025,United States,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Việt and Nam,Minh Quý Trương,2024,Vietnam,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,45 Years,Andrew Haigh,2015,United Kingdom,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,The New Years,Rodrigo Sorogoyen,2024,Spain,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Sexual Drive,Kota Yoshida,2021,Japan,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,River of Grass,Kelly Reichardt,1994,United States,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Beating Hearts,Gilles Lellouche,2024,France,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Priscilla,Sofia Coppola,2023,United States,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,The Hypnosis,Ernst De Geer,2023,Sweden,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Passages,Ira Sachs,2023,France,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Ema,Pablo Larraín,2019,Chile,real_and_in_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Annette,Leos Carax,2021,France,real_but_missing_from_prototype
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Sick of Myself,Kristoffer Borgli,2022,"Norway, Sweden",FABRICATED_IN_PROTOTYPE_NOT_REAL
+9,"TRULY, MADLY, DEEPLY",truly-madly-deeply,"TRULY, MADLY, DEEPLY",verified_discrepancy,Keep the Lights On,Ira Sachs,2012,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+10,Outstretched Hands: Two by Ken Loach,ken-loach-double-bill,FIGHT THE POWER: A KEN LOACH DOUBLE BILL,verified_discrepancy,Sweet Sixteen,Ken Loach,2002,,real_and_in_prototype
+10,Outstretched Hands: Two by Ken Loach,ken-loach-double-bill,FIGHT THE POWER: A KEN LOACH DOUBLE BILL,verified_discrepancy,"I, Daniel Blake",Ken Loach,2016,,real_and_in_prototype
+10,Outstretched Hands: Two by Ken Loach,ken-loach-double-bill,FIGHT THE POWER: A KEN LOACH DOUBLE BILL,verified_discrepancy,It's a Free World...,Ken Loach,2007,,real_but_missing_from_prototype
+10,Outstretched Hands: Two by Ken Loach,ken-loach-double-bill,FIGHT THE POWER: A KEN LOACH DOUBLE BILL,verified_discrepancy,The Wind That Shakes the Barley,Ken Loach,2006,,real_and_in_prototype
+10,Outstretched Hands: Two by Ken Loach,ken-loach-double-bill,FIGHT THE POWER: A KEN LOACH DOUBLE BILL,verified_discrepancy,Hidden Agenda,Ken Loach,1990,United Kingdom,FABRICATED_IN_PROTOTYPE_NOT_REAL
+10,Outstretched Hands: Two by Ken Loach,ken-loach-double-bill,FIGHT THE POWER: A KEN LOACH DOUBLE BILL,verified_discrepancy,Kes,Ken Loach,1969,United Kingdom,FABRICATED_IN_PROTOTYPE_NOT_REAL
+10,Outstretched Hands: Two by Ken Loach,ken-loach-double-bill,FIGHT THE POWER: A KEN LOACH DOUBLE BILL,verified_discrepancy,Sorry We Missed You,Ken Loach,2019,"United Kingdom, France",FABRICATED_IN_PROTOTYPE_NOT_REAL
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,Portrait of a Lady on Fire,Céline Sciamma,2019,France,real_but_missing_from_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,The Handmaiden,Park Chan-wook,2016,South Korea,real_and_in_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,The Mysterious Gaze of the Flamingo,Diego Céspedes,2025,Chile,real_and_in_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,Queer,Luca Guadagnino,2024,United States,real_but_missing_from_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,Việt and Nam,Minh Quý Trương,2024,Vietnam,real_and_in_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,The Celluloid Closet,"Rob Epstein, Jeffrey Friedman",1995,Germany,real_and_in_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,Orlando,Sally Potter,1992,United Kingdom,real_but_missing_from_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,The Watermelon Woman,Cheryl Dunye,1996,United States,real_but_missing_from_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,Benedetta,Paul Verhoeven,2021,France,real_but_missing_from_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,Please Baby Please,Amanda Kramer,2022,United States,real_but_missing_from_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,Blank Narcissus (Passion of the Swamp),Peter Strickland,2022,United Kingdom,real_but_missing_from_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,Great Freedom,Sebastian Meise,2021,Austria,real_but_missing_from_prototype
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,Paris Is Burning,Jennie Livingston,1990,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,My Own Private Idaho,Gus Van Sant,1991,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,Pariah,Dee Rees,2011,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+11,WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK,we-have-always-been-here,We Have Always Been Here: Queer Cinema Looks Back,verified_discrepancy,Carol,Todd Haynes,2015,"United States, United Kingdom",FABRICATED_IN_PROTOTYPE_NOT_REAL
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,The Non-Actor,Eliza Barry Callahan,2025,United States,real_and_in_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Not a Pretty Picture,Martha Coolidge,1976,United States,real_and_in_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,The Assistant,Kitty Green,2019,United States,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Bird,Andrea Arnold,2024,United Kingdom,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Titane,Julia Ducournau,2021,France,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Portrait of a Lady on Fire,Céline Sciamma,2019,France,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,"To Wong Foo, Thanks for Everything! Julie Newmar",Beeban Kidron,1995,United States,real_and_in_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Monangambééé,Sarah Maldoror,1968,Angola,real_and_in_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Sound of Falling,Mascha Schilinski,2025,Germany,real_and_in_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Good One,India Donaldson,2024,United States,real_and_in_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Discipline,Mona Fastvold,2026,United States,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,A Regular Woman,Sherry Hormann,2019,Germany,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,The Capsule,Athina Rachel Tsangari,2012,Greece,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Wadjda,Haifaa Al-Mansour,2012,Saudi Arabia,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Wuthering Heights,Andrea Arnold,2011,United Kingdom,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Sibyl,Justine Triet,2019,France,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Oxhide,Liu Jiayin,2005,China,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,When I Saw You,Annemarie Jacir,2012,Palestine,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Notes of a Crocodile,Daphne Xu,2024,Cambodia,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Untitled 77-A,Okhi Han,1977,South Korea,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Gerhard Richter Painting,Corinna Belz,2012,Germany,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,La Ciénaga,Lucrecia Martel,2001,Argentina,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Winter's Bone,Debra Granik,2010,United States,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,A Dessert for Constance,Sarah Maldoror,1981,France,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Zama,Lucrecia Martel,2017,Argentina,real_but_missing_from_prototype
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Dorian Gray in the Mirror of the Yellow Press,Ulrike Ottinger,1984,West Germany,FABRICATED_IN_PROTOTYPE_NOT_REAL
+12,REFRAMING: WOMEN DIRECTORS,women-directors,Reframing: Women Directors,verified_discrepancy,Rafiki,Wanuri Kahiu,2018,"Kenya, South Africa",FABRICATED_IN_PROTOTYPE_NOT_REAL
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Ghost World,Terry Zwigoff,2001,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,The Handmaiden,Park Chan-wook,2016,South Korea,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Adaptation.,Spike Jonze,2002,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Queer,Luca Guadagnino,2024,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Submarino,Thomas Vinterberg,2010,Denmark,real_and_in_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Jerichow,Christian Petzold,2008,Germany,real_and_in_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Phoenix,Christian Petzold,2014,Germany,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Tatsumi,Eric Khoo,2011,Japan,real_and_in_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,American Fiction,Cord Jefferson,2023,United States,real_and_in_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,The Golden Glove,Fatih Akin,2019,Germany,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Wuthering Heights,Andrea Arnold,2011,United Kingdom,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,The General,"Buster Keaton, Clyde Bruckman",1926,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Die My Love,Lynne Ramsay,2025,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Winter's Bone,Debra Granik,2010,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Zama,Lucrecia Martel,2017,Argentina,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,House by the River,Fritz Lang,1950,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,We Need to Talk About Kevin,Lynne Ramsay,2011,United Kingdom,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Dona Flor and Her Two Husbands,Bruno Barreto,1976,Brazil,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Hot Milk,Rebecca Lenkiewicz,2025,United Kingdom,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Babette's Feast,Gabriel Axel,1987,Denmark,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Priscilla,Sofia Coppola,2023,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Transit,Christian Petzold,2018,Germany,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Orlando,Sally Potter,1992,United Kingdom,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,The Road,John Hillcoat,2009,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Grand Theft Hamlet,"Pinny Grylls, Sam Crane",2024,United Kingdom,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Young Adam,David Mackenzie,2003,United Kingdom,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Malcolm X,Spike Lee,1992,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,The War of the Worlds: Next Century,Piotr Szulkin,1981,Poland,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,On the Road,Walter Salles,2012,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,"Oslo, August 31st",Joachim Trier,2011,Norway,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,First Cow,Kelly Reichardt,2019,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Lek and the Dogs,Andrew Kötting,2017,United Kingdom,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Radio Mary,Gary Walkow,2017,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Carrie,Brian De Palma,1976,United States,real_but_missing_from_prototype
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,The Woman in the Fifth,Paweł Pawlikowski,2011,"France, Poland",FABRICATED_IN_PROTOTYPE_NOT_REAL
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Burning,Lee Chang-dong,2018,South Korea,FABRICATED_IN_PROTOTYPE_NOT_REAL
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,The Zone of Interest,Jonathan Glazer,2023,"United Kingdom, Poland",FABRICATED_IN_PROTOTYPE_NOT_REAL
+13,ADAPTATIONS,adaptations,Adaptations,verified_discrepancy,Persepolis,"Marjane Satrapi, Vincent Paronnaud",2007,"France, United States",FABRICATED_IN_PROTOTYPE_NOT_REAL
+14,Pleasures of the Flesh: Films by Luca Guadagnino,luca-guadagnino,Everyone's Obscene: Films by Luca Guadagnino,verified_discrepancy,Queer,Luca Guadagnino,2024,United States,real_and_in_prototype
+14,Pleasures of the Flesh: Films by Luca Guadagnino,luca-guadagnino,Everyone's Obscene: Films by Luca Guadagnino,verified_discrepancy,Bones and All,Luca Guadagnino,2022,"United States, Italy",FABRICATED_IN_PROTOTYPE_NOT_REAL
+14,Pleasures of the Flesh: Films by Luca Guadagnino,luca-guadagnino,Everyone's Obscene: Films by Luca Guadagnino,verified_discrepancy,I Am Love,Luca Guadagnino,2009,Italy,FABRICATED_IN_PROTOTYPE_NOT_REAL
+14,Pleasures of the Flesh: Films by Luca Guadagnino,luca-guadagnino,Everyone's Obscene: Films by Luca Guadagnino,verified_discrepancy,Call Me by Your Name,Luca Guadagnino,2017,"Italy, France",FABRICATED_IN_PROTOTYPE_NOT_REAL
+14,Pleasures of the Flesh: Films by Luca Guadagnino,luca-guadagnino,Everyone's Obscene: Films by Luca Guadagnino,verified_discrepancy,A Bigger Splash,Luca Guadagnino,2015,"Italy, France",FABRICATED_IN_PROTOTYPE_NOT_REAL
+14,Pleasures of the Flesh: Films by Luca Guadagnino,luca-guadagnino,Everyone's Obscene: Films by Luca Guadagnino,verified_discrepancy,Suspiria,Luca Guadagnino,2018,"Italy, United States",FABRICATED_IN_PROTOTYPE_NOT_REAL
+14,Pleasures of the Flesh: Films by Luca Guadagnino,luca-guadagnino,Everyone's Obscene: Films by Luca Guadagnino,verified_discrepancy,Challengers,Luca Guadagnino,2024,"United States, Italy",FABRICATED_IN_PROTOTYPE_NOT_REAL
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,Bird,Andrea Arnold,2024,United Kingdom,real_but_missing_from_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,Father Mother Sister Brother,Jim Jarmusch,2025,United States,real_and_in_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,Die My Love,Lynne Ramsay,2025,United States,real_and_in_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,La Ciénaga,Lucrecia Martel,2001,Argentina,real_and_in_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,The Mastermind,Kelly Reichardt,2025,United States,real_and_in_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,Babyteeth,Shannon Murphy,2019,Australia,real_but_missing_from_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,We Need to Talk About Kevin,Lynne Ramsay,2011,United Kingdom,real_but_missing_from_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,Hot Milk,Rebecca Lenkiewicz,2025,United Kingdom,real_but_missing_from_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,One Fine Morning,Mia Hansen-Løve,2022,France,real_but_missing_from_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,Aftersun,Charlotte Wells,2022,United Kingdom,real_and_in_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,Alcarràs,Carla Simón,2022,Spain,real_but_missing_from_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,Bring Them Down,Christopher Andrews,2024,Ireland,real_but_missing_from_prototype
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,The Farewell,Lulu Wang,2019,"United States, China",FABRICATED_IN_PROTOTYPE_NOT_REAL
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,A Separation,Asghar Farhadi,2011,Iran,FABRICATED_IN_PROTOTYPE_NOT_REAL
+15,Father Mother Sister Brother: Family Stories,fmsb,FATHER MOTHER SISTER BROTHER: FAMILY STORIES,verified_discrepancy,Nobody Knows,Hirokazu Koreeda,2004,Japan,FABRICATED_IN_PROTOTYPE_NOT_REAL
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,The Handmaiden,Park Chan-wook,2016,South Korea,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Queer,Luca Guadagnino,2024,United States,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Viet and Nam (untitled in page text),Minh Quý Trương,2024,Vietnam,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Crossing,Levan Akin,2024,Sweden,real_and_in_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,The Celluloid Closet,"Rob Epstein, Jeffrey Friedman",1995,Germany,real_and_in_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,The Times of Harvey Milk,Rob Epstein,1984,United States,real_and_in_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Hot Milk,Rebecca Lenkiewicz,2025,United Kingdom,real_and_in_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,"Orlando, My Political Biography",Paul B. Preciado,2023,France,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,The Watermelon Woman,Cheryl Dunye,1996,United States,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Toomas Beneath the Valley of the Wild Wolves,"Chintis Lundgren, Draško Ivezić",2019,Estonia,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Born in Flames,Lizzie Borden,1983,United States,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,"Pepi, Luci, Bom",Pedro Almodóvar,1980,Spain,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,The Last Year of Darkness,Benjamin Mullinkosson,2023,China,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Rotting in the Sun,Sebastián Silva,2023,United States,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Passages,Ira Sachs,2023,France,real_and_in_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,The Five Devils,Léa Mysius,2022,France,real_and_in_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Please Baby Please,Amanda Kramer,2022,United States,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Shiva Baby,Emma Seligman,2020,United States,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Blank Narcissus (Passion of the Swamp),Peter Strickland,2022,United Kingdom,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Great Freedom,Sebastian Meise,2021,Austria,real_but_missing_from_prototype
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,Naz + Maalik,Jay Dockendorf,2014,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+16,THIS IS NOT A COMING OUT STORY,this-is-not-coming-out-story,THIS IS NOT A COMING OUT STORY,verified_discrepancy,I Am Divine,Jeffrey Schwarz,2013,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Ghost World,Terry Zwigoff,2001,United States,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,The Handmaiden,Park Chan-wook,2016,South Korea,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Adaptation.,Spike Jonze,2002,United States,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Queer,Luca Guadagnino,2024,United States,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Submarino,Thomas Vinterberg,2010,Denmark,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Jerichow,Christian Petzold,2008,Germany,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Phoenix,Christian Petzold,2014,Germany,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Tatsumi,Eric Khoo,2011,Japan,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,American Fiction,Cord Jefferson,2023,United States,real_and_in_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,The Golden Glove,Fatih Akın,2019,Germany,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Wuthering Heights,Andrea Arnold,2011,United Kingdom,real_and_in_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,The General,"Buster Keaton, Clyde Bruckman",1926,United States,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Die My Love,Lynne Ramsay,2025,United States,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Winter's Bone,Debra Granik,2010,United States,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Zama,Lucrecia Martel,2017,Argentina,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,House by the River,Fritz Lang,1950,United States,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,We Need to Talk About Kevin,Lynne Ramsay,2011,United Kingdom,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Dona Flor and Her Two Husbands,Bruno Barreto,1976,Brazil,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Hot Milk,Rebecca Lenkiewicz,2025,United Kingdom,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Babette's Feast,Gabriel Axel,1987,Denmark,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Priscilla,Sofia Coppola,2023,United States,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Transit,Christian Petzold,2018,Germany,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Orlando,Sally Potter,1992,United Kingdom,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,The Road,John Hillcoat,2009,United States,real_but_missing_from_prototype
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Nickel Boys,RaMell Ross,2024,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,The Silence of the Lambs,Jonathan Demme,1991,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Our Grand Despair,Seyfi Teoman,2011,"Turkey, Germany",FABRICATED_IN_PROTOTYPE_NOT_REAL
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,The Tin Drum,Volker Schlöndorff,1979,"West Germany, France",FABRICATED_IN_PROTOTYPE_NOT_REAL
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,Crash,David Cronenberg,1996,Canada,FABRICATED_IN_PROTOTYPE_NOT_REAL
+17,BY THE BOOK: AUTEUR ADAPTATIONS,adaptations,ADAPTATIONS,verified_discrepancy,The Invisible Life of Eurídice Gusmão,Karim Aïnouz,2019,"Brazil, Germany",FABRICATED_IN_PROTOTYPE_NOT_REAL
+18,THE CHER EFFECT: A DOUBLE BILL,cher,THE CHER EFFECT: A DOUBLE BILL,verified_discrepancy,Mermaids,Richard Benjamin,1990,United States,real_and_in_prototype
+18,THE CHER EFFECT: A DOUBLE BILL,cher,THE CHER EFFECT: A DOUBLE BILL,verified_discrepancy,Moonstruck,Norman Jewison,1987,United States,real_and_in_prototype
+18,THE CHER EFFECT: A DOUBLE BILL,cher,THE CHER EFFECT: A DOUBLE BILL,verified_discrepancy,Silkwood,Mike Nichols,1983,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+18,THE CHER EFFECT: A DOUBLE BILL,cher,THE CHER EFFECT: A DOUBLE BILL,verified_discrepancy,Mask,Peter Bogdanovich,1985,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+18,THE CHER EFFECT: A DOUBLE BILL,cher,THE CHER EFFECT: A DOUBLE BILL,verified_discrepancy,Suspect,Peter Yates,1987,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+18,THE CHER EFFECT: A DOUBLE BILL,cher,THE CHER EFFECT: A DOUBLE BILL,verified_discrepancy,The Witches of Eastwick,George Miller,1987,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,God Is Shy,Jocelyn Charles,2025,France,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Titane,Julia Ducournau,2021,France,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,The Neon Demon,Nicolas Winding Refn,2016,Denmark,real_and_in_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Bones and All,Luca Guadagnino,2022,United States,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,The Golden Glove,Fatih Akın,2019,Germany,real_and_in_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,The Silence of the Lambs,Jonathan Demme,1991,United States,real_and_in_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,The Killing of a Sacred Deer,Yorgos Lanthimos,2017,Ireland,real_and_in_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Deep Red,Dario Argento,1975,Italy,real_and_in_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Night of the Living Dead,George A. Romero,1968,United States,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,The Driller Killer,Abel Ferrara,1979,United States,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,The House by the Cemetery,Lucio Fulci,1981,Italy,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Hollywood 90028,Christina Hornisher,1973,United States,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,The Substance,Coralie Fargeat,2024,United States,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,It Follows,David Robert Mitchell,2014,United States,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,A Place Without Fear,Susanne Deeken,2023,United Kingdom,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Revenge,Coralie Fargeat,2017,France,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,House of Seven Belles,Andy Milligan,1979,United States,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Night Tide,Curtis Harrington,1961,United States,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,The Nest of the Cuckoo Birds,Bert Williams,1965,United States,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Orgy of the Dead,Stephen C. Apostolof,1965,United States,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Lamb,Valdimar Jóhannsson,2021,Iceland,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,The Other Lamb,Małgorzata Szumowska,2019,Ireland,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Zombi Child,Bertrand Bonello,2019,France,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Carrie,Brian De Palma,1976,United States,real_but_missing_from_prototype
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Luz,Tilman Singer,2018,Germany,FABRICATED_IN_PROTOTYPE_NOT_REAL
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,A Field in England,Ben Wheatley,2013,United Kingdom,FABRICATED_IN_PROTOTYPE_NOT_REAL
+19,FEAR ON FILM,horror,FEAR ON FILM,verified_match,Antichrist,Lars von Trier,2009,"Denmark, Germany",FABRICATED_IN_PROTOTYPE_NOT_REAL
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,"Paris, Texas",Wim Wenders,1984,West Germany,real_but_missing_from_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Queer,Luca Guadagnino,2024,United States,real_but_missing_from_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,La Ciénaga,Lucrecia Martel,2001,Argentina,real_but_missing_from_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Hot Milk,Rebecca Lenkiewicz,2025,United Kingdom,real_and_in_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Passing Summer,Angela Schanelec,2001,Germany,real_and_in_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Frankie,Ira Sachs,2019,France,real_and_in_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Days of the Bagnold Summer,Simon Bird,2019,United Kingdom,real_and_in_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Super Happy Forever,Kohei Igarashi,2024,Japan,real_but_missing_from_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Parthenope,Paolo Sorrentino,2024,Italy,real_but_missing_from_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Silvia Prieto,Martín Rejtman,1999,Argentina,real_and_in_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Aftersun,Charlotte Wells,2022,United Kingdom,real_but_missing_from_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Gasoline Rainbow,"Bill Ross IV, Turner Ross",2023,United States,real_and_in_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Rotting in the Sun,Sebastián Silva,2023,United States,real_but_missing_from_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Alcarràs,Carla Simón,2022,Spain,real_and_in_prototype
+20,THE SUMMER BLUES,the-summer-blues,THE SUMMER BLUES,verified_discrepancy,Unrelated,Joanna Hogg,2007,United Kingdom,FABRICATED_IN_PROTOTYPE_NOT_REAL
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,The Myth of the American Sleepover,David Robert Mitchell,2010,United States,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Sunset,László Nemes,2018,Hungary,real_and_in_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Kes,Ken Loach,1969,United Kingdom,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,The Neon Demon,Nicolas Winding Refn,2016,Denmark,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Submarino,Thomas Vinterberg,2010,Denmark,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Undine,Christian Petzold,2020,Germany,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Whores' Glory,Michael Glawogger,2011,Austria,real_and_in_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,The Edge of Heaven,Fatih Akin,2007,Germany,real_and_in_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,The Cut,Fatih Akin,2014,Germany,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,The Consequences of Love,Paolo Sorrentino,2004,Italy,real_and_in_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,A Regular Woman,Sherry Hormann,2019,Germany,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Wadjda,Haifaa Al-Mansour,2012,Saudi Arabia,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Neighbouring Sounds,Kleber Mendonça Filho,2012,Brazil,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,The Practice,Martín Rejtman,2023,Argentina,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Wuthering Heights,Andrea Arnold,2011,United Kingdom,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,What You Gonna Do When the World's on Fire?,Roberto Minervini,2018,Italy,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Sibyl,Justine Triet,2019,France,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,The Nile Hilton Incident,Tarik Saleh,2017,Sweden,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,The Killing of a Sacred Deer,Yorgos Lanthimos,2017,Ireland,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Blood of My Blood,Marco Bellocchio,2015,Italy,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Winter's Bone,Debra Granik,2010,United States,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Bad Tales,"Damiano D'Innocenzo, Fabio D'Innocenzo",2020,Italy,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Babyteeth,Shannon Murphy,2019,Australia,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Crossing,Levan Akin,2024,Sweden,real_but_missing_from_prototype
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Ennio,Giuseppe Tornatore,2021,Italy,FABRICATED_IN_PROTOTYPE_NOT_REAL
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,Infinite Football,Corneliu Porumboiu,2018,Romania,FABRICATED_IN_PROTOTYPE_NOT_REAL
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,"So Long, My Son",Wang Xiaoshuai,2019,China,FABRICATED_IN_PROTOTYPE_NOT_REAL
+21,FILM FESTIVAL FAVORITES,film-festival-favorites,FILM FESTIVAL FAVORITES,verified_discrepancy,I Am Not a Witch,Rungano Nyoni,2017,"Zambia, United Kingdom",FABRICATED_IN_PROTOTYPE_NOT_REAL
+22,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,shooting-stars,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,verified_match,Good Time,"Josh Safdie, Benny Safdie",2017,United States,real_and_in_prototype
+22,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,shooting-stars,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,verified_match,Winter's Bone,Debra Granik,2010,United States,real_and_in_prototype
+22,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,shooting-stars,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,verified_match,The Mastermind,Kelly Reichardt,2025,United States,real_and_in_prototype
+22,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,shooting-stars,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,verified_match,"Sorry, Baby",Eva Victor,2025,United States,real_and_in_prototype
+22,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,shooting-stars,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,verified_match,Minari,Lee Isaac Chung,2020,United States,real_and_in_prototype
+22,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,shooting-stars,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,verified_match,Priscilla,Sofia Coppola,2023,United States,real_and_in_prototype
+22,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,shooting-stars,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,verified_match,Aftersun,Charlotte Wells,2022,United Kingdom,real_and_in_prototype
+22,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,shooting-stars,SHOOTING STARS: HOLLYWOOD'S NEXT LEGENDS,verified_match,Shiva Baby,Emma Seligman,2020,United States,real_and_in_prototype
+23,“BIG FIVE” OSCAR WINNERS,big-five,“BIG FIVE” OSCAR WINNERS,verified_discrepancy,Thelma & Louise,Ridley Scott,1991,United States,real_and_in_prototype
+23,“BIG FIVE” OSCAR WINNERS,big-five,“BIG FIVE” OSCAR WINNERS,verified_discrepancy,Fargo,Joel Coen,1996,United States,real_and_in_prototype
+23,“BIG FIVE” OSCAR WINNERS,big-five,“BIG FIVE” OSCAR WINNERS,verified_discrepancy,The Silence of the Lambs,Jonathan Demme,1991,United States,real_but_missing_from_prototype
+23,“BIG FIVE” OSCAR WINNERS,big-five,“BIG FIVE” OSCAR WINNERS,verified_discrepancy,Midnight Cowboy,John Schlesinger,1969,United States,real_and_in_prototype
+23,“BIG FIVE” OSCAR WINNERS,big-five,“BIG FIVE” OSCAR WINNERS,verified_discrepancy,In the Heat of the Night,Norman Jewison,1967,United States,real_and_in_prototype
+23,“BIG FIVE” OSCAR WINNERS,big-five,“BIG FIVE” OSCAR WINNERS,verified_discrepancy,Moonstruck,Norman Jewison,1987,United States,real_but_missing_from_prototype
+23,“BIG FIVE” OSCAR WINNERS,big-five,“BIG FIVE” OSCAR WINNERS,verified_discrepancy,The Apartment,Billy Wilder,1960,United States,real_and_in_prototype
+23,“BIG FIVE” OSCAR WINNERS,big-five,“BIG FIVE” OSCAR WINNERS,verified_discrepancy,The Graduate,Mike Nichols,1967,United States,real_and_in_prototype
+23,“BIG FIVE” OSCAR WINNERS,big-five,“BIG FIVE” OSCAR WINNERS,verified_discrepancy,Parasite,Bong Joon Ho,2019,South Korea,FABRICATED_IN_PROTOTYPE_NOT_REAL
+23,“BIG FIVE” OSCAR WINNERS,big-five,“BIG FIVE” OSCAR WINNERS,verified_discrepancy,The Wrestler,Darren Aronofsky,2008,"United States, France",FABRICATED_IN_PROTOTYPE_NOT_REAL
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Lars and the Real Girl,Craig Gillespie,2007,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Shithouse,Cooper Raiff,2020,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,The Myth of the American Sleepover,David Robert Mitchell,2010,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Not a Pretty Picture,Martha Coolidge,1976,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Adaptation.,Spike Jonze,2002,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Bones and All,Luca Guadagnino,2022,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Ingrid Goes West,Matt Spicer,2017,United States,real_and_in_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Good Time,"Josh Safdie, Benny Safdie",2017,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Winter's Bone,Debra Granik,2010,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,The Cathedral,Ricky D'Ambrose,2021,United States,real_and_in_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,"Sorry, Baby",Eva Victor,2025,United States,real_and_in_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,River of Grass,Kelly Reichardt,1994,United States,real_and_in_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Old Joy,Kelly Reichardt,2006,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Good One,India Donaldson,2024,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Tendaberry,Haley Elizabeth Anderson,2024,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Actual People,Kit Zauhar,2021,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,This Closeness,Kit Zauhar,2023,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,45365,"Bill Ross IV, Turner Ross",2009,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Shiva Baby,Emma Seligman,2020,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Cryptozoo,Dash Shaw,2021,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Madeline's Madeline,Josephine Decker,2018,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Radio Mary,Gary Walkow,2017,United States,real_but_missing_from_prototype
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,On the Seventh Day,Jim McKay,2017,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,The Unknown Country,Morrisa Maltz,2022,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Certain Women,Kelly Reichardt,2016,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
+24,AMERICAN INDIES,indies,AMERICAN INDIES,verified_discrepancy,Familiar Touch,Sarah Friedland,2024,United States,FABRICATED_IN_PROTOTYPE_NOT_REAL
