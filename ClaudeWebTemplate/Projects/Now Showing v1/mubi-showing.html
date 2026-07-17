@@ -2531,7 +2531,7 @@
       white-space: nowrap;
       transition: color 0.2s ease;
     }
-    .bfi-genre-word:hover { color: #323232; }
+    .bfi-genre-word:hover { color: #001489; }
     /* Negative margin cancels the flex gap on this side only, so the comma sits flush
        against the word right before it while normal spacing remains before the next word. */
     .bfi-genre-sep {
@@ -2545,7 +2545,7 @@
     }
     .bfi-genre-section .row-title { text-transform: none; }
     :root[data-theme="dark"] .bfi-genre-word { color: var(--dm-text-dim); }
-    :root[data-theme="dark"] .bfi-genre-word:hover { color: var(--dm-text); }
+    :root[data-theme="dark"] .bfi-genre-word:hover { color: #4d6bd6; }
     :root[data-theme="dark"] .bfi-genre-sep { color: var(--dm-text-dimmer); }
     /* Double tile: full-bleed poster image (matching the film doubletile cards' visual
        language) with a bottom-up gradient tinted in the collection's own colour, and the
@@ -5561,12 +5561,18 @@ function bfiGenreSectionHTML(row, rowIdx) {
   const itemsHTML = row.colls.map(g =>
     `<a class="bfi-genre-word" href="explore.html?genre=${encodeURIComponent(g)}" target="_self">${g}</a><span class="bfi-genre-sep">,</span>`
   ).join('');
+  // Two extra "words" alongside the genres themselves — Rating jumps straight to the full
+  // catalog sorted by highest rated (no genre filter), Language jumps to the full catalog
+  // with the filter panel already open on its Language section (see explore.html's
+  // ?sort=rating / ?filters=open deep-link handlers).
+  const ratingHTML = `<a class="bfi-genre-word" href="explore.html?sort=rating" target="_self">Rating</a><span class="bfi-genre-sep">,</span>`;
+  const languageHTML = `<a class="bfi-genre-word" href="explore.html?filters=open" target="_self">Language</a><span class="bfi-genre-sep">,</span>`;
   const moreHTML = `<a class="bfi-genre-word" href="explore.html" target="_self">&amp; more</a>`;
   return `
     <div class="row-section bfi-genre-section">
       <div class="row-header"><span class="row-title">${row.title}</span></div>
       <div class="bfi-genre-list">
-        ${itemsHTML}${moreHTML}
+        ${itemsHTML}${ratingHTML}${languageHTML}${moreHTML}
       </div>
     </div>
   `;

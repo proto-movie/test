@@ -3060,6 +3060,25 @@ document.getElementById('filterBtn').addEventListener('click', (e) => {
 document.getElementById('filterPanelClose').addEventListener('click', closeFilterPanel);
 document.getElementById('filterOverlay').addEventListener('click', closeFilterPanel);
 
+// Deep-link support: ?sort=<value> pre-selects that sort option on load — used by
+// mubi-showing.html's BFI-style genre lane "Rating" word (?sort=rating, i.e. Highest Rated).
+(function () {
+  const sortParam = new URLSearchParams(location.search).get('sort');
+  if (!sortParam) return;
+  const sel = document.getElementById('sortDropdown-sort');
+  if (!sel || !sel.querySelector(`option[value="${CSS.escape(sortParam)}"]`)) return;
+  sel.value = sortParam;
+  renderGrid();
+})();
+
+// Deep-link support: ?filters=open pops the filter panel (Language / Video Quality) open on
+// load — used by mubi-showing.html's BFI-style genre lane "Language" word.
+(function () {
+  if (new URLSearchParams(location.search).get('filters') !== 'open') return;
+  const anchorBtn = isMobile() ? document.getElementById('filterBtnMobile') : document.getElementById('filterBtn');
+  openFilterPanel(anchorBtn);
+})();
+
 document.getElementById('filterFooterApply').addEventListener('click', closeFilterPanel);
 document.getElementById('filterFooterClear').addEventListener('click', () => { clearFilters(); closeFilterPanel(); });
 
