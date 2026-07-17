@@ -1558,6 +1558,46 @@
     :root[data-theme="dark"] .row-carousel-peek-hint--prev { background: linear-gradient(to left, var(--dm-seam) 0%, var(--dm-bg) 100%); }
     :root[data-theme="dark"] .row-carousel-peek-hint--next { background: linear-gradient(to right, var(--dm-seam) 0%, var(--dm-bg) 100%); }
     .row-carousel-peek-hint.is-visible { opacity: 1; }
+    /* "Peek Preview v2" (Page Settings > Layout > Carousel Rows > Peek Preview v2) — both
+       peeking tiles' real stills (set inline via nsUpdateRowCarousel, from each side's actual
+       adjacent tile) show through their peek shape instead of it just being a flat gradient
+       panel. Lives on a separate inner layer (.row-carousel-peek-hint-img), not the shape's
+       own background — that's what lets it slide independently: nsAdvanceRowCarousel animates
+       both inner layers' own transform in sync with the real tiles' slide (same duration/
+       easing/direction), so each preview visually continues the same motion as the rest of the
+       strip instead of just snapping to a new picture once the page settles. overflow:hidden
+       on the shape clips that wider inner layer back down to the peek window's own bounds
+       (rounded corners included). Semi-transparent so it reads as a hint/preview rather than
+       a fully crisp image, and still fades out to the page background at the outer edge via
+       this ::after gradient layered on top. */
+    .row-carousel-peek-hint.is-v2 { overflow: hidden; }
+    .row-carousel-peek-hint-img {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.3;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .row-carousel-peek-hint--prev.is-v2::after,
+    .row-carousel-peek-hint--next.is-v2::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+    }
+    .row-carousel-peek-hint--prev.is-v2::after { background: linear-gradient(to left, rgba(255,255,255,0.45) 0%, #fff 100%); }
+    .row-carousel-peek-hint--next.is-v2::after { background: linear-gradient(to right, rgba(255,255,255,0.45) 0%, #fff 100%); }
+    :root[data-theme="dark"] .row-carousel-peek-hint--prev.is-v2::after { background: linear-gradient(to left, rgba(18,20,28,0.45) 0%, var(--dm-bg) 100%); }
+    :root[data-theme="dark"] .row-carousel-peek-hint--next.is-v2::after { background: linear-gradient(to right, rgba(18,20,28,0.45) 0%, var(--dm-bg) 100%); }
+    /* The peeking image sitting behind the arrow now (v2 only) makes the default light/dim
+       arrow state hard to spot — bump it straight to the hover-darkness state so it's legible
+       against the image without needing a hover first. */
+    .row-carousel-inner:has(.row-carousel-peek-hint--prev.is-v2) .row-carousel-arrow--prev img,
+    .row-carousel-inner:has(.row-carousel-peek-hint--next.is-v2) .row-carousel-arrow--next img {
+      filter: brightness(0) opacity(0.65);
+    }
+    :root[data-theme="dark"] .row-carousel-inner:has(.row-carousel-peek-hint--prev.is-v2) .row-carousel-arrow--prev img,
+    :root[data-theme="dark"] .row-carousel-inner:has(.row-carousel-peek-hint--next.is-v2) .row-carousel-arrow--next img {
+      filter: none;
+      opacity: 0.85;
+    }
     @media (max-width: 809px) { .row-carousel-arrow, .row-carousel-peek-hint { display: none; } }
 
     /* ─── SPOTLIGHT — collection banner + horizontal film slider ─── */
@@ -1761,10 +1801,14 @@
     .film-card:hover .card-img-wrap { box-shadow: 0 4px 14px rgba(0,0,0,0.45); }
 
     /* Terminal tile at the end of a Carousel Row's track, linking to the real MUBI collection
-       page — same box (.card-img-wrap) as every other tile so it sizes identically. Uses the
-       row's own last film/collection still as a backdrop (set inline, see filmRowSectionHTML)
-       with a dark overlay for legibility, instead of a flat colour fill — #000C52 is only
-       ever seen as a fallback, for the rare row with no image to borrow at all. */
+       page — same box (.card-img-wrap) as every other tile so it sizes identically. Backdrop
+       (set inline, see filmRowSectionHTML) is a real, verified still of a film from that same
+       collection that ISN'T one of the films already shown in the row (row.extraFilm — see
+       NUMBERED_ROW_COLLECTIONS), so the See All tile always previews something new rather
+       than a poster the user just scrolled past. Falls back to the row's own last film's
+       still where no such extra film is available/known (a collection whose every real film
+       is already shown), and to the flat #000C52 fill only if there's no image to borrow at
+       all. */
     .row-carousel-see-all-inner {
       display: flex;
       flex-direction: column;
@@ -2723,7 +2767,7 @@
       top: 50%; left: 50%;
       transform: translate(-50%, -48%) scale(0.97);
       width: min(1480px, 96vw);
-      height: min(760px, 88vh);
+      height: min(950px, 94vh);
       background: #fff;
       border-radius: 8px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -3282,6 +3326,13 @@
                 <div class="ns-toggle-desc">Rows with more than 4 items page by 4 with peeking-tile arrows instead of See All.</div>
               </div>
               <label class="ns-switch"><input type="checkbox" id="carouselRowsToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            </div>
+            <div class="ns-toggle-row" id="carouselRowsPeekV2Row" style="display:none; padding-left:34px; padding-right:18px;">
+              <div>
+                <span class="ns-toggle-label">Peek Preview v2</span>
+                <div class="ns-toggle-desc">Shows the next film's real still masked into the peeking shape (right arrow only) instead of a plain gradient.</div>
+              </div>
+              <label class="ns-switch"><input type="checkbox" id="carouselRowsPeekV2Toggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
             <div class="ns-field" style="padding-left:18px; padding-right:18px;">
               <div class="ns-field-label">Number of Collections to Display After 2nd Spotlight</div>
@@ -4528,7 +4579,7 @@ const TOP_TEN_FILMS = [
    Pulled from api.mubi.com/v4/collections/<slug>. Row numbering (1-25) is kept;
    only the underlying collection/films per row are randomized. */
 const NUMBERED_ROW_COLLECTIONS = [
-  { collectionTitle: "SUMMER IN THE CITIES", slug: "summer-in-the-cities-uk", films: [
+  { collectionTitle: "SUMMER IN THE CITIES", slug: "summer-in-the-cities-uk", extraFilm:{ title:"The Watermelon Woman", year:1996, country:"United States", image:"https://assets.mubicdn.net/images/film/23121/image-w448.jpg?1745489762", fX:0.584958, fY:0.14604 }, films: [
     { title:"Human Traffic", director:"Justin Kerrigan", year:1999, country:"Ireland, United Kingdom", slug:"human-traffic",
       image:"https://assets.mubicdn.net/images/film/12309/image-w448.jpg?1778849354", titleTreatment:null, fX:0.51, fY:0.47, rating:3.5, award:null, ourTake:"Hyped for rave culture and what that synthetic new energy can do when channeled into cinema, Human Traffic is game for a laugh. Unmistakably of the ’90s, it brings together ascendent actors of the moment (from John Simm to Danny Dyer), rolling with the brash cheekiness of that young, excitable cast."},
     { title:"Days of the Bagnold Summer", director:"Simon Bird", year:2019, country:"United Kingdom", slug:"days-of-the-bagnold-summer",
@@ -4544,7 +4595,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Chungking Express", director:"Wong Kar Wai", year:1994, country:"Hong Kong", slug:"chungking-express",
   image:"https://assets.mubicdn.net/images/film/226/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Wong Kar-wai's woozy, neon-drenched diptych finds two lovelorn cops adrift in a humid Hong Kong summer, one nursing pineapple cans, the other unknowingly serenaded by California Dreamin'. Chungking Express bottles the fizzy ache of urban longing like nothing else."},
   ]},
-  { collectionTitle: "CANNES TAKEOVER", slug: "cannes-film-festival", totalItems: 107, films: [
+  { collectionTitle: "CANNES TAKEOVER", slug: "cannes-film-festival", totalItems: 107, extraFilm:{ title:"Amores Perros", year:2000, country:"Mexico", image:"https://assets.mubicdn.net/images/film/123/image-w448.jpg?1781621283", fX:0.41, fY:0.35 }, films: [
     { title:"Heaven's Gate", director:"Michael Cimino", year:1980, country:"United States", slug:"heaven-s-gate-1980",
       image:"https://assets.mubicdn.net/images/film/493/image-w448.jpg?1779175663", titleTreatment:null, fX:0.54, fY:0.46, rating:3.9, award:null, ourTake:"While the film’s runaway budget contributed to a studio’s collapse, Michael Cimino’s ambitious epic remains a stunning work of novelistic filmmaking. Thronging with stars of 1970s cinema, Heaven’s Gate may be quintessentially American, but achieves the sweep and detail of great Russian literature."},
     { title:"Bird", director:"Andrea Arnold", year:2024, country:"United Kingdom, France", slug:"bird",
@@ -4562,7 +4613,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"The Square", director:"Ruben Östlund", year:2017, country:"Sweden, Germany", slug:"the-square-2017",
   image:"https://assets.mubicdn.net/images/film/156028/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Ruben Östlund's Palme d'Or-winning satire skewers the contemporary art world's moral vanity through a hapless museum curator's escalating disasters. Equal parts cringe comedy and social experiment, The Square finds savage laughs between ideals and instinct."},
   ]},
-  { collectionTitle: "THE MUBI TOP 1000", slug: "mubi-top-1000", totalItems: 132, films: [
+  { collectionTitle: "THE MUBI TOP 1000", slug: "mubi-top-1000", totalItems: 132, extraFilm:{ title:"Parasite", director:"Bong Joon Ho", year:2019, country:"South Korea", image:"https://assets.mubicdn.net/images/film/172930/image-w448.jpg?1745495498", fX:0.713663, fY:0.503876 }, films: [
     { title:"Perfect Days", director:"Wim Wenders", year:2023, country:"Japan, Germany", slug:"perfect-days",
       image:"https://assets.mubicdn.net/images/film/343977/image-w448.jpg?1745501776", titleTreatment:"https://images.mubicdn.net/images/artworks/674402/cache-674402-1711023948/images-original.png", fX:0.59, fY:0.28, rating:4.7, award:{text:"Laurel: Oscar Nominee – Best International Film", image:"https://images.mubicdn.net/images/carousel_takeover/222/cache-953048-1711020763/prize_image_en_us-original.png"}, ourTake:"Kôji Yakusho won Best Actor in Cannes for this heart-warming, Oscar®-nominated drama from Wim Wenders, who lends his humanist gaze to the inhabitants of his beloved Tokyo. Charged with a superb soundtrack of classic rock and pop, Perfect Days finds beauty and serenity in the most unexpected places."},
     { title:"Portrait of a Lady on Fire", director:"Céline Sciamma", year:2019, country:"France", slug:"portrait-de-la-jeune-fille-en-feu",
@@ -4580,7 +4631,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"In the Mood for Love", director:"Wong Kar Wai", year:2000, country:"Hong Kong, France", slug:"in-the-mood-for-love",
   image:"https://assets.mubicdn.net/images/film/198/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Wong Kar-wai's aching masterwork follows two neighbors, each betrayed by an unfaithful spouse, circling a love they refuse to consummate. Bathed in cheongsams and Nat King Cole, restraint itself becomes the most sensuous special effect in cinema."},
   ]},
-  { collectionTitle: "GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS", slug: "award-winners", totalItems: 26, films: [
+  { collectionTitle: "GOLDEN PALMS, LIONS, AND BEARS, OH MY!: AWARD-WINNING GREATS", slug: "award-winners", totalItems: 26, extraFilm:{ title:"Father Mother Sister Brother", year:2025, country:"United States, United Kingdom", image:"https://assets.mubicdn.net/images/film/398054/image-w448.jpg?1770218943", fX:0.5, fY:0.39 }, films: [
     { title:"Titane", director:"Julia Ducournau", year:2021, country:"France, Belgium", slug:"titane",
       image:"https://assets.mubicdn.net/images/film/244680/image-w448.jpg?1745497559", titleTreatment:"https://images.mubicdn.net/images/artworks/446663/cache-446663-1643041783/images-original.png", fX:0.46, fY:0.44, rating:3.7, award:{text:"Cannes Film Festival Palme d'Or", image:"https://images.mubicdn.net/images/carousel_takeover/64/cache-751428-1642684006/prize_image_en_us-original.png"}, ourTake:"Exploding in a gnarled helix of chrome and flesh, Julia Ducournau’s Palme d’Or–winner is a jaw-dropping blast of Cronenbergian gothic. Conceptually audacious and dripping with insouciant attitude, Titane ignites a Molotov cocktail of gender politics, familial compassion, and female desire."},
     { title:"The Handmaiden", director:"Park Chan-wook", year:2016, country:"South Korea", slug:"the-handmaiden",
@@ -4598,7 +4649,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"The Substance", director:"Coralie Fargeat", year:2024, country:"United States, United Kingdom", slug:"the-substance",
   image:"https://assets.mubicdn.net/images/film/332868/image-w448.jpg?1745502662", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Demi Moore goes full body-horror in Coralie Fargeat's Oscar-winning takedown of beauty culture — gloriously grotesque, and impossible to look away from."},
   ]},
-  { collectionTitle: "FEATURED ON THE MUBI PODCAST", slug: "mubi-podcast", totalItems: 37, films: [
+  { collectionTitle: "FEATURED ON THE MUBI PODCAST", slug: "mubi-podcast", totalItems: 37, extraFilm:{ title:"Sentimental Value", director:"Joachim Trier", year:2025, country:"Norway", image:"https://assets.mubicdn.net/images/film/400360/image-w448.jpg", fX:0.5, fY:0.3 }, films: [
     { title:"Kes", director:"Ken Loach", year:1969, country:"United Kingdom", slug:"kes",
       image:"https://assets.mubicdn.net/images/film/2682/image-w448.jpg?1745490613", titleTreatment:null, fX:0.55, fY:0.42, rating:4.4, award:null, ourTake:"With all the heart-stopping precision of a falcon stooping for prey, this perfect work of social realism finds—and dives for—hope amid hardship. Authenticated by actual locations and a breathtakingly true performance from then-unknown David Bradley, Ken Loach’s soulful portrait of boyhood soars."},
     { title:"Do the Right Thing", director:"Spike Lee", year:1989, country:"United States", slug:"do-the-right-thing",
@@ -4616,7 +4667,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Die My Love", director:"Lynne Ramsay", year:2025, country:"United States, United Kingdom", slug:"die-my-love",
   image:"https://assets.mubicdn.net/images/film/360569/image-w448.jpg?1778585747", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Jennifer Lawrence and Robert Pattinson tear into a frenzied portrait of new motherhood unraveling — Lynne Ramsay at her most uncompromising."},
   ]},
-  { collectionTitle: "AND THE OSCAR GOES TO...", slug: "oscars", totalItems: 44, films: [
+  { collectionTitle: "AND THE OSCAR GOES TO...", slug: "oscars", totalItems: 44, extraFilm:{ title:"Ghost World", year:2001, country:"United States, United Kingdom", image:"https://assets.mubicdn.net/images/film/1834/image-w448.jpg?1745489537", fX:0.55, fY:0.3 }, films: [
     { title:"I Am Love", director:"Luca Guadagnino", year:2009, country:"Italy", slug:"i-am-love",
       image:"https://assets.mubicdn.net/images/film/20273/image-w448.jpg?1745501140", titleTreatment:null, fX:0.28, fY:0.44, rating:4.0, award:null, ourTake:"Dazzling the senses, I Am Love revives the lavish, elegant, emotionally expressive style of classic ’50s melodramas and proves their timeless vitality. It also confirms Tilda Swinton—who learned both Italian and Russian for the role(!)—as one of the best, most unpredictable actors."},
     { title:"Son of Saul", director:"László Nemes", year:2015, country:"Hungary, France", slug:"son-of-saul",
@@ -4634,7 +4685,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Finding Vivian Maier", director:"John Maloof, Charlie Siskel", year:2013, country:"United States", slug:"finding-vivian-maier",
   image:"https://assets.mubicdn.net/images/film/108396/image-w448.jpg?1745491658", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A box of undeveloped negatives reveals a secretive nanny's genius for street photography in this Oscar-nominated detective story about art and obscurity."},
   ]},
-  { collectionTitle: "IN THE MOOD FOR LOVE", slug: "romance", totalItems: 35, films: [
+  { collectionTitle: "IN THE MOOD FOR LOVE", slug: "romance", totalItems: 35, extraFilm:{ title:"Lars and the Real Girl", year:2007, country:"United States, Canada", image:"https://assets.mubicdn.net/images/film/20106/image-w448.jpg?1780385536", fX:0.64, fY:0.22 }, films: [
     { title:"Past Lives", director:"Celine Song", year:2023, country:"United States, South Korea", slug:"past-lives",
       image:"https://assets.mubicdn.net/images/film/255448/image-w448.jpg?1745500885", titleTreatment:"https://images.mubicdn.net/images/artworks/767007/cache-767007-1744189311/images-original.png", fX:0.68, fY:0.6, rating:4.4, award:null, ourTake:"Awash with wistful reveries about the “what ifs” and “maybes” of life, Celine Song’s exquisite debut stars the luminous Greta Lee (Russian Doll) in a breakout lead role. As fate brings two childhood sweethearts back together, Past Lives basks in the pleasure of yearning for what could have been."},
     { title:"The Blazing Sun", director:"Youssef Chahine", year:1954, country:"Egypt", slug:"the-blazing-sun-1954",
@@ -4652,7 +4703,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Transit", director:"Christian Petzold", year:2018, country:"Germany, France", slug:"transit-2018",
   image:"https://assets.mubicdn.net/images/film/179875/image-w448.jpg?1745494064", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Petzold transposes a WWII refugee novel into an eerie, timeless present — a scintillating melodrama of love stalked by history's return."},
   ]},
-  { collectionTitle: "MODERN MASTERPIECES", slug: "modern-masterpieces", totalItems: 34, films: [
+  { collectionTitle: "MODERN MASTERPIECES", slug: "modern-masterpieces", totalItems: 34, extraFilm:{ title:"Titane", director:"Julia Ducournau", year:2021, country:"France, Belgium", image:"https://assets.mubicdn.net/images/film/244680/image-w448.jpg?1745497559", fX:0.46, fY:0.44 }, films: [
     { title:"The Assistant", director:"Kitty Green", year:2019, country:"United States", slug:"the-assistant-2019",
       image:"https://assets.mubicdn.net/images/film/243980/image-w448.jpg?1745496341", titleTreatment:null, fX:0.63, fY:0.49, rating:3.7, award:null, ourTake:"Based on interviews with many female assistants, Kitty Green’s slow-burn #MeToo thriller depicts a pervasive office culture fuelled with fear and abuse. A film from the post-Weinstein era, the visceral discomfort captured by Julia Garner’s staggering performance stays with you long after viewing."},
     { title:"Swimming Pool", director:"François Ozon", year:2003, country:"France, United Kingdom", slug:"swimming-pool",
@@ -4670,7 +4721,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Cemetery of Splendour", director:"Apichatpong Weerasethakul", year:2015, country:"Thailand, United Kingdom", slug:"cemetery-of-splendour",
   image:"https://assets.mubicdn.net/images/film/119706/image-w448.jpg?1767803237", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Soldiers fall into an inexplicable sleeping sickness in Weerasethakul's trance-like, tender ode to dreams, spirits, and the quotidian sublime."},
   ]},
-  { collectionTitle: "FUNNY HA HA", slug: "comedies", totalItems: 58, films: [
+  { collectionTitle: "FUNNY HA HA", slug: "comedies", totalItems: 58, extraFilm:{ title:"Drop Dead Gorgeous", year:1999, country:"United States, Germany", image:"https://assets.mubicdn.net/images/film/2013/image-w448.jpg?1745490958", fX:0.529248, fY:0.423267 }, films: [
     { title:"Phantoms of July", director:"Julian Radlmaier", year:2025, country:"Germany", slug:"phantoms-of-july",
       image:"https://assets.mubicdn.net/images/film/450009/image-w448.jpg?1781696311", titleTreatment:null, fX:0.42, fY:0.5, rating:4.0, award:null, ourTake:"Turquoise stones shimmer alongside the dream of unlikely community in Julian Radlmaier’s capacious and beguiling film. As interlocking stories illumine both the surreal frustrations and pleasurable delusions of romantic longing, this time-hopping fable stays satisfyingly bittersweet to the core."},
     { title:"Self-Criticism of a Bourgeois Dog", director:"Julian Radlmaier", year:2017, country:"Germany, Italy", slug:"self-criticism-of-a-bourgeois-dog",
@@ -4688,7 +4739,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Kill the Jockey", director:"Luis Ortega", year:2024, country:"Argentina, Spain", slug:"el-jockey",
   image:"https://assets.mubicdn.net/images/film/391722/image-w448.jpg?1767002769", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A deadpan jockey's life spins wildly off-course in this surreal, sports-and-crime mashup from the director of El Ángel."},
   ]},
-  { collectionTitle: "TRULY, MADLY, DEEPLY", slug: "truly-madly-deeply", totalItems: 19, films: [
+  { collectionTitle: "TRULY, MADLY, DEEPLY", slug: "truly-madly-deeply", totalItems: 19, extraFilm:{ title:"The Handmaiden", director:"Park Chan-wook", year:2016, country:"South Korea", image:"https://assets.mubicdn.net/images/film/149904/image-w448.jpg?1745492652", fX:0.61, fY:0.31 }, films: [
     { title:"Damage", director:"Louis Malle", year:1992, country:"United Kingdom, France", slug:"damage",
       image:"https://assets.mubicdn.net/images/film/23699/image-w448.jpg?1745489778", titleTreatment:null, fX:0.38, fY:0.46, rating:3.7, award:null, ourTake:"Airs and graces are a thin veil over sexual deviance in this erotic drama, as young Juliette Binoche and a wolfish Jeremy Irons set the screen on fire. One of the final films from the great Louis Malle, this delectable tale of forbidden desire cuts to the incestuous heart of Britain’s upper classes."},
     { title:"Bones and All", director:"Luca Guadagnino", year:2022, country:"United States, Italy", slug:"bones-and-all",
@@ -4712,7 +4763,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Kes", director:"Ken Loach", year:1969, country:"United Kingdom", slug:"kes",
       image:"https://assets.mubicdn.net/images/film/2682/image-w448.jpg?1745490613", titleTreatment:null, fX:0.55, fY:0.42, rating:4.4, award:null, ourTake:"With all the heart-stopping precision of a falcon stooping for prey, this perfect work of social realism finds—and dives for—hope amid hardship. Authenticated by actual locations and a breathtakingly true performance from then-unknown David Bradley, Ken Loach’s soulful portrait of boyhood soars."},
   ]},
-  { collectionTitle: "WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK", slug: "we-have-always-been-here", totalItems: 12, films: [
+  { collectionTitle: "WE HAVE ALWAYS BEEN HERE: QUEER CINEMA LOOKS BACK", slug: "we-have-always-been-here", totalItems: 12, extraFilm:{ title:"Portrait of a Lady on Fire", director:"Céline Sciamma", year:2019, country:"France", image:"https://assets.mubicdn.net/images/film/224497/image-w448.jpg?1745495788", fX:0.506964, fY:0.44802 }, films: [
     { title:"The Mysterious Gaze of the Flamingo", director:"Diego Céspedes", year:2025, country:"Chile, France", slug:"the-mysterious-gaze-of-the-flamingo",
       image:"https://assets.mubicdn.net/images/film/440746/image-w448.jpg?1778689885", titleTreatment:"https://images.mubicdn.net/images/artworks/989579/cache-989579-1778752646/images-original.png", fX:0.49, fY:0.3, rating:4.5, award:null, ourTake:"Winner of Un Certain Regard at Cannes, Diego Céspedes’s debut feature pays luminous tribute to human resilience in inhumane times. Equal parts Chilean Western, dark fairy tale, and chosen-family hangout movie, this gorgeous work of queer magical realism finds love thriving amid sickness and hatred."},
     { title:"Việt and Nam", director:"Minh Quý Trương", year:2024, country:"Vietnam, France", slug:"viet-and-nam",
@@ -4730,7 +4781,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Carol", director:"Todd Haynes", year:2015, country:"United States, United Kingdom", slug:"carol-2015",
   image:"https://assets.mubicdn.net/images/film/119702/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Todd Haynes drapes 1950s New York in gorgeous, forbidden longing as a department-store clerk falls for an elegant older woman trapped in a loveless marriage. Adapted from Patricia Highsmith, Carol dares, quietly, to end in hope."},
   ]},
-  { collectionTitle: "REFRAMING: WOMEN DIRECTORS", slug: "women-directors", totalItems: 99, films: [
+  { collectionTitle: "REFRAMING: WOMEN DIRECTORS", slug: "women-directors", totalItems: 99, extraFilm:{ title:"Bird", director:"Andrea Arnold", year:2024, country:"United Kingdom, France", image:"https://assets.mubicdn.net/images/film/391623/image-w448.jpg?1745502560", fX:0.481224, fY:0.592593 }, films: [
     { title:"Not a Pretty Picture", director:"Martha Coolidge", year:1976, country:"United States", slug:"not-a-pretty-picture",
       image:"https://assets.mubicdn.net/images/film/213551/image-w448.jpg?1779955028", titleTreatment:null, fX:0.79, fY:0.61, rating:3.9, award:null, ourTake:"Allowing catharsis to take honest form, Martha Coolidge’s debut feature pushes narrative convention aside, embracing what truth might come from unpredictable collective reckoning. Gathering admirers (Céline Sciamma!) after its restoration, this is an underseen classic of ’70s feminist cinema."},
     { title:"To Wong Foo, Thanks for Everything! Julie Newmar", director:"Beeban Kidron", year:1995, country:"United States", slug:"to-wong-foo-thanks-for-everything-julie-newmar",
@@ -4748,7 +4799,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Rafiki", director:"Wanuri Kahiu", year:2018, country:"Kenya, South Africa", slug:"rafiki-2018",
   image:"https://assets.mubicdn.net/images/film/203274/image-w448.jpg?1745494917", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Banned at home yet dazzling at Cannes, this vibrant lesbian teen romance was the first Kenyan film to premiere at the festival."},
   ]},
-  { collectionTitle: "ADAPTATIONS", slug: "adaptations", totalItems: 29, films: [
+  { collectionTitle: "ADAPTATIONS", slug: "adaptations", totalItems: 29, extraFilm:{ title:"Ghost World", director:"Terry Zwigoff", year:2001, country:"United States, United Kingdom", image:"https://assets.mubicdn.net/images/film/1834/image-w448.jpg?1745489537", fX:0.55, fY:0.3 }, films: [
     { title:"Submarino", director:"Thomas Vinterberg", year:2010, country:"Denmark, Sweden", slug:"submarino",
       image:"https://assets.mubicdn.net/images/film/22944/image-w448.jpg?1745501111", titleTreatment:null, fX:0.45, fY:0.48, rating:4.3, award:null, ourTake:"Ten years before his Oscar® win for Another Round, Thomas Vinterberg examined the dark side of Denmark’s welfare state with this harrowing drama. Through a pair of remarkable central performances, Submarino lends a hard-earned grace to its spiritual portrait of unimaginable hardship and survival."},
     { title:"Jerichow", director:"Christian Petzold", year:2008, country:"Germany", slug:"jerichow",
@@ -4774,7 +4825,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Queer", director:"Luca Guadagnino", year:2024, country:"United States, Italy", slug:"queer",
       image:"https://assets.mubicdn.net/images/film/391610/image-w448.jpg?1745502917", titleTreatment:"https://images.mubicdn.net/images/artworks/754022/cache-754022-1736857258/images-original.png", fX:0.52, fY:0.65, rating:3.9, award:{text:"Venice Film Festival", image:"https://images.mubicdn.net/images/carousel_takeover/304/cache-1029887-1737121219/prize_image_en_us-original.png"}, ourTake:"Starring an astonishing Daniel Craig as a lovestruck sensualist, Luca Guadagnino’s audacious adaptation of William Burroughs’s infamous novel is suffused with romantic longing. Under the sway of infatuation’s exquisite pains and entrancing pleasures, Queer travels to the mesmerizing ends of love."},
   ]},
-  { collectionTitle: "Father Mother Sister Brother: Family Stories", slug: "fmsb", totalItems: 12, films: [
+  { collectionTitle: "Father Mother Sister Brother: Family Stories", slug: "fmsb", totalItems: 12, extraFilm:{ title:"The Mastermind", director:"Kelly Reichardt", year:2025, country:"United States", image:"https://assets.mubicdn.net/images/film/422583/image-w448.jpg?1765544027", fX:0.35, fY:0.01 }, films: [
     { title:"Father Mother Sister Brother", director:"Jim Jarmusch", year:2025, country:"United States, United Kingdom", slug:"father-mother-sister-brother",
       image:"https://assets.mubicdn.net/images/film/398054/image-w448.jpg?1770218943", titleTreatment:"https://images.mubicdn.net/images/artworks/991705/cache-991705-1779296307/images-original.png", fX:0.5, fY:0.39, rating:4.0, award:{text:"Venice", image:"https://images.mubicdn.net/images/carousel_takeover/454/cache-1132998-1778864397/prize_image_en_us-original.png"}, ourTake:"Iconic auteur Jim Jarmusch’s acclaimed return to anthology filmmaking abounds with wryly resonant observations on the family unit. Sketching finely detailed portraits with its starry ensemble cast (including a gloriously rumpled Tom Waits), this offbeat triptych finds universals in idiosyncrasies."},
     { title:"Die My Love", director:"Lynne Ramsay", year:2025, country:"United States, United Kingdom", slug:"die-my-love",
@@ -4792,7 +4843,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Aftersun", director:"Charlotte Wells", year:2022, country:"United Kingdom, United States", slug:"aftersun",
   image:"https://assets.mubicdn.net/images/film/340287/image-w448.jpg", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Charlotte Wells's astonishing debut reconstructs a father-daughter holiday in Turkey through the fog of adult memory, each camcorder frame hiding a sadness the child can't yet see. A heartbreaking act of remembrance, led by Paul Mescal."},
   ]},
-  { collectionTitle: "THIS IS NOT A COMING OUT STORY", slug: "this-is-not-coming-out-story", totalItems: 26, films: [
+  { collectionTitle: "THIS IS NOT A COMING OUT STORY", slug: "this-is-not-coming-out-story", totalItems: 26, extraFilm:{ title:"Great Freedom", director:"Sebastian Meise", year:2021, country:"Austria, Germany", image:"https://assets.mubicdn.net/images/film/307322/image-w448.jpg?1745498574", fX:0.4039, fY:0.294554 }, films: [
     { title:"Crossing", director:"Levan Akin", year:2024, country:"Sweden, Turkey", slug:"crossing-2023-levan-akin",
       image:"https://assets.mubicdn.net/images/film/374529/image-w448.jpg?1745502259", titleTreatment:"https://images.mubicdn.net/images/artworks/702731/cache-702731-1724061240/images-original.png", fX:0.54, fY:0.35, rating:4.6, award:{text:"BERLINALE", image:"https://images.mubicdn.net/images/carousel_takeover/266/cache-993176-1724749468/prize_image_en_us-original.png"}, ourTake:"Director Levan Akin centers the vital spirit of Istanbul’s trans community in this poignant story of unlikely connection. With three exquisite performances that vividly transcend generational divides, Crossing is a defiant city symphony and a compassionate tale of hope, identity, and forgiveness."},
     { title:"The Times of Harvey Milk", director:"Rob Epstein", year:1984, country:"United States", slug:"the-times-of-harvey-milk",
@@ -4810,7 +4861,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"The Five Devils", director:"Léa Mysius", year:2022, country:"France", slug:"les-cinq-diables",
   image:"https://assets.mubicdn.net/images/film/289223/image-w448.jpg?1745500884", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A girl who can smell memory into being unlocks her mother's hidden queer past in Mysius' witchy, genre-defying coming-of-age tale."},
   ]},
-  { collectionTitle: "BY THE BOOK: AUTEUR ADAPTATIONS", slug: "adaptations", totalItems: 29, films: [
+  { collectionTitle: "BY THE BOOK: AUTEUR ADAPTATIONS", slug: "adaptations", totalItems: 29, extraFilm:{ title:"American Fiction", director:"Cord Jefferson", year:2023, country:"United States", image:"https://assets.mubicdn.net/images/film/385929/image-w448.jpg?1762360003", fX:0.46, fY:0.17 }, films: [
     { title:"American Fiction", director:"Cord Jefferson", year:2023, country:"United States", slug:"american-fiction",
       image:"https://assets.mubicdn.net/images/film/385929/image-w448.jpg?1762360003", titleTreatment:null, fX:0.46, fY:0.17, rating:4.1, award:null, ourTake:"Nominated for Best Picture at the Oscars®, Cord Jefferson’s hilarious debut delivers a brilliant mix of satire and family drama. Taking aim at the racial blind spots of the publishing world, American Fiction gleefully exposes the industry’s ravenous appetite for stereotypical storytelling."},
     { title:"Nickel Boys", director:"RaMell Ross", year:2024, country:"United States", slug:"nickel-boys",
@@ -4834,7 +4885,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Moonstruck", director:"Norman Jewison", year:1987, country:"United States", slug:"moonstruck",
       image:"https://assets.mubicdn.net/images/film/9487/image-w448.jpg?1745490768", titleTreatment:"https://images.mubicdn.net/images/artworks/900250/cache-900250-1769542080/images-original.png", fX:0.26, fY:0.38, rating:4.1, award:null, ourTake:"Love drives people nuts in Norman Jewison’s deliciously farcical comedy, which tears into absurd social mores with glee. Cher won the Oscar® for her warm performance as a woman swept off her feet by Nicolas Cage’s wolfish lover, their offbeat romance glinting in the romantic New York City moonlight."},
   ]},
-  { collectionTitle: "FEAR ON FILM", slug: "horror", totalItems: 24, films: [
+  { collectionTitle: "FEAR ON FILM", slug: "horror", totalItems: 24, extraFilm:{ title:"God is Shy", director:"Jocelyn Charles", year:2025, country:"France", image:"https://assets.mubicdn.net/images/film/445143/image-w448.jpg?1780999338", fX:0.48, fY:0.59 }, films: [
     { title:"The Neon Demon", director:"Nicolas Winding Refn", year:2016, country:"Denmark, France", slug:"the-neon-demon",
       image:"https://assets.mubicdn.net/images/film/132568/image-w448.jpg?1745493105", titleTreatment:null, fX:0.5, fY:0.34, rating:3.3, award:null, ourTake:"Following two films with Ryan Gosling, Nicolas Winding Refn enlists Elle Fanning for the dazzling, hypnotic Neon Demon—an entrancing and especially stylized indictment of the ugliest grotesqueries of the modelling industry. A visually stunning, self-conscious satire of the horrors of vapidity."},
     { title:"The Golden Glove", director:"Fatih Akın", year:2019, country:"Germany, France", slug:"the-golden-glove",
@@ -4852,7 +4903,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Antichrist", director:"Lars von Trier", year:2009, country:"Denmark, Germany", slug:"antichrist",
   image:"https://assets.mubicdn.net/images/film/2098/image-w448.jpg?1745491069", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Charlotte Gainsbourg won Best Actress at Cannes for this harrowing, controversial descent into grief, guilt, and the terror of nature itself."},
   ]},
-  { collectionTitle: "THE SUMMER BLUES", slug: "the-summer-blues", totalItems: 19, films: [
+  { collectionTitle: "THE SUMMER BLUES", slug: "the-summer-blues", totalItems: 19, extraFilm:{ title:"Paris, Texas", director:"Wim Wenders", year:1984, country:"West Germany, France", image:"https://assets.mubicdn.net/images/film/1502/image-w448.jpg?1745500656", fX:0.583565, fY:0.324257 }, films: [
     { title:"Passing Summer", director:"Angela Schanelec", year:2001, country:"Germany", slug:"passing-summer",
       image:"https://assets.mubicdn.net/images/film/23061/image-w448.jpg?1754923644", titleTreatment:null, fX:0.23, fY:0.42, rating:3.6, award:null, ourTake:"Everyday dreamers imagine their attachments scattering to the breeze and becoming someone else in these tableaux of summertime Berlin. As Angela Schanelec threads serendipities—music, movement, tenderness—into ennui’s enervating haze, she outlines the pattern for her critically acclaimed cinema."},
     { title:"Days of the Bagnold Summer", director:"Simon Bird", year:2019, country:"United Kingdom", slug:"days-of-the-bagnold-summer",
@@ -4870,7 +4921,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Alcarràs", director:"Carla Simón", year:2022, country:"Spain, Italy", slug:"alcarras",
   image:"https://assets.mubicdn.net/images/film/332332/image-w448.jpg?1745499506", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A family's last peach harvest becomes an elegy for a vanishing way of life in Simón's Golden Bear-winning ensemble portrait."},
   ]},
-  { collectionTitle: "FILM FESTIVAL FAVORITES", slug: "film-festival-favorites", totalItems: 70, films: [
+  { collectionTitle: "FILM FESTIVAL FAVORITES", slug: "film-festival-favorites", totalItems: 70, extraFilm:{ title:"The Myth of the American Sleepover", director:"David Robert Mitchell", year:2010, country:"United States", image:"https://assets.mubicdn.net/images/film/23854/image-w448.jpg?1745489783", fX:0.55, fY:0.48 }, films: [
     { title:"Sunset", director:"László Nemes", year:2018, country:"Hungary, France", slug:"sunset-2017",
       image:"https://assets.mubicdn.net/images/film/158639/image-w448.jpg?1745498398", titleTreatment:null, fX:0.5, fY:0.54, rating:3.3, award:null, ourTake:"After emerging as a talent to watch with the audacious Son of Saul, Hungarian director László Nemes returned to the spotlight with this labyrinthine, woman-led period drama. As rich as it is in visual ideas, Sunset also serves as a cogent reality check on our past and, more urgently, near future."},
     { title:"The Edge of Heaven", director:"Fatih Akın", year:2007, country:"Germany, Turkey", slug:"the-edge-of-heaven",
@@ -4906,7 +4957,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"Shiva Baby", director:"Emma Seligman", year:2020, country:"United States", slug:"shiva-baby-2020",
   image:"https://assets.mubicdn.net/images/film/254618/image-w448.jpg?1745496747", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"A sugar baby's exes collide at a shiva in Seligman's stress-comedy debut — tight, funny, and anchored by a magnetic Rachel Sennott."},
   ]},
-  { collectionTitle: "“BIG FIVE” OSCAR WINNERS", slug: "big-five", totalItems: 12, films: [
+  { collectionTitle: "“BIG FIVE” OSCAR WINNERS", slug: "big-five", totalItems: 12, extraFilm:{ title:"The Silence of the Lambs", director:"Jonathan Demme", year:1991, country:"United States", image:"https://assets.mubicdn.net/images/film/528/image-w448.jpg?1757512229", fX:0.47, fY:0.32 }, films: [
     { title:"Thelma & Louise", director:"Ridley Scott", year:1991, country:"United States, United Kingdom", slug:"thelma-louise",
       image:"https://assets.mubicdn.net/images/film/17147/image-w448.jpg?1762361235", titleTreatment:null, fX:0.56, fY:0.81, rating:4.3, award:null, ourTake:"Sparking debate upon its release—and not long after hailed as a classic—this iconic drama earned first-time screenwriter Callie Khouri an Academy Award® for Best Screenplay. Fueled by a pair of vibrant, enthralling lead performances, Thelma & Louise is a feminist road trip for the ages."},
     { title:"Midnight Cowboy", director:"John Schlesinger", year:1969, country:"United States", slug:"midnight-cowboy",
@@ -4924,7 +4975,7 @@ const NUMBERED_ROW_COLLECTIONS = [
     { title:"The Apartment", director:"Billy Wilder", year:1960, country:"United States", slug:"the-apartment",
   image:"https://assets.mubicdn.net/images/film/1694/image-w448.jpg?1745489533", titleTreatment:null, fX:0.5, fY:0.35, rating:null, award:null, ourTake:"Jack Lemmon lends his apartment key to philandering executives in one of the most beloved romantic comedies ever made."},
   ]},
-  { collectionTitle: "AMERICAN INDIES", slug: "indies", totalItems: 26, films: [
+  { collectionTitle: "AMERICAN INDIES", slug: "indies", totalItems: 26, extraFilm:{ title:"Good One", director:"India Donaldson", year:2024, country:"United States", image:"https://assets.mubicdn.net/images/film/397502/image-w448.jpg?1757067360", fX:0.51, fY:1.0 }, films: [
     { title:"Ingrid Goes West", director:"Matt Spicer", year:2017, country:"United States", slug:"ingrid-goes-west",
       image:"https://assets.mubicdn.net/images/film/158264/image-w448.jpg?1745493395", titleTreatment:"https://images.mubicdn.net/images/artworks/949260/cache-949260-1773331596/images-original.png", fX:0.8, fY:0.3, rating:3.5, award:null, ourTake:"Soaked in California sun yet rooted in the darkest depths of obsession, Ingrid Goes West is a timely satire that examines our toxic relationship with social media. Aubrey Plaza’s performance as the titular Insta-stalker is as unhinged as it is layered, blurring the lines between empathy and pity."},
     { title:"The Cathedral", director:"Ricky D'Ambrose", year:2021, country:"United States", slug:"the-cathedral-2021",
@@ -4976,7 +5027,7 @@ function nsFilmGenres(film) {
 // merge (see nsMergeWatchNext) can render Continue Watching / Your Watchlist row markup
 // on demand without duplicating the template.
 function filmRowSectionHTML(row, rowIdx) {
-  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab, isTopTen, isGenreLane, carousel, collSlug, totalItems } = row;
+  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab, isTopTen, isGenreLane, carousel, collSlug, totalItems, extraFilm } = row;
   const emptySlotCount = capacity ? Math.max(0, capacity - rowFilms.length) : 0;
   // Real MUBI collection size (from mubi-collections.csv, see NUMBERED_ROW_COLLECTIONS) —
   // only set where it's genuinely known, never guessed. Drives the terminal "See All" tile's
@@ -5055,7 +5106,7 @@ function filmRowSectionHTML(row, rowIdx) {
       ${carousel ? `
       <div class="row-carousel-wrap" id="rowCarousel-${rowIdx}">
         <div class="row-carousel-inner">
-          <div class="row-carousel-peek-hint row-carousel-peek-hint--prev"></div>
+          <div class="row-carousel-peek-hint row-carousel-peek-hint--prev"><div class="row-carousel-peek-hint-img"></div></div>
           <button class="row-carousel-arrow row-carousel-arrow--prev" data-carousel-target="rowCarousel-${rowIdx}" data-carousel-dir="-1" aria-label="Previous">
             <img src="../../brand_assets/icon_arrowLeft.svg" alt="">
           </button>
@@ -5064,7 +5115,11 @@ function filmRowSectionHTML(row, rowIdx) {
             ${tilesHTML}
             ${seeAllHref ? `
             <a class="film-card row-carousel-see-all-tile" href="${seeAllHref}" target="_self" aria-label="See All">
-              <div class="card-img-wrap row-carousel-see-all-inner"${rowFilms.length ? ` style="background-image:url('${rowFilms[rowFilms.length - 1].image}')"` : ''}>
+              <div class="card-img-wrap row-carousel-see-all-inner"${
+                extraFilm ? ` style="background-image:url('${extraFilm.image}')"`
+                : rowFilms.length ? ` style="background-image:url('${rowFilms[rowFilms.length - 1].image}')"`
+                : ''
+              }>
                 <div class="row-carousel-see-all-overlay" aria-hidden="true"></div>
                 <span class="row-carousel-see-all-text">See All${totalItems ? `<strong>${totalItems}</strong>` : ''}</span>
               </div>
@@ -5074,7 +5129,7 @@ function filmRowSectionHTML(row, rowIdx) {
           <button class="row-carousel-arrow row-carousel-arrow--next" data-carousel-target="rowCarousel-${rowIdx}" data-carousel-dir="1" aria-label="Next">
             <img src="../../brand_assets/icon_arrowRight.svg" alt="">
           </button>
-          <div class="row-carousel-peek-hint row-carousel-peek-hint--next"></div>
+          <div class="row-carousel-peek-hint row-carousel-peek-hint--next"><div class="row-carousel-peek-hint-img"></div></div>
         </div>
       </div>
       ` : `
@@ -5127,7 +5182,7 @@ function renderGrid() {
   // with its "Row No" position kept alongside it; rows beyond 25 cycle back through the pool.
   for (let r = 0; r < totalNumberedRows; r++) {
     const coll = NUMBERED_ROW_COLLECTIONS[r % NUMBERED_ROW_COLLECTIONS.length];
-    numberedRows.push({ title: `${coll.collectionTitle} (Row No ${r + 1})`, films: coll.films, collSlug: coll.slug, totalItems: coll.totalItems });
+    numberedRows.push({ title: `${coll.collectionTitle} (Row No ${r + 1})`, films: coll.films, collSlug: coll.slug, totalItems: coll.totalItems, extraFilm: coll.extraFilm });
   }
   // Row 1 is pulled out of its natural spot and re-placed further down the page, right after the 2nd spotlight.
   const row1 = numberedRows.shift();
@@ -5199,12 +5254,12 @@ function renderGrid() {
     ]),
     // Real film set from api.mubi.com/v4/collections/mubi-releases/films (all 91 pages,
     // not just a handful) — verified live against mubi.com/en/gb/showing. Uses the taller
-    // "doubletile" card format (418px), and — unlike the other real-data rows above, whose
-    // carousel-vs-plain-grid split follows the Page Settings > Layout toggle — is always a
-    // carousel: with the collection's true size this large, a plain 4-tile grid would just
-    // silently drop the other 87 films rather than let you page to them.
+    // "doubletile" card format (418px). Like every other row, it only gets the carousel
+    // peeking/paging treatment when Carousel Rows (Page Settings > Layout) is on — see the
+    // count > 4 carousel-flagging .map() below, which it qualifies for automatically given
+    // its real size (91 films); with that setting off it renders as a plain 4-tile grid.
     ...(nsState.topTen ? [] : [{
-      title: 'MUBI RELEASES', films: MUBI_RELEASES_FILMS, doubletile: true, carousel: true,
+      title: 'MUBI RELEASES', films: MUBI_RELEASES_FILMS, doubletile: true,
       collSlug: 'mubi-releases', totalItems: MUBI_RELEASES_FILMS.length,
     }]),
     // Spotlight #1 (settings-driven) is its own entry right after New on MUBI, so it
@@ -5267,7 +5322,7 @@ function renderGrid() {
       <div class="row-header"><span class="row-title">${row.title}</span></div>
       <div class="row-carousel-wrap" id="rowCarousel-${rowIdx}">
         <div class="row-carousel-inner">
-          <div class="row-carousel-peek-hint row-carousel-peek-hint--prev"></div>
+          <div class="row-carousel-peek-hint row-carousel-peek-hint--prev"><div class="row-carousel-peek-hint-img"></div></div>
           <button class="row-carousel-arrow row-carousel-arrow--prev" data-carousel-target="rowCarousel-${rowIdx}" data-carousel-dir="-1" aria-label="Previous">
             <img src="../../brand_assets/icon_arrowLeft.svg" alt="">
           </button>
@@ -5279,7 +5334,7 @@ function renderGrid() {
           <button class="row-carousel-arrow row-carousel-arrow--next" data-carousel-target="rowCarousel-${rowIdx}" data-carousel-dir="1" aria-label="Next">
             <img src="../../brand_assets/icon_arrowRight.svg" alt="">
           </button>
-          <div class="row-carousel-peek-hint row-carousel-peek-hint--next"></div>
+          <div class="row-carousel-peek-hint row-carousel-peek-hint--next"><div class="row-carousel-peek-hint-img"></div></div>
         </div>
       </div>
     </div>
@@ -5769,6 +5824,28 @@ function nsUpdateRowCarousel(wrap) {
   if (nextBtn) nextBtn.classList.toggle('is-visible', !!peekRight);
   if (prevHint) prevHint.classList.toggle('is-visible', !!peekLeft);
   if (nextHint) nextHint.classList.toggle('is-visible', !!peekRight);
+  // "Peek Preview v2" — masks the actual adjacent tile's still into each peek shape itself
+  // (read straight off that tile's own <img>, not looked up from data) instead of the plain
+  // gradient panel. Falls back to the plain gradient if the setting's off, or the peeking
+  // tile has no still to borrow (e.g. it's the flat-colour "See All" tile, or a genre tile).
+  const applyPeekV2 = (hint, peekTile) => {
+    if (!hint) return;
+    const peekImg = peekTile ? peekTile.querySelector('.card-img, .coll-tile-double-img') : null;
+    const showV2 = nsState.carouselRowsPeekV2 && peekImg;
+    hint.classList.toggle('is-v2', !!showV2);
+    const hintImg = hint.querySelector('.row-carousel-peek-hint-img');
+    if (!hintImg) return;
+    hintImg.style.backgroundImage = showV2 ? `url('${peekImg.src}')` : '';
+    hintImg.style.backgroundPosition = showV2 ? (peekImg.style.objectPosition || 'center') : '';
+    // Every call here represents the strip at rest (either just settled after a slide, or a
+    // fresh render/resize) — snap the preview layer's own slide-in transform back to 0 with no
+    // transition, so the freshly-assigned image above always starts from its resting position
+    // rather than carrying over an in-flight offset from the last advance.
+    hintImg.style.transition = 'none';
+    hintImg.style.transform = 'translateX(0)';
+  };
+  applyPeekV2(prevHint, peekLeft);
+  applyPeekV2(nextHint, peekRight);
   // Anything further out than the current right-hand peek (or, with no peek at all, than the
   // last shown tile) is hidden outright rather than just relying on the wrap's own clipping —
   // this is what "hide the tiles after it" settles back to once nsAdvanceRowCarousel's own
@@ -5805,6 +5882,17 @@ function nsAdvanceRowCarousel(wrap, dir) {
   }
   const tileStep = tiles[0].getBoundingClientRect().width + 4;
   track.style.transform = `translateX(${-newPageStart * tileStep}px)`;
+  // "Peek Preview v2" — each peek's preview image lives on its own inner layer (see
+  // nsUpdateRowCarousel), so it can slide independently of the shape it's clipped to.
+  // Animating both by the exact same distance/duration/easing/direction as the real track
+  // above makes them read as one continuous motion — each preview keeps sliding right along
+  // with the rest of the strip — instead of just cutting to a new picture once the page
+  // settles. Same formula for both sides: the whole strip (peeks included) moves one way
+  // together, however hearing which particular tile ends up peeking differs per side.
+  wrap.querySelectorAll('.row-carousel-peek-hint-img').forEach(hintImg => {
+    hintImg.style.transition = 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+    hintImg.style.transform = `translateX(${-dir * tileStep}px)`;
+  });
   setTimeout(() => nsUpdateRowCarousel(wrap), 520);
 }
 document.getElementById('filmGrid').addEventListener('click', e => {
@@ -5896,7 +5984,7 @@ const NS_STORAGE_KEY = 'ns_settings_state_v1';
 function nsLoadState() {
   try { return JSON.parse(localStorage.getItem(NS_STORAGE_KEY)) || {}; } catch (e) { return {}; }
 }
-const nsState = Object.assign({ watchlist: [], continueWatching: [], watched: [], marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 25, laneOfLanes: false, laneOfLanesDoubleTile: false, allDoubleTiles: false, carouselRows: false, topTen: false, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', laneOfGenres: false, laneOfGenresStyle: 'tiles', activeDemoUserIdx: null, marqueeDisplayCount: 3, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
+const nsState = Object.assign({ watchlist: [], continueWatching: [], watched: [], marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 25, laneOfLanes: false, laneOfLanesDoubleTile: false, allDoubleTiles: false, carouselRows: false, carouselRowsPeekV2: false, topTen: false, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', laneOfGenres: false, laneOfGenresStyle: 'tiles', activeDemoUserIdx: null, marqueeDisplayCount: 3, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
 
 // Dark mode is a personal display preference, not "content" — kept in its own localStorage
 // key rather than nsState, so it isn't pushed to the shared Google Sheet (see NS_SHEET_API_URL
@@ -6531,6 +6619,12 @@ document.getElementById('allDoubleTilesToggle').addEventListener('change', e => 
 });
 document.getElementById('carouselRowsToggle').addEventListener('change', e => {
   nsState.carouselRows = e.target.checked;
+  document.getElementById('carouselRowsPeekV2Row').style.display = e.target.checked ? '' : 'none';
+  nsSaveState();
+  renderGrid();
+});
+document.getElementById('carouselRowsPeekV2Toggle').addEventListener('change', e => {
+  nsState.carouselRowsPeekV2 = e.target.checked;
   nsSaveState();
   renderGrid();
 });
@@ -7472,6 +7566,8 @@ function openSettingsModal() {
   document.getElementById('colSpacingToggle').checked = document.documentElement.dataset.colSpacing === 'true';
   document.getElementById('allDoubleTilesToggle').checked = !!nsState.allDoubleTiles;
   document.getElementById('carouselRowsToggle').checked = !!nsState.carouselRows;
+  document.getElementById('carouselRowsPeekV2Toggle').checked = !!nsState.carouselRowsPeekV2;
+  document.getElementById('carouselRowsPeekV2Row').style.display = nsState.carouselRows ? '' : 'none';
   document.getElementById('hoverGenresToggle').checked = !!nsState.hoverGenres;
   document.getElementById('genreLaneToggle').checked = !!nsState.genreLane;
   document.getElementById('genreLaneSelectRow').style.display = nsState.genreLane ? '' : 'none';
