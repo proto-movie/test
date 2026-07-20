@@ -1558,10 +1558,11 @@
     :root[data-theme="dark"] .row-carousel-peek-hint--prev { background: linear-gradient(to left, var(--dm-seam) 0%, var(--dm-bg) 100%); }
     :root[data-theme="dark"] .row-carousel-peek-hint--next { background: linear-gradient(to right, var(--dm-seam) 0%, var(--dm-bg) 100%); }
     .row-carousel-peek-hint.is-visible { opacity: 1; }
-    /* "Peek Preview v2" (Page Settings > Layout > Carousel Rows > Peek Preview v2) — both
-       peeking tiles' real stills (set inline via nsUpdateRowCarousel, from each side's actual
-       adjacent tile) show through their peek shape instead of it just being a flat gradient
-       panel. Lives on a separate inner layer (.row-carousel-peek-hint-img), not the shape's
+    /* Peek Preview (Page Settings > Layout > Carousel Rows) — both peeking tiles' real stills
+       (set inline via nsUpdateRowCarousel, from each side's actual adjacent tile) show through
+       their peek shape instead of it just being a flat gradient panel. This is just how
+       Carousel Rows peeking looks now, no separate toggle for it. Lives on a separate inner
+       layer (.row-carousel-peek-hint-img), not the shape's
        own background — that's what lets it slide independently: nsAdvanceRowCarousel animates
        both inner layers' own transform in sync with the real tiles' slide (same duration/
        easing/direction), so each preview visually continues the same motion as the rest of the
@@ -2708,6 +2709,18 @@
     .coll-tile-subtitle { display:block; font-size:22px; font-weight:500; margin-top:2px; }
     .coll-tile-right { width:185px; flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center; }
     .coll-tile-img { display:block; width:100%; height:100%; object-fit:cover; }
+    /* Terminal tile at the end of a Lane of Lanes carousel track — same convention as the
+       film-row carousel's own see-all tile (background image + tinted overlay + plain
+       "See All" text, no count), just using the LAST collection tile's own image/colour
+       instead of a fixed fill, since there's no single "this row's colour" for a lane of
+       many different collections. */
+    .coll-tile.row-carousel-see-all-tile { position: relative; }
+    .coll-tile-see-all-inner {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background-size: cover; background-position: center;
+    }
+    .coll-tile-see-all-overlay { position: absolute; inset: 0; opacity: 0.45; }
     .director-card { display:block; cursor:pointer; text-decoration:none; }
     .director-img-wrap { aspect-ratio:1/1; position:relative; overflow:hidden; background:#d0d0d0; }
     .director-img-wrap .card-img { filter:grayscale(100%); transition:transform 0.45s ease; }
@@ -3422,13 +3435,6 @@
               </div>
               <label class="ns-switch"><input type="checkbox" id="carouselRowsToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
-            <div class="ns-toggle-row" id="carouselRowsPeekV2Row" style="display:none; padding-left:34px; padding-right:18px;">
-              <div>
-                <span class="ns-toggle-label">Peek Preview v2</span>
-                <div class="ns-toggle-desc">Shows the next film's real still masked into the peeking shape (right arrow only) instead of a plain gradient.</div>
-              </div>
-              <label class="ns-switch"><input type="checkbox" id="carouselRowsPeekV2Toggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
             <div class="ns-field" style="padding-left:18px; padding-right:18px;">
               <div class="ns-field-label">Number of Collections to Display After 2nd Spotlight</div>
               <div class="ns-slider-row">
@@ -3443,10 +3449,6 @@
                   <div class="ns-toggle-desc">A lane of collection titles.</div>
                 </div>
                 <label class="ns-switch"><input type="checkbox" id="laneOfLanesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-              </div>
-              <div class="ns-toggle-row" id="laneOfLanesDoubleTileRow" style="display:none; padding-left:34px; padding-right:18px;">
-                <span class="ns-toggle-label">Double Tile</span>
-                <label class="ns-switch"><input type="checkbox" id="laneOfLanesDoubleTileToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
               </div>
             </div>
             <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
@@ -5303,8 +5305,17 @@ function renderGrid() {
 
   // "Lane of Lanes" is a settings toggle — when on, a row of real Collection tiles (the
   // exact same coll-tile component used in the Explore Collections tab) renders at the
-  // very bottom of the page.
-  const laneOfLanesColls = NS_COLLECTIONS.slice(0, nsState.carouselRows ? 8 : 4);
+  // very bottom of the page. The 2nd tile is overridden as a "Coming Soon" teaser for
+  // Teenage Sex and Death at Camp Miasma — the tile's own colour is that still's average
+  // colour (computed directly from the image), not a NS_COLLECTIONS value.
+  const laneOfLanesColls = NS_COLLECTIONS.slice(0, nsState.carouselRows ? 8 : 4).map((c, i) => i === 1 ? {
+    ...c,
+    img: 'https://assets.mubicdn.net/images/film/368829/image-original.jpg?1771019329',
+    color: '#441d0c',
+    title: 'Coming Soon',
+    subtitle: '',
+    items: '7',
+  } : c);
 
   // "New to MUBI?" only makes sense for a viewer with zero watchlist/continue-watching/
   // watched history — i.e. the Ava Chen persona, or anyone in that same fresh state.
@@ -5375,7 +5386,7 @@ function renderGrid() {
     ...(genreLaneFilms.length ? [{ title: nsState.genreLaneGenre, films: genreLaneFilms, isGenreLane: true }] : []),
     // Lane of Lanes is a settings-driven, opt-in row — always right after the 2nd spotlight
     // (ahead of Row 1 / the numbered rows) whenever it's on.
-    ...(nsState.laneOfLanes ? [{ title: 'Recent Collections', isCollections: true, colls: laneOfLanesColls, doubletile: nsState.laneOfLanesDoubleTile, seeAllHref: 'explore.html?tab=collections' }] : []),
+    ...(nsState.laneOfLanes ? [{ title: 'Recent Collections', isCollections: true, colls: laneOfLanesColls, seeAllHref: 'explore.html?tab=collections' }] : []),
     // Row 1 itself now lands here, right after the 2nd spotlight (and Lane of Lanes, if on).
     row1,
     ...numberedRows,
@@ -5410,9 +5421,27 @@ function renderGrid() {
     if (row.isSpotlight) return spotlightSectionHTML(row.spotlightColl, rowIdx);
     if (row.isGenreTiles && nsState.laneOfGenresStyle === 'type') return bfiGenreSectionHTML(row, rowIdx);
     if (row.isCollections) {
-      const tilesHTML = row.isGenreTiles
-        ? row.colls.map((g, i) => nsState.laneOfGenresStyle === 'stack' ? genreStackTileHTML(g, i, row.doubletile) : genreTileHTML(g, i, row.doubletile)).join('')
-        : row.colls.map(c => collTileHTML(c, row.doubletile)).join('');
+      const buildCollTiles = colls => row.isGenreTiles
+        ? colls.map((g, i) => nsState.laneOfGenresStyle === 'stack' ? genreStackTileHTML(g, i, row.doubletile) : genreTileHTML(g, i, row.doubletile)).join('')
+        : colls.map(c => collTileHTML(c, row.doubletile)).join('');
+      const tilesHTML = buildCollTiles(row.colls);
+      // Terminal "See All" tile at the end of the carousel track — Lane of Lanes only (it's
+      // the only isCollections row with a seeAllHref); uses the last collection's own image
+      // and colour, same convention as the film-row carousel's see-all tile, but with no
+      // item count or other info, just the label itself.
+      const collSeeAllHTML = (row.carousel && row.seeAllHref && row.colls.length) ? (() => {
+        const last = row.colls[row.colls.length - 1];
+        return `<a class="coll-tile row-carousel-see-all-tile${row.doubletile ? ' coll-tile--double' : ''}" href="${row.seeAllHref}" target="_self" aria-label="See All">
+          <div class="coll-tile-see-all-inner" style="background-image:url('${last.img}')">
+            <div class="coll-tile-see-all-overlay" style="background:${last.color}"></div>
+            <span class="row-carousel-see-all-text">See All</span>
+          </div>
+        </a>`;
+      })() : '';
+      // The see-all tile takes over the last collection's own image/colour, so that same
+      // collection is dropped from the real tile list here — total tile count stays the same
+      // as the non-carousel grid instead of gaining an extra (n+1th) tile.
+      const carouselTilesHTML = collSeeAllHTML ? buildCollTiles(row.colls.slice(0, -1)) : tilesHTML;
       return row.carousel ? `
     <div class="row-section${row.doubletile ? ' row-section--doubletile' : ''}">
       <div class="row-header"><span class="row-title">${row.title}</span></div>
@@ -5424,7 +5453,8 @@ function renderGrid() {
           </button>
           <div class="row-carousel-clip">
           <div class="row-grid row-grid--carousel">
-            ${tilesHTML}
+            ${carouselTilesHTML}
+            ${collSeeAllHTML}
           </div>
           </div>
           <button class="row-carousel-arrow row-carousel-arrow--next" data-carousel-target="rowCarousel-${rowIdx}" data-carousel-dir="1" aria-label="Next">
@@ -6024,14 +6054,16 @@ function nsUpdateRowCarousel(wrap) {
   if (nextBtn) nextBtn.classList.toggle('is-visible', !!peekRight);
   if (prevHint) prevHint.classList.toggle('is-visible', !!peekLeft);
   if (nextHint) nextHint.classList.toggle('is-visible', !!peekRight);
-  // "Peek Preview v2" — masks the actual adjacent tile's still into each peek shape itself
-  // (read straight off that tile's own <img>, not looked up from data) instead of the plain
-  // gradient panel. Falls back to the plain gradient if the setting's off, or the peeking
-  // tile has no still to borrow (e.g. it's the flat-colour "See All" tile, or a genre tile).
+  // "Peek Preview" — masks the actual adjacent tile's still into each peek shape itself (read
+  // straight off that tile's own <img>, not looked up from data) instead of the plain gradient
+  // panel. This is just how Carousel Rows peeking looks now (no separate toggle for it
+  // anymore) — falls back to the plain gradient only when the peeking tile genuinely has no
+  // still to borrow (e.g. it's the flat-colour "See All" tile, or a Colour + Stacked Films
+  // genre tile with no single representative image).
   const applyPeekV2 = (hint, peekTile) => {
     if (!hint) return;
-    const peekImg = peekTile ? peekTile.querySelector('.card-img, .coll-tile-double-img') : null;
-    const showV2 = nsState.carouselRowsPeekV2 && peekImg;
+    const peekImg = peekTile ? peekTile.querySelector('.card-img, .coll-tile-double-img, .genre-tile-img') : null;
+    const showV2 = nsState.carouselRows && peekImg;
     hint.classList.toggle('is-v2', !!showV2);
     const hintImg = hint.querySelector('.row-carousel-peek-hint-img');
     if (!hintImg) return;
@@ -6184,7 +6216,7 @@ const NS_STORAGE_KEY = 'ns_settings_state_v1';
 function nsLoadState() {
   try { return JSON.parse(localStorage.getItem(NS_STORAGE_KEY)) || {}; } catch (e) { return {}; }
 }
-const nsState = Object.assign({ watchlist: [], continueWatching: [], watched: [], marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 25, laneOfLanes: false, laneOfLanesDoubleTile: false, allDoubleTiles: false, carouselRows: false, carouselRowsPeekV2: false, topTen: false, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', laneOfGenres: false, laneOfGenresStyle: 'tiles', activeDemoUserIdx: null, marqueeDisplayCount: 3, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
+const nsState = Object.assign({ watchlist: [], continueWatching: [], watched: [], marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 25, laneOfLanes: false, allDoubleTiles: false, carouselRows: false, topTen: false, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', laneOfGenres: false, laneOfGenresStyle: 'tiles', activeDemoUserIdx: null, marqueeDisplayCount: 3, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
 
 // Dark mode is a personal display preference, not "content" — kept in its own localStorage
 // key rather than nsState, so it isn't pushed to the shared Google Sheet (see NS_SHEET_API_URL
@@ -6806,11 +6838,6 @@ document.getElementById('marqueeNavStyleToggle').addEventListener('click', e => 
 });
 document.getElementById('laneOfLanesToggle').addEventListener('change', e => {
   nsState.laneOfLanes = e.target.checked;
-  document.getElementById('laneOfLanesDoubleTileRow').style.display = e.target.checked ? '' : 'none';
-  nsSaveState();
-});
-document.getElementById('laneOfLanesDoubleTileToggle').addEventListener('change', e => {
-  nsState.laneOfLanesDoubleTile = e.target.checked;
   nsSaveState();
 });
 document.getElementById('allDoubleTilesToggle').addEventListener('change', e => {
@@ -6819,12 +6846,6 @@ document.getElementById('allDoubleTilesToggle').addEventListener('change', e => 
 });
 document.getElementById('carouselRowsToggle').addEventListener('change', e => {
   nsState.carouselRows = e.target.checked;
-  document.getElementById('carouselRowsPeekV2Row').style.display = e.target.checked ? '' : 'none';
-  nsSaveState();
-  renderGrid();
-});
-document.getElementById('carouselRowsPeekV2Toggle').addEventListener('change', e => {
-  nsState.carouselRowsPeekV2 = e.target.checked;
   nsSaveState();
   renderGrid();
 });
@@ -7766,8 +7787,6 @@ function openSettingsModal() {
   document.getElementById('colSpacingToggle').checked = document.documentElement.dataset.colSpacing === 'true';
   document.getElementById('allDoubleTilesToggle').checked = !!nsState.allDoubleTiles;
   document.getElementById('carouselRowsToggle').checked = !!nsState.carouselRows;
-  document.getElementById('carouselRowsPeekV2Toggle').checked = !!nsState.carouselRowsPeekV2;
-  document.getElementById('carouselRowsPeekV2Row').style.display = nsState.carouselRows ? '' : 'none';
   document.getElementById('hoverGenresToggle').checked = !!nsState.hoverGenres;
   document.getElementById('genreLaneToggle').checked = !!nsState.genreLane;
   document.getElementById('genreLaneSelectRow').style.display = nsState.genreLane ? '' : 'none';
@@ -7779,8 +7798,6 @@ function openSettingsModal() {
   document.getElementById('laneOfGenresBFIRow').style.display = nsState.laneOfGenres ? '' : 'none';
   document.getElementById('topTenToggle').checked = !!nsState.topTen;
   document.getElementById('laneOfLanesToggle').checked = !!nsState.laneOfLanes;
-  document.getElementById('laneOfLanesDoubleTileToggle').checked = !!nsState.laneOfLanesDoubleTile;
-  document.getElementById('laneOfLanesDoubleTileRow').style.display = nsState.laneOfLanes ? '' : 'none';
   document.querySelectorAll('#marqueeDisplayToggle .ns-type-toggle-btn').forEach(b => {
     b.classList.toggle('is-active', Number(b.dataset.nsDisplay) === nsState.marqueeDisplayCount);
   });
