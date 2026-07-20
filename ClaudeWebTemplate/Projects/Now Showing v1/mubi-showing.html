@@ -2541,9 +2541,8 @@
       top: 0; left: 0;
       width: 128px;
       height: 148px;
-      border-radius: 5px;
+      border-radius: 0;
       box-shadow: 0 8px 20px rgba(0,0,0,0.45);
-      border: 2px solid rgba(255,255,255,0.2);
       box-sizing: border-box;
       overflow: hidden;
       transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
@@ -2552,6 +2551,14 @@
     /* Only rendered when the film actually has one (see genreStackTileHTML) — a small
        drop-shadowed logo bottom-left on its own card, same corner convention as a normal
        doubletile card's title treatment. */
+    /* Only rendered when the film has a title treatment (see genreStackTileHTML) — same
+       bottom-up scrim formula as the big genre-tile-overlay, just squeezed into a smaller
+       card, so the (often light-coloured) logo stays legible against a bright still. */
+    .genre-stack-film-grad {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%);
+    }
     .genre-stack-film-treatment {
       position: absolute;
       left: 6px; bottom: 6px;
@@ -2561,6 +2568,11 @@
       object-position: left bottom;
       filter: drop-shadow(0 1px 3px rgba(0,0,0,0.7));
     }
+    /* Squareish logos (aspect ratio well under 2.2:1 — same threshold as
+       .card-title-treatment--square) render much smaller than wide banner ones at the same
+       max-height, since width shrinks along with it — bump them up so they don't look tiny
+       next to a wide logo on the card beside them. */
+    .genre-stack-film-treatment--square { max-height: 38px; }
     /* Bottoms land within a few px of each other (a tight fanned stack resting on a common
        "baseline") — only the rotation and horizontal offset vary, not the vertical one. */
     .genre-stack-film:nth-child(1) { transform: rotate(-9deg) translate(-16px, 4px); z-index: 1; }
@@ -5460,6 +5472,18 @@ function renderGrid() {
     else img.addEventListener('load', checkAspect, { once: true });
   });
 
+  // Same squareish-logo rule as .card-title-treatment above, for the small title
+  // treatments on the "Colour + Stacked Films" genre cards.
+  container.querySelectorAll('.genre-stack-film-treatment').forEach(img => {
+    const checkAspect = () => {
+      if (img.naturalWidth && img.naturalHeight && (img.naturalWidth / img.naturalHeight) < 2.2) {
+        img.classList.add('genre-stack-film-treatment--square');
+      }
+    };
+    if (img.complete) checkAspect();
+    else img.addEventListener('load', checkAspect, { once: true });
+  });
+
   if (nsState.laneOfLanes) fitCollText();
 
   // Carousel Rows — measure/tag peeking tiles + position arrows for every qualifying row
@@ -5714,7 +5738,7 @@ function genreStackTileHTML(genre, idx = 0, doubletile = false) {
   const films = nsRandomFilmsByGenre(genre, 3);
   const filmsHTML = films.map(f => `<div class="genre-stack-film">
       <img class="genre-stack-film-still" src="${f.image}" alt="" loading="lazy">
-      ${f.titleTreatment ? `<img class="genre-stack-film-treatment" src="${f.titleTreatment}" alt="">` : ''}
+      ${f.titleTreatment ? `<div class="genre-stack-film-grad"></div><img class="genre-stack-film-treatment" src="${f.titleTreatment}" alt="">` : ''}
     </div>`).join('');
   const color = NS_GENRE_STACK_TILE_COLOR_MAP[genre] || NS_GENRE_TILE_COLOR;
   return `<a class="genre-tile genre-tile--stack${doubletile ? ' genre-tile--double' : ''}" href="explore.html?genre=${encodeURIComponent(genre)}" target="_self" style="background:${color}" aria-label="${genre}">
