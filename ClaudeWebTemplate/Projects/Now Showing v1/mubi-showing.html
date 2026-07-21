@@ -2593,13 +2593,12 @@
     .genre-tile--stack:hover .genre-stack-film:nth-child(2)::after {
       opacity: 0;
     }
-    /* On hover, spread the fan wider — mostly horizontal, with just a touch more rotation
-       than the resting state (not the full arc of an earlier pass) — so more of the two
-       back cards peek out from behind the front one instead of sitting almost fully hidden
-       underneath it. */
-    .genre-tile--stack:hover .genre-stack-film:nth-child(1) { transform: rotate(-11deg) translate(-60px, 4px); }
-    .genre-tile--stack:hover .genre-stack-film:nth-child(2) { transform: rotate(11deg) translate(60px, 6px); }
-    .genre-tile--stack:hover .genre-stack-film:nth-child(3) { transform: rotate(0deg) translate(0, -4px); }
+    /* On hover, nudge the fan open just slightly wider than its resting spread — a subtle
+       shift (not the wide spread of an earlier pass) so the two back cards peek a little
+       further out from behind the front one without the stack visibly fanning apart. */
+    .genre-tile--stack:hover .genre-stack-film:nth-child(1) { transform: rotate(-10deg) translate(-20px, 4px); }
+    .genre-tile--stack:hover .genre-stack-film:nth-child(2) { transform: rotate(10deg) translate(20px, 6px); }
+    .genre-tile--stack:hover .genre-stack-film:nth-child(3) { transform: rotate(0deg) translate(0, 4px); }
     /* Lane of Genres "Style: BFI-like (Type Only)" (Page Settings > Layout > Lane of Genres
        > Style) swaps the genre-tile grid for the bare genre words themselves — oversized,
        comma-separated, flowing and wrapping like a paragraph, no pill chrome — referencing
@@ -2641,7 +2640,7 @@
     }
     .bfi-genre-section .row-title { text-transform: none; }
     :root[data-theme="dark"] .bfi-genre-word { color: var(--dm-text-dim); }
-    :root[data-theme="dark"] .bfi-genre-word:hover { color: #4d6bd6; }
+    :root[data-theme="dark"] .bfi-genre-word:hover { color: #fff; }
     :root[data-theme="dark"] .bfi-genre-sep { color: var(--dm-text-dimmer); }
     /* Double tile: full-bleed poster image (matching the film doubletile cards' visual
        language) with a bottom-up gradient tinted in the collection's own colour, and the
@@ -3761,10 +3760,12 @@
       fetchpriority="high"
     >
     <!-- Drive My Car — Ryusuke Hamaguchi (2021) -->
-    <!-- hero-video is intentionally left unmanaged by the settings modal's "Update Now Showing" action — it always keeps whichever video is currently set here -->
+    <!-- Default clip matches the default film info below (see FILMS' own "Drive My Car" entry)
+         — nsShowMarqueeFilm's applyFilm() swaps this src to the active film's own video any
+         time the marquee changes, so the two never fall out of sync. -->
     <video
       class="hero-video"
-      src="../../videos/Aftersun.mp4"
+      src="../../videos/DriveMyCar.mp4"
       autoplay
       muted
       loop
@@ -3831,7 +3832,7 @@
       <div class="hero-trad-stage-inner" id="heroTradStageInner">
         <div class="hero-trad-tile" data-role="prev" aria-label="Previous film">
           <img class="hero-trad-tile-img" src="" alt="">
-          <video class="hero-trad-tile-video" src="../../videos/DriveMyCar.mp4" muted loop playsinline></video>
+          <video class="hero-trad-tile-video" src="../../videos/perfectdays.mp4" muted loop playsinline></video>
           <div class="hero-trad-top-grad" aria-hidden="true"></div>
           <div class="hero-trad-grad" aria-hidden="true"></div>
           <div class="hero-trad-card-info">
@@ -3864,7 +3865,7 @@
         </div>
         <div class="hero-trad-tile" data-role="center" aria-label="Current film">
           <img class="hero-trad-tile-img" src="" alt="">
-          <video class="hero-trad-tile-video" src="../../videos/Ema.mp4" muted loop playsinline></video>
+          <video class="hero-trad-tile-video" src="../../videos/thepresidentscake.mp4" muted loop playsinline></video>
           <div class="hero-trad-top-grad" aria-hidden="true"></div>
           <div class="hero-trad-grad" aria-hidden="true"></div>
           <div class="hero-trad-card-info">
@@ -3897,7 +3898,7 @@
         </div>
         <div class="hero-trad-tile" data-role="next" aria-label="Next film">
           <img class="hero-trad-tile-img" src="" alt="">
-          <video class="hero-trad-tile-video" src="../../videos/TheSacrifice.mp4" muted loop playsinline></video>
+          <video class="hero-trad-tile-video" src="../../videos/mitski.mp4" muted loop playsinline></video>
           <div class="hero-trad-top-grad" aria-hidden="true"></div>
           <div class="hero-trad-grad" aria-hidden="true"></div>
           <div class="hero-trad-card-info">
@@ -3932,10 +3933,17 @@
       <!-- Fixed in place at the stage's centre — never slides. Whichever physical tile is
            currently rotated into the centre position sits directly beneath this. -->
       <div class="hero-trad-center-overlay">
-        <!-- Mirrors .hero-video — same fixed source, always playing, layered over the still.
-             Kept as a second <video> (rather than moving the original) so Subtle Rotation /
-             Tile Navigation still have theirs when Traditional isn't the active style. -->
-        <video class="hero-trad-center-video" id="heroTradCenterVideo" src="../../videos/Aftersun.mp4" autoplay muted loop playsinline></video>
+        <!-- Mirrors .hero-video — same source, always playing, layered over the still. Kept
+             as a second <video> (rather than moving the original) so Subtle Rotation / Tile
+             Navigation still have theirs when Traditional isn't the active style. Also kept
+             in sync with the active film by applyFilm() (see nsShowMarqueeFilm). -->
+        <video class="hero-trad-center-video" id="heroTradCenterVideo" src="../../videos/DriveMyCar.mp4" autoplay muted loop playsinline></video>
+        <!-- Own copy of the tile's darkening treatment — needed here too now that this
+             overlay's video (above) is what's actually visible once it fades in; without
+             its own copy, that opaque video would sit right on top of (and hide) the real
+             tile's grad underneath, since this overlay is fixed above it at z-index 20. -->
+        <div class="hero-trad-top-grad" aria-hidden="true"></div>
+        <div class="hero-trad-grad" aria-hidden="true"></div>
         <div class="hero-trad-title" id="heroTradTitle">
           <img
             id="heroTradTitleImg"
@@ -4099,104 +4107,47 @@
 </footer>
 
 <script>
-/* ─── FILM DATA (30 films from MUBI CSV) ─── */
+/* ─── FILM DATA (from MUBI CSV) ─── */
+// Only films with a matching clip in ../../videos are included — see nsTradPreviewURL below,
+// which reads each film's own `video` field directly instead of assigning a shared stand-in.
 const FILMS = [
   { title:"The President's Cake", director:"Hasan Hadi", year:2025, country:"Iraq, United States", slug:"the-president-s-cake",
     image:"https://assets.mubicdn.net/images/film/444324/image-w448.jpg?1779874381",
-    fX:0.75, fY:0.64, days:31, rating:4.1, isFotd:true, ourTake:"A cake, a girl, and a rooster are the surprising ingredients of this enchanting modern fable, which journeys from reeded wetlands to war-torn cities. Winning a prize for best debut at Cannes, Hasan Hadi's incisive political parable brings a child's poignant innocence to bear on Iraq's troubled past."},
+    fX:0.75, fY:0.64, days:31, rating:4.1, isFotd:true, video:"../../videos/thepresidentscake.mp4", ourTake:"A cake, a girl, and a rooster are the surprising ingredients of this enchanting modern fable, which journeys from reeded wetlands to war-torn cities. Winning a prize for best debut at Cannes, Hasan Hadi's incisive political parable brings a child's poignant innocence to bear on Iraq's troubled past."},
   { title:"Mitski: The Land", director:"Grant James", year:2025, country:"United States",
     image:"https://assets.mubicdn.net/images/film/458206/image-w448.jpg?1777028350",
-    fX:0.50, fY:0.48, days:30, rating:5.0, ourTake:"Channeling influence from the movies into her mesmerizing movements, Mitski gives live performances that find kindred spirit in cinema. Playing with speed, color, and freeze frames to electrifying effect, her first concert documentary embraces the transformative power of both film and music."},
+    fX:0.50, fY:0.48, days:30, rating:5.0, video:"../../videos/mitski.mp4", ourTake:"Channeling influence from the movies into her mesmerizing movements, Mitski gives live performances that find kindred spirit in cinema. Playing with speed, color, and freeze frames to electrifying effect, her first concert documentary embraces the transformative power of both film and music."},
   { title:"No Other Choice", director:"Park Chan-wook", year:2025, country:"South Korea",
     image:"https://assets.mubicdn.net/images/film/255497/image-w448.jpg?1753801050",
-    fX:0.51, fY:0.63, days:29, rating:4.2 , ourTake:"Desperate times call for desperate measures in this wild satirical ride from Korean master Park Chan-wook, starring Lee Byung-hun as a trampled worker with nothing to lose. An unruly blend of ingenious visuals and twisted humor, No Other Choice delivers a brutal takedown of the cutthroat job market.",
+    fX:0.51, fY:0.63, days:29, rating:4.2 , video:"../../videos/nootherchoice.mp4", ourTake:"Desperate times call for desperate measures in this wild satirical ride from Korean master Park Chan-wook, starring Lee Byung-hun as a trampled worker with nothing to lose. An unruly blend of ingenious visuals and twisted humor, No Other Choice delivers a brutal takedown of the cutthroat job market.",
     award:{text:"Golden Globe Awards Nominee", image:"https://images.mubicdn.net/images/carousel_takeover/405/cache-1118170-1772835067/prize_image_en_us-original.png"}},
   { title:"It Was Just an Accident", director:"Jafar Panahi", year:2025, country:"Iran, France",
     image:"https://assets.mubicdn.net/images/film/441162/image-w448.jpg?1747995632",
-    fX:0.52, fY:0.42, days:28, rating:4.3 , ourTake:"Jafar Panahi won the Palme d’Or for this tour-de-force morality tale, which ignites the pursuit of truth with dark comedy and impassioned urgency. Driving through obstinate barriers of authoritarianism and censorship, this is a defining work of political cinema from one of Iran’s great auteurs.",
+    fX:0.52, fY:0.42, days:28, rating:4.3 , video:"../../videos/itwasjustanaccident.mp4", ourTake:"Jafar Panahi won the Palme d’Or for this tour-de-force morality tale, which ignites the pursuit of truth with dark comedy and impassioned urgency. Driving through obstinate barriers of authoritarianism and censorship, this is a defining work of political cinema from one of Iran’s great auteurs.",
     award:{text:"Cannes Palme d'Or", image:"https://images.mubicdn.net/images/carousel_takeover/397/cache-1115886-1771848656/prize_image_en_us-original.png"}},
   { title:"Sentimental Value", director:"Joachim Trier", year:2025, country:"Norway, Germany",
     image:"https://assets.mubicdn.net/images/film/400360/image-w448.jpg?1757575671",
-    fX:0.77, fY:0.40, days:27, rating:4.1 , ourTake:"Eskil Vogt and Joachim Trier—the writer-director dream team behind The Worst Person in the World—return with this stunningly observed family drama. Winner of the Best International Feature Oscar®, and featuring an all-star cast, Sentimental Value traces the fault lines between vanity, art, and life.",
+    fX:0.77, fY:0.40, days:27, rating:4.1 , video:"../../videos/sentimentalvalue.mp4", ourTake:"Eskil Vogt and Joachim Trier—the writer-director dream team behind The Worst Person in the World—return with this stunningly observed family drama. Winner of the Best International Feature Oscar®, and featuring an all-star cast, Sentimental Value traces the fault lines between vanity, art, and life.",
     award:{text:"Cannes Gran Prix", image:"https://images.mubicdn.net/images/carousel_takeover/391/cache-1111887-1770034391/prize_image_en_us-original.png"}},
   { title:"Die My Love", director:"Lynne Ramsay", year:2025, country:"United States, UK",
     image:"https://assets.mubicdn.net/images/film/360569/image-w448.jpg?1761916729",
-    fX:0.52, fY:0.44, days:26, rating:4.0 , ourTake:"Instincts both maternal and carnal clatter like shards of glass in a blender in this uncompromising portrait of a woman on the edge from director Lynne Ramsay. Starring Jennifer Lawrence and Robert Pattinson in a frenzied pas de deux, Die My Love inflames the exposed nerves of delirium and desire."},
+    fX:0.52, fY:0.44, days:26, rating:4.0 , video:"../../videos/diemylove.mp4", ourTake:"Instincts both maternal and carnal clatter like shards of glass in a blender in this uncompromising portrait of a woman on the edge from director Lynne Ramsay. Starring Jennifer Lawrence and Robert Pattinson in a frenzied pas de deux, Die My Love inflames the exposed nerves of delirium and desire."},
   { title:"The Mastermind", director:"Kelly Reichardt", year:2025, country:"United States",
     image:"https://assets.mubicdn.net/images/film/422583/image-w448.jpg?1765544027",
-    fX:0.35, fY:0.01, days:25, rating:3.9 , ourTake:"With an artful eye and jazzy unpredictability, Kelly Reichardt unravels the threads of the heist film in this standout from Cannes. As an antihero kicking about on the brink of the ‘70s, Josh O’Connor is unmissable, lending rumpled discontent to this ironic, wry vision of American individualism."},
+    fX:0.35, fY:0.01, days:25, rating:3.9 , video:"../../videos/themastermind.mp4", ourTake:"With an artful eye and jazzy unpredictability, Kelly Reichardt unravels the threads of the heist film in this standout from Cannes. As an antihero kicking about on the brink of the ‘70s, Josh O’Connor is unmissable, lending rumpled discontent to this ironic, wry vision of American individualism."},
   { title:"Hot Milk", director:"Rebecca Lenkiewicz", year:2025, country:"United Kingdom", slug:"hot-milk-2023",
     image:"https://assets.mubicdn.net/images/film/332978/image-w448.jpg?1746718753",
-    fX:0.31, fY:0.44, days:24, rating:3.8 , ourTake:"Rising star Emma Mackey stuns in this searing adaptation of Deborah Levy’s acclaimed novel about sensual longing and animal instincts. Intoxicated by the sun and salt sensations of the Andalusian coast, her hot-headed heroine swims clear of her mother’s stinging gaze in a break for self-realization."},
-  { title:"Harvest", director:"Athina Rachel Tsangari", year:2024, country:"UK, Germany",
-    image:"https://assets.mubicdn.net/images/film/400471/image-w448.jpg?1745502898",
-    fX:0.55, fY:0.30, days:23, rating:4.0 , ourTake:"Textured with russet reds and pollinic yellows, Athina Rachel Tsangari’s spellbinding allegory gleans an atmospheric folk tale from a rural idyll. As landowners sow the seeds of modern capital, Sean Price Williams reaps horror and beauty from the earth with swirling, immersive cinematography."},
-  { title:"Magic Farm", director:"Amalia Ulman", year:2025, country:"Argentina, USA",
-    image:"https://assets.mubicdn.net/images/film/418722/image-w448.jpg?1745503382",
-    fX:0.54, fY:0.47, days:22, rating:3.7 , ourTake:"Things get weird in Amalia Ulman’s kaleidoscopic film, a colorful comedy of errors and an imaginative send-up of millennial media. Starring Simon Rex and Chloë Sevigny, this story of a frantic search for an internet sensation is electrified by wit, subversion, and distinctively fluorescent style."},
-  { title:"The End", director:"Joshua Oppenheimer", year:2024, country:"Denmark, Germany",
-    image:"https://assets.mubicdn.net/images/film/391666/image-w448.jpg?1747444187",
-    fX:0.00, fY:0.19, days:21, rating:3.8 , ourTake:"The golden age of Hollywood musicals is given a postapocalyptic twist in this dazzling epic from Oscar®-nominated filmmaker Joshua Oppenheimer. With Tilda Swinton and George MacKay leading a stellar ensemble cast, The End journeys to the end of the world to explore the limits of our shared humanity."},
-  { title:"Grand Tour", director:"Miguel Gomes", year:2024, country:"Portugal, Italy",
-    image:"https://assets.mubicdn.net/images/film/400395/image-w448.jpg?1745502227",
-    fX:0.25, fY:0.51, days:20, rating:4.2 , ourTake:"Winner of the Best Director prize at Cannes, Miguel Gomes’s transcendent travelogue sets sail for spellbinding horizons, where romance and adventure thrillingly entwine. Guided by the capricious will of the heart, this epic tale of love on the run is a movable feast for the mind and the senses."},
-  { title:"September Says", director:"Ariane Labed", year:2024, country:"France, UK",
-    image:"https://assets.mubicdn.net/images/film/409204/image-w448.jpg?1745502559",
-    fX:0.53, fY:0.25, days:19, rating:3.9 , ourTake:"Power dynamics seesaw and daring playground games become deadly serious in Ariane Labed's startlingly unique first feature as director. Offering up a dark, distinctive vision of adolescence and girlhood, this unpredictable film sees the strangeness of the sibling bond for its wild, feral intensity."},
-  { title:"Bring Them Down", director:"Christopher Andrews", year:2024, country:"Ireland, UK",
-    image:"https://assets.mubicdn.net/images/film/369358/image-w448.jpg?1745501001",
-    fX:0.11, fY:0.50, days:18, rating:3.9 , ourTake:"Christopher Abbott and Barry Keoghan are arch enemies in this gripping revenge thriller, in which Ireland's rugged landscapes echo inner torment. Pulling apart the western trope of the strong, silent type, Christopher Andrews's hard-hitting debut feature reveals old traumas behind fresh wounds."},
-  { title:"The Girl with the Needle", director:"Magnus von Horn", year:2024, country:"Denmark, Poland",
-    image:"https://assets.mubicdn.net/images/film/401325/image-w448.jpg?1745502562",
-    fX:0.50, fY:0.54, days:17, rating:4.1 , ourTake:"An Oscar®-nominated marvel of exquisite empathy, Magnus von Horn’s masterful vision of early 20th-century Denmark searches for tenderness and morality under fraught circumstances. Drawing on chilling true events that continue to resonate, this gothic parable is a visceral reckoning from the past."},
-  { title:"Dahomey", director:"Mati Diop", year:2024, country:"France, Senegal",
-    image:"https://assets.mubicdn.net/images/film/401676/image-w448.jpg?1745502278",
-    fX:0.52, fY:0.51, days:16, rating:4.3 , ourTake:"Winner of the Golden Bear at the 2024 Berlinale, Mati Diop’s dynamic film brings a dazzling sense of imagination to vital issues of self-determination and restitution. Amplifying voices from beyond the walls of international museums, this spellbinding work redefines the spaces of culture and art."},
-  { title:"The Substance", director:"Coralie Fargeat", year:2024, country:"United States, UK",
-    image:"https://assets.mubicdn.net/images/film/332868/image-w448.jpg?1745502662",
-    fX:0.69, fY:0.42, days:15, rating:4.0 , ourTake:"With sharp wit and cathartic intensity, Coralie Fargeat turns toxic beauty culture inside out in her Oscar®-winning latest feature. Powered by a career-best performance from Demi Moore, The Substance fearlessly bulldozes its way into the midnight-movie pantheon and the feminist canon."},
-  { title:"A Natural History of the Studio", director:"William Kentridge", year:2024, country:"South Africa, USA",
-    image:"https://assets.mubicdn.net/images/film/419520/image-w448.jpg?1745503006",
-    fX:0.96, fY:0.73, days:14, rating:3.7 , ourTake:"Step inside the roving creative imagination of William Kentridge with this exclusive nine-part series. An ode to procrastination, pacing, and messy desks, this playful first episode sees the South African artist invoke a doppelgänger with whom to squabble over the intangible seeds of inspiration."},
-  { title:"My First Film", director:"Zia Anger", year:2024, country:"United States",
-    image:"https://assets.mubicdn.net/images/film/391609/image-w448.jpg?1745502467",
-    fX:0.32, fY:0.50, days:13, rating:3.8 , ourTake:"Following a celebrated performance piece about creative evolution, Zia Anger turns narrative cinema inside out with this meta-fiction, starring Odessa Young and Devon Ross. Transforming failure into rituals of rebirth, this poignant film captures the zeitgeist and comes straight from the heart."},
-  { title:"Crossing", director:"Levan Akin", year:2024, country:"Sweden, Turkey", slug:"crossing-2023-levan-akin",
-    image:"https://assets.mubicdn.net/images/film/374529/image-w448.jpg?1745502259",
-    fX:0.54, fY:0.35, days:12, rating:4.1 , ourTake:"Director Levan Akin centers the vital spirit of Istanbul’s trans community in this poignant story of unlikely connection. With three exquisite performances that vividly transcend generational divides, Crossing is a defiant city symphony and a compassionate tale of hope, identity, and forgiveness."},
+    fX:0.31, fY:0.44, days:24, rating:3.8 , video:"../../videos/hotmilk.mp4", ourTake:"Rising star Emma Mackey stuns in this searing adaptation of Deborah Levy’s acclaimed novel about sensual longing and animal instincts. Intoxicated by the sun and salt sensations of the Andalusian coast, her hot-headed heroine swims clear of her mother’s stinging gaze in a break for self-realization."},
   { title:"Gasoline Rainbow", director:"Bill Ross IV, Turner Ross", year:2023, country:"United States",
     image:"https://assets.mubicdn.net/images/film/385392/image-w448.jpg?1745501631",
-    fX:0.48, fY:0.12, days:11, rating:3.9 , ourTake:"Reimagining the road movie with the next generation of misfits, celebrated directorial duo the Ross Brothers make a coming-of-age film that runs on free-flowing feeling. Alive with friendship and the promise of the moment, Gasoline Rainbow is a beautiful reminder of what matters and what’s real."},
-  { title:"The Delinquents", director:"Rodrigo Moreno", year:2023, country:"Argentina, Brazil",
-    image:"https://assets.mubicdn.net/images/film/376078/image-w448.jpg?1745501368",
-    fX:0.48, fY:0.64, days:10, rating:4.2 , ourTake:"Rebelling against the banality of work, Rodrigo Moreno’s playful and restorative Cannes highlight reinvents the heist film as a free-flowing adventure in which love and epiphanies bloom. A beguiling and defiant quest for personal freedom that dares to embrace the strangeness of life with open arms."},
-  { title:"High & Low — John Galliano", director:"Kevin Macdonald", year:2023, country:"United Kingdom",
-    image:"https://assets.mubicdn.net/images/film/380148/image-w448.jpg?1745501368",
-    fX:0.52, fY:0.36, days:9, rating:3.6 , ourTake:"Reliving triumphs and controversies, fashion designer John Galliano takes center stage in this grippingly nuanced portrait from Oscar®-winner Kevin Macdonald. Star-studded interviews and rare archival footage reveal the toxicity behind exquisite glamor and spectacle, both on and off the runway."},
+    fX:0.48, fY:0.12, days:11, rating:3.9 , video:"../../videos/gasolinerainbow.mp4", ourTake:"Reimagining the road movie with the next generation of misfits, celebrated directorial duo the Ross Brothers make a coming-of-age film that runs on free-flowing feeling. Alive with friendship and the promise of the moment, Gasoline Rainbow is a beautiful reminder of what matters and what’s real."},
   { title:"Perfect Days", director:"Wim Wenders", year:2023, country:"Japan, Germany",
     image:"https://assets.mubicdn.net/images/film/343977/image-w448.jpg?1745501776",
-    fX:0.59, fY:0.28, days:8, rating:4.4 , ourTake:"Kôji Yakusho won Best Actor in Cannes for this heart-warming, Oscar®-nominated drama from Wim Wenders, who lends his humanist gaze to the inhabitants of his beloved Tokyo. Charged with a superb soundtrack of classic rock and pop, Perfect Days finds beauty and serenity in the most unexpected places."},
-  { title:"The Settlers", director:"Felipe Gálvez", year:2023, country:"Chile, Argentina", slug:"the-settlers-2023",
-    image:"https://assets.mubicdn.net/images/film/376083/image-w448.jpg?1745502117",
-    fX:0.33, fY:0.54, days:7, rating:3.9 , ourTake:"Writer-director Felipe Gálvez emerges as a startling new voice in Latin American cinema with this searing revisionist western. Capturing majestic landscapes with a painterly eye, Chile’s official Oscar® entry is a singularly immersive reckoning with national myth-making and its attendant violence."},
-  { title:"Priscilla", director:"Sofia Coppola", year:2023, country:"United States, Italy",
-    image:"https://assets.mubicdn.net/images/film/354432/image-w448.jpg?1745501476",
-    fX:0.46, fY:0.30, days:6, rating:3.8 , ourTake:"The gilded cage of fame is beguiling but lonesome in Sofia Coppola’s sumptuous adaptation of Priscilla Presley’s memoir. Starring a revelatory, award-winning Cailee Spaeny next to Jacob Elordi as Elvis, this dark fairytale charts the highs and the lows of a life spent in the shadow of the King."},
-  { title:"Fallen Leaves", director:"Aki Kaurismäki", year:2023, country:"Finland, Germany", slug:"fallen-leaves-2023",
-    image:"https://assets.mubicdn.net/images/film/346537/image-w448.jpg?1745501249",
-    fX:0.39, fY:0.40, days:5, rating:4.3 , ourTake:"Moviegoing dreamers, there is hope for us still in this timeless, tender romance from living legend Aki Kaurismäki. Imbued with the filmmaker’s idiosyncratic playfulness and deadpan humor, this bittersweet comedy charmed even the most dour of critics and, delightfully, won the Jury Prize at Cannes."},
-  { title:"Passages", director:"Ira Sachs", year:2023, country:"France", slug:"passages-2022",
-    image:"https://assets.mubicdn.net/images/film/325455/image-w448.jpg?1745499517",
-    fX:0.45, fY:0.19, days:4, rating:3.7 , ourTake:"Three lovers spin in a vortex of pent-up desire and resentment in Ira Sachs’ fresh, honest and acerbically funny take on messy, modern relationships. Just like its dynamic leads—Franz Rogowski, Adèle Exarchopoulos and Ben Whishaw—this refreshingly fluid relationship drama simply oozes sex appeal."},
-  { title:"Rotting in the Sun", director:"Sebastián Silva", year:2023, country:"United States, Mexico",
-    image:"https://assets.mubicdn.net/images/film/364307/image-w448.jpg?1745500732",
-    fX:0.49, fY:0.38, days:3, rating:3.5 , ourTake:"Getting sucked into an infinite loop of drugs, men and dizzying mystery? That’s one cure for writer’s block! Frolicking and squabbling across the beaches, clubs, and rooftops of Mexico, Sebastián Silva and Jordan Firstman play hilarious versions of themselves in this absurd and sexy meta-comedy."},
-  { title:"Medusa Deluxe", director:"Thomas Hardiman", year:2022, country:"United Kingdom",
-    image:"https://assets.mubicdn.net/images/film/343641/image-w448.jpg?1745499941",
-    fX:0.26, fY:0.49, days:2, rating:3.6 , ourTake:"The air is thick with hairspray, wicked gossip, and even murder in Thomas Hardiman’s audacious and extravagant one-shot whodunnit, uniquely set amid a hairdressing contest. Feast your eyes on a dazzling array of wild styles concocted by the legendary Eugene Souleiman—they are surely full of secrets!"},
-  { title:"Return to Seoul", director:"Davy Chou", year:2022, country:"France, Germany",
-    image:"https://assets.mubicdn.net/images/film/339537/image-w448.jpg?1745499786",
-    fX:0.43, fY:0.23, days:1, rating:4.0 , ourTake:"A moving search for identity in neon-drenched Seoul, Davy Chou’s mercurial drama aches with diasporic longing, which thrums through an exquisitely curated soundtrack. Dazzling in her vulnerability, first-time actress Park Ji-Min ferociously embodies the tragicomic chaos of living between cultures."},
+    fX:0.59, fY:0.28, days:8, rating:4.4 , video:"../../videos/perfectdays.mp4", ourTake:"Kôji Yakusho won Best Actor in Cannes for this heart-warming, Oscar®-nominated drama from Wim Wenders, who lends his humanist gaze to the inhabitants of his beloved Tokyo. Charged with a superb soundtrack of classic rock and pop, Perfect Days finds beauty and serenity in the most unexpected places."},
+  { title:"Drive My Car", director:"Ryusuke Hamaguchi", year:2021, country:"Japan",
+    image:"https://images.mubicdn.net/images/film/293319/cache-683932-1745498585/image-w1280.jpg",
+    titleTreatment:"https://images.mubicdn.net/images/artworks/456873/cache-456873-1648738309/images-original.png",
+    fX:0.5, fY:0.35, days:20, rating:4.5, video:"../../videos/DriveMyCar.mp4", ourTake:"Winning the Oscar®, BAFTA, and Golden Globe for International Feature, Ryusuke Hamaguchi's expansive Haruki Murakami adaptation is a film of engrossing pleasures. In detailing the effects of the past and the present, of memory and imagination on the creation of art, Drive My Car contains multitudes."},
 ];
 
 function daysLabel(d) {
@@ -6184,6 +6135,9 @@ const NS_CATALOG = (() => {
 // arrays already verified live against api.mubi.com/v4/collections/<slug> and
 // mubi.com/en/gb/showing elsewhere on this page (see their own comments), every one of
 // which carries a real ourTake, so every marquee pick always has real synopsis text to show.
+// Also filtered to `video` truthy — the marquee hero always autoplays a clip for its centered
+// pick, so only FILMS entries with a matching file in ../../videos are offerable here; the
+// other arrays (MUBI_RELEASES_FILMS etc.) have no video field and would show a dead <video>.
 const NS_MARQUEE_CATALOG = (() => {
   const seen = new Set();
   const items = [
@@ -6191,6 +6145,7 @@ const NS_MARQUEE_CATALOG = (() => {
     ...CURATORS_SPOTLIGHT_FILMS, ...TOP_TEN_FILMS,
   ].map(f => ({ ...f, _slug: f.slug || slugify(f.title), _type: 'film' }));
   return items.filter(f => {
+    if (!f.video) return false;
     if (seen.has(f._slug)) return false;
     seen.add(f._slug);
     return true;
@@ -6918,8 +6873,8 @@ function nsReplayHeroVideoFadeIn() {
   // The video's fade-in (opacity 0 -> 1, 2s delay) only ever plays once on page load.
   // By the time a marquee update happens, the video is already fully opaque and
   // permanently hides the still image underneath. Restart the CSS animation so the
-  // freshly-updated still is visible again for a beat before the (unchanged) video
-  // fades back in on top of it.
+  // freshly-updated still is visible again for a beat before the video (by now already
+  // swapped to the newly-active film's own clip — see applyFilm above) fades back in.
   document.querySelectorAll('.hero-video, .hero-trad-center-video').forEach(video => {
     video.style.animation = 'none';
     void video.offsetWidth;
@@ -7047,9 +7002,33 @@ function nsShowMarqueeFilm(slug, animate = true, direction = null) {
   // that crossfade's own delay.
   nsRenderTraditionalCarousel(slug, direction);
 
+  // Swapped here, immediately and unconditionally (not inside the gated applyFilm below) —
+  // Traditional's own center-overlay title (fillTitleBlock, called from
+  // nsRenderTraditionalCarousel above) already updates instantly on every call with no
+  // fade-generation gating, so its mirrored video (.hero-trad-center-video) has to keep up
+  // the same way or the two fall out of sync the moment steps happen faster than the text
+  // crossfade below (rapid clicking would otherwise leave the overlay showing a new film's
+  // title over its predecessor's video, stuck there until a slower step finally lands).
+  // .hero-video is deliberately NOT swapped here — it's paired with the .hero-info title
+  // below, which IS gated behind the crossfade, so it's swapped inside applyFilm instead
+  // (same timing as its own title) rather than racing ahead of it here.
+  const centerVideoEl = document.getElementById('heroTradCenterVideo');
+  if (film.video && centerVideoEl && centerVideoEl.getAttribute('src') !== film.video) {
+    centerVideoEl.setAttribute('src', film.video);
+    centerVideoEl.style.animation = 'none';
+    void centerVideoEl.offsetWidth;
+    centerVideoEl.style.animation = '';
+  }
+
   const titleTreatment = film.titleTreatment || NS_TITLE_TREATMENTS[film._slug];
 
   const applyFilm = () => {
+    // Paired with the title/image below — swapped at the same gated timing so a fast run
+    // of picks never shows this film's info over the previous film's still-playing video.
+    if (film.video) {
+      const heroVideoEl = document.querySelector('.hero-video');
+      if (heroVideoEl && heroVideoEl.getAttribute('src') !== film.video) heroVideoEl.setAttribute('src', film.video);
+    }
     nsReplayHeroVideoFadeIn();
 
     const stillImg = document.getElementById('heroStillImg');
@@ -7085,8 +7064,6 @@ function nsShowMarqueeFilm(slug, animate = true, direction = null) {
 
     nsRenderMarqueeDots(slug);
     nsRenderMarqueeNavTiles(slug);
-
-    // hero-video is intentionally left untouched — the existing/old video stays in place
   };
 
   if (!animate) { nsMarqueeFadeGen++; applyFilm(); return; }
@@ -7216,63 +7193,11 @@ const NS_TRAD_FLIP_MS = 550;
 const NS_TRAD_TITLE_FADE_MS = 700;
 let nsTradPreloadedMarqueeKey = null;
 
-// Local stand-in b-roll used wherever a film has no real trailer clip (see nsTradPreviewURL
-// below) — 4 real video files, picked per-film from a hash of the slug rather than
-// Math.random() so the same film always lands on the same clip (no flicker on re-render),
-// while different films in the marquee end up spread across all 4 rather than sharing one.
-const NS_STANDIN_VIDEOS = [
-  '../../videos/Aftersun.mp4',
-  '../../videos/DriveMyCar.mp4',
-  '../../videos/Ema.mp4',
-  '../../videos/TheSacrifice.mp4',
-];
-function nsStandinVideoForSlug(slug) {
-  let hash = 0;
-  for (let i = 0; i < slug.length; i++) hash = (hash * 31 + slug.charCodeAt(i)) | 0;
-  return NS_STANDIN_VIDEOS[Math.abs(hash) % NS_STANDIN_VIDEOS.length];
-}
-// Slug -> stand-in video, rebuilt (see nsRebuildStandinVideoAssignment) any time the
-// marquee's own film list changes — guarantees no two films CURRENTLY in the marquee ever
-// share a video (their independent hashes could otherwise collide), while still keeping
-// each film's own pick stable across re-renders. nsTradPreviewURL reads from this first,
-// falling back to the plain per-slug hash for any film not currently in the marquee list.
-let nsStandinVideoAssignment = {};
-function nsRebuildStandinVideoAssignment(slugs) {
-  const assignment = {};
-  const used = new Set();
-  slugs.forEach(slug => {
-    let hash = 0;
-    for (let i = 0; i < slug.length; i++) hash = (hash * 31 + slug.charCodeAt(i)) | 0;
-    let idx = Math.abs(hash) % NS_STANDIN_VIDEOS.length;
-    let tries = 0;
-    // Walks forward to the next free slot on a collision — guarantees every slug gets a
-    // distinct video as long as there are at least as many videos (4) as slugs; beyond
-    // that, videos start repeating since there's nothing else to assign.
-    while (used.has(idx) && tries < NS_STANDIN_VIDEOS.length) {
-      idx = (idx + 1) % NS_STANDIN_VIDEOS.length;
-      tries++;
-    }
-    used.add(idx);
-    assignment[slug] = NS_STANDIN_VIDEOS[idx];
-  });
-  nsStandinVideoAssignment = assignment;
-}
-// Default hero (.hero-video, Subtle Rotation/Tile Navigation's fixed background clip) was
-// always the same hardcoded "Drive My Car" crop regardless of which film's info/still is
-// showing on top of it — genuinely randomised per page load instead, from the same 4-video
-// pool, rather than a per-slug hash (there's no single "active film" concept to hash here,
-// since this element intentionally never swaps as the marquee rotates — see its own comment
-// in the markup).
-const heroVideoEl = document.querySelector('.hero-video');
-if (heroVideoEl) heroVideoEl.src = NS_STANDIN_VIDEOS[Math.floor(Math.random() * NS_STANDIN_VIDEOS.length)];
-
-// Marquee preview video for a film — one of the 4 local stand-in videos, de-duplicated
-// against whichever other films are currently in the marquee (see
-// nsRebuildStandinVideoAssignment) so no two of them show the same clip at once. No longer
-// pulls from real MUBI trailer URLs.
+// Marquee preview video for a film — every film in FILMS carries its own dedicated clip
+// (film.video, see FILMS above), matched by name to a real file in ../../videos, so this is
+// just a direct lookup — no shared stand-in pool or hash-based dedup needed anymore.
 function nsTradPreviewURL(film) {
-  const slug = film._slug || film.title || 'x';
-  return nsStandinVideoAssignment[slug] || nsStandinVideoForSlug(slug);
+  return film.video;
 }
 
 // Per-card video (see .hero-trad-tile-video) — starts 3s after a card has actually
@@ -7495,14 +7420,17 @@ function nsRenderTraditionalCarousel(activeSlug, direction = null) {
     inner.style.transform = `translateX(${offset}px)`;
 
     // Plain Traditional's fixed centre overlay (hidden entirely on Rounded, so this is a
-    // no-op there) — the title/title-treatment specifically now crossfades (see
-    // .hero-trad-title's own transition above) instead of swapping instantly; bottom/our
-    // take still update in step with it, right as the fade-out finishes.
-    const overlayTitleEl = document.querySelector('.hero-trad-center-overlay .hero-trad-title');
-    if (overlayTitleEl) overlayTitleEl.classList.add('hero-content-fading');
+    // no-op there) — the whole info block (title/title-treatment, our take, director/
+    // country, actions) fades out together, only once the slide itself has fully settled
+    // above, then swaps content and fades back in — rather than title crossfading on its
+    // own while the rest of the block just pops to the new film's content underneath it.
+    const overlayFadeEls = document.querySelectorAll(
+      '.hero-trad-center-overlay .hero-trad-title, .hero-trad-center-overlay .hero-trad-bottom, .hero-trad-center-overlay .hero-trad-our-take'
+    );
+    overlayFadeEls.forEach(el => el.classList.add('hero-content-fading'));
     setTimeout(() => {
       fillTitleBlock(document.querySelector('.hero-trad-center-overlay'), film);
-      if (overlayTitleEl) overlayTitleEl.classList.remove('hero-content-fading');
+      overlayFadeEls.forEach(el => el.classList.remove('hero-content-fading'));
     }, NS_TRAD_TITLE_FADE_MS);
     // The dots/countdown are also driven by nsShowMarqueeFilm's own applyFilm(), but that
     // only fires after its slower 1s crossfade+preload delay — re-render them here too so
@@ -7691,9 +7619,6 @@ window.addEventListener('resize', nsOnVParallax2Scroll, { passive: true });
 function nsApplyMarqueeToHero() {
   if (!nsState.marquee.length) return;
   const activeMarquee = nsMarqueeActive();
-  // Rebuild before anything below reads nsTradPreviewURL, so every render this triggers
-  // (Traditional's tiles, Vertical Parallax V2) sees the de-duplicated picks.
-  nsRebuildStandinVideoAssignment(activeMarquee);
   // Vertical Parallax V2 builds/rebuilds its own 3-segment structure straight from the whole
   // marquee list — it isn't "active slug" driven like the other 3, so it's handled here
   // independently of the startIdx/nsShowMarqueeFilm dispatch below (which it also safely
