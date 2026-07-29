@@ -53,7 +53,7 @@
   .proto-setting-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; }
   .proto-setting-copy{ min-width:0; }
   .proto-setting-name{ font-family:var(--font-ui); font-weight:700; font-size:14.5px; color:var(--stage-fg); margin:0 0 2px; }
-  .proto-setting-desc{ font-family:var(--font-ui); font-size:12.5px; color:var(--stage-fg); opacity:.55; margin:0; line-height:1.35; }
+  .proto-setting-desc{ font-family:var(--font-ui); font-size:12.5px; color:var(--stage-fg); opacity:.75; margin:0; line-height:1.35; }
   .proto-toggle{
     position:relative; width:46px; height:28px; border-radius:16px; flex-shrink:0; border:none; padding:0;
     background:rgba(120,120,128,.5); transition:background .2s ease; -webkit-tap-highlight-color:transparent;
@@ -64,6 +64,15 @@
   }
   .proto-toggle.is-on{ background:#001489; }
   .proto-toggle.is-on::after{ transform:translateX(18px); }
+
+  .proto-radio-group{ display:flex; flex-direction:column; gap:14px; }
+  .proto-radio-row{ display:flex; align-items:flex-start; gap:12px; background:none; border:none; padding:0; text-align:left; -webkit-tap-highlight-color:transparent; }
+  .proto-radio-dot{ position:relative; width:20px; height:20px; border-radius:50%; flex-shrink:0; margin-top:1px; border:1.5px solid rgba(255,255,255,.4); }
+  .proto-radio-row.is-active .proto-radio-dot{ border-color:#001489; }
+  .proto-radio-row.is-active .proto-radio-dot::after{ content:''; position:absolute; inset:3px; border-radius:50%; background:#001489; }
+  .proto-radio-copy{ display:flex; flex-direction:column; }
+  .proto-radio-name{ font-family:var(--font-ui); font-weight:700; font-size:14.5px; color:var(--stage-fg); }
+  .proto-radio-desc{ font-family:var(--font-ui); font-size:12.5px; color:var(--stage-fg); opacity:.75; margin-top:2px; line-height:1.35; }
   .stage::before{
     content:''; position:absolute; inset:0; pointer-events:none; opacity:.035; mix-blend-mode:overlay;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -275,6 +284,7 @@
   .gpill{ flex:0 0 auto; font-family:var(--font-riforma); font-size:12.5px; font-weight:500; color:rgba(24,20,15,.72);
     border:1px solid rgba(24,20,15,.28); border-radius:50px; padding:6px 14px; white-space:nowrap; background:none; -webkit-tap-highlight-color:transparent; }
   .gpill.active{ background:var(--paper); color:var(--ink); border-color:var(--paper); }
+  #dirPills .gpill.active{ border-radius:0; }
 
   #segFilms.list-mode, #segCollections.list-mode{ background:#F2F2F2; }
   #segFilms.list-mode .gpill:not(.active), #segCollections.list-mode .gpill:not(.active){ background:#fff; border-color:transparent; }
@@ -309,11 +319,11 @@
   #filmGrid.list-mode .expl-card p .fd-director{ color:#6E6E73; font-weight:400; }
   #filmGrid.list-mode .expl-card p .fd-meta{ display:none; }
 
-  #filmGrid.poster-mode{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px 12px; }
-  #filmGrid.poster-mode .expl-card{ aspect-ratio:2/3; border-radius:8px; }
-  #filmGrid.poster-mode .expl-card .scrim,
-  #filmGrid.poster-mode .expl-card .overlay,
-  #filmGrid.poster-mode .expl-rating{ display:none; }
+  #filmGrid.poster-mode, #genreDetailGrid.poster-mode{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px 12px; }
+  #filmGrid.poster-mode .expl-card, #genreDetailGrid.poster-mode .expl-card{ aspect-ratio:2/3; border-radius:8px; }
+  #filmGrid.poster-mode .expl-card .scrim, #genreDetailGrid.poster-mode .expl-card .scrim,
+  #filmGrid.poster-mode .expl-card .overlay, #genreDetailGrid.poster-mode .expl-card .overlay,
+  #filmGrid.poster-mode .expl-rating, #genreDetailGrid.poster-mode .expl-rating{ display:none; }
 
   .coll-list{ display:flex; flex-direction:column; gap:8px; padding:6px 20px 6px; }
   .coll-tile{ display:flex; aspect-ratio:371/209; overflow:hidden; border-radius:3px; text-decoration:none; }
@@ -367,12 +377,12 @@
     font-family:inherit; flex-shrink:0; opacity:.7; -webkit-tap-highlight-color:transparent; }
   .director-tag-x:active{ opacity:1; }
 
-  .home-indicator{ position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:36%; max-width:134px; height:5px; border-radius:3px; background:rgba(24,20,15,.75); z-index:10; }
+  .home-indicator{ display:none; position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:36%; max-width:134px; height:5px; border-radius:3px; background:rgba(24,20,15,.75); z-index:10; }
   .screen.dark-content .home-indicator{ background:rgba(255,255,255,.85); }
   .screen.dark-content .statusbar{ color:#fff; }
 
   .tabbar-wrap{
-    position:absolute; left:20px; right:20px; bottom:16px; height:62px; z-index:9;
+    position:absolute; left:20px; right:20px; bottom:16px; height:62px; z-index:12;
     display:flex; align-items:stretch; gap:10px;
     transition:bottom .34s cubic-bezier(.32,.72,0,1);
   }
@@ -383,8 +393,10 @@
     background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
     border:1px solid rgba(255,255,255,1);
     box-shadow:0 10px 24px rgba(24,20,15,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(24,20,15,.04);
-    transition:flex-grow .4s cubic-bezier(.32,.72,0,1), flex-basis .4s cubic-bezier(.32,.72,0,1), max-width .4s cubic-bezier(.32,.72,0,1);
+    transition:flex-grow .4s cubic-bezier(.32,.72,0,1), flex-basis .4s cubic-bezier(.32,.72,0,1), max-width .4s cubic-bezier(.32,.72,0,1),
+      opacity .4s cubic-bezier(.32,.72,0,1), margin-right .4s cubic-bezier(.32,.72,0,1);
   }
+  .tabbar-wrap.kb-open .tabbar{ flex:0 0 0; max-width:0; opacity:0; margin-right:-10px; pointer-events:none; }
   .tabbar::before{
     content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:0;
     background:linear-gradient(115deg, rgba(255,255,255,.65) 0%, rgba(255,255,255,.15) 22%, rgba(255,255,255,.15) 78%, rgba(255,255,255,.5) 100%);
@@ -430,30 +442,48 @@
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
     background:none; border:none; color:var(--paper); -webkit-tap-highlight-color:transparent;
   }
-  .search-pill-icon svg{ width:18px; height:18px; flex-shrink:0; }
-  .search-pill.expanded .search-pill-icon{ display:none; }
+  .search-pill-icon svg{ width:24px; height:24px; flex-shrink:0; }
+  .search-pill.expanded:not(.focused) .search-pill-icon{ display:none; }
+  .search-pill.expanded.focused .search-pill-icon{ left:14px; right:auto; width:22px; padding-left:0; justify-content:flex-start; pointer-events:none; color:#3A3A3C; }
+  .search-pill.expanded.focused .search-pill-icon svg{ width:22px; height:22px; }
 
   .search-pill-prompt{
     display:none; position:absolute; inset:0; align-items:center; gap:9px; padding:0 16px;
-    background:none; border:none; color:var(--paper); -webkit-tap-highlight-color:transparent;
+    background:none; border:none; color:#3A3A3C; -webkit-tap-highlight-color:transparent;
   }
-  .search-pill-prompt svg{ width:16px; height:16px; flex-shrink:0; }
+  .search-pill-prompt svg{ width:22px; height:22px; flex-shrink:0; }
   .search-pill-prompt-label{
     flex:1; text-align:left; font-family:var(--font-ui); font-weight:700; font-size:15px;
     letter-spacing:-.01em; color:rgba(24,20,15,.5);
   }
-  .search-pill-prompt-mic{ margin-left:auto; opacity:.55; }
+  .search-pill-prompt-mic{ margin-left:auto; width:22px; height:22px; }
   .search-pill.expanded .search-pill-prompt{ display:flex; }
   .search-pill.expanded.focused .search-pill-prompt{ display:none; }
 
   .search-pill-input{
-    width:100%; height:100%; border:none; background:none; padding:0 18px 0 44px; margin:0;
+    width:100%; height:100%; border:none; outline:none; background:none; padding:0 56px 0 58px; margin:0;
     font-family:var(--font-ui); font-size:15px; color:var(--paper); opacity:0; pointer-events:none;
-    transition:opacity .18s ease;
+    transition:opacity .18s ease; text-align:left;
   }
   .search-pill-input::placeholder{ color:rgba(24,20,15,.4); }
   .search-pill.expanded{ flex:1 1 auto; max-width:none; }
   .search-pill.expanded.focused .search-pill-input{ opacity:1; pointer-events:auto; }
+
+  .search-pill-mic{
+    display:none; position:absolute; top:50%; right:14px; transform:translateY(-50%);
+    width:22px; height:22px; color:#3A3A3C; pointer-events:none;
+  }
+  .search-pill.expanded.focused .search-pill-mic{ display:block; }
+
+  .search-kb-close-btn{
+    display:none; flex:0 0 62px; max-width:62px; height:62px; border-radius:50%;
+    align-items:center; justify-content:center; color:var(--paper); -webkit-tap-highlight-color:transparent;
+    backdrop-filter:blur(28px) saturate(140%); -webkit-backdrop-filter:blur(28px) saturate(140%);
+    background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
+    border:1px solid rgba(255,255,255,1);
+    box-shadow:0 10px 24px rgba(24,20,15,.16), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(24,20,15,.04);
+  }
+  .search-kb-close-btn svg{ width:15px; height:15px; }
 
   .ios-keyboard{
     position:absolute; left:0; right:0; bottom:0; z-index:25;
@@ -521,6 +551,26 @@
 
 <div class="stage">
   <div class="glow"></div>
+
+  <div class="proto-settings">
+    <div class="proto-settings-title">Version</div>
+    <div class="proto-radio-group" id="prototypeRadioGroup" role="radiogroup" aria-label="Navigation prototype">
+      <button class="proto-radio-row is-active" data-value="1" role="radio" aria-checked="true">
+        <span class="proto-radio-dot"></span>
+        <span class="proto-radio-copy">
+          <span class="proto-radio-name">Prototype 1</span>
+          <span class="proto-radio-desc">Browse tab with genre pills</span>
+        </span>
+      </button>
+      <button class="proto-radio-row" data-value="2" role="radio" aria-checked="false">
+        <span class="proto-radio-dot"></span>
+        <span class="proto-radio-copy">
+          <span class="proto-radio-name">Prototype 2</span>
+          <span class="proto-radio-desc">Remove the Browse tab, browse genres from Search instead</span>
+        </span>
+      </button>
+    </div>
+  </div>
 
   <div class="phone-scale-wrapper" id="phoneScaleWrapper">
   <div class="phone" id="phoneCanvas">
@@ -636,8 +686,10 @@
 
         <!-- SEARCH -->
         <div class="panel" data-panel="search">
-          <div class="app-header"></div>
-          <div class="search-field-wrap">
+          <div class="app-header">
+            <h1 class="page-title riforma">Search</h1>
+          </div>
+          <div class="search-field-wrap" id="searchFieldWrap">
             <div class="search-field">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
               <input type="text" class="search-input" placeholder="Search films, people, genres">
@@ -794,7 +846,11 @@
             <svg class="search-pill-prompt-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
           </button>
           <input class="search-pill-input" id="searchPillInput" type="text" placeholder="Search films, people, genres" tabindex="-1">
+          <svg class="search-pill-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
         </div>
+        <button class="search-kb-close-btn" id="searchKbCloseBtn" aria-label="Close search">
+          <svg viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
         </div>
 
         <div class="ios-keyboard" id="iosKeyboard">
@@ -948,16 +1004,6 @@
     </div>
 
     <div class="proto-settings-divider"></div>
-    <div class="proto-settings-title">Navigation</div>
-    <div class="proto-setting-row">
-      <div class="proto-setting-copy">
-        <div class="proto-setting-name">Genres in Search</div>
-        <p class="proto-setting-desc">Prototype 2: remove the Browse tab and browse genres from Search instead</p>
-      </div>
-      <button class="proto-toggle" id="genreSearchToggle" role="switch" aria-checked="false" aria-label="Toggle genres-in-search prototype"></button>
-    </div>
-
-    <div class="proto-settings-divider"></div>
     <div class="proto-settings-title">List View</div>
     <div class="proto-setting-row">
       <div class="proto-setting-copy">
@@ -1017,6 +1063,7 @@
     var tabbarCollapsedBtn = document.getElementById('tabbarCollapsedBtn');
     var tabbarWrapEl = document.getElementById('tabbarWrap');
     var iosKeyboard = document.getElementById('iosKeyboard');
+    var searchKbCloseBtn = document.getElementById('searchKbCloseBtn');
     var lastNonSearchBtn = null;
 
     function placeIndicator(btn){
@@ -1025,12 +1072,27 @@
       indicator.style.width = (btn.offsetWidth - inset * 2) + 'px';
     }
 
+    function openKeyboard(){
+      if(!searchPill) return;
+      searchPill.classList.add('focused');
+      if(searchKbCloseBtn) searchKbCloseBtn.style.display = 'flex';
+      if(tabbarWrapEl) tabbarWrapEl.classList.add('kb-open');
+      if(iosKeyboard){
+        iosKeyboard.classList.add('open');
+        if(tabbarWrapEl) tabbarWrapEl.style.bottom = (16 + iosKeyboard.offsetHeight) + 'px';
+      }
+      if(searchPillInput) setTimeout(function(){ searchPillInput.focus(); }, 60);
+    }
+
     function closeKeyboard(){
       if(searchPill) searchPill.classList.remove('focused');
       if(iosKeyboard) iosKeyboard.classList.remove('open');
       if(tabbarWrapEl) tabbarWrapEl.style.bottom = '';
       if(searchPillInput){ searchPillInput.blur(); searchPillInput.value = ''; }
+      if(searchKbCloseBtn) searchKbCloseBtn.style.display = 'none';
+      if(tabbarWrapEl) tabbarWrapEl.classList.remove('kb-open');
     }
+    window.closeSearchKeyboard = closeKeyboard;
 
     function activate(btn, animate){
       if(!animate) indicator.style.transition = 'none';
@@ -1062,15 +1124,10 @@
       });
     }
     if(searchPillPrompt){
-      searchPillPrompt.addEventListener('click', function(){
-        if(!searchPill) return;
-        searchPill.classList.add('focused');
-        if(iosKeyboard){
-          iosKeyboard.classList.add('open');
-          if(tabbarWrapEl) tabbarWrapEl.style.bottom = (16 + iosKeyboard.offsetHeight) + 'px';
-        }
-        if(searchPillInput) setTimeout(function(){ searchPillInput.focus(); }, 60);
-      });
+      searchPillPrompt.addEventListener('click', openKeyboard);
+    }
+    if(searchKbCloseBtn){
+      searchKbCloseBtn.addEventListener('click', closeKeyboard);
     }
     if(tabbarCollapsedBtn){
       tabbarCollapsedBtn.addEventListener('click', function(){
@@ -1213,7 +1270,15 @@
     grid.classList.toggle('rating-active', filmState.sort === 'rating');
     filmState.hasMore = visible.length < list.length;
   }
-  window.setFilmPosterMode = function(on){ filmPosterMode = on; renderFilms(false); };
+  window.setFilmPosterMode = function(on){
+    filmPosterMode = on;
+    renderFilms(false);
+    var genreGrid = document.getElementById('genreDetailGrid');
+    if(genreGrid){
+      genreGrid.classList.toggle('poster-mode', on);
+      renderGenreDetail(false);
+    }
+  };
 
   // Prototype 2: genre browsing via Search. Independent state/grid so it never
   // clashes with Browse's own filmState, but reuses the same sort/filter UI.
@@ -1263,6 +1328,7 @@
   }
 
   function openGenreDetail(genre, label){
+    if(window.closeSearchKeyboard) window.closeSearchKeyboard();
     genreDetailState.genre = genre;
     genreDetailState.label = label;
     genreDetailState.sort = 'popularity_quality_score';
@@ -1706,33 +1772,39 @@
 </script>
 <script>
   (function(){
-    var toggle = document.getElementById('genreSearchToggle');
+    var radioGroup = document.getElementById('prototypeRadioGroup');
+    var radioRows = radioGroup ? Array.prototype.slice.call(radioGroup.querySelectorAll('.proto-radio-row')) : [];
     var browseTabBtn = document.querySelector('.tab[data-tab="browse"]');
     var homeTabBtn = document.querySelector('.tab[data-tab="home"]');
-    var searchTabBtn = document.querySelector('.tab[data-tab="search"]');
     var tabbarEl = document.getElementById('tabbar');
     var tabbarWrapEl = document.getElementById('tabbarWrap');
     var searchBrowseBy = document.getElementById('searchBrowseBy');
-    if(!toggle || !browseTabBtn || !tabbarEl) return;
+    var searchFieldWrap = document.getElementById('searchFieldWrap');
+    if(!radioGroup || !browseTabBtn || !tabbarEl) return;
 
     function setPrototype2(on){
       if(window.closeGenreDetail) window.closeGenreDetail();
-      if(searchTabBtn && searchTabBtn.classList.contains('active') && homeTabBtn){
-        homeTabBtn.click();
-      }
       browseTabBtn.style.display = on ? 'none' : '';
       tabbarEl.classList.toggle('tabs-4', on);
       if(tabbarWrapEl) tabbarWrapEl.classList.toggle('split-mode', on);
       if(searchBrowseBy) searchBrowseBy.style.display = on ? '' : 'none';
-      toggle.classList.toggle('is-on', on);
-      toggle.setAttribute('aria-checked', on ? 'true' : 'false');
-      if(on && browseTabBtn.classList.contains('active') && homeTabBtn){
-        homeTabBtn.click();
+      if(searchFieldWrap) searchFieldWrap.style.display = on ? 'none' : '';
+      radioRows.forEach(function(row){
+        var isActive = (row.dataset.value === '2') === on;
+        row.classList.toggle('is-active', isActive);
+        row.setAttribute('aria-checked', isActive ? 'true' : 'false');
+      });
+      if(on){
+        if(homeTabBtn) homeTabBtn.click();
+      } else {
+        if(browseTabBtn) browseTabBtn.click();
       }
     }
 
-    toggle.addEventListener('click', function(){
-      setPrototype2(!toggle.classList.contains('is-on'));
+    radioRows.forEach(function(row){
+      row.addEventListener('click', function(){
+        setPrototype2(row.dataset.value === '2');
+      });
     });
 
     setPrototype2(false);
