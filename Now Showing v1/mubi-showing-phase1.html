@@ -1981,6 +1981,65 @@
       padding: 4px 20px;
     }
 
+    /* "Go Crazy!" (Page Settings > Layout > Coming Soon Lane > Go Crazy!) — nsSetupComingSoonFlip
+       waits for the row to scroll into view, then every few seconds turns each tile over once
+       (staggered left to right, alternating front/back — see the .is-flipped toggle it flips on
+       .flip-inner) to reveal the other Coming Soon title on its back face, with a shade/glare
+       effect (.is-flipping, below) synced to the same turn. Axis is picked per tile at render
+       time (comingSoonFlipTileHTML): Y ("left to right", like a page turning) when the row is in
+       Double Tiles mode, X ("top to bottom") otherwise. */
+    .film-card--flip { perspective: 1400px; position: relative; }
+    .film-card--flip .flip-inner {
+      position: relative;
+      aspect-ratio: 371 / 209;
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(.45,0,.15,1);
+    }
+    /* "Make All Tiles Double Tiles" (Page Settings > Layout) switches the row's own
+       .card-img-wrap over to a fixed 418px height (see the rule above) — .flip-inner needs
+       the same override, or its shorter 16:9 box leaves the taller nested .card-img-wrap
+       (still correctly picking up that same rule) overflowing past the flip tile's bounds. */
+    .row-section--doubletile .film-card--flip .flip-inner { aspect-ratio: unset; height: 418px; }
+    .flip-face {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+    }
+    .flip-face--back-y { transform: rotateY(180deg); }
+    .flip-face--back-x { transform: rotateX(180deg); }
+    /* No fixed "flipped" transform class here on purpose — nsSetupComingSoonFlip sets
+       .flip-inner's rotation via inline style instead, always increasing (0deg, 180deg,
+       360deg, 540deg, ...) so every sweep spins the same direction as the last (see the
+       "flip left to right" comment there) instead of the transition reversing back through
+       the same arc on every other sweep. */
+    /* Shade — a physical card catches less light edge-on, so brightness/shadow dip together
+       right at the 50% (edge-on) point of the spin. Lives on the outer, non-3D-transformed
+       anchor so `filter` never risks flattening .flip-inner's preserve-3d rendering. */
+    .film-card--flip.is-flipping { animation: ns-flip-shade 0.7s ease-in-out; }
+    @keyframes ns-flip-shade {
+      0%, 100% { filter: brightness(1) drop-shadow(0 0 0 rgba(0,0,0,0)); }
+      50%      { filter: brightness(0.5) drop-shadow(0 14px 22px rgba(0,0,0,0.6)); }
+    }
+    /* Light — a diagonal glare sweeps across the tile as it catches the light mid-spin.
+       Lives on each .flip-face (not the outer, non-3D anchor) so the glare rotates with
+       whichever face is actually showing instead of sitting flat over the tile regardless
+       of the card's spin — backface-visibility:hidden (already on .flip-face) keeps it
+       from also showing through on the face that's turned away. */
+    .flip-face::after {
+      content: '';
+      position: absolute; inset: 0; z-index: 9; pointer-events: none;
+      background: linear-gradient(75deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%);
+      background-size: 250% 250%;
+      background-position: -150% -150%;
+      opacity: 0;
+    }
+    .film-card--flip.is-flipping .flip-face::after { animation: ns-flip-shine 0.7s ease-in-out; }
+    @keyframes ns-flip-shine {
+      0%   { opacity: 0; background-position: -150% -150%; }
+      35%  { opacity: 1; }
+      65%  { opacity: 1; }
+      100% { opacity: 0; background-position: 150% 150%; }
+    }
+
     /* Top Picks row (Page Settings > Layout > Top Picks) — big, faded rank numeral, 1-4,
        stamped in the top-left corner of each tile ahead of the card's own overlay/title. */
     .card-rank-badge {
@@ -2509,9 +2568,7 @@
       text-decoration: none;
       padding: 16px 18px;
       box-sizing: border-box;
-      transition: opacity 0.15s ease;
     }
-    .genre-tile:hover { opacity: 0.85; }
     /* "Make All Tiles Double Tiles" — the double variant is just the same tile scaled to the
        same fixed height as .coll-tile--double / the film doubletile cards. */
     .genre-tile--double { aspect-ratio: unset; height: 418px; }
@@ -2593,27 +2650,20 @@
     .genre-stack-film:nth-child(1) { transform: rotate(-9deg) translate(-16px, 4px); z-index: 1; }
     .genre-stack-film:nth-child(2) { transform: rotate(9deg) translate(16px, 6px); z-index: 2; }
     .genre-stack-film:nth-child(3) { transform: rotate(0deg) translate(0, 8px); z-index: 3; }
-    /* The two cards behind the front one get a slight dark tint so they read as "receded"
-       at rest, then fade away on hover once the fan spreads them into full view. */
+    /* The two cards behind the front one get a slight dark tint so they read as "receded" —
+       kept as-is on hover too (only position/rotation animate, not a brightness change). */
     .genre-stack-film:nth-child(1)::after,
     .genre-stack-film:nth-child(2)::after {
       content: '';
       position: absolute;
       inset: 0;
       background: rgba(0,0,0,0.35);
-      transition: opacity 0.25s ease;
     }
-    .genre-tile--stack:hover .genre-stack-film:nth-child(1)::after,
-    .genre-tile--stack:hover .genre-stack-film:nth-child(2)::after {
-      opacity: 0;
-    }
-    /* On hover, spread the fan wider — mostly horizontal, with just a touch more rotation
-       than the resting state (not the full arc of an earlier pass) — so more of the two
-       back cards peek out from behind the front one instead of sitting almost fully hidden
-       underneath it. */
-    .genre-tile--stack:hover .genre-stack-film:nth-child(1) { transform: rotate(-11deg) translate(-60px, 4px); }
-    .genre-tile--stack:hover .genre-stack-film:nth-child(2) { transform: rotate(11deg) translate(60px, 6px); }
-    .genre-tile--stack:hover .genre-stack-film:nth-child(3) { transform: rotate(0deg) translate(0, -4px); }
+    /* On hover, spread the fan slightly — just enough for the two back cards to peek out
+       a bit further from behind the front one, without swinging wide. */
+    .genre-tile--stack:hover .genre-stack-film:nth-child(1) { transform: rotate(-10deg) translate(-24px, 4px); }
+    .genre-tile--stack:hover .genre-stack-film:nth-child(2) { transform: rotate(10deg) translate(24px, 6px); }
+    .genre-tile--stack:hover .genre-stack-film:nth-child(3) { transform: rotate(0deg) translate(0, 2px); }
     /* Lane of Genres "Style: BFI-like (Type Only)" (Page Settings > Layout > Lane of Genres
        > Style) swaps the genre-tile grid for the bare genre words themselves — oversized,
        comma-separated, flowing and wrapping like a paragraph, no pill chrome — referencing
@@ -3411,36 +3461,30 @@
   <div class="settings-modal-body">
     <div class="settings-tab-panel is-active" data-settings-panel="page">
       <div class="settings-columns">
-        <div class="settings-column">
-          <div class="settings-column-head">
-            <div class="settings-column-title"><span>Appearance</span></div>
-          </div>
-          <div class="settings-list">
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <span class="ns-toggle-label">Dark Mode</span>
-              <label class="ns-switch"><input type="checkbox" id="darkModeToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <span class="ns-toggle-label">Rounded Tile Corners</span>
-              <label class="ns-switch"><input type="checkbox" id="roundedTilesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-          </div>
-        </div>
+        <!-- Phase 1: Dark Mode / Rounded Tile Corners removed from Settings — this fixed
+             layout is light-mode-only. #darkModeToggle / #roundedTilesToggle stay in the DOM
+             (hidden) below so the existing JS wiring for them still resolves. -->
+        <input type="checkbox" id="darkModeToggle" style="display:none">
+        <input type="checkbox" id="roundedTilesToggle" style="display:none">
         <div class="settings-column">
           <div class="settings-column-head">
             <div class="settings-column-title"><span>Layout</span></div>
           </div>
           <div class="settings-list">
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <span class="ns-toggle-label">Make All Tiles Double Tiles</span>
-              <label class="ns-switch"><input type="checkbox" id="allDoubleTilesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <div>
-                <span class="ns-toggle-label">Increase Col Spacing</span>
-                <div class="ns-toggle-desc">Narrower tiles, more margin between columns.</div>
+            <!-- Phase 1: this fixed layout doesn't expose these toggles — the elements stay
+                 in the DOM (hidden) so the existing JS wiring for them still resolves. -->
+            <div style="display:none;">
+              <div class="ns-toggle-row">
+                <span class="ns-toggle-label">Make All Tiles Double Tiles</span>
+                <label class="ns-switch"><input type="checkbox" id="allDoubleTilesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
               </div>
-              <label class="ns-switch"><input type="checkbox" id="colSpacingToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+              <div class="ns-toggle-row">
+                <div>
+                  <span class="ns-toggle-label">Increase Col Spacing</span>
+                  <div class="ns-toggle-desc">Narrower tiles, more margin between columns.</div>
+                </div>
+                <label class="ns-switch"><input type="checkbox" id="colSpacingToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+              </div>
             </div>
             <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
               <div>
@@ -3449,80 +3493,78 @@
               </div>
               <label class="ns-switch"><input type="checkbox" id="carouselRowsToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
-            <div class="ns-field" style="padding-left:18px; padding-right:18px;">
-              <div class="ns-field-label">Number of Collections to Display After 2nd Spotlight</div>
-              <div class="ns-slider-row">
-                <input type="range" min="1" max="25" class="ns-slider" id="numberOfRows">
-                <span class="ns-slider-value" id="numberOfRowsValue">25</span>
+            <div class="ns-toggle-row" id="comingSoonCrazyRow" style="padding-left:18px; padding-right:18px;">
+              <div>
+                <span class="ns-toggle-label">Go Crazy!</span>
+                <div class="ns-toggle-desc">Tiles flip left to right, revealing another Coming Soon title behind each one.</div>
               </div>
+              <label class="ns-switch"><input type="checkbox" id="comingSoonCrazyToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
-            <div class="ns-toggle-group">
-              <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-                <div>
-                  <span class="ns-toggle-label">Lane of Lanes</span>
-                  <div class="ns-toggle-desc">A lane of collection titles.</div>
+            <div style="display:none;">
+              <div class="ns-field">
+                <div class="ns-field-label">Number of Collections to Display After 2nd Spotlight</div>
+                <div class="ns-slider-row">
+                  <input type="range" min="1" max="25" class="ns-slider" id="numberOfRows">
+                  <span class="ns-slider-value" id="numberOfRowsValue">25</span>
                 </div>
-                <label class="ns-switch"><input type="checkbox" id="laneOfLanesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
               </div>
-            </div>
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <div>
-                <span class="ns-toggle-label">Top Picks</span>
-                <div class="ns-toggle-desc">Replaces Your Watchlist and MUBI Releases on the page.</div>
-              </div>
-              <label class="ns-switch"><input type="checkbox" id="topTenToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-            <div class="ns-toggle-group">
-              <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-                <div>
-                  <span class="ns-toggle-label">Genre Lane</span>
-                  <div class="ns-toggle-desc">Adds a row of real films from one genre you pick below.</div>
+              <div class="ns-toggle-group">
+                <div class="ns-toggle-row">
+                  <div>
+                    <span class="ns-toggle-label">Lane of Lanes</span>
+                    <div class="ns-toggle-desc">A lane of collection titles.</div>
+                  </div>
+                  <label class="ns-switch"><input type="checkbox" id="laneOfLanesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
                 </div>
-                <label class="ns-switch"><input type="checkbox" id="genreLaneToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
               </div>
-              <div class="ns-field" id="genreLaneSelectRow" style="display:none; padding-left:34px; padding-right:18px;">
-                <div class="ns-field-label">Genre</div>
-                <select class="ns-select" id="genreLaneSelect"></select>
+              <div class="ns-toggle-row">
+                <div>
+                  <span class="ns-toggle-label">Top Picks</span>
+                  <div class="ns-toggle-desc">Replaces Your Watchlist and MUBI Releases on the page.</div>
+                </div>
+                <label class="ns-switch"><input type="checkbox" id="topTenToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
               </div>
-            </div>
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <div>
-                <span class="ns-toggle-label">Coming Soon Lane</span>
-                <div class="ns-toggle-desc">A lane of real upcoming titles from MUBI.</div>
+              <div class="ns-toggle-group">
+                <div class="ns-toggle-row">
+                  <div>
+                    <span class="ns-toggle-label">Genre Lane</span>
+                    <div class="ns-toggle-desc">Adds a row of real films from one genre you pick below.</div>
+                  </div>
+                  <label class="ns-switch"><input type="checkbox" id="genreLaneToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+                </div>
+                <div class="ns-field" id="genreLaneSelectRow">
+                  <div class="ns-field-label">Genre</div>
+                  <select class="ns-select" id="genreLaneSelect"></select>
+                </div>
               </div>
-              <label class="ns-switch"><input type="checkbox" id="comingSoonToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <div>
-                <span class="ns-toggle-label">Lane of Genres</span>
-                <div class="ns-toggle-desc">A lane of genre tiles, linking through to Browse.</div>
+              <div class="ns-toggle-row">
+                <div>
+                  <span class="ns-toggle-label">Coming Soon Lane</span>
+                  <div class="ns-toggle-desc">A lane of real upcoming titles from MUBI.</div>
+                </div>
+                <label class="ns-switch"><input type="checkbox" id="comingSoonToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
               </div>
-              <label class="ns-switch"><input type="checkbox" id="laneOfGenresToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-            <div class="ns-field" id="laneOfGenresBFIRow" style="display:none; padding-left:34px; padding-right:18px;">
-              <div class="ns-field-label">Style</div>
-              <div class="ns-type-toggle" id="laneOfGenresStyleToggle" style="flex-wrap:wrap;">
-                <button class="ns-type-toggle-btn is-active" data-ns-genre-style="tiles">Tiles</button>
-                <button class="ns-type-toggle-btn" data-ns-genre-style="type">BFI-like (Type Only)</button>
-                <button class="ns-type-toggle-btn" data-ns-genre-style="stack">Colour + Stacked Films</button>
+              <div class="ns-toggle-row">
+                <div>
+                  <span class="ns-toggle-label">Lane of Genres</span>
+                  <div class="ns-toggle-desc">A lane of genre tiles, linking through to Browse.</div>
+                </div>
+                <label class="ns-switch"><input type="checkbox" id="laneOfGenresToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+              </div>
+              <div class="ns-field" id="laneOfGenresBFIRow">
+                <div class="ns-field-label">Style</div>
+                <div class="ns-type-toggle" id="laneOfGenresStyleToggle" style="flex-wrap:wrap;">
+                  <button class="ns-type-toggle-btn is-active" data-ns-genre-style="tiles">Tiles</button>
+                  <button class="ns-type-toggle-btn" data-ns-genre-style="type">BFI-like (Type Only)</button>
+                  <button class="ns-type-toggle-btn" data-ns-genre-style="stack">Colour + Stacked Films</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="settings-column">
-          <div class="settings-column-head">
-            <div class="settings-column-title"><span>Hover Settings</span></div>
-          </div>
-          <div class="settings-list">
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <div>
-                <span class="ns-toggle-label">Genres</span>
-                <div class="ns-toggle-desc">Toggle between film details and genres.</div>
-              </div>
-              <label class="ns-switch"><input type="checkbox" id="hoverGenresToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-          </div>
-        </div>
+        <!-- Phase 1: Hover Settings removed from Settings — #hoverGenresToggle stays in the
+             DOM (hidden) so the existing JS wiring for it still resolves. -->
+        <input type="checkbox" id="hoverGenresToggle" style="display:none">
       </div>
     </div>
     <div class="settings-tab-panel" data-settings-panel="marquee">
@@ -3537,42 +3579,30 @@
         <div class="settings-column" data-column="marqueeSlots">
           <div class="settings-column-head">
             <div class="settings-column-title"><span>Marquee</span><span class="settings-column-count" id="marqueeSlotCount"></span></div>
-            <input type="text" class="settings-search" id="marqueeSlotSearch" placeholder="Search marquee" autocomplete="off">
           </div>
           <div class="settings-list" id="marqueeSlotList"></div>
         </div>
-        <div class="settings-column" data-column="marqueeSettings">
-          <div class="settings-column-head">
-            <div class="settings-column-title"><span>Marquee Settings</span></div>
+      </div>
+      <!-- Phase 1: fixed to a single-film marquee — Marquee Settings (Display/Navigation
+           Style/Square Corners) and the slot-side search are removed. These elements stay in
+           the DOM (hidden) so the existing JS wiring for them still resolves. -->
+      <div style="display:none;">
+        <input type="text" id="marqueeSlotSearch">
+        <div class="ns-type-toggle" id="marqueeDisplayToggle">
+          <button class="ns-type-toggle-btn is-active" data-ns-display="1">1</button>
+        </div>
+        <div id="marqueeNavStyleField">
+          <div class="ns-type-toggle" id="marqueeNavStyleToggle">
+            <button class="ns-type-toggle-btn is-active" data-ns-nav="rotation">Subtle Rotation</button>
+            <button class="ns-type-toggle-btn" data-ns-nav="rotationArrows">Subtle with Arrows</button>
+            <button class="ns-type-toggle-btn" data-ns-nav="tiles">Tile Navigation</button>
+            <button class="ns-type-toggle-btn" data-ns-nav="traditional">Traditional</button>
+            <button class="ns-type-toggle-btn" data-ns-nav="traditionalRounded">Traditional Rounded</button>
+            <button class="ns-type-toggle-btn" data-ns-nav="vparallax2">Vertical Parallax V2</button>
           </div>
-          <div class="settings-list">
-            <div class="ns-field" style="padding-left:18px; padding-right:18px;">
-              <div class="ns-field-label">Display</div>
-              <div class="ns-type-toggle" id="marqueeDisplayToggle">
-                <button class="ns-type-toggle-btn" data-ns-display="1">1</button>
-                <button class="ns-type-toggle-btn" data-ns-display="2">2</button>
-                <button class="ns-type-toggle-btn is-active" data-ns-display="3">3</button>
-              </div>
-            </div>
-            <div class="ns-field" id="marqueeNavStyleField" style="padding-left:18px; padding-right:18px;">
-              <div class="ns-field-label">Navigation Style (Display: 3)</div>
-              <div class="ns-type-toggle" id="marqueeNavStyleToggle" style="flex-wrap:wrap;">
-                <button class="ns-type-toggle-btn is-active" data-ns-nav="rotation">Subtle Rotation</button>
-                <button class="ns-type-toggle-btn" data-ns-nav="rotationArrows">Subtle with Arrows</button>
-                <button class="ns-type-toggle-btn" data-ns-nav="tiles">Tile Navigation</button>
-                <button class="ns-type-toggle-btn" data-ns-nav="traditional">Traditional</button>
-                <button class="ns-type-toggle-btn" data-ns-nav="traditionalRounded">Traditional Rounded</button>
-                <button class="ns-type-toggle-btn" data-ns-nav="vparallax2">Vertical Parallax V2</button>
-              </div>
-            </div>
-            <div class="ns-toggle-row" id="marqueeSquareCornersRow" style="display:none; padding-left:18px; padding-right:18px;">
-              <div>
-                <span class="ns-toggle-label">Square Corners</span>
-                <div class="ns-toggle-desc">Unrounds Traditional Rounded's tiles (2-tile or 3-tile layout).</div>
-              </div>
-              <label class="ns-switch"><input type="checkbox" id="marqueeSquareCornersToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-          </div>
+        </div>
+        <div class="ns-toggle-row" id="marqueeSquareCornersRow">
+          <label class="ns-switch"><input type="checkbox" id="marqueeSquareCornersToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
         </div>
       </div>
     </div>
@@ -5191,8 +5221,46 @@ function nsFilmGenres(film) {
 // Renders a single film row-section — pulled out of renderGrid so the Diego "Watch Next"
 // merge (see nsMergeWatchNext) can render Continue Watching / Your Watchlist row markup
 // on demand without duplicating the template.
+// Single face (front or back) of a "Go Crazy!" flip tile — same image/date-badge/title/meta
+// markup a normal Coming Soon tile renders, just reusable for both sides of the flip. Picks up
+// the same title-treatment logo (e.g. Teenage Sex and Death at Camp Miasma) the standard tile
+// path does whenever the row is in Double Tiles mode (see filmRowSectionHTML's own titleTreatment
+// line just below) — this is a separate render path, so it has to re-derive it itself.
+function comingSoonFaceHTML(film, doubletile) {
+  const posX = Math.round(film.fX * 100);
+  const posY = Math.round(film.fY * 100);
+  const titleTreatment = doubletile ? (film.titleTreatment || NS_TITLE_TREATMENTS[film.slug || slugify(film.title)]) : null;
+  return `
+    <div class="card-img-wrap">
+      <img class="card-img" src="${film.image}" alt="${film.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
+      ${film.releaseDate ? `<span class="card-date-badge">${film.releaseDate}</span>` : ''}
+      <div class="card-overlay">
+        ${titleTreatment
+          ? `<img class="card-title-treatment" src="${titleTreatment}" alt="${film.title}">`
+          : `<div class="card-title">${film.title}</div>`}
+        <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
+      </div>
+    </div>`;
+}
+
+// "Go Crazy!" tile (Page Settings > Layout > Coming Soon Lane > Go Crazy!) — holds frontFilm and
+// backFilm; nsSetupComingSoonFlip toggles the .is-flipping class (see the ns-flip-spin-x/-y
+// keyframes) to actually trigger each spin, this just builds the static two-face markup. Axis is
+// fixed per tile at render time: Y ("left to right") in Double Tiles mode, X ("top to bottom")
+// otherwise — matches how a real flipping card reads wider (Y) vs. taller (X).
+function comingSoonFlipTileHTML(frontFilm, backFilm, doubletile) {
+  const axis = doubletile ? 'y' : 'x';
+  return `
+    <a class="film-card film-card--flip flip-axis-${axis}" href="https://mubi.com/films/${frontFilm.slug || slugify(frontFilm.title)}" target="_self" aria-label="${frontFilm.title}">
+      <div class="flip-inner">
+        <div class="flip-face flip-face--front">${comingSoonFaceHTML(frontFilm, doubletile)}</div>
+        <div class="flip-face flip-face--back flip-face--back-${axis}">${comingSoonFaceHTML(backFilm, doubletile)}</div>
+      </div>
+    </a>`;
+}
+
 function filmRowSectionHTML(row, rowIdx) {
-  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab, isTopTen, isGenreLane, carousel, collSlug, totalItems, extraFilm } = row;
+  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab, isTopTen, isGenreLane, carousel, collSlug, totalItems, extraFilm, isComingSoonFlip, flipBackFilms } = row;
   const emptySlotCount = capacity ? Math.max(0, capacity - rowFilms.length) : 0;
   // Real MUBI collection size (from mubi-collections.csv, see NUMBERED_ROW_COLLECTIONS) —
   // only set where it's genuinely known, never guessed. Drives the terminal "See All" tile's
@@ -5204,6 +5272,7 @@ function filmRowSectionHTML(row, rowIdx) {
     ? `explore.html?genre=${encodeURIComponent(title)}`
     : collSlug ? `https://mubi.com/en/gb/collections/${encodeURIComponent(collSlug)}` : null;
   const tilesHTML = rowFilms.map((film, filmIdx) => {
+    if (isComingSoonFlip) return comingSoonFlipTileHTML(film, flipBackFilms[filmIdx], doubletile);
     const posX = Math.round(film.fX * 100);
     const posY = Math.round(film.fY * 100);
     const titleTreatment = doubletile ? (film.titleTreatment || NS_TITLE_TREATMENTS[film.slug || slugify(film.title)]) : null;
@@ -5344,11 +5413,13 @@ function renderGrid() {
   const totalNumberedRows = nsState.numberOfRows || 25;
   const numberedRows = [];
   // Each numbered row is a real, randomly-picked MUBI collection with its real films
-  // (see NUMBERED_ROW_COLLECTIONS above). The row's title is the collection's real title,
-  // with its "Row No" position kept alongside it; rows beyond 25 cycle back through the pool.
+  // (see NUMBERED_ROW_COLLECTIONS above), titled with the collection's own real title —
+  // rows beyond the pool's length cycle back through it. "The MUBI Top 1000" is skipped
+  // for Phase 1's fixed set of rows.
+  const numberedRowPool = NUMBERED_ROW_COLLECTIONS.filter(c => c.slug !== 'mubi-top-1000');
   for (let r = 0; r < totalNumberedRows; r++) {
-    const coll = NUMBERED_ROW_COLLECTIONS[r % NUMBERED_ROW_COLLECTIONS.length];
-    numberedRows.push({ title: `${coll.collectionTitle} (Row No ${r + 1})`, films: coll.films, collSlug: coll.slug, totalItems: coll.totalItems, extraFilm: coll.extraFilm });
+    const coll = numberedRowPool[r % numberedRowPool.length];
+    numberedRows.push({ title: coll.collectionTitle, films: coll.films, collSlug: coll.slug, totalItems: coll.totalItems, extraFilm: coll.extraFilm });
   }
   // Row 1 is pulled out of its natural spot and re-placed further down the page, right after the 2nd spotlight.
   const row1 = numberedRows.shift();
@@ -5376,14 +5447,11 @@ function renderGrid() {
   // very bottom of the page. The 2nd tile is overridden as a "Coming Soon" teaser for
   // Teenage Sex and Death at Camp Miasma — the tile's own colour is that still's average
   // colour (computed directly from the image), not a NS_COLLECTIONS value.
-  const laneOfLanesColls = NS_COLLECTIONS.slice(0, nsState.carouselRows ? 8 : 4).map((c, i) => i === 1 ? {
-    ...c,
-    img: 'https://assets.mubicdn.net/images/film/368829/image-original.jpg?1771019329',
-    color: '#441d0c',
-    title: 'Coming Soon',
-    subtitle: '',
-    items: '7',
-  } : c);
+  // Phase 1: the "Coming Soon" teaser tile is removed from this lane — it's a plain slice.
+  // Collections already used by the 2 Spotlight slots are skipped so this lane doesn't
+  // just repeat them.
+  const spotlightCollSlugs = spotlightColls.map(c => c && c._slug).filter(Boolean);
+  const laneOfLanesColls = NS_COLLECTIONS.filter(c => !spotlightCollSlugs.includes(c._slug)).slice(0, nsState.carouselRows ? 8 : 4);
 
   // "New to MUBI?" only makes sense for a viewer with zero watchlist/continue-watching/
   // watched history — i.e. the Ava Chen persona, or anyone in that same fresh state.
@@ -5416,31 +5484,41 @@ function renderGrid() {
   // the very top spot and Top Picks drops in right below it instead. It's meant to replace
   // Your Watchlist and MUBI Releases (not Continue Watching / Watch Next), so both of those
   // are hidden from the page while it's on.
-  const topTenRow = nsState.topTen ? { title: 'TOP PICKS', films: TOP_TEN_FILMS.slice(0, nsState.carouselRows ? 8 : 4), isTopTen: true } : null;
+  const topTenRow = nsState.topTen ? { title: 'FEATURED', films: TOP_TEN_FILMS.slice(0, nsState.carouselRows ? 8 : 4), doubletile: true } : null;
   const genreLaneFilms = (nsState.genreLane && nsState.genreLaneGenre)
     ? nsFilmsByGenre(nsState.genreLaneGenre, nsState.carouselRows ? 8 : 4)
     : [];
   const comingSoonFilms = nsState.comingSoon ? COMING_SOON_FILMS.slice(0, nsState.carouselRows ? 8 : 4) : [];
+  // "Go Crazy!" (Page Settings > Layout > Coming Soon Lane > Go Crazy!) — each visible tile
+  // pairs with a different, currently-hidden Coming Soon title (offset by how many tiles are
+  // showing, wrapping back into COMING_SOON_FILMS) so its 3D flip always reveals something new.
+  const comingSoonFlip = nsState.comingSoon && nsState.comingSoonGoCrazy;
+  const comingSoonFlipBackFilms = comingSoonFlip
+    ? comingSoonFilms.map((_, i) => COMING_SOON_FILMS[(i + comingSoonFilms.length) % COMING_SOON_FILMS.length])
+    : null;
+  // Phase 1 fixed layout: Marquee, FEATURED (double tile, no rank numbers), Continue
+  // Watching, Watchlist, New on MUBI, MUBI Releases (double tile), Spotlight #1, Trending,
+  // Curator's Spotlight (double tile), Suggested for You, Spotlight #2, Coming Soon (double
+  // tile), a lane of collections, 4 more collection lanes, then Lane of Genres (Colour +
+  // Stacked). Essential Viewing / Genre Lane / the numbered-collections bulk rows are not
+  // part of this fixed order, so they're omitted here regardless of their settings toggles.
   const rows = [
-    ...(isNewToMubi ? [{ title: 'ESSENTIAL VIEWING', films: essentialViewingFilms, doubletile: true, isNewToMubi: true }] : []),
     ...(topTenRow ? [topTenRow] : []),
     ...(watchNextFilms && watchNextFilms.length ? [{ title: 'WATCH NEXT', films: watchNextFilms, showUnmergeFab: true }] : [
       ...(continueWatchingFilms.length ? [{ title: 'CONTINUE WATCHING', films: continueWatchingFilms, isContinueWatching: true, showMergeFab: canMergeWatchNext }] : []),
-      ...(watchlistFilms.length && !nsState.topTen ? [{ title: 'YOUR WATCHLIST', films: watchlistFilms }] : []),
+      ...(watchlistFilms.length ? [{ title: 'YOUR WATCHLIST', films: watchlistFilms }] : []),
     ]),
+    { title: 'NEW ON MUBI', films: NEW_ON_MUBI_FILMS },
     // Real film set from api.mubi.com/v4/collections/mubi-releases/films (all 91 pages,
     // not just a handful) — verified live against mubi.com/en/gb/showing. Uses the taller
     // "doubletile" card format (418px). Like every other row, it only gets the carousel
     // peeking/paging treatment when Carousel Rows (Page Settings > Layout) is on — see the
     // count > 4 carousel-flagging .map() below, which it qualifies for automatically given
     // its real size (91 films); with that setting off it renders as a plain 4-tile grid.
-    ...(nsState.topTen ? [] : [{
+    {
       title: 'MUBI RELEASES', films: MUBI_RELEASES_FILMS, doubletile: true,
       collSlug: 'mubi-releases', totalItems: MUBI_RELEASES_FILMS.length,
-    }]),
-    // Spotlight #1 (settings-driven) is its own entry right after New on MUBI, so it
-    // isn't tied to New on MUBI's own visibility.
-    { title: 'NEW ON MUBI', films: NEW_ON_MUBI_FILMS },
+    },
     { isSpotlight: true, spotlightColl: spotlightColls[0] },
     { title: 'TRENDING', films: TRENDING_FILMS },
     { title: "CURATOR'S SPOTLIGHT", films: CURATORS_SPOTLIGHT_FILMS, doubletile: true },
@@ -5448,19 +5526,17 @@ function renderGrid() {
     // title or something in Continue Watching. Spotlight #2 always follows regardless.
     ...(showSuggestedForYou ? [{ title: 'SUGGESTED FOR YOU', films: row1Films }] : []),
     { isSpotlight: true, spotlightColl: spotlightColls[1] },
-    // Genre Lane is a settings-driven, opt-in row (Page Settings > Layout > Genre Lane) —
-    // real films from the catalog tagged with whichever genre is picked in the dropdown
-    // (see nsFilmsByGenre/NS_FILM_GENRES). Skipped entirely if that genre has no matches.
-    // Sits right after the 2nd spotlight, alongside Lane of Lanes / Lane of Genres below.
-    ...(genreLaneFilms.length ? [{ title: nsState.genreLaneGenre, films: genreLaneFilms, isGenreLane: true }] : []),
     // Coming Soon is a settings-driven, opt-in row (Page Settings > Layout > Coming Soon Lane) —
-    // genuinely upcoming MUBI titles (see COMING_SOON_FILMS). Sits right alongside Genre Lane.
-    ...(comingSoonFilms.length ? [{ title: 'COMING SOON', films: comingSoonFilms }] : []),
+    // genuinely upcoming MUBI titles (see COMING_SOON_FILMS), rendered in double-tile style.
+    ...(comingSoonFilms.length ? [{ title: 'COMING SOON', films: comingSoonFilms, doubletile: true, isComingSoonFlip: comingSoonFlip, flipBackFilms: comingSoonFlipBackFilms }] : []),
     // Lane of Lanes is a settings-driven, opt-in row — always right after the 2nd spotlight
-    // (ahead of Row 1 / the numbered rows) whenever it's on.
+    // and Coming Soon whenever it's on. The "Coming Soon" teaser tile it normally injects has
+    // been removed (see laneOfLanesColls above) since Coming Soon already has its own row.
     ...(nsState.laneOfLanes ? [{ title: 'Recent Collections', isCollections: true, colls: laneOfLanesColls, seeAllHref: 'explore.html?tab=collections' }] : []),
-    // Row 1 itself now lands here, right after the 2nd spotlight (and Lane of Lanes, if on).
-    row1,
+    // 4 more collection rows, immediately following the main lane of collections — normal
+    // film-tile rows (not collection-tile banners), each showing a real collection's own
+    // films (see numberedRows/NUMBERED_ROW_COLLECTIONS above; row1 — used for Suggested for
+    // You — is shifted off first, so these are the next 4 distinct collections in the pool).
     ...numberedRows,
     // Lane of Genres is a settings-driven, opt-in row (Page Settings > Layout > Lane of
     // Genres) — a fixed set (see NS_LANE_OF_GENRES_ITEMS), each linking through to Browse.
@@ -5609,6 +5685,59 @@ function renderGrid() {
   }
 
   positionSpotlightArrows();
+  nsSetupComingSoonFlip();
+}
+
+// "Go Crazy!" (Page Settings > Layout > Coming Soon Lane > Go Crazy!) driver — called at the
+// end of every renderGrid() since the flip tiles are fresh DOM nodes each render. Waits for the
+// row to actually scroll into view, then fires a left-to-right sweep (each tile's spin staggered
+// behind the last, see comingSoonFlipTileHTML/.is-flipping) every few seconds for as long as the
+// row exists, so the reveal only starts once someone can actually see it.
+let nsComingSoonFlipObserver = null;
+let nsComingSoonFlipTimeouts = [];
+function nsSetupComingSoonFlip() {
+  if (nsComingSoonFlipObserver) { nsComingSoonFlipObserver.disconnect(); nsComingSoonFlipObserver = null; }
+  nsComingSoonFlipTimeouts.forEach(clearTimeout);
+  nsComingSoonFlipTimeouts = [];
+
+  const tiles = Array.from(document.querySelectorAll('.film-card--flip'));
+  if (!tiles.length) return;
+
+  // Matches the 0.7s animation duration + 150ms-per-tile stagger set below/in the CSS —
+  // used to time exactly a 2s pause after the LAST tile's flip actually finishes, regardless
+  // of how many tiles are in the row (4 vs. 8 with Carousel Rows on).
+  const FLIP_DURATION = 700;
+  const STAGGER = 150;
+  const sweepDuration = (tiles.length - 1) * STAGGER + FLIP_DURATION;
+
+  const sweep = () => {
+    tiles.forEach((tile, i) => {
+      nsComingSoonFlipTimeouts.push(setTimeout(() => {
+        // Each turn adds another +180deg on top of whatever rotation is already there —
+        // never resets back to 0 — so the tile always spins the same direction it did last
+        // time (left-to-right stays left-to-right) instead of the transition reversing back
+        // through the same arc every other sweep. Front/back still alternates (odd steps =
+        // back, even = front) since backface-visibility only cares about the angle mod 360.
+        const inner = tile.querySelector('.flip-inner');
+        const step = (parseInt(inner.dataset.flipStep, 10) || 0) + 1;
+        inner.dataset.flipStep = step;
+        const axis = tile.classList.contains('flip-axis-y') ? 'Y' : 'X';
+        inner.style.transform = `rotate${axis}(${step * 180}deg)`;
+        tile.classList.remove('is-flipping');
+        void tile.offsetWidth; // force reflow so the shade/glare animation restarts every time
+        tile.classList.add('is-flipping');
+      }, i * STAGGER));
+    });
+    nsComingSoonFlipTimeouts.push(setTimeout(sweep, sweepDuration + 2000));
+  };
+
+  const row = tiles[0].closest('.row-section');
+  nsComingSoonFlipObserver = new IntersectionObserver((entries) => {
+    if (!entries.some(e => e.isIntersecting)) return;
+    nsComingSoonFlipObserver.disconnect();
+    nsComingSoonFlipTimeouts.push(setTimeout(sweep, 2000));
+  }, { threshold: 0.2 });
+  nsComingSoonFlipObserver.observe(row || tiles[0]);
 }
 
 // Each spotlight filmstrip is wider than the page's normal content width (see
@@ -6284,11 +6413,16 @@ const NS_COLLECTIONS = (() => {
   });
 })();
 
-const NS_STORAGE_KEY = 'ns_settings_state_v1';
+// Phase 1 uses its own storage key so this fixed layout never inherits saved
+// toggle state from mubi-showing.html (same-origin localStorage would otherwise bleed across).
+const NS_STORAGE_KEY = 'ns_settings_state_v1_phase1';
 function nsLoadState() {
   try { return JSON.parse(localStorage.getItem(NS_STORAGE_KEY)) || {}; } catch (e) { return {}; }
 }
-const nsState = Object.assign({ watchlist: [], continueWatching: [], watched: [], marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 25, laneOfLanes: false, allDoubleTiles: false, carouselRows: false, topTen: false, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', comingSoon: false, laneOfGenres: false, laneOfGenresStyle: 'tiles', activeDemoUserIdx: null, marqueeDisplayCount: 3, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
+// Phase 1 fixed layout defaults: Top Picks (renamed FEATURED), Lane of Lanes, Coming Soon
+// and Lane of Genres (Colour + Stacked) all on by default, seeded with the Priya Nair
+// persona so Continue Watching / Your Watchlist / Suggested for You all have content to show.
+const nsState = Object.assign({ watchlist: nsCatalogSlugs(2, 20), continueWatching: nsCatalogSlugs(22, 3), watched: nsCatalogSlugs(25, 20), marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 5, laneOfLanes: true, allDoubleTiles: false, carouselRows: true, topTen: true, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', comingSoon: true, comingSoonGoCrazy: false, laneOfGenres: true, laneOfGenresStyle: 'stack', activeDemoUserIdx: 2, marqueeDisplayCount: 1, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
 
 // Dark mode is a personal display preference, not "content" — kept in its own localStorage
 // key rather than nsState, so it isn't pushed to the shared Google Sheet (see NS_SHEET_API_URL
@@ -6299,7 +6433,8 @@ function nsApplyTheme(theme) {
   const toggle = document.getElementById('darkModeToggle');
   if (toggle) toggle.checked = theme === 'dark';
 }
-nsApplyTheme(localStorage.getItem(NS_THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light');
+// Phase 1 is a fixed light-mode layout — ignore any dark-mode preference saved by other pages.
+nsApplyTheme('light');
 document.getElementById('darkModeToggle').addEventListener('change', e => {
   const theme = e.target.checked ? 'dark' : 'light';
   localStorage.setItem(NS_THEME_STORAGE_KEY, theme);
@@ -6746,7 +6881,7 @@ document.querySelectorAll('.settings-tab').forEach(tab => {
 // ─── MARQUEE & SPOTLIGHT SLOT PICKERS ───
 const NS_SLOT_CONFIGS = {
   marquee: {
-    limit: 3,
+    limit: 1,
     label: 'Marquee',
     items: () => NS_MARQUEE_CATALOG,
     catalogListId: 'marqueeCatalogList',
@@ -6945,6 +7080,12 @@ genreLaneSelectEl.addEventListener('change', e => {
 });
 document.getElementById('comingSoonToggle').addEventListener('change', e => {
   nsState.comingSoon = e.target.checked;
+  document.getElementById('comingSoonCrazyRow').style.display = e.target.checked ? '' : 'none';
+  nsSaveState();
+  renderGrid();
+});
+document.getElementById('comingSoonCrazyToggle').addEventListener('change', e => {
+  nsState.comingSoonGoCrazy = e.target.checked;
   nsSaveState();
   renderGrid();
 });
@@ -7869,6 +8010,8 @@ function openSettingsModal() {
   document.getElementById('genreLaneSelectRow').style.display = nsState.genreLane ? '' : 'none';
   if (nsState.genreLaneGenre) document.getElementById('genreLaneSelect').value = nsState.genreLaneGenre;
   document.getElementById('comingSoonToggle').checked = !!nsState.comingSoon;
+  document.getElementById('comingSoonCrazyRow').style.display = nsState.comingSoon ? '' : 'none';
+  document.getElementById('comingSoonCrazyToggle').checked = !!nsState.comingSoonGoCrazy;
   document.getElementById('laneOfGenresToggle').checked = !!nsState.laneOfGenres;
   document.querySelectorAll('#laneOfGenresStyleToggle .ns-type-toggle-btn').forEach(b => {
     b.classList.toggle('is-active', b.dataset.nsGenreStyle === nsState.laneOfGenresStyle);

@@ -1967,20 +1967,6 @@
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    /* Coming Soon row (Page Settings > Layout > Coming Soon Lane) — same top-left pill
-       treatment as the "On MUBI" badge on the Film Database page, showing each film's
-       real MUBI release date instead. */
-    .card-date-badge {
-      position: absolute;
-      top: 0; left: 0;
-      z-index: 6;
-      font-family: Riforma, sans-serif;
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.5px;
-      color: #323232; background: #fff;
-      padding: 4px 20px;
-    }
-
     /* Top Picks row (Page Settings > Layout > Top Picks) — big, faded rank numeral, 1-4,
        stamped in the top-left corner of each tile ahead of the card's own overlay/title. */
     .card-rank-badge {
@@ -3487,13 +3473,6 @@
             </div>
             <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
               <div>
-                <span class="ns-toggle-label">Coming Soon Lane</span>
-                <div class="ns-toggle-desc">A lane of real upcoming titles from MUBI.</div>
-              </div>
-              <label class="ns-switch"><input type="checkbox" id="comingSoonToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <div>
                 <span class="ns-toggle-label">Lane of Genres</span>
                 <div class="ns-toggle-desc">A lane of genre tiles, linking through to Browse.</div>
               </div>
@@ -4658,52 +4637,6 @@ const CURATORS_SPOTLIGHT_FILMS = [
     fX:0.48, fY:0.59, rating:4.5, ourTake:"Packing the deepest secrets of the universe into its modest running time, this suggestive and painterly animated short glimpses unknowable mysteries. An unexpected blend of gorgeously bright-hued design and eldritch cosmic horror, God is Shy peers into the abyss—and finds it gazing back."},
 ];
 
-/* ─── COMING SOON — settings-driven, opt-in row (Page Settings > Layout > Coming Soon Lane) ───
-   Genuinely upcoming MUBI titles — verified live against api.mubi.com/v4/films/<slug>
-   (consumable.availability === "upcoming"), matching mubifinder.com's GB "upcoming" filter.
-   Sorted soonest-first; releaseDate is a made-up relative countdown (not the real MUBI date). */
-const COMING_SOON_FILMS = [
-  { title:"Caligula: The Ultimate Cut", director:"Tinto Brass", year:2023, country:"Italy, United States", slug:"caligula-the-ultimate-cut",
-    image:"https://assets.mubicdn.net/images/film/421346/image-w448.jpg?1745503308", titleTreatment:null,
-    fX:0.49, fY:0.41, rating:3.4, releaseDate:"Tomorrow", ourTake:"The extensive reconstruction of the notorious 1980 spectacle. Shadowed by the murder of his family, Caligula eliminates his devious adoptive grandfather and seizes control of the Roman Empire alongside his wife Caesonia before descending into a spiral of depravity, destruction, and madness."},
-  { title:"Black Bear", director:"Lawrence Michael Levine", year:2020, country:"United States", slug:"black-bear",
-    image:"https://assets.mubicdn.net/images/film/251181/image-w448.jpg?1745496595", titleTreatment:null,
-    fX:0.494429, fY:0.383663, rating:3.8, releaseDate:"In 3 Days", ourTake:"At a remote lake house, filmmaker Allison arrives as a house guest to a troubled couple, who have eschewed their life in the city. Battling writer's block, Allison sparks a calculated game of desire and jealousy in pursuit of a new work that blurs the boundaries of autobiography and invention."},
-  { title:"Ancestral Visions of the Future", director:"Lemohang Jeremiah Mosese", year:2025, country:"France, Lesotho", slug:"ancestral-visions-of-the-future",
-    image:"https://assets.mubicdn.net/images/film/434147/image-w448.jpg?1783686614", titleTreatment:null,
-    fX:0.44, fY:0.42, rating:3.5, releaseDate:"In 3 Days", ourTake:"Mythical imagery of the Lesotho landscape tethers to a poetic voiceover, in which a filmmaker muses on his childhood, the dreams and bravery of his mother, the wonder of cinema, and exile. His camera crosses paths with enigmatic figures—the Market Seller, the Puppeteer—on a journey of rediscovery."},
-  { title:"Teenage Sex and Death at Camp Miasma", director:"Jane Schoenbrun", year:2026, country:"United States, Canada", slug:"teenage-sex-and-death-at-camp-miasma",
-    image:"https://assets.mubicdn.net/images/film/368829/image-w448.jpg?1771019329", titleTreatment:"https://images.mubicdn.net/images/artworks/995272/cache-995272-1779889050/images-original.png",
-    fX:0.51, fY:0.45, rating:4.3, releaseDate:"Next Month", ourTake:"After years of slapdash sequels, the Camp Miasma franchise is handed over to an enthusiastic young director for resurrection. But when she visits the original's star, a now-reclusive actress shrouded in mystery, the two women fall into a blood-soaked world of desire, fear, and delirium."},
-  { title:"Obsession", director:"Brian De Palma", year:1976, country:"United States", slug:"obsession",
-    image:"https://assets.mubicdn.net/images/film/2410/image-w448.jpg?1745491170", titleTreatment:null,
-    fX:0.456067, fY:0.425743, rating:3.5, releaseDate:"In 1 Week", ourTake:"In 1959, businessman Michael and his wife are celebrating their anniversary when his daughter and wife are kidnapped and tragically killed in the rescue attempt. Years later, still grieving over his loss, Michael meets a young woman in Florence who bears a remarkable resemblance to his late wife."},
-  { title:"Sisters", director:"Brian De Palma", year:1972, country:"United States", slug:"sisters",
-    image:"https://assets.mubicdn.net/images/film/377/image-w448.jpg?1745489499", titleTreatment:null,
-    fX:0.674095, fY:0.995049, rating:3.5, releaseDate:"In 1 Week", ourTake:"Journalist Grace witnesses a murder in the neighboring apartment of two twin sisters. However, when the police find no evidence of the crime, Grace takes things into her own hands. With the help of a private detective, she soon discovers more about the sisters' relationship than she bargained for."},
-  { title:"Carlito's Way", director:"Brian De Palma", year:1993, country:"United States", slug:"carlito-s-way",
-    image:"https://assets.mubicdn.net/images/film/5264/image-w448.jpg?1776857924", titleTreatment:"https://images.mubicdn.net/images/artworks/989337/cache-989337-1778693448/images-original.png",
-    fX:0.38, fY:0.29, rating:4.1, releaseDate:"In 1 Week", ourTake:"After narrowly escaping a three-decade prison sentence, former drug dealer Carlito Brigante renounces his former life of misconduct. When implicated in the murder of a Mafia don, the race is on to see if he can escape the New York City underworld he is so desperate to leave behind."},
-  { title:"Rosebush Pruning", director:"Karim Aïnouz", year:2026, country:"Italy, Germany", slug:"rosebush-pruning",
-    image:"https://assets.mubicdn.net/images/film/391721/image-w448.jpg?1784791259", titleTreatment:null,
-    fX:0.34, fY:0.15, rating:3.3, releaseDate:"In 2 Weeks", ourTake:"Underneath the Catalonian sun, a rich white American family lives in hedonistic isolation, seeking love and validation through one another, their designer wardrobes and pop music. When an outsider infiltrates the family, buried tensions surface and blood ties are severed."},
-  { title:"Dogtooth", director:"Yorgos Lanthimos", year:2009, country:"Greece", slug:"dogtooth",
-    image:"https://assets.mubicdn.net/images/film/2740/image-w448.jpg?1745490960", titleTreatment:null,
-    fX:0.616992, fY:0.574257, rating:4.0, releaseDate:"In 2 Weeks", ourTake:"In an effort to protect their children from the corrupting influence of the outside world, a couple transforms their home into a gated compound of cultural deprivation. When the father invites a trusted outsider into their home their reality begins to crumble, with devastating consequences."},
-  { title:"The Loneliness of Lizards", director:"Inês Nunes", year:2025, country:"Portugal, Spain", slug:"the-loneliness-of-lizards",
-    image:"https://assets.mubicdn.net/images/film/445147/image-w448.jpg?1784708967", titleTreatment:"https://images.mubicdn.net/images/artworks/997390/cache-997390-1780399538/images-original.png",
-    fX:0.57, fY:0.48, rating:3.2, releaseDate:"In 2 Weeks", ourTake:"Guests at an unusual spa in southern Portugal bathe, exfoliate, slumber, and unwind, as laborers work the terrain's natural salt flats. One woman seems at odds with the other vacationers, in an evening dress creased with unease. When night falls, the space changes, porous to the visitors' desires."},
-  { title:"Romería", director:"Carla Simón", year:2025, country:"Spain, Germany", slug:"romeria",
-    image:"https://assets.mubicdn.net/images/film/421811/image-w448.jpg?1755972643", titleTreatment:"https://images.mubicdn.net/images/artworks/1006213/cache-1006213-1783509514/images-original.png",
-    fX:0.36, fY:0.28, rating:3.5, releaseDate:"Next Month", ourTake:"A woman travels to the Galician city of Vigo to meet her biological father's family. Like her mother, he died of AIDS when she was very young. Through her encounters with the family, she attempts to piece together the story of her father and the love he shared with her mother."},
-  { title:"Ninjababy", director:"Yngvild Sve Flikke", year:2021, country:"Norway", slug:"ninjababy",
-    image:"https://assets.mubicdn.net/images/film/289899/image-w448.jpg?1745497926", titleTreatment:null,
-    fX:0.336123, fY:0.586634, rating:4.3, releaseDate:"Next Month", ourTake:"Astronaut, forest-keeper, cartoonist. Young Rakel has a whole lot of other plans than becoming a mother. She would rather party, get drunk or stoned instead of sitting hours on the toilet. But she can't ignore it. Is it her or the baby?"},
-  { title:"Lady Bird", director:"Greta Gerwig", year:2017, country:"United States", slug:"lady-bird",
-    image:"https://assets.mubicdn.net/images/film/154518/image-w448.jpg?1784631835", titleTreatment:"https://images.mubicdn.net/images/artworks/1009089/cache-1009089-1784632445/images-original.png",
-    fX:0.24, fY:0.28, rating:3.7, releaseDate:"Next Month", ourTake:"Northern California, 2002. \"Lady Bird,\" a precocious teenager at a local Catholic school, feels trapped by provincial life in Sacramento. Navigating fraught relationships with her family and friends, she counts down the days until she can fulfill her dream of attending college on the East Coast."},
-];
-
 /* ─── TOP PICKS — settings-driven, opt-in row (Page Settings > Layout > Top Picks) ───
    Real MUBI viewing data (see top10.png "Views Within Date Range"), ranked by views —
    top 4 titles only, matching .row-grid's widest breakpoint. */
@@ -5228,7 +5161,6 @@ function filmRowSectionHTML(row, rowIdx) {
           ${doubletile && film.award
             ? `<img class="card-award-badge" src="${film.award.image}" alt="${film.award.text}" title="${film.award.text}">`
             : ''}
-          ${film.releaseDate ? `<span class="card-date-badge">${film.releaseDate}</span>` : ''}
           <div class="card-overlay">
             ${film.isSeries ? `<div class="card-eyebrow">Series</div>` : ''}
             ${titleTreatment
@@ -5420,7 +5352,6 @@ function renderGrid() {
   const genreLaneFilms = (nsState.genreLane && nsState.genreLaneGenre)
     ? nsFilmsByGenre(nsState.genreLaneGenre, nsState.carouselRows ? 8 : 4)
     : [];
-  const comingSoonFilms = nsState.comingSoon ? COMING_SOON_FILMS.slice(0, nsState.carouselRows ? 8 : 4) : [];
   const rows = [
     ...(isNewToMubi ? [{ title: 'ESSENTIAL VIEWING', films: essentialViewingFilms, doubletile: true, isNewToMubi: true }] : []),
     ...(topTenRow ? [topTenRow] : []),
@@ -5453,9 +5384,6 @@ function renderGrid() {
     // (see nsFilmsByGenre/NS_FILM_GENRES). Skipped entirely if that genre has no matches.
     // Sits right after the 2nd spotlight, alongside Lane of Lanes / Lane of Genres below.
     ...(genreLaneFilms.length ? [{ title: nsState.genreLaneGenre, films: genreLaneFilms, isGenreLane: true }] : []),
-    // Coming Soon is a settings-driven, opt-in row (Page Settings > Layout > Coming Soon Lane) —
-    // genuinely upcoming MUBI titles (see COMING_SOON_FILMS). Sits right alongside Genre Lane.
-    ...(comingSoonFilms.length ? [{ title: 'COMING SOON', films: comingSoonFilms }] : []),
     // Lane of Lanes is a settings-driven, opt-in row — always right after the 2nd spotlight
     // (ahead of Row 1 / the numbered rows) whenever it's on.
     ...(nsState.laneOfLanes ? [{ title: 'Recent Collections', isCollections: true, colls: laneOfLanesColls, seeAllHref: 'explore.html?tab=collections' }] : []),
@@ -6288,7 +6216,7 @@ const NS_STORAGE_KEY = 'ns_settings_state_v1';
 function nsLoadState() {
   try { return JSON.parse(localStorage.getItem(NS_STORAGE_KEY)) || {}; } catch (e) { return {}; }
 }
-const nsState = Object.assign({ watchlist: [], continueWatching: [], watched: [], marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 25, laneOfLanes: false, allDoubleTiles: false, carouselRows: false, topTen: false, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', comingSoon: false, laneOfGenres: false, laneOfGenresStyle: 'tiles', activeDemoUserIdx: null, marqueeDisplayCount: 3, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
+const nsState = Object.assign({ watchlist: [], continueWatching: [], watched: [], marquee: [], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 25, laneOfLanes: false, allDoubleTiles: false, carouselRows: false, topTen: false, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', laneOfGenres: false, laneOfGenresStyle: 'tiles', activeDemoUserIdx: null, marqueeDisplayCount: 3, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
 
 // Dark mode is a personal display preference, not "content" — kept in its own localStorage
 // key rather than nsState, so it isn't pushed to the shared Google Sheet (see NS_SHEET_API_URL
@@ -6940,11 +6868,6 @@ document.getElementById('genreLaneToggle').addEventListener('change', e => {
 });
 genreLaneSelectEl.addEventListener('change', e => {
   nsState.genreLaneGenre = e.target.value;
-  nsSaveState();
-  renderGrid();
-});
-document.getElementById('comingSoonToggle').addEventListener('change', e => {
-  nsState.comingSoon = e.target.checked;
   nsSaveState();
   renderGrid();
 });
@@ -7868,7 +7791,6 @@ function openSettingsModal() {
   document.getElementById('genreLaneToggle').checked = !!nsState.genreLane;
   document.getElementById('genreLaneSelectRow').style.display = nsState.genreLane ? '' : 'none';
   if (nsState.genreLaneGenre) document.getElementById('genreLaneSelect').value = nsState.genreLaneGenre;
-  document.getElementById('comingSoonToggle').checked = !!nsState.comingSoon;
   document.getElementById('laneOfGenresToggle').checked = !!nsState.laneOfGenres;
   document.querySelectorAll('#laneOfGenresStyleToggle .ns-type-toggle-btn').forEach(b => {
     b.classList.toggle('is-active', b.dataset.nsGenreStyle === nsState.laneOfGenresStyle);
