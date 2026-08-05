@@ -1981,65 +1981,6 @@
       padding: 4px 20px;
     }
 
-    /* "Go Crazy!" (Page Settings > Layout > Coming Soon Lane > Go Crazy!) — nsSetupComingSoonFlip
-       waits for the row to scroll into view, then every few seconds turns each tile over once
-       (staggered left to right, alternating front/back — see the .is-flipped toggle it flips on
-       .flip-inner) to reveal the other Coming Soon title on its back face, with a shade/glare
-       effect (.is-flipping, below) synced to the same turn. Axis is picked per tile at render
-       time (comingSoonFlipTileHTML): Y ("left to right", like a page turning) when the row is in
-       Double Tiles mode, X ("top to bottom") otherwise. */
-    .film-card--flip { perspective: 1400px; position: relative; }
-    .film-card--flip .flip-inner {
-      position: relative;
-      aspect-ratio: 371 / 209;
-      transform-style: preserve-3d;
-      transition: transform 0.7s cubic-bezier(.45,0,.15,1);
-    }
-    /* "Make All Tiles Double Tiles" (Page Settings > Layout) switches the row's own
-       .card-img-wrap over to a fixed 418px height (see the rule above) — .flip-inner needs
-       the same override, or its shorter 16:9 box leaves the taller nested .card-img-wrap
-       (still correctly picking up that same rule) overflowing past the flip tile's bounds. */
-    .row-section--doubletile .film-card--flip .flip-inner { aspect-ratio: unset; height: 418px; }
-    .flip-face {
-      position: absolute; inset: 0;
-      backface-visibility: hidden;
-    }
-    .flip-face--back-y { transform: rotateY(180deg); }
-    .flip-face--back-x { transform: rotateX(180deg); }
-    /* No fixed "flipped" transform class here on purpose — nsSetupComingSoonFlip sets
-       .flip-inner's rotation via inline style instead, always increasing (0deg, 180deg,
-       360deg, 540deg, ...) so every sweep spins the same direction as the last (see the
-       "flip left to right" comment there) instead of the transition reversing back through
-       the same arc on every other sweep. */
-    /* Shade — a physical card catches less light edge-on, so brightness/shadow dip together
-       right at the 50% (edge-on) point of the spin. Lives on the outer, non-3D-transformed
-       anchor so `filter` never risks flattening .flip-inner's preserve-3d rendering. */
-    .film-card--flip.is-flipping { animation: ns-flip-shade 0.7s ease-in-out; }
-    @keyframes ns-flip-shade {
-      0%, 100% { filter: brightness(1) drop-shadow(0 0 0 rgba(0,0,0,0)); }
-      50%      { filter: brightness(0.5) drop-shadow(0 14px 22px rgba(0,0,0,0.6)); }
-    }
-    /* Light — a diagonal glare sweeps across the tile as it catches the light mid-spin.
-       Lives on each .flip-face (not the outer, non-3D anchor) so the glare rotates with
-       whichever face is actually showing instead of sitting flat over the tile regardless
-       of the card's spin — backface-visibility:hidden (already on .flip-face) keeps it
-       from also showing through on the face that's turned away. */
-    .flip-face::after {
-      content: '';
-      position: absolute; inset: 0; z-index: 9; pointer-events: none;
-      background: linear-gradient(75deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%);
-      background-size: 250% 250%;
-      background-position: -150% -150%;
-      opacity: 0;
-    }
-    .film-card--flip.is-flipping .flip-face::after { animation: ns-flip-shine 0.7s ease-in-out; }
-    @keyframes ns-flip-shine {
-      0%   { opacity: 0; background-position: -150% -150%; }
-      35%  { opacity: 1; }
-      65%  { opacity: 1; }
-      100% { opacity: 0; background-position: 150% 150%; }
-    }
-
     /* Top Picks row (Page Settings > Layout > Top Picks) — big, faded rank numeral, 1-4,
        stamped in the top-left corner of each tile ahead of the card's own overlay/title. */
     .card-rank-badge {
@@ -3418,14 +3359,6 @@
   </button>
 </div>
 
-<div class="profile-overlay" id="profileOverlay">
-  <button class="profile-modal-close" id="profileModalClose" aria-label="Close">
-    <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" width="20"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-  </button>
-  <div class="profile-title">Who's Watching?</div>
-  <div class="profile-subtitle">Switch to different users with different usage amounts</div>
-  <div class="profile-grid" id="profileGrid"></div>
-</div>
 <div class="settings-overlay" id="settingsOverlay"></div>
 <div class="ns-confirm-overlay" id="nsConfirmOverlay"></div>
 <div class="ns-confirm-panel" id="nsConfirmPanel" role="alertdialog" aria-modal="true" aria-label="Confirm">
@@ -3438,7 +3371,7 @@
 </div>
 <div class="ns-infobar" id="nsInfobar">
   <span class="material-icons ns-infobar-icon" aria-hidden="true">info</span>
-  <span class="ns-infobar-text">Press <kbd>S</kbd> for settings or <kbd>U</kbd> to switch user.</span>
+  <span class="ns-infobar-text">Press <kbd>S</kbd> for settings.</span>
   <button class="ns-infobar-close" id="nsInfobarClose" aria-label="Dismiss">
     <span class="material-icons">close</span>
   </button>
@@ -3455,7 +3388,6 @@
       <div class="settings-tab is-active" data-settings-tab="page">Page Settings</div>
       <div class="settings-tab" data-settings-tab="marquee">Marquee</div>
       <div class="settings-tab" data-settings-tab="spotlight">Spotlight</div>
-      <div class="settings-tab" data-settings-tab="films-series">Films &amp; Series</div>
     </div>
   </div>
   <div class="settings-modal-body">
@@ -3492,13 +3424,6 @@
                 <div class="ns-toggle-desc">Rows with more than 4 items page by 4 with peeking-tile arrows instead of See All.</div>
               </div>
               <label class="ns-switch"><input type="checkbox" id="carouselRowsToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-            <div class="ns-toggle-row" id="comingSoonCrazyRow" style="padding-left:18px; padding-right:18px;">
-              <div>
-                <span class="ns-toggle-label">Go Crazy!</span>
-                <div class="ns-toggle-desc">Tiles flip left to right, revealing another Coming Soon title behind each one.</div>
-              </div>
-              <label class="ns-switch"><input type="checkbox" id="comingSoonCrazyToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
             <div style="display:none;">
               <div class="ns-field">
@@ -3624,59 +3549,6 @@
         </div>
       </div>
     </div>
-    <div class="settings-tab-panel settings-tab-panel--stacked" data-settings-panel="films-series">
-      <div class="ns-user-select" id="nsUserSelect">
-        <span class="ns-user-select-label">Select a User</span>
-        <div class="ns-user-list" id="nsUserList"></div>
-      </div>
-      <div class="settings-columns" id="settingsColumns">
-        <div class="settings-column" data-column="catalog">
-          <div class="settings-column-head">
-            <div class="settings-column-title"><span>Catalog</span><span class="settings-column-count" id="settingsCatalogCount"></span></div>
-            <input type="text" class="settings-search" id="settingsSearchCatalog" placeholder="Search catalog" autocomplete="off">
-            <div class="ns-type-toggle" id="filmsSeriesTypeToggle">
-              <button class="ns-type-toggle-btn is-active" data-ns-type="all">All</button>
-              <button class="ns-type-toggle-btn" data-ns-type="film">Films</button>
-              <button class="ns-type-toggle-btn" data-ns-type="series">Series</button>
-            </div>
-          </div>
-          <div class="settings-list" id="settingsListCatalog"></div>
-        </div>
-        <div class="settings-column" data-column="watchlist">
-          <div class="settings-column-head">
-            <div class="settings-column-title"><span>Watchlist</span><span class="settings-column-count" id="settingsWatchlistCount"></span><button class="ns-clear-all-btn" data-ns-clear-column="watchlist">Clear All</button></div>
-            <input type="text" class="settings-search" id="settingsSearchWatchlist" placeholder="Search watchlist" autocomplete="off">
-          </div>
-          <div class="settings-list" id="settingsListWatchlist"></div>
-        </div>
-        <div class="settings-column" data-column="continueWatching">
-          <div class="settings-column-head">
-            <div class="settings-column-title"><span>Continue Watching</span><span class="settings-column-count" id="settingsContinueWatchingCount"></span><button class="ns-clear-all-btn" data-ns-clear-column="continueWatching">Clear All</button></div>
-            <input type="text" class="settings-search" id="settingsSearchContinueWatching" placeholder="Search continue watching" autocomplete="off">
-          </div>
-          <div class="settings-list" id="settingsListContinueWatching"></div>
-        </div>
-        <div class="settings-column" data-column="watched">
-          <div class="settings-column-head">
-            <div class="settings-column-title"><span>Watched</span><span class="settings-column-count" id="settingsWatchedCount"></span><button class="ns-clear-all-btn" data-ns-clear-column="watched">Clear All</button></div>
-            <input type="text" class="settings-search" id="settingsSearchWatched" placeholder="Search watched" autocomplete="off">
-          </div>
-          <div class="settings-list" id="settingsListWatched"></div>
-        </div>
-        <div class="settings-details" id="settingsDetails">
-          <div class="settings-details-head">
-            <div class="settings-details-title">Film Details</div>
-            <button class="settings-modal-close" id="settingsDetailsClose" aria-label="Close details">
-              <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" width="14"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-          <div class="settings-details-body" id="settingsDetailsBody"></div>
-          <div class="settings-details-footer">
-            <button class="settings-details-save" id="settingsDetailsSave">Save</button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
   <div class="settings-modal-footer">
     <button class="settings-modal-reset-btn" id="resetPrototypeSettingsBtn">Reset Prototype</button>
@@ -3759,7 +3631,7 @@
         <input class="search-inline-input" id="searchInput" type="text" placeholder="Search" autocomplete="off">
       </div>
       <div class="nav-avatar-wrap">
-        <a href="#" class="nav-avatar" aria-label="Profile" id="navAvatarBtn" onclick="openProfileModal(event)">
+        <a href="#" class="nav-avatar" aria-label="Profile" id="navAvatarBtn" onclick="event.preventDefault()">
           <img id="navAvatarImg" src="data:image/png;base64,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" alt="Profile">
         </a>
       </div>
@@ -5223,46 +5095,8 @@ function nsFilmGenres(film) {
 // Renders a single film row-section — pulled out of renderGrid so the Diego "Watch Next"
 // merge (see nsMergeWatchNext) can render Continue Watching / Your Watchlist row markup
 // on demand without duplicating the template.
-// Single face (front or back) of a "Go Crazy!" flip tile — same image/date-badge/title/meta
-// markup a normal Coming Soon tile renders, just reusable for both sides of the flip. Picks up
-// the same title-treatment logo (e.g. Teenage Sex and Death at Camp Miasma) the standard tile
-// path does whenever the row is in Double Tiles mode (see filmRowSectionHTML's own titleTreatment
-// line just below) — this is a separate render path, so it has to re-derive it itself.
-function comingSoonFaceHTML(film, doubletile) {
-  const posX = Math.round(film.fX * 100);
-  const posY = Math.round(film.fY * 100);
-  const titleTreatment = doubletile ? (film.titleTreatment || NS_TITLE_TREATMENTS[film.slug || slugify(film.title)]) : null;
-  return `
-    <div class="card-img-wrap">
-      <img class="card-img" src="${film.image}" alt="${film.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
-      ${film.releaseDate ? `<span class="card-date-badge">${film.releaseDate}</span>` : ''}
-      <div class="card-overlay">
-        ${titleTreatment
-          ? `<img class="card-title-treatment" src="${titleTreatment}" alt="${film.title}">`
-          : `<div class="card-title">${film.title}</div>`}
-        <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
-      </div>
-    </div>`;
-}
-
-// "Go Crazy!" tile (Page Settings > Layout > Coming Soon Lane > Go Crazy!) — holds frontFilm and
-// backFilm; nsSetupComingSoonFlip toggles the .is-flipping class (see the ns-flip-spin-x/-y
-// keyframes) to actually trigger each spin, this just builds the static two-face markup. Axis is
-// fixed per tile at render time: Y ("left to right") in Double Tiles mode, X ("top to bottom")
-// otherwise — matches how a real flipping card reads wider (Y) vs. taller (X).
-function comingSoonFlipTileHTML(frontFilm, backFilm, doubletile) {
-  const axis = doubletile ? 'y' : 'x';
-  return `
-    <a class="film-card film-card--flip flip-axis-${axis}" href="https://mubi.com/films/${frontFilm.slug || slugify(frontFilm.title)}" target="_self" aria-label="${frontFilm.title}">
-      <div class="flip-inner">
-        <div class="flip-face flip-face--front">${comingSoonFaceHTML(frontFilm, doubletile)}</div>
-        <div class="flip-face flip-face--back flip-face--back-${axis}">${comingSoonFaceHTML(backFilm, doubletile)}</div>
-      </div>
-    </a>`;
-}
-
 function filmRowSectionHTML(row, rowIdx) {
-  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab, isTopTen, isGenreLane, carousel, collSlug, totalItems, extraFilm, isComingSoonFlip, flipBackFilms } = row;
+  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab, isTopTen, isGenreLane, carousel, collSlug, totalItems, extraFilm } = row;
   const emptySlotCount = capacity ? Math.max(0, capacity - rowFilms.length) : 0;
   // Real MUBI collection size (from mubi-collections.csv, see NUMBERED_ROW_COLLECTIONS) —
   // only set where it's genuinely known, never guessed. Drives the terminal "See All" tile's
@@ -5274,7 +5108,6 @@ function filmRowSectionHTML(row, rowIdx) {
     ? `explore.html?genre=${encodeURIComponent(title)}`
     : collSlug ? `https://mubi.com/en/gb/collections/${encodeURIComponent(collSlug)}` : null;
   const tilesHTML = rowFilms.map((film, filmIdx) => {
-    if (isComingSoonFlip) return comingSoonFlipTileHTML(film, flipBackFilms[filmIdx], doubletile);
     const posX = Math.round(film.fX * 100);
     const posY = Math.round(film.fY * 100);
     const titleTreatment = doubletile ? (film.titleTreatment || NS_TITLE_TREATMENTS[film.slug || slugify(film.title)]) : null;
@@ -5419,9 +5252,11 @@ function renderGrid() {
   // only ever shows 5 of these (Row 1 / Suggested for You, plus the 4 lanes further down),
   // so rather than take the pool in its raw stored order — which front-loads Cannes, Award
   // Winners, the Podcast feature, and the Oscars back to back, reading as one long "for your
-  // consideration" reel — this hand-picks a genre-varied set instead. "The MUBI Top 1000" is
-  // skipped either way, since it isn't a themed collection.
-  const numberedRowPool = ['summer-in-the-cities-uk', 'romance', 'horror', 'comedies', 'women-directors']
+  // consideration" reel — this hand-picks a varied set instead: a mood genre (romance), a
+  // curatorial pick (women directors), a director double bill (Ken Loach), and a broader
+  // prestige pick (modern masterpieces) rather than stacking more genre lanes. "The MUBI Top
+  // 1000" is skipped either way, since it isn't a themed collection.
+  const numberedRowPool = ['summer-in-the-cities-uk', 'romance', 'women-directors', 'ken-loach-double-bill', 'modern-masterpieces']
     .map(slug => NUMBERED_ROW_COLLECTIONS.find(c => c.slug === slug))
     .filter(Boolean);
   for (let r = 0; r < totalNumberedRows; r++) {
@@ -5434,15 +5269,16 @@ function renderGrid() {
 
   const spotlightColls = nsSpotlightCollections();
 
-  // Continue Watching / Your Watchlist reflect what's actually been set in the Films & Series
-  // settings tab — the row is left out of the page entirely when its list is empty.
-  // Capped to a single lane (4, matching .row-grid's widest breakpoint) — extra
-  // watched-in-progress/watchlisted films beyond that just aren't shown here.
+  // Continue Watching / Your Watchlist reflect nsState's own fixed seed data (Phase 1 has no
+  // Films & Series settings tab to edit these from) — the row is left out of the page
+  // entirely when its list is empty. Capped to a single lane (4, matching .row-grid's widest
+  // breakpoint) — extra watched-in-progress/watchlisted films beyond that just aren't shown.
   const continueWatchingFilms = nsState.continueWatching.map(nsFilmBySlug).filter(Boolean).slice(0, 4);
   const watchlistFilms = nsState.watchlist.map(nsFilmBySlug).filter(Boolean).slice(0, 4);
-  // The "combine into Watch Next" affordance only ever shows for the Diego Ramos persona
-  // (see nsMergeWatchNext), and only while both lanes exist separately.
-  const isDiego = NS_DEMO_USERS[nsState.activeDemoUserIdx]?.name === 'Diego Ramos';
+  // The "combine into Watch Next" affordance only ever showed for the (now removed) Diego
+  // Ramos demo persona (see nsMergeWatchNext) — Phase 1's fixed persona is Priya Nair, so
+  // this stays permanently off.
+  const isDiego = false;
   const canMergeWatchNext = isDiego && !nsState.watchNextMerged && continueWatchingFilms.length > 0 && watchlistFilms.length > 0;
   const watchNextFilms = isDiego && nsState.watchNextMerged ? nsWatchNextFilms(continueWatchingFilms, watchlistFilms) : null;
   // "Suggested for You" only makes sense once the user has watched something or has
@@ -5503,13 +5339,6 @@ function renderGrid() {
     ? nsFilmsByGenre(nsState.genreLaneGenre, nsState.carouselRows ? 8 : 4)
     : [];
   const comingSoonFilms = nsState.comingSoon ? COMING_SOON_FILMS.slice(0, nsState.carouselRows ? 8 : 4) : [];
-  // "Go Crazy!" (Page Settings > Layout > Coming Soon Lane > Go Crazy!) — each visible tile
-  // pairs with a different, currently-hidden Coming Soon title (offset by how many tiles are
-  // showing, wrapping back into COMING_SOON_FILMS) so its 3D flip always reveals something new.
-  const comingSoonFlip = nsState.comingSoon && nsState.comingSoonGoCrazy;
-  const comingSoonFlipBackFilms = comingSoonFlip
-    ? comingSoonFilms.map((_, i) => COMING_SOON_FILMS[(i + comingSoonFilms.length) % COMING_SOON_FILMS.length])
-    : null;
   // Phase 1 fixed layout: Marquee, FEATURED (double tile, no rank numbers), Continue
   // Watching, Watchlist, New on MUBI, MUBI Releases (double tile), Spotlight #1, Trending,
   // Curator's Spotlight (double tile), Suggested for You, Spotlight #2, Coming Soon (double
@@ -5542,7 +5371,8 @@ function renderGrid() {
     { isSpotlight: true, spotlightColl: spotlightColls[1] },
     // Coming Soon is a settings-driven, opt-in row (Page Settings > Layout > Coming Soon Lane) —
     // genuinely upcoming MUBI titles (see COMING_SOON_FILMS), rendered in double-tile style.
-    ...(comingSoonFilms.length ? [{ title: 'COMING SOON', films: comingSoonFilms, doubletile: true, isComingSoonFlip: comingSoonFlip, flipBackFilms: comingSoonFlipBackFilms }] : []),
+    // Its own "Go Crazy!" flip toggle now lives on comingsoon.html instead.
+    ...(comingSoonFilms.length ? [{ title: 'COMING SOON', films: comingSoonFilms, doubletile: true }] : []),
     // Lane of Lanes is a settings-driven, opt-in row — always right after the 2nd spotlight
     // and Coming Soon whenever it's on. The "Coming Soon" teaser tile it normally injects has
     // been removed (see laneOfLanesColls above) since Coming Soon already has its own row.
@@ -5699,59 +5529,6 @@ function renderGrid() {
   }
 
   positionSpotlightArrows();
-  nsSetupComingSoonFlip();
-}
-
-// "Go Crazy!" (Page Settings > Layout > Coming Soon Lane > Go Crazy!) driver — called at the
-// end of every renderGrid() since the flip tiles are fresh DOM nodes each render. Waits for the
-// row to actually scroll into view, then fires a left-to-right sweep (each tile's spin staggered
-// behind the last, see comingSoonFlipTileHTML/.is-flipping) every few seconds for as long as the
-// row exists, so the reveal only starts once someone can actually see it.
-let nsComingSoonFlipObserver = null;
-let nsComingSoonFlipTimeouts = [];
-function nsSetupComingSoonFlip() {
-  if (nsComingSoonFlipObserver) { nsComingSoonFlipObserver.disconnect(); nsComingSoonFlipObserver = null; }
-  nsComingSoonFlipTimeouts.forEach(clearTimeout);
-  nsComingSoonFlipTimeouts = [];
-
-  const tiles = Array.from(document.querySelectorAll('.film-card--flip'));
-  if (!tiles.length) return;
-
-  // Matches the 0.7s animation duration + 150ms-per-tile stagger set below/in the CSS —
-  // used to time exactly a 2s pause after the LAST tile's flip actually finishes, regardless
-  // of how many tiles are in the row (4 vs. 8 with Carousel Rows on).
-  const FLIP_DURATION = 700;
-  const STAGGER = 150;
-  const sweepDuration = (tiles.length - 1) * STAGGER + FLIP_DURATION;
-
-  const sweep = () => {
-    tiles.forEach((tile, i) => {
-      nsComingSoonFlipTimeouts.push(setTimeout(() => {
-        // Each turn adds another +180deg on top of whatever rotation is already there —
-        // never resets back to 0 — so the tile always spins the same direction it did last
-        // time (left-to-right stays left-to-right) instead of the transition reversing back
-        // through the same arc every other sweep. Front/back still alternates (odd steps =
-        // back, even = front) since backface-visibility only cares about the angle mod 360.
-        const inner = tile.querySelector('.flip-inner');
-        const step = (parseInt(inner.dataset.flipStep, 10) || 0) + 1;
-        inner.dataset.flipStep = step;
-        const axis = tile.classList.contains('flip-axis-y') ? 'Y' : 'X';
-        inner.style.transform = `rotate${axis}(${step * 180}deg)`;
-        tile.classList.remove('is-flipping');
-        void tile.offsetWidth; // force reflow so the shade/glare animation restarts every time
-        tile.classList.add('is-flipping');
-      }, i * STAGGER));
-    });
-    nsComingSoonFlipTimeouts.push(setTimeout(sweep, sweepDuration + 2000));
-  };
-
-  const row = tiles[0].closest('.row-section');
-  nsComingSoonFlipObserver = new IntersectionObserver((entries) => {
-    if (!entries.some(e => e.isIntersecting)) return;
-    nsComingSoonFlipObserver.disconnect();
-    nsComingSoonFlipTimeouts.push(setTimeout(sweep, 2000));
-  }, { threshold: 0.2 });
-  nsComingSoonFlipObserver.observe(row || tiles[0]);
 }
 
 // Each spotlight filmstrip is wider than the page's normal content width (see
@@ -5794,26 +5571,6 @@ document.addEventListener('keydown', e => {
     document.getElementById('navDropdown').classList.remove('open');
     document.getElementById('navHamburger').setAttribute('aria-expanded', 'false');
   }
-});
-
-/* ─── PROFILE MODAL (Netflix-style "Who's Watching?") ─── */
-function openProfileModal(e) {
-  if (e) e.preventDefault();
-  document.getElementById('navDropdown').classList.remove('open');
-  document.getElementById('navHamburger').setAttribute('aria-expanded', 'false');
-  document.getElementById('profileOverlay').classList.add('is-open');
-  document.body.style.overflow = 'hidden';
-}
-function closeProfileModal() {
-  document.getElementById('profileOverlay').classList.remove('is-open');
-  document.body.style.overflow = '';
-}
-document.getElementById('profileModalClose').addEventListener('click', closeProfileModal);
-document.getElementById('profileOverlay').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeProfileModal();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeProfileModal();
 });
 
 /* ─── MOBILE DRAWER ─── */
@@ -6456,7 +6213,7 @@ function nsLoadState() {
 // Phase 1 fixed layout defaults: Top Picks (renamed FEATURED), Lane of Lanes, Coming Soon
 // and Lane of Genres (Colour + Stacked) all on by default, seeded with the Priya Nair
 // persona so Continue Watching / Your Watchlist / Suggested for You all have content to show.
-const nsState = Object.assign({ watchlist: nsCatalogSlugs(2, 20), continueWatching: nsCatalogSlugs(22, 3), watched: nsCatalogSlugs(25, 20), marquee: ['it-was-just-an-accident'], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 5, laneOfLanes: true, allDoubleTiles: false, carouselRows: true, topTen: true, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', comingSoon: true, comingSoonGoCrazy: false, laneOfGenres: true, laneOfGenresStyle: 'stack', activeDemoUserIdx: 2, marqueeDisplayCount: 1, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
+const nsState = Object.assign({ watchlist: nsCatalogSlugs(2, 20), continueWatching: nsCatalogSlugs(22, 3), watched: nsCatalogSlugs(25, 20), marquee: ['it-was-just-an-accident'], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 5, laneOfLanes: true, allDoubleTiles: false, carouselRows: true, topTen: true, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', comingSoon: true, laneOfGenres: true, laneOfGenresStyle: 'stack', marqueeDisplayCount: 1, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
 
 // Dark mode is a personal display preference, not "content" — kept in its own localStorage
 // key rather than nsState, so it isn't pushed to the shared Google Sheet (see NS_SHEET_API_URL
@@ -6541,7 +6298,6 @@ function nsSyncFromSheet() {
       // Refresh the page itself, not just the settings modal — the Sheet may hold
       // different picks than whatever was last saved to this browser's localStorage.
       renderGrid();
-      nsRestoreActiveDemoUser();
       if (nsState.marquee.length) nsApplyMarqueeToHero();
       const trendingGrid = document.getElementById('trendingCollGrid');
       if (trendingGrid) {
@@ -6550,16 +6306,11 @@ function nsSyncFromSheet() {
       }
       const modal = document.getElementById('settingsModal');
       if (modal && modal.classList.contains('is-open')) {
-        nsRenderAll();
         nsRenderSlotPicker('marquee');
         nsRenderSlotPicker('spotlight');
       }
     })
     .catch(() => {}); // offline, URL not set yet, or script not deployed — keep local state
-}
-function nsMeta(slug) {
-  if (!nsState.meta[slug]) nsState.meta[slug] = { impressionCap: 0 };
-  return nsState.meta[slug];
 }
 function nsFilmBySlug(slug) { return NS_CATALOG.find(f => f._slug === slug); }
 // "Display 2" caps the marquee's active rotation pool to the first 2 picks, same idea as
@@ -6583,325 +6334,12 @@ function nsMarqueeActiveCapped() {
   return nsState.marquee.slice(0, nsState.marqueeDisplayCount === 2 ? 2 : 3);
 }
 
-let nsSelectedSlug = null;
-let nsFilmsSeriesTypeFilter = 'all';
-const nsSearchTerms = { catalog: '', watchlist: '', continueWatching: '', watched: '' };
-const nsColCap = s => s.charAt(0).toUpperCase() + s.slice(1);
-const NS_COLUMN_LABELS = { watchlist: 'Watchlist', continueWatching: 'Continue Watching', watched: 'Watched' };
-
-function nsRowHTML(film, column) {
-  const inWatchlist = nsState.watchlist.includes(film._slug);
-  const inContinueWatching = nsState.continueWatching.includes(film._slug);
-  const inWatched = nsState.watched.includes(film._slug);
-  let actions;
-  if (column === 'catalog') {
-    actions = `<div class="settings-row-actions">
-      <button class="settings-row-action-btn${inWatchlist ? ' is-active' : ''}" data-ns-action="watchlist" data-ns-slug="${film._slug}" title="${inWatchlist ? 'Remove from' : 'Add to'} Watchlist" aria-label="Toggle watchlist">
-        <span class="material-icons" style="font-size:15px;">${inWatchlist ? 'bookmark' : 'bookmark_border'}</span>
-      </button>
-      <button class="settings-row-action-btn${inContinueWatching ? ' is-active' : ''}" data-ns-action="continueWatching" data-ns-slug="${film._slug}" title="${inContinueWatching ? 'Remove from' : 'Add to'} Continue Watching" aria-label="Toggle continue watching">
-        <span class="material-icons" style="font-size:15px;">${inContinueWatching ? 'play_circle' : 'play_circle_outline'}</span>
-      </button>
-      <button class="settings-row-action-btn${inWatched ? ' is-active' : ''}" data-ns-action="watched" data-ns-slug="${film._slug}" title="${inWatched ? 'Remove from' : 'Add to'} Watched" aria-label="Toggle watched">
-        <span class="material-icons" style="font-size:15px;">${inWatched ? 'check_circle' : 'check_circle_outline'}</span>
-      </button>
-    </div>`;
-  } else {
-    actions = `<div class="settings-row-actions">
-      <button class="settings-row-action-btn is-remove" data-ns-action="${column}" data-ns-slug="${film._slug}" title="Remove from ${NS_COLUMN_LABELS[column]}" aria-label="Remove">
-        <span class="material-icons" style="font-size:15px;">close</span>
-      </button>
-    </div>`;
-  }
-  return `<div class="settings-row" data-ns-slug="${film._slug}">
-    <img class="settings-row-thumb" src="${film.image}" alt="" loading="lazy">
-    <div class="settings-row-info">
-      <div class="settings-row-title">${film.title}${film._type === 'series' ? ' <span class="settings-row-type-badge">Series</span>' : ''}</div>
-      <div class="settings-row-meta">${[film.director, film.year].filter(Boolean).join(' · ')}</div>
-    </div>
-    ${actions}
-  </div>`;
-}
-
-function nsFilteredList(column) {
-  const term = nsSearchTerms[column].trim().toLowerCase();
-  let list = column === 'catalog' ? NS_CATALOG : nsState[column].map(nsFilmBySlug).filter(Boolean);
-  if (column === 'catalog' && nsFilmsSeriesTypeFilter !== 'all') list = list.filter(f => f._type === nsFilmsSeriesTypeFilter);
-  if (term) list = list.filter(f => f.title.toLowerCase().includes(term));
-  return list;
-}
-
-function nsRenderColumn(column) {
-  const listEl = document.getElementById('settingsList' + nsColCap(column));
-  const list = nsFilteredList(column);
-  listEl.innerHTML = list.length ? list.map(f => nsRowHTML(f, column)).join('') : '<div class="settings-empty">No films found.</div>';
-  const countEl = document.getElementById('settings' + nsColCap(column) + 'Count');
-  if (countEl) countEl.textContent = column === 'catalog' ? '' : (list.length || '');
-  nsUpdateSelectionHighlight();
-}
-
-function nsRenderAll() {
-  nsRenderColumn('catalog');
-  nsRenderColumn('watchlist');
-  nsRenderColumn('continueWatching');
-  nsRenderColumn('watched');
-}
-
-// "Select a User" swaps the Films & Series columns to a preset persona's watchlist/
-// continueWatching/watched lists, for demoing what different kinds of users would see.
+// Slices NS_CATALOG into a stable run of slugs — used to seed nsState's own fixed
+// watchlist/continueWatching/watched arrays below (Phase 1 has no Films & Series settings
+// tab to edit these from, so this is the only place they're set).
 function nsCatalogSlugs(start, count) {
   return NS_CATALOG.slice(start, start + count).map(f => f._slug);
 }
-const NS_DEMO_USERS = [
-  {
-    name: 'Ava Chen',
-    desc: 'New to MUBI, hasn’t watched anything',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces',
-    watchlist: [], continueWatching: [], watched: [],
-  },
-  {
-    name: 'Diego Ramos',
-    desc: 'Started watching 1 film, watchlisted 1 film',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces',
-    watchlist: nsCatalogSlugs(0, 1),
-    continueWatching: nsCatalogSlugs(1, 1),
-    watched: [],
-  },
-  {
-    name: 'Priya Nair',
-    desc: '~20 films watched and watchlisted',
-    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=faces',
-    watchlist: nsCatalogSlugs(2, 20),
-    continueWatching: nsCatalogSlugs(22, 3),
-    watched: nsCatalogSlugs(25, 20),
-  },
-  {
-    name: 'Amara Osei',
-    desc: 'Power user, watched and watchlisted hundreds of films',
-    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&crop=faces',
-    watchlist: nsCatalogSlugs(45, 250),
-    continueWatching: nsCatalogSlugs(295, 5),
-    watched: nsCatalogSlugs(300, 300),
-  },
-];
-let nsActiveDemoUser = null;
-function nsRenderUserSelect() {
-  document.getElementById('nsUserList').innerHTML = NS_DEMO_USERS.map((u, i) => `
-    <button class="ns-user-btn${nsActiveDemoUser === i ? ' is-active' : ''}" data-ns-user-idx="${i}" type="button">
-      <img class="ns-user-avatar" src="${u.avatar}" alt="${u.name}">
-      <span class="ns-user-text">
-        <span class="ns-user-name">${u.name}</span>
-        <span class="ns-user-desc">${u.desc}</span>
-      </span>
-    </button>
-  `).join('');
-}
-function nsRenderProfileModal() {
-  document.getElementById('profileGrid').innerHTML = NS_DEMO_USERS.map((u, i) => `
-    <button class="profile-card${nsActiveDemoUser === i ? ' is-active' : ''}" data-ns-user-idx="${i}" type="button">
-      <span class="profile-card-avatar-wrap"><img class="profile-card-avatar" src="${u.avatar}" alt="${u.name}"></span>
-      <span class="profile-card-name">${u.name}</span>
-      <span class="profile-card-desc">${u.desc}</span>
-    </button>
-  `).join('');
-}
-// Shared by both the nav avatar "Who's Watching?" modal and the Films & Series "Select a
-// User" row — picking a persona in either place updates the same underlying state.
-function nsApplyDemoUser(idx) {
-  const user = NS_DEMO_USERS[idx];
-  if (!user) return;
-  nsActiveDemoUser = idx;
-  nsState.activeDemoUserIdx = idx;
-  nsState.watchlist = [...user.watchlist];
-  nsState.continueWatching = [...user.continueWatching];
-  nsState.watched = [...user.watched];
-  nsState.watchNextMerged = false;
-  nsSaveState();
-  nsCloseDetails();
-  nsRenderAll();
-  nsRenderUserSelect();
-  nsRenderProfileModal();
-  renderGrid();
-  const navAvatarImg = document.getElementById('navAvatarImg');
-  if (navAvatarImg) navAvatarImg.src = user.avatar;
-}
-document.getElementById('nsUserList').addEventListener('click', e => {
-  const btn = e.target.closest('.ns-user-btn');
-  if (!btn) return;
-  nsApplyDemoUser(Number(btn.dataset.nsUserIdx));
-});
-document.getElementById('profileGrid').addEventListener('click', e => {
-  const btn = e.target.closest('.profile-card');
-  if (!btn) return;
-  nsApplyDemoUser(Number(btn.dataset.nsUserIdx));
-  closeProfileModal();
-});
-// Restores which persona was last picked (from localStorage, or the Sheet once
-// nsSyncFromSheet resolves) — e.g. after navigating here from the Watchlist page and
-// back — without re-applying that persona's watchlist/watched/etc. over whatever's
-// actually saved now, since those may have been edited since the persona was chosen.
-function nsRestoreActiveDemoUser() {
-  const idx = nsState.activeDemoUserIdx;
-  const user = NS_DEMO_USERS[idx];
-  if (idx === null || idx === undefined || !user) return;
-  nsActiveDemoUser = idx;
-  nsRenderUserSelect();
-  nsRenderProfileModal();
-  const navAvatarImg = document.getElementById('navAvatarImg');
-  if (navAvatarImg) navAvatarImg.src = user.avatar;
-}
-nsRenderProfileModal();
-nsRestoreActiveDemoUser();
-
-function nsUpdateSelectionHighlight() {
-  document.querySelectorAll('#settingsColumns .settings-row').forEach(row => {
-    row.classList.toggle('is-selected', row.dataset.nsSlug === nsSelectedSlug);
-  });
-}
-
-let nsDraft = null;
-let nsDraftSlug = null;
-
-function nsRenderDetailsBody(slug) {
-  const film = nsFilmBySlug(slug);
-  if (!film) return;
-  const meta = nsMeta(slug);
-  if (nsDraftSlug !== slug) {
-    nsDraft = {
-      impressionCap: meta.impressionCap || 0,
-      watchlistedDaysAgo: meta.watchlistedDaysAgo || 0,
-      watchedDaysAgo: meta.watchedDaysAgo || 0,
-    };
-    nsDraftSlug = slug;
-  }
-  const inWatchlist = nsState.watchlist.includes(slug);
-  const inContinueWatching = nsState.continueWatching.includes(slug);
-  const inWatched = nsState.watched.includes(slug);
-  document.getElementById('settingsDetailsBody').innerHTML = `
-    <img class="settings-details-thumb" src="${film.image}" alt="">
-    <div class="settings-details-name">${film.title}</div>
-    <div class="settings-details-meta">${[film.director, film.year].filter(Boolean).join(' · ')}</div>
-    <div class="ns-field">
-      <div class="ns-field-label">Impression Cap</div>
-      <input type="number" min="0" class="ns-number-input" id="settingsImpressionCap" value="${nsDraft.impressionCap}">
-    </div>
-    <div class="ns-toggle-row">
-      <span class="ns-toggle-label">Watchlist</span>
-      <label class="ns-switch"><input type="checkbox" id="settingsToggleWatchlist" ${inWatchlist ? 'checked' : ''}><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-    </div>
-    ${inWatchlist ? `<div class="ns-field">
-      <div class="ns-field-label">Watchlisted (days ago)</div>
-      <input type="number" min="0" class="ns-number-input" id="settingsWatchlistDaysAgo" value="${nsDraft.watchlistedDaysAgo}">
-    </div>` : ''}
-    <div class="ns-toggle-row">
-      <span class="ns-toggle-label">Continue Watching</span>
-      <label class="ns-switch"><input type="checkbox" id="settingsToggleContinueWatching" ${inContinueWatching ? 'checked' : ''}><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-    </div>
-    <div class="ns-toggle-row">
-      <span class="ns-toggle-label">Watched</span>
-      <label class="ns-switch"><input type="checkbox" id="settingsToggleWatched" ${inWatched ? 'checked' : ''}><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-    </div>
-    ${inWatched ? `<div class="ns-field">
-      <div class="ns-field-label">Watched (days ago)</div>
-      <input type="number" min="0" class="ns-number-input" id="settingsWatchedDaysAgo" value="${nsDraft.watchedDaysAgo}">
-    </div>` : ''}
-  `;
-  document.getElementById('settingsImpressionCap').addEventListener('input', e => {
-    nsDraft.impressionCap = parseInt(e.target.value, 10) || 0;
-  });
-  const wlDaysInput = document.getElementById('settingsWatchlistDaysAgo');
-  if (wlDaysInput) wlDaysInput.addEventListener('input', e => { nsDraft.watchlistedDaysAgo = parseInt(e.target.value, 10) || 0; });
-  const wDaysInput = document.getElementById('settingsWatchedDaysAgo');
-  if (wDaysInput) wDaysInput.addEventListener('input', e => { nsDraft.watchedDaysAgo = parseInt(e.target.value, 10) || 0; });
-  document.getElementById('settingsToggleWatchlist').addEventListener('change', e => nsSetMembership('watchlist', slug, e.target.checked));
-  document.getElementById('settingsToggleContinueWatching').addEventListener('change', e => nsSetMembership('continueWatching', slug, e.target.checked));
-  document.getElementById('settingsToggleWatched').addEventListener('change', e => nsSetMembership('watched', slug, e.target.checked));
-}
-
-function nsOpenDetails(slug) {
-  nsSelectedSlug = slug;
-  nsRenderDetailsBody(slug);
-  document.getElementById('settingsDetails').classList.add('is-open');
-  nsUpdateSelectionHighlight();
-}
-function nsCloseDetails() {
-  nsSelectedSlug = null;
-  nsDraft = null;
-  nsDraftSlug = null;
-  document.getElementById('settingsDetails').classList.remove('is-open');
-  nsUpdateSelectionHighlight();
-}
-function nsSaveDraft() {
-  if (!nsSelectedSlug || !nsDraft) return;
-  Object.assign(nsMeta(nsSelectedSlug), nsDraft);
-  nsSaveState();
-  const btn = document.getElementById('settingsDetailsSave');
-  btn.textContent = 'Saved';
-  btn.classList.add('is-saved');
-  clearTimeout(btn._nsSavedTimeout);
-  btn._nsSavedTimeout = setTimeout(() => {
-    btn.textContent = 'Save';
-    btn.classList.remove('is-saved');
-  }, 1200);
-}
-const NS_EXCLUSIVE_PAIRS = { watched: 'continueWatching', continueWatching: 'watched' };
-function nsSetMembership(column, slug, on) {
-  const arr = nsState[column];
-  const idx = arr.indexOf(slug);
-  if (on && idx === -1) arr.push(slug);
-  if (!on && idx !== -1) arr.splice(idx, 1);
-  const exclusiveWith = NS_EXCLUSIVE_PAIRS[column];
-  if (on && exclusiveWith) {
-    const otherArr = nsState[exclusiveWith];
-    const otherIdx = otherArr.indexOf(slug);
-    if (otherIdx !== -1) otherArr.splice(otherIdx, 1);
-  }
-  nsSaveState();
-  nsRenderAll();
-  if (nsSelectedSlug === slug) nsRenderDetailsBody(slug);
-  // Continue Watching / Your Watchlist rows on the page itself reflect this list live.
-  if (column === 'continueWatching' || column === 'watchlist') renderGrid();
-}
-
-document.querySelectorAll('[data-ns-clear-column]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const column = btn.dataset.nsClearColumn;
-    if (!nsState[column].length) return;
-    nsState[column] = [];
-    nsSaveState();
-    nsRenderAll();
-    if (nsSelectedSlug) nsRenderDetailsBody(nsSelectedSlug);
-  });
-});
-
-document.getElementById('settingsColumns').addEventListener('click', e => {
-  const actionBtn = e.target.closest('[data-ns-action]');
-  if (actionBtn) {
-    e.stopPropagation();
-    const slug = actionBtn.dataset.nsSlug;
-    const action = actionBtn.dataset.nsAction;
-    nsSetMembership(action, slug, !nsState[action].includes(slug));
-    return;
-  }
-  const row = e.target.closest('.settings-row');
-  if (row) nsOpenDetails(row.dataset.nsSlug);
-});
-document.getElementById('settingsDetailsClose').addEventListener('click', nsCloseDetails);
-document.getElementById('settingsDetailsSave').addEventListener('click', nsSaveDraft);
-document.getElementById('filmsSeriesTypeToggle').addEventListener('click', e => {
-  const btn = e.target.closest('.ns-type-toggle-btn');
-  if (!btn) return;
-  nsFilmsSeriesTypeFilter = btn.dataset.nsType;
-  document.querySelectorAll('#filmsSeriesTypeToggle .ns-type-toggle-btn').forEach(b => b.classList.toggle('is-active', b === btn));
-  nsRenderAll();
-});
-
-['catalog', 'watchlist', 'continueWatching', 'watched'].forEach(col => {
-  document.getElementById('settingsSearch' + nsColCap(col)).addEventListener('input', e => {
-    nsSearchTerms[col] = e.target.value;
-    nsRenderColumn(col);
-  });
-});
 
 document.querySelectorAll('.settings-tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -7114,12 +6552,6 @@ genreLaneSelectEl.addEventListener('change', e => {
 });
 document.getElementById('comingSoonToggle').addEventListener('change', e => {
   nsState.comingSoon = e.target.checked;
-  document.getElementById('comingSoonCrazyRow').style.display = e.target.checked ? '' : 'none';
-  nsSaveState();
-  renderGrid();
-});
-document.getElementById('comingSoonCrazyToggle').addEventListener('change', e => {
-  nsState.comingSoonGoCrazy = e.target.checked;
   nsSaveState();
   renderGrid();
 });
@@ -8035,8 +7467,6 @@ function openSettingsModal() {
   document.getElementById('settingsOverlay').classList.add('is-open');
   document.getElementById('settingsModal').classList.add('is-open');
   document.body.style.overflow = 'hidden';
-  nsRenderAll();
-  nsRenderUserSelect();
   nsRenderSlotPicker('marquee');
   nsRenderSlotPicker('spotlight');
   document.getElementById('numberOfRows').value = nsState.numberOfRows;
@@ -8051,8 +7481,6 @@ function openSettingsModal() {
   document.getElementById('genreLaneSelectRow').style.display = nsState.genreLane ? '' : 'none';
   if (nsState.genreLaneGenre) document.getElementById('genreLaneSelect').value = nsState.genreLaneGenre;
   document.getElementById('comingSoonToggle').checked = !!nsState.comingSoon;
-  document.getElementById('comingSoonCrazyRow').style.display = nsState.comingSoon ? '' : 'none';
-  document.getElementById('comingSoonCrazyToggle').checked = !!nsState.comingSoonGoCrazy;
   document.getElementById('laneOfGenresToggle').checked = !!nsState.laneOfGenres;
   document.querySelectorAll('#laneOfGenresStyleToggle .ns-type-toggle-btn').forEach(b => {
     b.classList.toggle('is-active', b.dataset.nsGenreStyle === nsState.laneOfGenresStyle);
@@ -8079,7 +7507,6 @@ function closeSettingsModal() {
   document.getElementById('settingsOverlay').classList.remove('is-open');
   document.getElementById('settingsModal').classList.remove('is-open');
   document.body.style.overflow = '';
-  nsCloseDetails();
 }
 document.getElementById('settingsModalClose').addEventListener('click', closeSettingsModal);
 document.getElementById('settingsOverlay').addEventListener('click', closeSettingsModal);
@@ -8106,18 +7533,6 @@ document.addEventListener('keydown', e => {
   e.preventDefault();
   openSettingsModal();
 });
-// "u" switches user from anywhere — same "Who's Watching?" modal as clicking the nav
-// avatar (openProfileModal), guarded the same way "s" is above.
-document.addEventListener('keydown', e => {
-  if (e.key !== 'u' && e.key !== 'U') return;
-  if (e.metaKey || e.ctrlKey || e.altKey) return;
-  const tag = (e.target.tagName || '').toLowerCase();
-  if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) return;
-  if (document.getElementById('profileOverlay').classList.contains('is-open')) return;
-  e.preventDefault();
-  openProfileModal();
-});
-
 /* ─── KEYBOARD-SHORTCUT HINT BAR ─── floating at the bottom of the viewport (position:fixed,
    see its own CSS comment) so dismissing/showing it never affects any other layout math on
    the page — unlike the top-of-flow version this replaced. */

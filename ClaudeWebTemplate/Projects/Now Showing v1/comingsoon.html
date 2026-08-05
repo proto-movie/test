@@ -1,0 +1,3979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Coming Soon on MUBI</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <style>
+    /* Riforma — MUBI CDN, same preload as production */
+    @font-face { font-family: 'Riforma'; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-weight: 500; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2'); }
+    @font-face { font-family: 'Riforma'; font-style: italic; font-display: swap;
+      src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Italic.woff2) format('woff2'); }
+
+    /* ─── RESET ─── */
+    /* overflow-x:hidden lives on html, not body — any non-visible overflow on body breaks
+       position:sticky for descendants (it makes body compete as a scroll/clip container
+       instead of the real viewport), which is what the Vertical Parallax marquee relies on. */
+    html { overflow-y: scroll; overflow-x: hidden; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Riforma, Helvetica, Arial, "Lucida Grande", sans-serif;
+      background: #fff;
+      color: #323232;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; padding: 0; }
+    body { transition: background 0.2s ease, color 0.2s ease; }
+
+    /* ─── DARK MODE (Page Settings tab) ───
+       The rest of the stylesheet hardcodes colours rather than using custom properties, so
+       rather than rewrite every rule, dark mode is a block of overrides scoped under
+       [data-theme="dark"] on <html> — same technique as the light/dark toggle wired up in
+       JS (see nsApplyTheme()). Covers the light surfaces that actually appear on the public
+       page; the Content Settings modal itself is left alone (it's an authoring tool, not
+       part of "the page"), as are the already-dark hero/spotlight/marquee sections.
+       Greys are tinted a few degrees toward MUBI's brand navy (--red: #001489 elsewhere in
+       the design system) rather than neutral, so dark mode reads as "MUBI dark" not generic
+       dark-grey. */
+    :root[data-theme="dark"] {
+      --dm-bg: #12141c;
+      --dm-surface: #1a1d28;
+      --dm-seam: #262a37;
+      --dm-text: #EDEDF2;
+      --dm-text-dim: rgba(237,237,242,0.55);
+      --dm-text-dimmer: rgba(237,237,242,0.4);
+    }
+    :root[data-theme="dark"] body { background: var(--dm-bg); color: var(--dm-text); }
+    :root[data-theme="dark"] .row-title,
+    :root[data-theme="dark"] .now-showing-title { color: var(--dm-text); }
+    :root[data-theme="dark"] .row-see-all,
+    :root[data-theme="dark"] .now-showing-count { color: var(--dm-text-dim); }
+    :root[data-theme="dark"] .row-grid { background: var(--dm-bg); border-top-color: var(--dm-bg); border-bottom-color: var(--dm-bg); }
+    /* "New to MUBI?" sits over its own full-bleed photo background (see .new-to-mubi-bg),
+       so its row-grid must stay fully transparent even in dark mode — otherwise the general
+       dark .row-grid rule above (equal specificity, but this is more specific) paints a
+       visible --dm-bg seam behind/between the tiles. */
+    :root[data-theme="dark"] .new-to-mubi-section .row-grid { background: transparent; border-top-color: transparent; border-bottom-color: transparent; }
+    :root[data-theme="dark"] .film-card--empty .card-img-wrap { background: linear-gradient(var(--dm-seam) 0%, var(--dm-bg) 100%); }
+    :root[data-theme="dark"] .card-img-wrap { background: var(--dm-seam); }
+    :root[data-theme="dark"] .card-synopsis-block { background: var(--dm-surface); box-shadow: 0 4px 14px rgba(0,0,0,0.6); }
+    :root[data-theme="dark"] .card-synopsis { color: var(--dm-text); }
+    :root[data-theme="dark"] .card-icon-btn { border-color: var(--dm-text); color: var(--dm-text); }
+    :root[data-theme="dark"] .card-meta-icons svg path { fill: var(--dm-text); }
+    :root[data-theme="dark"] .site-footer { border-top-color: var(--dm-seam); }
+    :root[data-theme="dark"] .footer-bottom { border-top-color: var(--dm-seam); }
+    :root[data-theme="dark"] .footer-links a { color: var(--dm-text-dim); }
+    :root[data-theme="dark"] .footer-links a:hover { color: var(--dm-text); }
+    :root[data-theme="dark"] .footer-copy { color: var(--dm-text-dimmer); }
+    :root[data-theme="dark"] .director-info { background: var(--dm-surface); }
+    :root[data-theme="dark"] .director-name { color: var(--dm-text); }
+    :root[data-theme="dark"] .director-count { color: var(--dm-text-dim); }
+    :root[data-theme="dark"] #searchNavBg { background: rgba(18,20,28,0.8); }
+    :root[data-theme="dark"] .search-inline-input { color: var(--dm-text); }
+    :root[data-theme="dark"] .search-inline-input::placeholder { color: var(--dm-text-dimmer); }
+    :root[data-theme="dark"] .search-inline.is-open .search-icon-btn { color: var(--dm-text-dim); }
+    :root[data-theme="dark"] .search-dropdown { background: var(--dm-surface); box-shadow: 0 4px 24px rgba(0,0,0,0.5); }
+    :root[data-theme="dark"] .search-drop-label { color: var(--dm-text-dimmer); }
+    :root[data-theme="dark"] .search-drop-item:hover { background: var(--dm-seam); }
+    :root[data-theme="dark"] .search-drop-thumb { background: var(--dm-seam); }
+    :root[data-theme="dark"] .search-drop-title { color: var(--dm-text); }
+    :root[data-theme="dark"] .search-drop-director { color: var(--dm-text-dim); }
+    :root[data-theme="dark"] .nav-dropdown { background: var(--dm-surface); box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.3); }
+    :root[data-theme="dark"] .nav-dropdown::before { background: var(--dm-surface); box-shadow: -2px -2px 4px rgba(0,0,0,0.2); }
+    :root[data-theme="dark"] .nav-dropdown a { color: var(--dm-text-dim); }
+    :root[data-theme="dark"] .nav-dropdown a:hover { background: var(--dm-seam); color: var(--dm-text); }
+    :root[data-theme="dark"] .nav-dropdown-sep { border-top-color: var(--dm-seam); }
+
+    /* ─── CONTAINER — exact MUBI breakpoints ─── */
+    .wrap {
+      width: 100%;
+      padding: 0 20px;
+      margin: 0 auto;
+    }
+    @media (min-width: 810px)  { .wrap { padding: 0 22px; max-width: 836px; } }
+    @media (min-width: 1186px) { .wrap { max-width: 1124px; } }
+    @media (min-width: 1562px) { .wrap { max-width: 1500px; } }
+
+    /* ─── Centred content containers ─── */
+    @media (min-width: 810px) {
+      .now-showing { max-width: 836px; }
+      .browse-cta  { max-width: 836px; }
+    .site-footer {
+      border-top: 1px solid #EAEAEA;
+      margin-top: 100px;
+    }
+    .site-footer .wrap { padding-top: 40px; padding-bottom: 48px; }
+    .footer-top {
+      display: flex;
+      gap: 48px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+    .footer-logo-col { flex-shrink: 0; }
+    .footer-logo-col svg { display: block; }
+    .footer-cols {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+    .footer-col { min-width: 120px; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 8px; }
+    .footer-col a {
+      font-family: Riforma, sans-serif;
+      font-size: 14px; font-weight: 400;
+      color: #7d7d7d; text-decoration: none;
+    }
+    .footer-col a:hover { color: #323232; }
+    .footer-bottom {
+      display: flex; align-items: center; gap: 20px;
+      border-top: 1px solid #EAEAEA;
+      padding-top: 20px;
+    }
+    .footer-social { display: flex; gap: 14px; }
+    .footer-social a { color: #7d7d7d; display: flex; align-items: center; }
+    .footer-social a:hover { color: #323232; }
+    .footer-copy {
+      font-family: Riforma, sans-serif;
+      font-size: 14px; color: #aaa;
+      margin-left: auto;
+    }
+}
+    @media (min-width: 1186px) {
+      .nav-desktop { max-width: 1124px; margin: 0 auto; }
+      .now-showing { max-width: 1124px; margin: 0 auto; }
+      .browse-cta  { max-width: 1124px; margin: 0 auto; }
+      .site-footer { max-width: 1124px; margin: 0 auto; }
+    }
+    @media (min-width: 1562px) {
+      .nav-desktop { max-width: 1500px; }
+      .now-showing { max-width: 1500px; }
+      .browse-cta  { max-width: 1500px; }
+      .site-footer { max-width: 1500px; }
+    }
+
+    /* ─── HEADER ─── transparent — hero image shows through */
+    .site-header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      z-index: 10;
+    }
+    @media (min-width: 1186px) { .site-header { height: 50px; } }
+
+    /* Mobile top bar */
+    .nav-mobile {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 12px;
+      position: relative;
+    }
+    @media (min-width: 810px) and (max-width: 1185px) { .nav-mobile { max-width: 836px; margin: 0 auto; padding: 0 22px; } }
+    @media (min-width: 1186px) { .nav-mobile { display: none; } }
+    .nav-mobile-left { display: flex; align-items: center; gap: 2px; z-index: 1; }
+    .nav-mobile-logo { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; }
+
+    /* Desktop nav bar */
+    .nav-desktop {
+      display: none;
+    }
+    @media (min-width: 1186px) {
+      .nav-desktop {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 22px;
+        gap: 0;
+      }
+    }
+
+    .nav-logo { flex-shrink: 0; padding-right: 40px; display: flex; align-items: center; }
+
+    /* Right nav links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      align-self: flex-end;
+      margin-bottom: 7px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .nav-link {
+      display: block;
+      padding: 0 15px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      line-height: 24px;
+      color: rgba(255,255,255,0.7);
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { color: #fff; }
+    .nav-link.is-active { color: #fff; }
+    .nav-hamburger {
+      display: flex;
+      align-items: center;
+      padding: 0 8px 0 8px;
+      color: rgba(255,255,255,0.7);
+      transition: color 0.15s;
+      cursor: pointer;
+    }
+    .nav-hamburger:hover { color: #fff; }
+    .nav-hamburger .material-icons { font-size: 20px; }
+    .nav-cta {
+      margin-left: 14px;
+      padding: 7px 14px;
+      border: 1px solid rgba(255,255,255,0.45);
+      border-radius: 3px;
+      font-size: 13px;
+      line-height: 1;
+      color: #fff;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { background: rgba(255,255,255,0.12); border-color: #fff; }
+
+    /* Mobile right icons */
+    .nav-mobile-right { display: flex; align-items: center; gap: 2px; }
+    .nav-icon-btn {
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+    }
+
+    /* ─── HERO ─── exact MUBI technique */
+    /* Hero outer: normal document flow, establishes positioning context */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 75vh;
+      min-height: 630px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    @media (min-width: 810px) {
+      .hero {
+        height: 0;
+        padding-bottom: 56.25%; /* 16:9 */
+        overflow: visible;
+        min-height: 0;
+        margin-bottom: 35px;
+      }
+    }
+
+    /* Marquee rotation indicator — one dot per marquee pick, shown only when there's more
+       than one. The active dot becomes a pill that fills left-to-right over the rotation
+       interval, so it doubles as a countdown to the next film. */
+    .hero-marquee-dots {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 15;
+    }
+    .hero-marquee-dot {
+      width: 6px; height: 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.45);
+    }
+    .hero-marquee-dot.is-active {
+      position: relative;
+      width: 32px; height: 6px;
+      background: rgba(255,255,255,0.3);
+      overflow: hidden;
+    }
+    .hero-marquee-dot-fill {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      border-radius: 3px;
+      transform: scaleX(0);
+      transform-origin: left center;
+      will-change: transform;
+      animation-name: hero-marquee-fill;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+    }
+    @keyframes hero-marquee-fill {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    /* "Subtle with Arrows" Navigation Style — a duplicate of Subtle Rotation with a manual
+       prev/next pair overlaid on the hero, revealed only on hover instead of sitting visible
+       at rest (keeps the "subtle" full-bleed hero uncluttered until the viewer actually
+       reaches for it). Scoped under .hero--rotation-arrows (toggled by nsRenderMarqueeArrows
+       only when this style is active), so the buttons stay inert/invisible for every other
+       style even though the markup itself is always present. */
+    /* Black gradients bleeding in from the screen edges — the hover affordance itself,
+       instead of a circle behind each arrow. Wider than the arrow's own hit area so the
+       icon reads as sitting "in" the darkened edge rather than floating over plain image. */
+    .hero-arrow-edge-fade {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 200px;
+      max-width: 16vw;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      /* Sits just above the video/still (.hero-bg is z-index:0) but below .hero-info
+         (z-index:2) and everything else in the UI layer, so it only ever darkens the
+         video itself — never the synopsis, buttons, dots, or nav tiles on top of it. */
+      z-index: 1;
+    }
+    .hero--rotation-arrows:hover .hero-arrow-edge-fade { opacity: 1; }
+    .hero-arrow-edge-fade--left { left: 0; background: linear-gradient(to right, rgba(0,0,0,0.35) 0%, transparent 100%); }
+    .hero-arrow-edge-fade--right { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.35) 0%, transparent 100%); }
+    .hero-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 52px; height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      color: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.15s ease;
+      z-index: 16;
+    }
+    .hero--rotation-arrows:hover .hero-arrow { opacity: 1; pointer-events: auto; }
+    .hero-arrow:hover { transform: translateY(-50%) scale(1.15); }
+    .hero-arrow--prev { left: 24px; }
+    .hero-arrow--next { right: 24px; }
+    .hero-arrow img { width: 13px; height: 20px; display: block; filter: drop-shadow(0 1px 6px rgba(0,0,0,0.6)); }
+    @media (max-width: 809px) { .hero-arrow, .hero-arrow-edge-fade { display: none; } }
+
+    /* "Tile Navigation" marquee display mode — small clickable poster thumbnails, one per
+       marquee pick, so the viewer picks which film shows instead of it auto-rotating.
+       Sits in normal flow below the buttons/synopsis (left-aligned with them), pushing
+       that content up rather than floating as a centered overlay like .hero-marquee-dots. */
+    .hero-marquee-nav-tiles {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .hero-marquee-nav-tile-wrap { position: relative; }
+    /* Sized to match the Curator's Spotlight filmstrip tiles exactly (see .spotlight-slider's
+       grid-auto-columns and .card-img-wrap's aspect-ratio) — same width formula at the same
+       breakpoints, height derived the same way (371:209) instead of a fixed px height. */
+    .hero-marquee-nav-tile {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 390px;
+      aspect-ratio: 371 / 209;
+      border-radius: 0;
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0.6;
+      transition: opacity 0.2s ease, border-color 0.2s ease;
+    }
+    @media (min-width: 810px)  { .hero-marquee-nav-tile { width: calc((836px - 44px - 4px) / 2); } }
+    @media (min-width: 1186px) { .hero-marquee-nav-tile { width: calc((1124px - 44px - 8px) / 3); } }
+    @media (min-width: 1562px) { .hero-marquee-nav-tile { width: calc((1500px - 44px - 12px) / 4); } }
+    .hero-marquee-nav-tile:hover { opacity: 0.85; }
+    .hero-marquee-nav-tile.is-active { opacity: 1; border-color: #fff; }
+    .hero-marquee-nav-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-marquee-nav-tile-grad {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+    }
+    /* Same circle+triangle glyph as .search-drop-play, just bigger — centred over the tile,
+       and only shown on hover so it reads as a "click to watch" affordance rather than
+       permanently sitting on top of the title. pointer-events stays enabled (unlike the
+       plain decorative overlays elsewhere) so hovering the glyph itself can go further —
+       filling in solid brand blue with the outline dropped, same "about to click" cue as
+       a real button's hover state. */
+    .hero-marquee-nav-tile-play {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .hero-marquee-nav-tile:hover .hero-marquee-nav-tile-play { opacity: 1; }
+    .hero-marquee-nav-tile-play svg { filter: drop-shadow(0 1px 4px rgba(0,0,0,0.5)); }
+    .hero-marquee-nav-tile-play-circle { transition: fill 0.15s ease, stroke 0.15s ease; }
+    .hero-marquee-nav-tile-play:hover .hero-marquee-nav-tile-play-circle { fill: #001489; stroke: none; }
+    /* Same type treatment/positioning as the standard film-card title (.card-title /
+       .card-overlay) elsewhere on the page, just applied to this smaller tile. */
+    .hero-marquee-nav-tile-title {
+      position: absolute;
+      left: 20px; right: 14px; bottom: 12px;
+      font-family: Riforma, sans-serif;
+      font-size: 22px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.1px;
+      color: #fff;
+      line-height: 1.2;
+      text-align: left;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    /* Active tile only — a flat horizontal timer bar flush against its bottom edge, filling
+       over the rotation interval (same duration/mechanic as the "Subtle Rotation" dot fill)
+       before the hero advances to the next tile. */
+    .hero-marquee-nav-tile-timer {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 3px;
+      background: rgba(255,255,255,0.3);
+      z-index: 2;
+      overflow: hidden;
+    }
+    .hero-marquee-nav-tile-timer-fill {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #fff;
+      transform: scaleX(0);
+      transform-origin: left center;
+      will-change: transform;
+      animation-name: hero-marquee-fill;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+    }
+
+    /* ─── "TRADITIONAL" MARQUEE — a classic 3-up carousel: a fixed 1593×986 centre slide
+       flanked by narrow "peeking" slivers of the previous/next marquee pick, sitting flush
+       against it with no seam. Only shown when Navigation Style is set to "Traditional"
+       (see .hero--traditional below) — Subtle Rotation and Tile Navigation are untouched
+       by any of this. */
+    .hero-traditional { display: none; }
+    .hero--traditional .hero-bg,
+    .hero--traditional .hero-info { display: none; }
+    .hero--traditional .hero-traditional { display: block; }
+    @media (min-width: 810px) {
+      .hero--traditional.hero { height: auto; padding-bottom: 0; overflow: visible; }
+    }
+    /* Full-bleed to the viewport, not just the page's own max-width wrap — so the tile row
+       is always at least as wide as the nav bar/content above it, however wide the screen. */
+    .hero-trad-stage {
+      position: relative;
+      left: 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      overflow: hidden;
+    }
+    /* nsCenterTraditionalFilmstrip() sets this row's own transform so the middle (2nd) tile
+       sits centred in the stage — the outer two, being the exact same width, mostly hang off
+       past the stage's overflow:hidden edges and only peek a sliver into view. Sliding by
+       exactly one tile-width (see nsRenderTraditionalCarousel) is what lands a peek in the
+       centre at the size it already was — nothing ever resizes mid-slide. */
+    .hero-trad-stage-inner {
+      display: flex;
+      align-items: stretch;
+    }
+    /* Shared size for both the filmstrip tiles above and .hero-trad-center-overlay below —
+       min-width goes a bit beyond .nav-desktop/.wrap's own max-width at each tier (not just
+       matching it), so the centre slide always reads as visibly wider than the nav bar/page
+       content above it, at any viewport. */
+    .hero-trad-tile, .hero-trad-center-overlay {
+      width: 1593px;
+      max-width: 78vw;
+      aspect-ratio: 1593 / 986;
+    }
+    @media (min-width: 810px)  { .hero-trad-tile, .hero-trad-center-overlay { min-width: 896px; max-width: 896px; } }
+    @media (min-width: 1186px) { .hero-trad-tile, .hero-trad-center-overlay { min-width: 1184px; max-width: 1184px; } }
+    @media (min-width: 1562px) { .hero-trad-tile, .hero-trad-center-overlay { min-width: 1580px; max-width: 1580px; } }
+    .hero-trad-tile {
+      position: relative;
+      flex-shrink: 0;
+      overflow: hidden;
+      background: #A5A3AB;
+      cursor: pointer;
+    }
+    .hero-trad-tile-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    /* Only the centred card's video ever plays — starting 3s after it actually settles in
+       the middle (see nsScheduleTradCenterVideo) — so peeking tiles just show their still
+       image. Once started, a video is a normal child of its (still sliding) tile: if a new
+       slide begins while it's playing, it keeps playing and slides right along with the
+       tile out to a peek slot, fading out only once that slide has settled (see
+       nsStopTradCenterVideo, called from nsRenderTraditionalCarousel's settle callback). */
+    .hero-trad-tile-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1s ease;
+      pointer-events: none;
+    }
+    .hero-trad-tile-video.is-playing { opacity: 1; }
+    /* Fixed in the stage's centre (never slides) — whichever physical tile is currently
+       rotated into the centre position sits directly beneath this. */
+    .hero-trad-center-overlay {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 20;
+    }
+    .hero-trad-title, .hero-trad-bottom, .hero-trad-our-take {
+      transition: opacity 1s ease;
+      pointer-events: auto;
+    }
+    /* Slower, smoother crossfade specifically between one film's title/title-treatment and
+       the next's (see the fade-out-swap-fade-in cycle in nsRenderTraditionalCarousel's
+       settle callback) — .hero-trad-bottom/.hero-trad-our-take keep the plain 1s above,
+       swapping instantly alongside it. */
+    .hero-trad-title { transition: opacity 1.4s ease-in-out; }
+    .hero-trad-center-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      animation: videoFadeIn 1s ease forwards;
+      animation-delay: 3s;
+      transition: opacity 1s ease;
+    }
+    /* Fades the nav bar's dark backdrop into whatever's directly beneath it, regardless of
+       how bright the slide's own image/video is — same purpose as .hero-grad-2, just scoped
+       to the centre tile instead of one full-bleed background. */
+    .hero-trad-top-grad {
+      position: absolute; top: 0; left: 0; right: 0; height: 340px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+    }
+    .hero-trad-grad {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 45%, transparent 72%);
+    }
+    /* Every tile (peek AND centre alike) carries the exact same gradient strength via its
+       own top-grad/grad — no more special-cased "boost" on the peeks trying to visually
+       match a doubled centre. Since the gradient is each tile's own child element, it
+       slides with that tile automatically; nothing is fixed in place over the middle of
+       the stage, so there's no more "darker in the middle" patch during a slide. The fixed
+       .hero-trad-center-overlay no longer carries its own duplicate top-grad/grad either
+       (see its markup) — it now relies on whichever tile is currently centred underneath
+       for darkening, same as the peeks. */
+    .hero-trad-title {
+      position: absolute; top: 0; left: 0; right: 0;
+      padding: 120px 48px 0;
+      color: #fff;
+    }
+    .hero-trad-title-img { display: block; max-height: 140px; max-width: 800px; width: auto; height: auto; object-fit: contain; object-position: left center; }
+    /* Same proportional scale-down as .hero-title-img--wide, for banner-style logos (>3:1)
+       so they don't dominate next to squarer/stacked ones as the carousel rotates. */
+    .hero-trad-title-img--wide { max-height: 103px; max-width: 600px; }
+    .hero-trad-title-text { font-family: Riforma, sans-serif; font-size: 52px; font-weight: 500; text-transform: uppercase; }
+    .hero-trad-bottom {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: 0 48px 64px;
+      color: #fff;
+    }
+    /* At each tier the centre tile is wider than .nav-desktop by a fixed amount (see the
+       min-width comment above), so the gap between the tile's own edge and the nav logo's
+       left edge is a constant, viewport-independent offset within that tier — not 48px.
+       Bump padding-left to that measured constant so the title/director/watch button
+       line up with the MUBI logo exactly, at every width from here up. */
+    @media (min-width: 1186px) {
+      .hero-trad-title { padding-left: 53px; }
+      .hero-trad-bottom { padding-left: 53px; }
+    }
+    @media (min-width: 1562px) {
+      .hero-trad-title { padding-left: 62px; }
+      .hero-trad-bottom { padding-left: 62px; }
+    }
+    /* Director/year — two stacked lines, matching the Subtle Rotation hero's
+       .hero-meta-director-row / .hero-meta-country-row instead of one inline row. */
+    .hero-trad-meta { display: flex; flex-direction: column; gap: 0; font-family: Riforma, sans-serif; font-size: 14px; margin-bottom: 18px; }
+    .hero-trad-meta .hero-meta-director-row { display: flex; align-items: baseline; gap: 4px; }
+    .hero-trad-meta .hero-meta-label { color: rgba(255,255,255,0.7); text-transform: uppercase; }
+    .hero-trad-meta .hero-meta-director { font-weight: 700; }
+    .hero-trad-country { color: rgba(255,255,255,0.85); text-transform: uppercase; }
+    .hero-trad-bottom-row { display: flex; align-items: flex-end; gap: 32px; }
+    .hero-trad-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    /* Centred, sitting higher up the slide rather than tucked at the bottom next to the
+       Watch button — a caption over the middle of the image instead of a footnote. */
+    .hero-trad-our-take {
+      position: absolute; left: 50%; bottom: 69px;
+      transform: translateX(-50%);
+      width: 100%; max-width: 680px;
+      padding: 0 24px;
+      font-family: Riforma, sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.55;
+      text-align: left;
+      color: #fff;
+      text-shadow: 0 1px 10px rgba(0,0,0,0.8);
+    }
+    /* Anchored to the stage itself (not any one tile, since which tile is "the peek" now
+       rotates) — near the stage's own edges, closer to the middle than dead-centre-of-a-
+       mostly-offscreen-tile would be, matching the .new-to-mubi-arrow inner-edge convention. */
+    .hero-trad-arrow {
+      position: absolute; top: 50%;
+      transform: translateY(-50%);
+      width: 60px; height: 60px;
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 25;
+      opacity: 0.85;
+      transition: opacity 0.15s ease;
+    }
+    .hero-trad-arrow--prev { left: 16px; }
+    .hero-trad-arrow--next { right: 16px; }
+    .hero-trad-arrow:hover { opacity: 1; }
+    .hero-trad-arrow img { width: 13px; height: 20px; display: block; filter: drop-shadow(0 1px 6px rgba(0,0,0,0.6)); }
+    @media (max-width: 809px) {
+      .hero-trad-tile[data-role="prev"], .hero-trad-tile[data-role="next"],
+      .hero-trad-arrow { display: none; }
+    }
+
+    /* ─── "TRADITIONAL ROUNDED" — a duplicate of Traditional (same carousel markup/JS,
+       see nsRenderTraditionalCarousel) with its own visual treatment: tiles sit under the
+       nav with real clearance, capped to the page's own content width (.wrap's max-width,
+       not wider than it like plain Traditional) then bumped up from that, rounded corners,
+       and a real 20px gap between them instead of sitting flush. .hero--traditional-rounded
+       is toggled alongside .hero--traditional, so it only ever layers on top of it. */
+    .hero--traditional-rounded .hero-trad-stage {
+      margin-top: 80px;
+      /* Reserves real white space below the card, inside the stage's own clipped box, for
+         the arrow pair to sit in (see the arrows section) — anything positioned past the
+         stage's box (padding included) would otherwise be cut off by its overflow:hidden,
+         which is what keeps the peeking side cards' excess sliced off. */
+      padding-bottom: 70px;
+    }
+    .hero--traditional-rounded.hero { margin-bottom: 50px; }
+    /* The 20px gap (and .hero-trad-stage's own transparent box beyond it) would otherwise
+       show the page's plain white background right up against the cards — most noticeable
+       while sliding, since a peek's edge sits right next to it. A dark fill behind the strip
+       reads as intentional negative space instead of an unstyled gap. */
+    /* Stage itself (not just stage-inner) also gets the dark fill — guards against the
+       page's own background (white in light mode) showing through at the stage's own box
+       edges, which would only be noticeable in light mode since dark mode's page background
+       already reads close to this same dark tone. */
+    /* Matches the page's own background exactly — plain white in light mode, the same
+       --dm-bg dark tone body itself uses in dark mode — so the letterbox space around the
+       card reads as the page showing through, not a separate panel. */
+    .hero--traditional-rounded .hero-trad-stage { background: #fff; }
+    .hero--traditional-rounded .hero-trad-stage-inner { gap: 20px; background: #fff; }
+    :root[data-theme="dark"] .hero--traditional-rounded .hero-trad-stage { background: var(--dm-bg); }
+    :root[data-theme="dark"] .hero--traditional-rounded .hero-trad-stage-inner { background: var(--dm-bg); }
+    .hero--traditional-rounded .hero-trad-tile,
+    .hero--traditional-rounded .hero-trad-center-overlay {
+      max-width: 68vw;
+      border-radius: 24px;
+      overflow: hidden;
+    }
+    /* .wrap's own max-width per tier (836/1124/1500), taken down 20% then up 10% from
+       there — plain Traditional instead goes a bit *beyond* .wrap's width at each tier. */
+    @media (min-width: 810px) {
+      .hero--traditional-rounded .hero-trad-tile,
+      .hero--traditional-rounded .hero-trad-center-overlay { min-width: 736px; max-width: 736px; }
+    }
+    @media (min-width: 1186px) {
+      .hero--traditional-rounded .hero-trad-tile,
+      .hero--traditional-rounded .hero-trad-center-overlay { min-width: 989px; max-width: 989px; }
+    }
+    @media (min-width: 1562px) {
+      .hero--traditional-rounded .hero-trad-tile,
+      .hero--traditional-rounded .hero-trad-center-overlay { min-width: 1320px; max-width: 1320px; }
+    }
+
+    /* Only 2 films active (see nsMarqueeActive/Display: 2) — there's no third pick to peek
+       from on the left, so that slot is dropped entirely instead of just sitting empty, and
+       the freed-up width goes straight into making the remaining two tiles bigger. Same
+       shared width for both (not just the centre) is what keeps the slide math below
+       correct — nsCenterTraditionalFilmstrip measures whichever tile is centred and slides
+       by exactly that width, so every tile needs to actually match. */
+    .hero--traditional-rounded-duo .hero-trad-tile[data-role="prev"] { display: none; }
+    /* "Square Corners" setting (see marqueeSquareCornersToggle) — unrounds Traditional
+       Rounded's tiles, whether it's this 2-tile duo layout or the regular 3-tile one below. */
+    .hero--traditional-rounded-duo.hero--square-corners .hero-trad-tile,
+    .hero--traditional-rounded-duo.hero--square-corners .hero-trad-center-overlay { border-radius: 0; }
+    .hero--traditional-rounded.hero--square-corners .hero-trad-tile,
+    .hero--traditional-rounded.hero--square-corners .hero-trad-center-overlay { border-radius: 0; }
+    /* Narrower than the page's own .wrap container (was a flush 836/1124/1500 match —
+       dialled back ~10% per feedback) while height stays exactly at the regular 3-tile
+       version's own height, so explicit height here (not the shared aspect-ratio) is what
+       actually governs it. */
+    @media (min-width: 810px) {
+      .hero--traditional-rounded-duo .hero-trad-tile,
+      .hero--traditional-rounded-duo .hero-trad-center-overlay { min-width: 750px; max-width: 750px; height: 456px; }
+    }
+    @media (min-width: 1186px) {
+      .hero--traditional-rounded-duo .hero-trad-tile,
+      .hero--traditional-rounded-duo .hero-trad-center-overlay { min-width: 1010px; max-width: 1010px; height: 612px; }
+    }
+    @media (min-width: 1562px) {
+      .hero--traditional-rounded-duo .hero-trad-tile,
+      .hero--traditional-rounded-duo .hero-trad-center-overlay { min-width: 1350px; max-width: 1350px; height: 817px; }
+    }
+
+    /* Title/synopsis/meta baked directly onto all 3 tiles now (see the markup — every
+       .hero-trad-tile carries its own .hero-trad-card-info) so they carry real info and
+       slide with the card, with no separate crossfade step. The fixed overlay (video mirror
+       + its own crossfading text, used by plain Traditional) is dropped entirely for Rounded
+       — each card is now fully self-contained, so there's nothing left for it to add.
+       display:none by default so plain Traditional doesn't show 3x duplicated titles on its
+       tiles. */
+    .hero-trad-card-info { display: none; }
+    .hero--traditional-rounded .hero-trad-card-info { display: contents; }
+    .hero--traditional-rounded .hero-trad-center-overlay { display: none; }
+    /* Title/title-treatment pulled up into the true top-left corner, and director/country
+       pulled into the same tighter left inset — the base padding (120px top, 48-62px left)
+       was tuned for plain Traditional's much taller fixed box. */
+    .hero--traditional-rounded .hero-trad-tile .hero-trad-title { padding: 24px 24px 0 34px; }
+    /* Title-treatment logo nudged down a touch and scaled ~10% smaller than plain
+       Traditional's (140px/800px, 103px/600px for wide logos) to sit better in the shorter
+       card. */
+    .hero--traditional-rounded .hero-trad-tile .hero-trad-title-img {
+      margin-top: 12px;
+      max-height: 126px; max-width: 720px;
+    }
+    .hero--traditional-rounded .hero-trad-tile .hero-trad-title-img--wide { max-height: 93px; max-width: 540px; }
+    /* Director/country + Watch/Add buttons both live in here — left matches the title's own
+       inset above, and bottom is bumped up 10px from the card's true bottom edge. */
+    .hero--traditional-rounded .hero-trad-tile .hero-trad-bottom { padding: 0 24px 34px 34px; }
+    /* Base .hero-trad-our-take is centred (left:50% + translateX(-50%)) — anchor it to the
+       card's right side instead, so it reads as a caption sitting over the right portion of
+       the (now much narrower) card rather than spanning its full width. */
+    .hero--traditional-rounded .hero-trad-tile .hero-trad-our-take {
+      left: auto; right: 244px;
+      bottom: 40px;
+      transform: none;
+      text-align: left;
+      width: auto; max-width: 55%;
+    }
+    /* Every tile now carries its own gradient with nothing else stacked on top of it (the
+       overlay that used to double up on the centre tile's darkening is gone) — all 3 read
+       at the same, single strength. Undoes the base CSS's boost on the peeking tiles, which
+       existed only to match that now-removed doubling. */
+    .hero--traditional-rounded .hero-trad-tile[data-role="prev"] .hero-trad-top-grad,
+    .hero--traditional-rounded .hero-trad-tile[data-role="next"] .hero-trad-top-grad {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+    }
+    .hero--traditional-rounded .hero-trad-tile[data-role="prev"] .hero-trad-grad,
+    .hero--traditional-rounded .hero-trad-tile[data-role="next"] .hero-trad-grad {
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 45%, transparent 72%);
+    }
+
+    /* Arrows — a circular prev/next pair sitting below the card (in the white space reserved
+       by the stage's own padding-bottom above) instead of overlapping it. display:contents by
+       default (see the markup) keeps plain Traditional's arrows exactly as they were —
+       full-stage-edge, untouched. The `right` offset mirrors each tier's own half-tile-width
+       above so the pair always lands under the same card, regardless of viewport. */
+    .hero-trad-arrow-group { display: contents; }
+    .hero--traditional-rounded .hero-trad-arrow-group {
+      display: flex;
+      gap: 10px;
+      position: absolute;
+      bottom: 15px;
+      z-index: 30;
+    }
+    @media (min-width: 810px)  { .hero--traditional-rounded .hero-trad-arrow-group { right: calc(50% - 384px + 28px); } }
+    @media (min-width: 1186px) { .hero--traditional-rounded .hero-trad-arrow-group { right: calc(50% - 510.5px + 28px); } }
+    @media (min-width: 1562px) { .hero--traditional-rounded .hero-trad-arrow-group { right: calc(50% - 676px + 28px); } }
+    /* Half of duo mode's own tile width (see .hero--traditional-rounded-duo's own
+       tile-width rules) — keeps the arrows aligned with that (centred) tile's right edge
+       at whatever width it's currently set to, rather than the regular 3-tile version's
+       tile-edge offset. */
+    @media (min-width: 810px)  { .hero--traditional-rounded-duo .hero-trad-arrow-group { right: calc(50% - 375px); } }
+    @media (min-width: 1186px) { .hero--traditional-rounded-duo .hero-trad-arrow-group { right: calc(50% - 505px); } }
+    @media (min-width: 1562px) { .hero--traditional-rounded-duo .hero-trad-arrow-group { right: calc(50% - 675px); } }
+    .hero--traditional-rounded .hero-trad-arrow-group .hero-trad-arrow {
+      position: static;
+      top: auto; left: auto; right: auto; transform: none;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #F4F4F4;
+      color: #4a4a4a;
+      opacity: 1;
+    }
+    .hero--traditional-rounded .hero-trad-arrow-group .hero-trad-arrow:hover { background: #e8e8e8; }
+    /* The arrow asset is a solid white SVG (built for sitting over video/image), but this
+       button is a light-grey chip — invert it to a dark icon so it stays visible here. */
+    .hero--traditional-rounded .hero-trad-arrow-group .hero-trad-arrow img { filter: invert(1); }
+    /* Dark mode: the light-grey/dark-icon pair above was tuned for the light-mode nav fix's
+       plain white page background — swap to the dark-mode surface/text tokens so the
+       buttons read as "dark mode" instead of a mismatched light chip floating on a dark page. */
+    :root[data-theme="dark"] .hero--traditional-rounded .hero-trad-arrow-group .hero-trad-arrow {
+      background: var(--dm-surface);
+      color: var(--dm-text);
+    }
+    :root[data-theme="dark"] .hero--traditional-rounded .hero-trad-arrow-group .hero-trad-arrow:hover {
+      background: var(--dm-seam);
+    }
+    :root[data-theme="dark"] .hero--traditional-rounded .hero-trad-arrow-group .hero-trad-arrow img { filter: none; }
+
+    /* No rotation countdown/dots for Traditional Rounded — arrows are the only navigation. */
+    .hero--traditional-rounded .hero-marquee-dots { display: none; }
+
+    /* Top navigation recoloured to match the Browse (explore.html) page's own nav palette
+       — dark text/icons, transparent bar (a solid white one was cutting across the card's
+       own rounded top edge, since the nav floats above it) — instead of the white-on-photo
+       treatment the rest of Now Showing uses. The stage's own margin-top above keeps the
+       card clear of the nav's real estate, so the plain white page background shows through
+       behind the nav on its own. Toggled via body.marquee-nav-browse (see
+       nsRenderTraditionalCarousel). */
+    body.marquee-nav-browse .site-header { background: transparent; }
+    body.marquee-nav-browse .nav-link { color: rgba(0,0,0,0.45); }
+    body.marquee-nav-browse .nav-link:hover,
+    body.marquee-nav-browse .nav-link.is-active { color: #323232; }
+    body.marquee-nav-browse .nav-hamburger,
+    body.marquee-nav-browse .search-icon-btn { color: rgba(0,0,0,0.45); }
+    body.marquee-nav-browse .nav-hamburger:hover,
+    body.marquee-nav-browse .search-icon-btn:hover { color: #323232; }
+    body.marquee-nav-browse .nav-cta { color: #323232; border-color: rgba(0,0,0,0.3); }
+    body.marquee-nav-browse .nav-cta:hover { background: rgba(0,0,0,0.05); border-color: #323232; }
+    body.marquee-nav-browse .nav-logo svg,
+    body.marquee-nav-browse .nav-mobile-logo svg { filter: brightness(0); }
+    /* Dark mode: the page background behind the transparent nav is dark (--dm-bg), not
+       the plain white the light-mode recolouring above assumes — so undo it back to the
+       site's normal light-on-dark nav treatment instead of dark-on-dark, illegible text. */
+    :root[data-theme="dark"] body.marquee-nav-browse .nav-link { color: rgba(255,255,255,0.7); }
+    :root[data-theme="dark"] body.marquee-nav-browse .nav-link:hover,
+    :root[data-theme="dark"] body.marquee-nav-browse .nav-link.is-active { color: #fff; }
+    :root[data-theme="dark"] body.marquee-nav-browse .nav-hamburger,
+    :root[data-theme="dark"] body.marquee-nav-browse .search-icon-btn { color: rgba(255,255,255,0.7); }
+    :root[data-theme="dark"] body.marquee-nav-browse .nav-hamburger:hover,
+    :root[data-theme="dark"] body.marquee-nav-browse .search-icon-btn:hover { color: #fff; }
+    :root[data-theme="dark"] body.marquee-nav-browse .nav-cta { color: #fff; border-color: rgba(255,255,255,0.45); }
+    :root[data-theme="dark"] body.marquee-nav-browse .nav-cta:hover { background: rgba(255,255,255,0.12); border-color: #fff; }
+    :root[data-theme="dark"] body.marquee-nav-browse .nav-logo svg,
+    :root[data-theme="dark"] body.marquee-nav-browse .nav-mobile-logo svg { filter: none; }
+
+    /* Vertical Parallax's dots/info-layer — used by "Vertical Parallax V2" (the only
+       surviving variant; the original single-speed V1 was removed, see
+       nsRenderVerticalParallax2/nsUpdateVParallax2Scroll for the rest of its markup/CSS).
+       Right edge + vertical centre, unlike .hero-marquee-dots (bottom-centre) — same dot
+       shape/size, reused. The right inset mirrors .hero-info's own right/padding formula at
+       each tier so the dots line up with the nav hamburger button above them. */
+    .hero-vparallax-dots {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      z-index: 4;
+    }
+    @media (min-width: 810px) { .hero-vparallax-dots { right: 22px; } }
+    @media (min-width: 1186px) {
+      .hero-vparallax-dots { right: max(0px, calc((100% - 1124px) / 2 + 22px)); }
+    }
+    @media (min-width: 1562px) {
+      .hero-vparallax-dots { right: max(0px, calc((100% - 1500px) / 2 + 22px)); }
+    }
+    /* Same elongated-pill + fill-bar pattern as the rotation mode's dots, just rotated to a
+       vertical bar — but the fill isn't a fixed-duration CSS animation counting down a timer,
+       it's set directly from scroll position (see nsUpdateVParallaxScroll), growing bottom-up
+       as the next film's image approaches being fully in view. */
+    .hero-vparallax-dots .hero-marquee-dot.is-active {
+      width: 6px; height: 32px;
+    }
+    .hero-vparallax-dot-fill {
+      position: absolute;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: #fff;
+      border-radius: 3px;
+      transform: scaleY(0);
+      transform-origin: top center;
+      will-change: transform;
+    }
+    .hero-vparallax-info-layer {
+      position: absolute; inset: 0;
+      z-index: 3;
+    }
+    /* Each is a full .hero-info (inherits all its responsive padding/layout for free) —
+       stacked on top of one another. Unlike the background (which scrubs continuously with
+       scroll position), text visibility is a discrete on/off toggled by nsUpdateVParallaxScroll
+       once the next film's image is actually halfway up the viewport — the transition below
+       does the fade, so the text holds perfectly still rather than dragging with every pixel
+       of scroll (that per-pixel drag was reading as the text itself "scrolling"). */
+    .hero-vparallax-info-item {
+      position: absolute; inset: 0;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+    .hero-vparallax-info-item.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* "Vertical Parallax V2" — each film's background is its own independently-transformed
+       layer stacked at the SAME position (z-index order, not offset by i*100vh) instead of
+       one shared layer that translates as a whole. During a transition the incoming film
+       slides in from below over a full 100vh of travel (fast), while the outgoing film
+       beneath it only drifts up a fraction of that distance (slow) before being fully
+       covered — a two-speed parallax cue. Reuses the .hero-vparallax-dots/-info-layer/
+       -info-item classes above verbatim (see nsRenderVerticalParallax2/nsUpdateVParallax2Scroll). */
+    .hero-vparallax-v2 { display: none; }
+    .hero--vparallax-v2 > .hero-bg,
+    .hero--vparallax-v2 > .hero-info { display: none; }
+    .hero--vparallax-v2 .hero-vparallax-v2 { display: block; }
+    .hero--vparallax-v2.hero { height: auto; padding-bottom: 0; overflow: visible; }
+    .hero-vparallax-v2-track { position: relative; }
+    .hero-vparallax-v2-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .hero-vparallax-v2-bg-layer {
+      position: absolute;
+      inset: 0;
+    }
+    /* All items share the same box (no per-item top offset) — the incoming item's z-index
+       (set inline per-item, higher index on top) plus its own transform is what lands it
+       on screen; the base position never changes, only transform does. */
+    .hero-vparallax-v2-bg-item {
+      position: absolute;
+      inset: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: #A5A3AB;
+      will-change: transform;
+    }
+    .hero-vparallax-v2-bg-item img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .hero-vparallax-v2-bg-item video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .hero-vparallax-v2-bg-item video.is-playing { opacity: 1; }
+    .hero-vparallax-v2-bg-item .hero-grad-1,
+    .hero-vparallax-v2-bg-item .hero-grad-2 { z-index: 1; }
+
+    /* Image container: extends UP behind the transparent header */
+    .hero-bg {
+      position: absolute;
+      top: -60px; left: 0;
+      right: 0;
+      height: calc(75vh + 60px);
+      min-height: calc(630px + 60px);
+      overflow: hidden;
+      background-color: #A5A3AB;
+      z-index: 0;
+    }
+    @media (min-width: 810px) {
+      .hero-bg { height: calc(56.25vw + 60px); min-height: 0; }
+    }
+    @media (min-width: 1186px) {
+      .hero-bg { top: -50px; height: calc(56.25vw + 50px); }
+    }
+
+    .hero-still {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 60% 26%;
+      transition: opacity 1s ease;
+    }
+
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 60% 26%;
+      opacity: 0;
+      animation: videoFadeIn 1s ease forwards;
+      animation-delay: 3s;
+    }
+    @keyframes videoFadeIn {
+      to { opacity: 1; }
+    }
+
+    /* Gradients — copied verbatim from MUBI source */
+    .hero-grad-1 {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, transparent 0%, transparent 50%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.4) 100%),
+        linear-gradient(to top,    transparent 0%, transparent 70%, rgba(0,0,0,0.25) 90%, rgba(0,0,0,0.35) 100%);
+    }
+    .hero-grad-2 {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.375) 0%, transparent 50%);
+    }
+    /* Tile Navigation mode — the poster tiles sit directly over the hero image at the
+       bottom, so both gradients darken further/reach higher than the Subtle Rotation
+       default to keep the tiles (and the text beside them) legible against any still. */
+    .hero--tile-nav .hero-grad-1 {
+      background:
+        linear-gradient(to bottom, transparent 0%, transparent 35%, rgba(0,0,0,0.6) 75%, rgba(0,0,0,0.6) 100%),
+        linear-gradient(to top,    transparent 0%, transparent 55%, rgba(0,0,0,0.4) 85%, rgba(0,0,0,0.5) 100%);
+    }
+    .hero--tile-nav .hero-grad-2 {
+      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 65%);
+    }
+
+    /* Film info panel — full height, aligned with page container */
+    .hero-info {
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 72px 20px 58px;
+      z-index: 2;
+      transition: opacity 0.4s ease;
+    }
+    @media (min-width: 810px) { .hero-info { padding: 72px 22px 70px; } }
+    @media (min-width: 1186px) {
+      .hero-info {
+        left: max(0px, calc((100% - 1124px) / 2));
+        right: max(0px, calc((100% - 1124px) / 2));
+        padding: 112px 22px 82px;
+      }
+    }
+    @media (min-width: 1562px) {
+      .hero-info {
+        left: max(0px, calc((100% - 1500px) / 2));
+        right: max(0px, calc((100% - 1500px) / 2));
+      }
+    }
+    /* Tile Navigation mode only — .hero-info-bottom sits flush against .hero-info's own
+       bottom padding edge (space-between + a full-height flex column), so the poster tiles
+       row sits down a bit further by giving it less bottom padding to be flush against,
+       not by nudging the tiles themselves (which the text row above would just absorb). */
+    .hero--tile-nav .hero-info { padding-bottom: 24px; }
+    @media (min-width: 810px)  { .hero--tile-nav .hero-info { padding-bottom: 32px; } }
+    @media (min-width: 1186px) { .hero--tile-nav .hero-info { padding-bottom: 40px; } }
+    @media (max-width: 809px) {
+      .hero-info { padding-top: 102px; }
+      .hero-info-bottom { display: flex; flex-direction: column; }
+      .hero-meta { margin-bottom: 12px; }
+      .hero-bottom-row { flex-direction: column; align-items: flex-start; gap: 12px; width: 100%; }
+      .hero-our-take { width: 100%; max-width: 100%; margin-left: 0; }
+      .hero-actions { align-self: flex-start; }
+      .hero-meta-label,
+      .hero-meta-director,
+      .hero-meta-country-row,
+      .hero-synopsis,
+      .hero-rating,
+      .hero-our-take { color: #fff; }
+    }
+
+    /* Slow crossfade when the marquee auto-rotates between multiple selected films */
+    .hero-info-top,
+    .hero-meta,
+    .hero-our-take {
+      transition: opacity 1s ease;
+    }
+    .hero-content-fading { opacity: 0; }
+
+    /* Title treatment PNG (film logo art) — top of hero, below logo */
+    .hero-title-img {
+      display: block;
+      max-height: 150px;
+      max-width: 560px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: left center;
+    }
+    @media (max-width: 809px) { .hero-title-img { max-height: 90px; max-width: 300px; } }
+    @media (max-width: 420px) { .hero-title-img { max-height: 69px; max-width: 240px; } }
+    /* Wide banner-style logos (aspect ratio > 3:1) span nearly the full hero width at the
+       normal max-height/max-width — scale them down so they don't dominate next to the
+       smaller footprint of squarer/stacked logos as the marquee rotates between films. */
+    .hero-title-img--wide { max-height: 110px; max-width: 420px; }
+    @media (max-width: 809px) { .hero-title-img--wide { max-height: 70px; max-width: 230px; } }
+    @media (max-width: 420px) { .hero-title-img--wide { max-height: 54px; max-width: 190px; } }
+
+    /* Text fallback if title treatment isn't used */
+    .hero-title-text {
+      font-family: Riforma, sans-serif;
+      font-size: clamp(22px, 3.2vw, 42px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.3px;
+      line-height: 1.04;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0px;
+      margin-bottom: 14px;
+    }
+    .hero-meta-director-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .hero-meta-label {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+    .hero-meta-director {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #fff;
+    }
+    .hero-meta-country-row {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .hero-synopsis {
+      font-size: 14px;
+      font-style: italic;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.82);
+      margin-bottom: 20px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    @media (max-width: 600px) { .hero-synopsis { display: none; } }
+
+    .hero-rating {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+    }
+    .hero-rating-val {
+      color: #fff;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .hero-bottom-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 32px;
+    }
+    .hero-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
+    .hero-our-take {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.55;
+      color: #fff;
+      max-width: 798px;
+      margin-left: 200px;
+    }
+    /* Tile Navigation mode only (and only once 2+ tiles actually render) — stacked in two
+       rows: film info on top (director/country beside the "our take" synopsis), the 3
+       pagination tiles in their own full-width row below, so the tiles' size isn't
+       constrained by however much room the text needs. */
+    .hero-info-bottom--tile-nav {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 28px;
+    }
+    .hero-info-bottom--tile-nav .hero-info-bottom-text {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 48px;
+    }
+    .hero-info-bottom--tile-nav .hero-meta { margin-bottom: 0; flex-shrink: 0; }
+    .hero-info-bottom--tile-nav .hero-bottom-row {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+    .hero-info-bottom--tile-nav .hero-our-take { max-width: 620px; margin-left: 0; }
+    .hero-info-bottom--tile-nav .hero-actions { display: none; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      height: 45px;
+      padding: 0 20px;
+      box-sizing: border-box;
+      background: #fff;
+      color: #323232;
+      border-radius: 100px;
+      font-family: Riforma, sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      text-transform: uppercase;
+      line-height: 1;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      background: transparent;
+      color: #fff;
+      border: 1px solid #fff;
+      border-radius: 50%;
+      transition: border-color 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-outline:hover { border-color: #fff; color: #fff; }
+    .btn-outline .material-icons { font-size: 22.4px; }
+
+    /* ─── BROWSE CTA ─── */
+    .browse-cta {
+      display: none;
+      padding: 48px 20px 64px;
+      text-align: center;
+    }
+    @media (min-width: 810px) { .browse-cta { padding: 48px 22px 64px; } }
+    .browse-cta-link {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #323232;
+      text-decoration: none;
+      border: 1.5px solid #323232;
+      padding: 14px 36px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .browse-cta-link:hover { background: #323232; color: #fff; }
+
+    /* ─── NOW SHOWING SECTION ─── */
+    .now-showing { padding: 0 20px 80px; width: 100%; margin: 0 auto; }
+    @media (min-width: 810px) { .now-showing { padding: 0 22px 80px; } }
+
+    .now-showing-header {
+      padding: 0 0 22px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    @media (min-width: 810px) { .now-showing-header { padding: 0 0 24px; } }
+
+    .now-showing-title {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: #323232;
+    }
+
+    .now-showing-count {
+      font-size: 14px;
+      color: #7d7d7d;
+    }
+
+    /* ─── FILM GRID ─── */
+    /* 1px gap via background colour on grid = EAEAEA */
+    .row-section { margin-bottom: 20px; }
+    .row-section:last-child { margin-bottom: 0; }
+
+    /* Diego Ramos-only affordance (see nsMergeWatchNext): floats in the gap between
+       Continue Watching and Your Watchlist, offering to combine them into one lane. */
+    .row-section--has-merge-fab { position: relative; }
+    .watch-next-fab {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translate(-50%, 50%);
+      z-index: 6;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 20px 11px 16px;
+      background: #001489;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,20,137,0.35), 0 0 0 4px #fff;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .watch-next-fab:hover { transform: translate(-50%, 50%) scale(1.05); box-shadow: 0 6px 18px rgba(0,20,137,0.45), 0 0 0 4px #fff; }
+    .watch-next-fab .material-icons { font-size: 18px; }
+
+    .row-header { padding: 0 0 10px; display: flex; align-items: center; justify-content: flex-start; }
+    .row-title {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: #323232;
+    }
+    .row-see-all {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      text-transform: uppercase;
+      color: #999;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 6px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .row-section:hover .row-see-all { opacity: 1; }
+
+    .row-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      column-gap: 4px;
+      row-gap: 1px;
+      background: transparent;
+      border-top: 1px solid transparent;
+      border-bottom: 1px solid transparent;
+    }
+    @media (min-width: 810px)  { .row-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1186px) { .row-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1562px) { .row-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    /* "Increase Col Spacing" (Page Settings > Layout) — widens the gap between tiles.
+       Grid's own 1fr columns absorb that extra gap by shrinking each tile proportionally, so
+       tiles read narrower with more margin between them with no separate width rule needed. */
+    :root[data-col-spacing="true"] .row-grid { column-gap: 16px; }
+
+    /* Rows with placeholder empty slots (Continue Watching / Your Watchlist under 4 items)
+       skip the row-grid's usual 1px grey seam so the placeholders don't read as outlined. */
+    .row-section--has-empty .row-grid { background: transparent; border-top: none; border-bottom: none; }
+
+    /* Hide overflow cards so rows never wrap — skipped for .row-grid--carousel, which is
+       meant to hold every item (paged via nsUpdateRowCarousel, not clipped by nth-child).
+       Covers .coll-tile/.genre-tile too (Lane of Lanes / Lane of Genres), not just .film-card
+       — otherwise a row with more than one lane's worth of collection/genre tiles (e.g. Lane
+       of Genres' 8) wraps onto a second grid row instead of staying a single line. */
+    @media (min-width: 810px) and (max-width: 1185px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+3), .row-grid:not(.row-grid--carousel) .coll-tile:nth-child(n+3), .row-grid:not(.row-grid--carousel) .genre-tile:nth-child(n+3) { display: none; } }
+    @media (min-width: 1186px) and (max-width: 1561px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+4), .row-grid:not(.row-grid--carousel) .coll-tile:nth-child(n+4), .row-grid:not(.row-grid--carousel) .genre-tile:nth-child(n+4) { display: none; } }
+    @media (min-width: 1562px) { .row-grid:not(.row-grid--carousel) .film-card:nth-child(n+5), .row-grid:not(.row-grid--carousel) .coll-tile:nth-child(n+5), .row-grid:not(.row-grid--carousel) .genre-tile:nth-child(n+5) { display: none; } }
+    /* Essential Viewing ("New to MUBI?") is also a plain .row-grid (not .row-grid--carousel),
+       so the generic per-breakpoint hiding above was clipping it down to one lane too — but
+       its column count is set dynamically via JS (see the isNewToMubi block in renderGrid) to
+       match essentialViewingFilms's actual length exactly, so it must never be capped here. */
+    .new-to-mubi-section .row-grid .film-card { display: block !important; }
+
+    /* ─── CAROUSEL ROWS (Page Settings > Layout) ───
+       Qualifying rows (more than 4 items — see renderGrid's row.carousel flag) drop "See All"
+       for the usual 4 fully-shown tiles plus a 5th peeking on the right (and, once paged
+       forward, a 4th peeking back on the left) — each edge's arrow is always visible (no
+       hover needed) whenever that side actually has a peek, and pressing it slides the whole
+       row by 4 so the peeking tile lands exactly where tile 1 (or tile 4) used to sit (see
+       nsUpdateRowCarousel / the row-carousel-arrow click handler). Unlike .spotlight-slider-wrap
+       (which can bleed via position:absolute since its section has a fixed height regardless),
+       row-sections stack in normal flow — .row-carousel-wrap has to stay in flow to contribute
+       real height, so it uses the left:50%/width:100vw/transform:translateX(-50%) full-bleed
+       trick (same one "New to MUBI?" uses) instead. .row-carousel-inner re-centers the normal
+       content max-width/padding inside that bleed, so the "fully shown" tiles land exactly
+       where non-carousel tiles would; .row-grid--carousel's own tile-width formula is a
+       straight copy of .spotlight-slider's (itself already a match of .row-grid's per-breakpoint
+       math). */
+    .row-carousel-wrap {
+      position: relative;
+      left: 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      /* No local overflow:hidden — it would also clip the hover synopsis dropdown, which
+         extends below a normal (non-doubletile) tile via top:100% and is taller than this
+         wrap's own (image-height-only) box. The page-level `html { overflow-x: hidden }`
+         (see its own comment) already keeps the bled-out/peeking tiles from causing a
+         horizontal scrollbar, so nothing extra is needed here to hide them off-viewport. */
+    }
+    /* `transform` above creates a new stacking context, which traps a hovered .film-card's
+       own z-index:20 inside it — without this, the hover dropdown can no longer rise above
+       the next row-section (a plain sibling box that would otherwise just paint after it in
+       DOM order), since that elevation never escapes the wrap's own isolated context. */
+    .row-carousel-wrap:has(.film-card:hover) { z-index: 20; }
+    .row-carousel-inner {
+      max-width: 100%;
+      padding: 0 20px;
+      margin: 0 auto;
+      position: relative;
+    }
+    @media (min-width: 810px)  { .row-carousel-inner { max-width: 836px; padding: 0 22px; } }
+    @media (min-width: 1186px) { .row-carousel-inner { max-width: 1124px; } }
+    @media (min-width: 1562px) { .row-carousel-inner { max-width: 1500px; } }
+    .row-grid--carousel {
+      display: grid;
+      /* .row-grid's own breakpoint rules (grid-template-columns: repeat(N,1fr)) still match
+         this element too (it keeps the base .row-grid class) — reset that back to none so
+         only this rule's own auto-flow/auto-columns sizing takes effect, otherwise the
+         explicit N-column track fights the auto-columns track and nothing ever peeks. */
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: calc(100vw - 40px);
+      column-gap: 4px;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    /* Always divide by 4 (not 2/3 the way non-carousel rows' own breakpoints do) — the whole
+       point of this feature is "the usual 4 items, 5th peeking," consistently, regardless of
+       which desktop tier the viewport happens to land in. */
+    @media (min-width: 810px)  { .row-grid--carousel { grid-auto-columns: calc((836px - 44px - 12px) / 4); } }
+    @media (min-width: 1186px) { .row-grid--carousel { grid-auto-columns: calc((1124px - 44px - 12px) / 4); } }
+    @media (min-width: 1562px) { .row-grid--carousel { grid-auto-columns: calc((1500px - 44px - 12px) / 4); } }
+
+    /* Tiles further out than the current right-hand peek are invisible outright (not just
+       relying on the wrap's own clipping) — nsUpdateRowCarousel sets opacity:0 on them, and
+       needs an opacity transition to visibly fade IN as the track slides them into the
+       peek/shown position, instead of already being at full opacity underneath the slide.
+       .film-card already has its own transition (the whole-tile hover-scale) declared later
+       in this file, which would otherwise just replace this rule outright (same specificity,
+       last one wins) — so opacity is added directly to .film-card's own declaration instead
+       of competing with it here; .coll-tile has no transition of its own, so it's set here. */
+    .row-carousel-wrap .coll-tile { transition: opacity 0.5s ease; }
+    /* .genre-tile already has its own opacity transition (a quick 0.15s hover-dim) — override
+       it to the slower, carousel-appropriate 0.5s here so it fades in at the same pace as
+       everything else sliding into view instead of snapping visible almost immediately. */
+    .row-carousel-wrap .genre-tile { transition: opacity 0.5s ease; }
+
+    /* Whichever tile(s) currently bleed past .row-carousel-inner's edges (tagged live by
+       nsUpdateRowCarousel — which tile(s) shift with viewport width and paging position) are
+       inert: no hover state at all (not even the whole-tile hover-scale every other tile
+       gets), and their own overlay/synopsis is hidden so no readable text floats over a
+       partially cut-off tile — not pointer-events:none, since that would also stop it from
+       being clickable to advance (see the filmGrid click handler, which blocks navigation
+       but still treats a click on the peek itself as "press the arrow"). */
+    .row-carousel-wrap .row-carousel-peek:hover { transform: none; z-index: 0; }
+    .row-carousel-wrap .row-carousel-peek:hover .card-img-wrap { box-shadow: none; }
+    .row-carousel-wrap .film-card.row-carousel-peek .card-overlay,
+    .row-carousel-wrap .film-card.row-carousel-peek .card-synopsis-block { display: none; }
+
+    /* Clips the real tiles exactly at the page container's own edge — nothing past that point
+       is a real tile, only the decorative .row-carousel-peek-hint shape + arrow (both outside
+       this clip, direct children of .row-carousel-inner) hint that there's more. clip-path,
+       not overflow:hidden — overflow clips ALL directions, cutting off the hover synopsis
+       dropdown that extends below a tile via top:100%. clip-path lets left/right stay clipped
+       (0 inset) while top/bottom go effectively unclipped (a huge negative inset). */
+    .row-carousel-clip { clip-path: inset(-9999px 0 -9999px 0); }
+
+    /* Same plain chevron as .spotlight-arrow (identical size/icon/no backdrop), just
+       recoloured dark grey instead of native white — .spotlight-arrow sits over a dark hero
+       image so white reads fine there, but these sit on the plain page background instead. */
+    .row-carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 13px; height: 20px;
+      z-index: 6;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    /* Fixed position just outside .row-carousel-inner's own edge (the "page container" width)
+       — never moves, only ever toggles visible/hidden via .is-visible depending on whether
+       that side actually has more content (see nsUpdateRowCarousel). */
+    .row-carousel-arrow--prev { left: -4px; }
+    .row-carousel-arrow--next { right: -4px; }
+    .row-carousel-arrow img { display: block; width: 100%; height: 100%; filter: brightness(0) opacity(0.35); transition: filter 0.15s ease, opacity 0.15s ease; }
+    .row-carousel-arrow:hover img { filter: brightness(0) opacity(0.65); }
+    /* The source SVG is natively white — dark mode drops the brightness(0) filter (which
+       forces it to black) entirely and just dims/brightens that native white via opacity
+       instead, since a dark grey arrow would be nearly invisible on the dark page background. */
+    :root[data-theme="dark"] .row-carousel-arrow img { filter: none; opacity: 0.5; }
+    :root[data-theme="dark"] .row-carousel-arrow:hover img { filter: none; opacity: 0.85; }
+    /* Hovering the (much bigger) peek-hint shape darkens its arrow too, even though they're
+       siblings rather than one containing the other. */
+    .row-carousel-inner:has(.row-carousel-peek-hint--prev:hover) .row-carousel-arrow--prev img,
+    .row-carousel-inner:has(.row-carousel-peek-hint--next:hover) .row-carousel-arrow--next img {
+      filter: brightness(0) opacity(0.65);
+    }
+    :root[data-theme="dark"] .row-carousel-inner:has(.row-carousel-peek-hint--prev:hover) .row-carousel-arrow--prev img,
+    :root[data-theme="dark"] .row-carousel-inner:has(.row-carousel-peek-hint--next:hover) .row-carousel-arrow--next img {
+      filter: none;
+      opacity: 0.85;
+    }
+    .row-carousel-arrow.is-visible { opacity: 1; pointer-events: auto; }
+
+    /* A plain rounded-rect card silhouette sitting behind the arrow, in the same fixed spot
+       just outside .row-carousel-inner — hints "there's a tile here" (a 5th one, or the 4th
+       peeking back) even though the arrow itself has moved off the actual tile and now floats
+       in the page's own gutter. Same visibility logic as the arrow, no hover, never moves. */
+    .row-carousel-peek-hint {
+      position: absolute;
+      top: 1px; bottom: 1px;
+      width: 60px;
+      border-radius: 0;
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    /* A much bigger click target than the arrow alone — clicking anywhere on this shape
+       advances/retreats the row too (see the filmGrid click handler). */
+    .row-carousel-peek-hint.is-visible { pointer-events: auto; cursor: pointer; }
+    .row-carousel-peek-hint--prev { left: -41px; background: linear-gradient(to left, #d8d8d8 0%, #fff 100%); }
+    .row-carousel-peek-hint--next { right: -41px; background: linear-gradient(to right, #e4e4e4 0%, #fff 100%); }
+    /* Only the inner corners (facing the container/arrow) round, and only when Rounded Tile
+       Corners is on — the outer edge stays square either way (it reads as a tile actually cut
+       off by the page's own boundary), matching the same setting the tiles themselves use. */
+    :root[data-rounded-tiles="true"] .row-carousel-peek-hint--prev { border-radius: 0 18px 18px 0; }
+    :root[data-rounded-tiles="true"] .row-carousel-peek-hint--next { border-radius: 17px 0 0 17px; }
+    :root[data-theme="dark"] .row-carousel-peek-hint--prev { background: linear-gradient(to left, var(--dm-seam) 0%, var(--dm-bg) 100%); }
+    :root[data-theme="dark"] .row-carousel-peek-hint--next { background: linear-gradient(to right, var(--dm-seam) 0%, var(--dm-bg) 100%); }
+    .row-carousel-peek-hint.is-visible { opacity: 1; }
+    /* Peek Preview (Page Settings > Layout > Carousel Rows) — both peeking tiles' real stills
+       (set inline via nsUpdateRowCarousel, from each side's actual adjacent tile) show through
+       their peek shape instead of it just being a flat gradient panel. This is just how
+       Carousel Rows peeking looks now, no separate toggle for it. Lives on a separate inner
+       layer (.row-carousel-peek-hint-img), not the shape's
+       own background — that's what lets it slide independently: nsAdvanceRowCarousel animates
+       both inner layers' own transform in sync with the real tiles' slide (same duration/
+       easing/direction), so each preview visually continues the same motion as the rest of the
+       strip instead of just snapping to a new picture once the page settles. overflow:hidden
+       on the shape clips that wider inner layer back down to the peek window's own bounds
+       (rounded corners included). Semi-transparent so it reads as a hint/preview rather than
+       a fully crisp image, and still fades out to the page background at the outer edge via
+       this ::after gradient layered on top. */
+    .row-carousel-peek-hint.is-v2 { overflow: hidden; }
+    .row-carousel-peek-hint-img {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.3;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .row-carousel-peek-hint--prev.is-v2::after,
+    .row-carousel-peek-hint--next.is-v2::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+    }
+    .row-carousel-peek-hint--prev.is-v2::after { background: linear-gradient(to left, rgba(255,255,255,0.45) 0%, #fff 100%); }
+    .row-carousel-peek-hint--next.is-v2::after { background: linear-gradient(to right, rgba(255,255,255,0.45) 0%, #fff 100%); }
+    :root[data-theme="dark"] .row-carousel-peek-hint--prev.is-v2::after { background: linear-gradient(to left, rgba(18,20,28,0.45) 0%, var(--dm-bg) 100%); }
+    :root[data-theme="dark"] .row-carousel-peek-hint--next.is-v2::after { background: linear-gradient(to right, rgba(18,20,28,0.45) 0%, var(--dm-bg) 100%); }
+    /* The peeking image sitting behind the arrow now (v2 only) makes the default light/dim
+       arrow state hard to spot — bump it straight to the hover-darkness state so it's legible
+       against the image without needing a hover first. */
+    .row-carousel-inner:has(.row-carousel-peek-hint--prev.is-v2) .row-carousel-arrow--prev img,
+    .row-carousel-inner:has(.row-carousel-peek-hint--next.is-v2) .row-carousel-arrow--next img {
+      filter: brightness(0) opacity(0.65);
+    }
+    :root[data-theme="dark"] .row-carousel-inner:has(.row-carousel-peek-hint--prev.is-v2) .row-carousel-arrow--prev img,
+    :root[data-theme="dark"] .row-carousel-inner:has(.row-carousel-peek-hint--next.is-v2) .row-carousel-arrow--next img {
+      filter: none;
+      opacity: 0.85;
+    }
+    @media (max-width: 809px) { .row-carousel-arrow, .row-carousel-peek-hint { display: none; } }
+
+    /* ─── SPOTLIGHT — collection banner + horizontal film slider ─── */
+    /* .spotlight-head/.spotlight-slider-wrap live inside #filmGrid, so their text/slider
+       inherit the same max-width as the rest of Now Showing. .spotlight-bg and
+       .spotlight-color-bar break out to full viewport width behind/below them. */
+    .spotlight-wrap {
+      position: relative;
+      margin: 40px 0;
+    }
+    .spotlight-section {
+      position: relative;
+      height: 723px;
+      display: flow-root; /* new block-formatting context so .spotlight-eyebrow's own
+        margin-top can't collapse out through this box and shift the whole section down */
+      isolation: isolate;
+    }
+
+    /* Full-bleed colour bar flush against the bottom of the spotlight, using the
+       collection's own colour from mubi-collections.csv (average_colour). */
+    .spotlight-color-bar {
+      position: relative;
+      left: 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      height: 124px;
+    }
+
+    /* Floats over the image/colour-bar boundary, its bottom edge 20px above the very
+       bottom of the colour bar. */
+    .spotlight-slider-wrap {
+      position: absolute;
+      left: 0;
+      right: calc((100% - 100vw) / 2);
+      bottom: 20px;
+      z-index: 2;
+    }
+
+    .spotlight-bg {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      z-index: -1;
+      background: #A5A3AB;
+    }
+    .spotlight-bg-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+    .spotlight-bg-grad {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.45) 40%, rgba(0,0,0,0.15) 65%, transparent 85%),
+        linear-gradient(to right, rgba(0,0,0,0.55) 0%, transparent 55%);
+    }
+    /* Blends the image into the colour bar below it — background colour set inline per
+       collection (coll.color), fading to nothing higher up the image. */
+    .spotlight-bg-color-fade {
+      position: absolute; inset: 0;
+    }
+
+    .spotlight-eyebrow {
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      margin-top: 40px;
+      margin-bottom: 82px;
+    }
+    .spotlight-title {
+      font-family: Riforma, sans-serif;
+      font-size: 42px;
+      font-weight: 500;
+      text-transform: uppercase;
+      max-width: 470px;
+      color: #fff;
+      margin-bottom: 60px;
+    }
+    .spotlight-title-treatment {
+      display: block;
+      max-height: 126px;
+      max-width: 588px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: left center;
+      margin-bottom: 60px;
+    }
+    @media (min-width: 810px) { .spotlight-title-treatment { max-height: 154px; max-width: 728px; } }
+    /* Wide/rectangular logos (>2.2:1) look oversized next to squarer ones at the
+       section's default size — same rule as the doubletile cards, opposite direction. */
+    .spotlight-title-treatment--wide { max-height: 85px; max-width: 400px; }
+    @media (min-width: 810px) { .spotlight-title-treatment--wide { max-height: 105px; max-width: 495px; } }
+    .spotlight-desc {
+      font-family: Riforma, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.85);
+      max-width: 400px;
+    }
+
+    /* Tile width is a fixed px match of .row-grid's math at each breakpoint (same max-width,
+       padding, column count and 4px gap) — since .now-showing's width is flat within each
+       tier, this keeps tiles pixel-identical to the normal film tiles on the page even though
+       the slider itself is now wider than that container. */
+    /* No overflow/scroll on the slider itself — any axis but 'visible' here would clip the
+       hover synopsis panel dropping below the tile. Paging is done by translating the whole
+       grid (see pageSpotlightSlider() in JS) instead of native scrolling; tiles beyond the
+       current page just extend past the viewport edge, hidden by the page-level
+       `html { overflow-x: hidden }` the same way the other full-bleed rows already rely on. */
+    .spotlight-slider {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: calc(100vw - 40px);
+      column-gap: 4px;
+      transform: translateX(0px);
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @media (min-width: 810px)  { .spotlight-slider { grid-auto-columns: calc((836px - 44px - 4px) / 2); } }
+    @media (min-width: 1186px) { .spotlight-slider { grid-auto-columns: calc((1124px - 44px - 8px) / 3); } }
+    @media (min-width: 1562px) { .spotlight-slider { grid-auto-columns: calc((1500px - 44px - 12px) / 4); } }
+
+    /* "Increase Col Spacing" applied to the spotlight filmstrip too — same 16px column-gap
+       as .row-grid above. grid-auto-columns' own subtracted term is gap × (columns-1), so it
+       has to be recomputed per tier (1/2/3 gaps at 16px = 16/32/48) to keep tiles filling the
+       row edge-to-edge instead of overflowing by the extra gap width. */
+    :root[data-col-spacing="true"] .spotlight-slider { column-gap: 16px; }
+    @media (min-width: 810px)  { :root[data-col-spacing="true"] .spotlight-slider { grid-auto-columns: calc((836px - 44px - 16px) / 2); } }
+    @media (min-width: 1186px) { :root[data-col-spacing="true"] .spotlight-slider { grid-auto-columns: calc((1124px - 44px - 32px) / 3); } }
+    @media (min-width: 1562px) { :root[data-col-spacing="true"] .spotlight-slider { grid-auto-columns: calc((1500px - 44px - 48px) / 4); } }
+
+    /* Plain white chevrons, no button/background — matching the essential-viewing peeking-
+       tile arrow convention rather than a filled circular control. */
+    .spotlight-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 13px; height: 20px;
+      z-index: 5;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+    .spotlight-arrow img { display: block; width: 100%; height: 100%; }
+    .spotlight-arrow--prev {
+      left: 4px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .spotlight-arrow--prev.is-visible { opacity: 1; pointer-events: auto; }
+    /* .spotlight-arrow--next's left offset is set by positionSpotlightArrows() (JS) to land
+       on the inner (left) edge of the peeking tile — the one tile bleeding past the normal
+       fully-shown width — same inner-edge convention as the essential-viewing arrows. */
+    .spotlight-arrow--next { right: 20px; }
+    @media (max-width: 809px) { .spotlight-arrow { display: none; } }
+
+    /* The peeking tile itself — faded like essential-viewing's peeking tiles, and inert
+       since it's only ever partially visible. positionSpotlightArrows() (JS) tags whichever
+       tile currently bleeds past the fully-shown width with this class, since that tile's
+       identity shifts with viewport width and isn't a fixed nth-child. */
+    .spotlight-slide--peeking { pointer-events: none; }
+    .spotlight-slide--peeking .card-img-wrap { opacity: 0.35; }
+    .spotlight-slide--peeking .card-overlay,
+    .spotlight-slide--peeking .card-synopsis-block { display: none; }
+
+    /* ─── FILM CARD ─── */
+    .film-card {
+      display: block;
+      position: relative;
+      cursor: pointer;
+      z-index: 0;
+      /* opacity here is for Carousel Rows specifically — tiles further out than the current
+         peek are set to opacity:0 by nsUpdateRowCarousel and need to fade in as the track
+         slides them into view, not just snap to visible underneath the slide. */
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease;
+    }
+    /* Whole tile scales up as one unit on hover — the image/gradient/dropdown's own
+       independent zooms below are turned off so they don't ALSO scale and compound/overshoot. */
+    .film-card:hover { z-index: 20; transform: scale(1.05); }
+    /* The carousel's terminal "See All" tile is a flat fill, not a poster — scaling it up
+       like a real film card just looks like a stray wobble, so it stays put on hover. */
+    .row-carousel-see-all-tile:hover { transform: none; }
+
+    /* Image wrapper: 371×209 (≈16:9) — overflow:hidden crops the scaled-up tile/image
+       cleanly to this box rather than letting it spill past its own edges. */
+    .card-img-wrap {
+      position: relative;
+      aspect-ratio: 371 / 209;
+      background: #d0d0d0;
+      overflow: hidden;
+      transition: box-shadow 0.35s ease;
+    }
+    .film-card:hover .card-img-wrap { box-shadow: 0 4px 14px rgba(0,0,0,0.45); }
+
+    /* Terminal tile at the end of a Carousel Row's track, linking to the real MUBI collection
+       page — same box (.card-img-wrap) as every other tile so it sizes identically. Backdrop
+       (set inline, see filmRowSectionHTML) is a real, verified still of a film from that same
+       collection that ISN'T one of the films already shown in the row (row.extraFilm — see
+       NUMBERED_ROW_COLLECTIONS), so the See All tile always previews something new rather
+       than a poster the user just scrolled past. Falls back to the row's own last film's
+       still where no such extra film is available/known (a collection whose every real film
+       is already shown), and to the flat #000C52 fill only if there's no image to borrow at
+       all. */
+    .row-carousel-see-all-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background-color: #000C52;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    :root[data-theme="dark"] .row-carousel-see-all-inner { background-color: #000C52; }
+    .row-carousel-see-all-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.55); }
+    /* No poster image behind this tile, so the shared bottom-up legibility gradient every
+       other .card-img-wrap gets (see .card-img-wrap::before) would just look like a stray
+       dark smudge over a flat fill — switch it off here specifically. */
+    .card-img-wrap.row-carousel-see-all-inner::before { content: none; }
+    .row-carousel-see-all-text {
+      position: relative;
+      z-index: 1;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #fff;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .row-carousel-see-all-text strong { display: block; font-size: 22px; font-weight: 700; }
+
+    /* Placeholder tile filling out unused slots in a capped row (e.g. Continue Watching /
+       Your Watchlist with fewer than 4 items) so the row still reads as a full lane. */
+    .film-card--empty { pointer-events: none; cursor: default; }
+    .film-card--empty .card-img-wrap { background: linear-gradient(rgb(255, 255, 255) 0%, rgb(234, 234, 234) 100%); }
+    .film-card--empty .card-img-wrap::before { content: none; }
+
+    /* Doubletile — taller card variant (fixed 418px height, no 16:9 aspect-ratio) */
+    .row-section--doubletile .card-img-wrap { aspect-ratio: unset; height: 418px; }
+
+    /* "New to MUBI?" — shown only when the current viewer has no watchlist/continue-watching/
+       watched history yet. Full-bleed background photo (same technique as .spotlight-bg)
+       behind a row of doubletile tiles, anchored top (title) / bottom (tiles). */
+    .new-to-mubi-section {
+      position: relative;
+      height: 631px;
+      margin-top: -20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 32px 0;
+      isolation: isolate;
+      box-sizing: border-box;
+    }
+    @media (min-width: 810px) { .new-to-mubi-section { margin-top: -35px; } }
+    /* The row-grid's own light grey background/border (used elsewhere to show a thin
+       1px seam between tiles) would otherwise show through as pale borders against
+       this section's photo background — make the gaps transparent here instead. */
+    .new-to-mubi-section .row-grid {
+      background: transparent;
+      border-top: none;
+      border-bottom: none;
+    }
+    .new-to-mubi-bg {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      background-size: cover;
+      background-position: center;
+      z-index: -2;
+    }
+    .new-to-mubi-grad {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 30%, transparent 65%, rgba(0,0,0,0.55) 100%);
+      z-index: -1;
+    }
+    .new-to-mubi-section .row-title { color: #fff; font-weight: 400; }
+    .new-to-mubi-section .row-header { align-items: flex-start; }
+    .new-to-mubi-heading {
+      font-family: Riforma, sans-serif;
+      font-size: 42px;
+      font-weight: 500;
+      color: #fff;
+      margin-top: 10px;
+    }
+    .new-to-mubi-body {
+      font-family: Riforma, sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.85);
+      max-width: 500px;
+      margin-top: 12px;
+    }
+    /* 6 tiles total, all the same size as every other doubletile — the outer two sit
+       outside the normal 4-tile content width (in a full-bleed row) and are faded out,
+       hinting at more content just past the 4 fully-shown tiles in the middle. Column
+       width is measured in JS off a normal doubletile tile so sizing stays identical. */
+    .new-to-mubi-section .row-grid {
+      position: relative;
+      left: 50%;
+      width: 100vw;
+      transform: translateX(-50%);
+      justify-content: center;
+      background: transparent;
+      border-top: none;
+      border-bottom: none;
+    }
+    .new-to-mubi-section .row-grid > .film-card:first-child .card-img-wrap,
+    .new-to-mubi-section .row-grid > .film-card:last-child .card-img-wrap {
+      opacity: 0.35;
+    }
+    .new-to-mubi-section .row-grid > .film-card:first-child .card-overlay,
+    .new-to-mubi-section .row-grid > .film-card:last-child .card-overlay {
+      display: none;
+    }
+    /* No whole-tile hover-scale on the two peeking tiles — they're only ever partially
+       visible, so growing them on hover would look broken/cut-off rather than inviting. */
+    .new-to-mubi-section .row-grid > .film-card:first-child:hover,
+    .new-to-mubi-section .row-grid > .film-card:last-child:hover {
+      transform: none;
+    }
+    /* Arrows sit on the faded peeking tiles but on the inner edge (toward the fully-shown
+       tiles), and stay fully opaque since they're outside .card-img-wrap's faded opacity. */
+    .new-to-mubi-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 13px;
+      height: 20px;
+      z-index: 5;
+    }
+    .new-to-mubi-arrow--left { right: 12px; }
+    .new-to-mubi-arrow--right { left: 12px; }
+    .new-to-mubi-section .card-eyebrow { transform: translateY(-13px); }
+    .new-to-mubi-section .film-card:hover .card-eyebrow { transform: translateY(-13px) translateX(-14px); }
+    /* No hover-reveal synopsis panel on these tiles — it doesn't fit the section's own
+       photo background/gradient treatment. */
+    .new-to-mubi-section .film-card:hover .card-synopsis-block { opacity: 0; pointer-events: none; }
+    .card-award-badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      max-height: 50px;
+      max-width: 216px;
+      width: auto; height: auto;
+      object-fit: contain;
+      z-index: 2;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Coming Soon row (Page Settings > Layout > Coming Soon Lane) — same top-left pill
+       treatment as the "On MUBI" badge on the Film Database page, showing each film's
+       real MUBI release date instead. */
+    .card-date-badge {
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 6;
+      font-family: Riforma, sans-serif;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: #323232; background: #fff;
+      padding: 4px 20px;
+    }
+
+    /* "Go Crazy!" (Page Settings > Layout > Coming Soon Lane > Go Crazy!) — nsSetupComingSoonFlip
+       waits for the row to scroll into view, then every few seconds turns each tile over once
+       (staggered left to right, alternating front/back — see the .is-flipped toggle it flips on
+       .flip-inner) to reveal the other Coming Soon title on its back face, with a shade/glare
+       effect (.is-flipping, below) synced to the same turn. Axis is picked per tile at render
+       time (comingSoonFlipTileHTML): Y ("left to right", like a page turning) when the row is in
+       Double Tiles mode, X ("top to bottom") otherwise. */
+    .film-card--flip { perspective: 1400px; position: relative; }
+    .film-card--flip .flip-inner {
+      position: relative;
+      aspect-ratio: 371 / 209;
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(.45,0,.15,1);
+    }
+    /* "Make All Tiles Double Tiles" (Page Settings > Layout) switches the row's own
+       .card-img-wrap over to a fixed 418px height (see the rule above) — .flip-inner needs
+       the same override, or its shorter 16:9 box leaves the taller nested .card-img-wrap
+       (still correctly picking up that same rule) overflowing past the flip tile's bounds. */
+    .row-section--doubletile .film-card--flip .flip-inner { aspect-ratio: unset; height: 418px; }
+    .flip-face {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+    }
+    .flip-face--back-y { transform: rotateY(180deg); }
+    .flip-face--back-x { transform: rotateX(180deg); }
+    /* No fixed "flipped" transform class here on purpose — nsSetupComingSoonFlip sets
+       .flip-inner's rotation via inline style instead, always increasing (0deg, 180deg,
+       360deg, 540deg, ...) so every sweep spins the same direction as the last (see the
+       "flip left to right" comment there) instead of the transition reversing back through
+       the same arc on every other sweep. */
+    /* Shade — a physical card catches less light edge-on, so brightness/shadow dip together
+       right at the 50% (edge-on) point of the spin. Lives on the outer, non-3D-transformed
+       anchor so `filter` never risks flattening .flip-inner's preserve-3d rendering. */
+    .film-card--flip.is-flipping { animation: ns-flip-shade 0.7s ease-in-out; }
+    @keyframes ns-flip-shade {
+      0%, 100% { filter: brightness(1) drop-shadow(0 0 0 rgba(0,0,0,0)); }
+      50%      { filter: brightness(0.5) drop-shadow(0 14px 22px rgba(0,0,0,0.6)); }
+    }
+    /* Light — a diagonal glare sweeps across the tile as it catches the light mid-spin.
+       Lives on each .flip-face (not the outer, non-3D anchor) so the glare rotates with
+       whichever face is actually showing instead of sitting flat over the tile regardless
+       of the card's spin — backface-visibility:hidden (already on .flip-face) keeps it
+       from also showing through on the face that's turned away. */
+    .flip-face::after {
+      content: '';
+      position: absolute; inset: 0; z-index: 9; pointer-events: none;
+      background: linear-gradient(75deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%);
+      background-size: 250% 250%;
+      background-position: -150% -150%;
+      opacity: 0;
+    }
+    .film-card--flip.is-flipping .flip-face::after { animation: ns-flip-shine 0.7s ease-in-out; }
+    @keyframes ns-flip-shine {
+      0%   { opacity: 0; background-position: -150% -150%; }
+      35%  { opacity: 1; }
+      65%  { opacity: 1; }
+      100% { opacity: 0; background-position: 150% 150%; }
+    }
+
+    /* "Splash" (Coming Soon page toggle, next to "Go Crazy!") — mutually exclusive with
+       Go Crazy (splashToggle's change handler disables/unchecks the Go Crazy switch
+       whenever Splash turns on, and vice versa is unnecessary since Go Crazy is inert
+       while disabled). Purely a hover effect, gated by .splash-mode on the Coming Soon
+       section: a wave of white circles (.splash-circle, laid out on a jittered grid by
+       comingSoonSplashHTML so they read as randomly placed/sized but still overlap enough
+       to fully cover the tile) pop in one after another until the poster is all white. */
+    .card-splash {
+      position: absolute; inset: 0;
+      z-index: 6;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .splash-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      transform: translate(-50%, -50%) scale(0);
+      /* Un-hovering falls back to this fast, undelayed shrink (see the more specific
+         hover rule below) so the paint vanishes cleanly instead of un-staggering. */
+      transition: transform 0.25s ease-in;
+    }
+    .splash-mode .film-card:hover .splash-circle {
+      transform: translate(-50%, -50%) scale(1);
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition-delay: var(--delay, 0s);
+    }
+
+    /* Top Picks row (Page Settings > Layout > Top Picks) — big, faded rank numeral, 1-4,
+       stamped in the top-left corner of each tile ahead of the card's own overlay/title. */
+    .card-rank-badge {
+      position: absolute;
+      top: -12px; left: 0;
+      font-family: Riforma, sans-serif;
+      font-weight: 700;
+      font-size: clamp(64px, 9vw, 108px);
+      line-height: 1;
+      color: #fff;
+      opacity: 0.45;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .card-img-wrap::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 55%, transparent 100%);
+      transform-origin: center center;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .film-card:hover .card-img-wrap::before { transform: none; }
+
+    .card-img {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transform-origin: center center;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+    }
+    .film-card:hover .card-img { transform: none; }
+
+    /* Text overlay — metadata only, no background */
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px 14px 12px 20px;
+      z-index: 4;
+    }
+
+    .card-title {
+      font-family: Riforma, sans-serif;
+      font-size: 22px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.1px;
+      line-height: 1.2;
+      color: #fff;
+      margin-bottom: 1px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Title treatment PNG in place of .card-title, shown when the film has one */
+    .card-title-treatment {
+      display: block;
+      max-width: 80%;
+      max-height: 64px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: left center;
+      margin-top: -4px;
+      margin-bottom: 4px;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    /* Squareish/stacked logos read much smaller than wide banner ones at the same
+       max-height (object-fit:contain shrinks their width along with it) — give them
+       more height so they carry similar visual weight next to wide rectangular logos. */
+    .card-title-treatment--square {
+      max-height: 110px;
+    }
+
+    .card-eyebrow {
+      font-family: Riforma, sans-serif;
+      font-size: 12px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.4px;
+      color: #fff;
+      margin-bottom: 1px;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .card-meta {
+      font-family: Riforma, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      text-transform: uppercase;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 6px;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .film-card:hover .card-eyebrow,
+    .film-card:hover .card-title,
+    .film-card:hover .card-title-treatment,
+    .film-card:hover .card-meta { transform: translateX(0); }
+
+    /* MUBI Releases / Curator's Spotlight — on hover, the synopsis panel (watch button,
+       synopsis text, meta icons) overlays the bottom half of the tile itself instead of
+       dropping below it, so the white panel, being a child, scales exactly in lockstep with
+       the tile's own whole-card hover scale (see .film-card:hover above) and always matches
+       its actual (scaled) bottom half. */
+    .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block {
+      top: auto;
+      bottom: 0;
+      height: 50%;
+    }
+    /* Landscape "hover still" — fades in over the poster-cropped default image, framed
+       more openly (centered, not focal-point-cropped) for a more cinematic hover reveal. */
+    .card-hover-still {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    /* Rounded Tile Corners (Page Settings > Appearance) — a personal display preference like
+       Dark Mode, so it's its own [data-rounded-tiles] attribute rather than nsState (see
+       nsApplyRoundedTiles). .card-img-wrap is shared by every film tile, single or double, so
+       one rule clips the image/hover-still/badges/gradient uniformly across both. The hover
+       synopsis panel is a separate sibling (not clipped by .card-img-wrap's own overflow), so
+       it needs matching radius of its own — full corners for the normal dropdown-style panel,
+       bottom-only for the doubletile overlay variant since it only covers the tile's lower half. */
+    :root[data-rounded-tiles="true"] .card-img-wrap { border-radius: 16px; }
+    :root[data-rounded-tiles="true"] .card-synopsis-block { border-radius: 16px; }
+    :root[data-rounded-tiles="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block {
+      border-radius: 0 0 16px 16px;
+    }
+    /* Normal (non-doubletile) tiles only — the synopsis panel drops down flush below the
+       image (top:100%) rather than overlaying it, so on hover the image's bottom corners and
+       the panel's top corners square off where they meet, reading as one continuous rounded
+       card instead of two independently-rounded pieces with a notch at the seam.
+       .row-section--doubletile also covers "Make All Tiles Double Tiles" (that setting adds
+       the same class to every row), so this naturally excludes both. */
+    :root[data-rounded-tiles="true"] .row-section:not(.row-section--doubletile) .film-card:hover .card-img-wrap {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    :root[data-rounded-tiles="true"] .row-section:not(.row-section--doubletile) .film-card:hover .card-synopsis-block {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+    /* Same seam-squaring for the Spotlight filmstrip — its slides are plain .film-card tiles
+       too (always the dropdown-below style, never doubletile), just outside .row-section. */
+    :root[data-rounded-tiles="true"] .spotlight-slider .film-card:hover .card-img-wrap {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    :root[data-rounded-tiles="true"] .spotlight-slider .film-card:hover .card-synopsis-block {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+    .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-img { opacity: 0; }
+    .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-hover-still { opacity: 1; }
+    /* Lane of Lanes (.coll-tile / .coll-tile--double) and Lane of Genres (.genre-tile) — both
+       are single self-contained flex containers with their own overflow:hidden already (no
+       separate hover-dropdown panel to seam-square against), so a plain border-radius is all
+       either needs. */
+    :root[data-rounded-tiles="true"] .coll-tile,
+    :root[data-rounded-tiles="true"] .genre-tile { border-radius: 16px; }
+    .film-card:hover .card-award-badge { transform: translate(-6px, -6px); }
+
+
+    .card-synopsis-block {
+      position: absolute;
+      top: 100%;
+      left: 0; right: 0;
+      background: #fff;
+      box-sizing: border-box;
+      padding: 16px 20px;
+      overflow: hidden;
+      z-index: 20;
+      pointer-events: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+      transform: scaleX(1);
+      transform-origin: top center;
+      opacity: 0;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease 0.1s;
+      display: flex;
+      flex-direction: column;
+    }
+    .film-card:hover .card-synopsis-block {
+      transform: none;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .card-synopsis {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      line-height: 140%;
+      color: #323232;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 7;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .card-meta-icons { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    /* Hover Settings > Genres — replaces .card-meta-icons above with the film's real genre
+       tags (see nsFilmGenres/NS_FILM_GENRES) in the same slot. */
+    .card-genres {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      color: #7d7d7d;
+      margin-top: 10px;
+    }
+    :root[data-theme="dark"] .card-genres { color: var(--dm-text-dim); }
+    .card-meta-icons svg { width: 24px; height: 24px; flex-shrink: 0; }
+    .card-watch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 9px 16px 9px 12px;
+      background: #001489;
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      line-height: 1;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .card-watch-btn:hover { opacity: 0.85; }
+    .card-icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px; height: 30px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1.5px solid #323232;
+      background: transparent;
+      color: #323232;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+    .card-icon-btn:hover { opacity: 0.7; }
+
+    .card-meta-director {
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+    }
+
+    /* Continue Watching tiles show playback progress instead of director/country/year. */
+    .card-progress-track {
+      width: 180px;
+      height: 6px;
+      margin-top: 6px;
+      margin-bottom: 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.35);
+      overflow: hidden;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .card-progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: #fff;
+    }
+    .film-card:hover .card-progress-track { transform: translateX(-14px); }
+
+    /* ─── MOBILE DRAWER ─── */
+    .mob-drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .mob-drawer.open { pointer-events: auto; }
+    .mob-drawer-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.6);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-overlay { opacity: 1; }
+    .mob-drawer-panel {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: calc(100% - 60px);
+      max-width: 350px;
+      background: #fff;
+      overflow-y: auto;
+      padding: 20px 0 120px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-panel { transform: translateX(0); }
+    .mob-drawer-close {
+      position: absolute;
+      top: 20px;
+      left: calc(min(100% - 60px, 350px) + 20px);
+      color: #fff;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .mob-drawer.open .mob-drawer-close { opacity: 1; }
+    .mob-drawer-link {
+      display: block;
+      padding: 0 25px;
+      font-family: Riforma, sans-serif;
+      font-size: 20px;
+      line-height: 42px;
+      color: #7d7d7d;
+      text-decoration: none;
+      transition: color 0.1s;
+    }
+    .mob-drawer-link:hover { color: #323232; }
+    .mob-drawer-link.is-active { color: #323232; }
+    .mob-drawer-sep { border-top: 1px solid #EAEAEA; margin: 10px 0; }
+
+    /* ─── HAMBURGER DROPDOWN ─── */
+    .nav-avatar {
+      display: flex;
+      align-items: center;
+      padding: 0 8px 0 15px;
+      flex-shrink: 0;
+    }
+    .nav-avatar img {
+      width: 22px;
+      height: 22px;
+      object-fit: cover;
+      border-radius: 4px;
+      display: block;
+    }
+
+    .nav-hamburger-wrap {
+      position: relative;
+    }
+    .nav-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 14px);
+      right: 0;
+      background: #fff;
+      border-radius: 0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.08);
+      min-width: 200px;
+      padding: 6px 0;
+      z-index: 100;
+    }
+    .nav-dropdown.open { display: block; }
+    .nav-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      right: 16px;
+      width: 12px; height: 12px;
+      background: #fff;
+      transform: rotate(45deg);
+      box-shadow: -2px -2px 4px rgba(0,0,0,0.06);
+    }
+    .nav-dropdown a {
+      display: block;
+      padding: 8px 20px;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #7d7d7d;
+      transition: background 0.1s;
+      white-space: nowrap;
+    }
+    .nav-dropdown a:hover { background: #f5f5f5; color: #323232; }
+    .nav-dropdown-sep { border-top: 1px solid #EAEAEA; margin: 5px 0; }
+
+    .nav-avatar-wrap { position: relative; }
+
+    /* ─── PROFILE MODAL (Netflix-style "Who's Watching?") ─── */
+    .profile-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10,10,10,0.85);
+      z-index: 1010;
+      opacity: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+    .profile-overlay.is-open { opacity: 1; pointer-events: auto; }
+    .profile-modal-close {
+      position: absolute;
+      top: 32px; right: 40px;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .profile-modal-close:hover { color: #fff; }
+    .profile-title {
+      font-family: Riforma, sans-serif;
+      font-size: 40px; font-weight: 500;
+      color: #fff;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .profile-subtitle {
+      font-family: Riforma, sans-serif;
+      font-size: 15px; font-weight: 400;
+      color: #fff;
+      margin-bottom: 48px;
+      text-align: center;
+    }
+    .profile-grid {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 1100px;
+      padding: 0 20px;
+    }
+    .profile-card {
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      width: 200px;
+      background: none; border: none; cursor: pointer;
+      font-family: Riforma, sans-serif;
+      padding: 0;
+    }
+    .profile-card-avatar-wrap {
+      width: 160px; height: 160px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 3px solid transparent;
+      box-sizing: border-box;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .profile-card:hover .profile-card-avatar-wrap,
+    .profile-card.is-active .profile-card-avatar-wrap {
+      border-color: #fff;
+      transform: scale(1.04);
+    }
+    .profile-card-avatar { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .profile-card-name {
+      font-size: 18px; font-weight: 600; color: #fff;
+      transition: color 0.15s;
+    }
+    .profile-card-desc {
+      font-size: 13px; font-weight: 400; color: #fff;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* ─── FOOTER ─── */
+    .site-footer {
+      border-top: 1px solid #EAEAEA;
+      padding: 36px 20px 48px;
+    }
+    @media (min-width: 810px) { .site-footer { padding: 36px 22px 48px; } }
+
+    .footer-logo { margin-bottom: 18px; }
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 18px;
+      list-style: none;
+      margin-bottom: 24px;
+    }
+    .footer-links a { font-size: 13px; color: #7d7d7d; }
+    .footer-links a:hover { color: #323232; }
+    .footer-copy { font-size: 12px; color: #aaa; }
+
+    /* ─── UTILS ─── */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      overflow: hidden; clip: rect(0,0,0,0);
+    }
+
+    /* Film of day badge on first card */
+    .card-fotd-badge {
+      position: absolute;
+      top: 8px; right: 8px;
+      background: #001489;
+      color: #fff;
+      font-size: 8px;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 2px;
+    }
+    .coll-tile { display:flex; aspect-ratio:371/209; overflow:hidden; cursor:pointer; text-decoration:none; }
+    /* Lane of Genres — a real film still (the first catalog match for that genre, see
+       genreTileHTML/nsFilmsByGenre) behind a bottom-up gradient for legibility (same
+       formula as .card-img-wrap::before, for consistency with every other tile's scrim),
+       falling back to a flat colour tile (NS_GENRE_TILE_COLOR) on the rare genre with no
+       match — same aspect ratio as .coll-tile so it sits at home in the same row-grid. */
+    .genre-tile {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      aspect-ratio: 371/209;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      padding: 16px 18px;
+      box-sizing: border-box;
+    }
+    /* "Make All Tiles Double Tiles" — the double variant is just the same tile scaled to the
+       same fixed height as .coll-tile--double / the film doubletile cards. */
+    .genre-tile--double { aspect-ratio: unset; height: 418px; }
+    .genre-tile-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    .genre-tile-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 55%, transparent 100%);
+      z-index: 1;
+    }
+    .genre-tile-title {
+      position: relative;
+      z-index: 3;
+      font-family: Riforma, sans-serif;
+      font-size: 23px;
+      font-weight: 500;
+      text-transform: none;
+      color: #fff;
+    }
+    /* Lane of Genres "Style: Colour + Stacked Films" — flat colour tile (no still/overlay
+       behind the label, so it stays reserved space for the fanned stack at right instead).
+       Label keeps the same bottom-left placement as the Tiles style. */
+    .genre-tile--stack { padding-right: 175px; }
+    .genre-stack-films {
+      position: absolute;
+      top: calc(50% - 10px);
+      right: 16px;
+      transform: translateY(-50%);
+      width: 150px;
+      height: 150px;
+      z-index: 2;
+    }
+    .genre-stack-film {
+      position: absolute;
+      top: 0; left: 0;
+      width: 128px;
+      height: 148px;
+      border-radius: 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+      box-sizing: border-box;
+      overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .genre-stack-film-still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    /* Only rendered when the film actually has one (see genreStackTileHTML) — a small
+       drop-shadowed logo bottom-left on its own card, same corner convention as a normal
+       doubletile card's title treatment. */
+    /* Only rendered when the film has a title treatment (see genreStackTileHTML) — same
+       bottom-up scrim formula as the big genre-tile-overlay, just squeezed into a smaller
+       card, so the (often light-coloured) logo stays legible against a bright still. */
+    .genre-stack-film-grad {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%);
+    }
+    .genre-stack-film-treatment {
+      position: absolute;
+      left: 6px; bottom: 6px;
+      max-width: 72%;
+      max-height: 22px;
+      object-fit: contain;
+      object-position: left bottom;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.7));
+    }
+    /* Squareish logos (aspect ratio well under 2.2:1 — same threshold as
+       .card-title-treatment--square) render much smaller than wide banner ones at the same
+       max-height, since width shrinks along with it — bump them up so they don't look tiny
+       next to a wide logo on the card beside them. */
+    .genre-stack-film-treatment--square { max-height: 38px; }
+    /* Bottoms land within a few px of each other (a tight fanned stack resting on a common
+       "baseline") — only the rotation and horizontal offset vary, not the vertical one. */
+    .genre-stack-film:nth-child(1) { transform: rotate(-9deg) translate(-16px, 4px); z-index: 1; }
+    .genre-stack-film:nth-child(2) { transform: rotate(9deg) translate(16px, 6px); z-index: 2; }
+    .genre-stack-film:nth-child(3) { transform: rotate(0deg) translate(0, 8px); z-index: 3; }
+    /* The two cards behind the front one get a slight dark tint so they read as "receded" —
+       kept as-is on hover too (only position/rotation animate, not a brightness change). */
+    .genre-stack-film:nth-child(1)::after,
+    .genre-stack-film:nth-child(2)::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+    }
+    /* On hover, spread the fan slightly — just enough for the two back cards to peek out
+       a bit further from behind the front one, without swinging wide. */
+    .genre-tile--stack:hover .genre-stack-film:nth-child(1) { transform: rotate(-10deg) translate(-24px, 4px); }
+    .genre-tile--stack:hover .genre-stack-film:nth-child(2) { transform: rotate(10deg) translate(24px, 6px); }
+    .genre-tile--stack:hover .genre-stack-film:nth-child(3) { transform: rotate(0deg) translate(0, 2px); }
+    /* Lane of Genres "Style: BFI-like (Type Only)" (Page Settings > Layout > Lane of Genres
+       > Style) swaps the genre-tile grid for the bare genre words themselves — oversized,
+       comma-separated, flowing and wrapping like a paragraph, no pill chrome — referencing
+       the big editorial typography on player.bfi.org.uk's genre browsing screen.
+       Deliberately doesn't participate in Carousel Rows — a wrapping word cloud doesn't fit
+       the peek/slide model. */
+    .bfi-genre-section { margin-top: 100px; margin-bottom: 100px; }
+    .bfi-genre-list {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px 20px;
+    }
+    .bfi-genre-word {
+      display: inline-flex;
+      align-items: center;
+      font-family: Riforma, sans-serif;
+      font-size: clamp(32px, 4.6vw, 62px);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      color: #b3b3b3;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease;
+    }
+    .bfi-genre-word:hover { color: #001489; }
+    /* Negative margin cancels the flex gap on this side only, so the comma sits flush
+       against the word right before it while normal spacing remains before the next word. */
+    .bfi-genre-sep {
+      align-self: flex-end;
+      margin-left: -20px;
+      font-family: Riforma, sans-serif;
+      font-size: clamp(32px, 4.6vw, 62px);
+      font-weight: 700;
+      line-height: 1;
+      color: #b3b3b3;
+    }
+    .bfi-genre-section .row-title { text-transform: none; }
+    :root[data-theme="dark"] .bfi-genre-word { color: var(--dm-text-dim); }
+    :root[data-theme="dark"] .bfi-genre-word:hover { color: #4d6bd6; }
+    :root[data-theme="dark"] .bfi-genre-sep { color: var(--dm-text-dimmer); }
+    /* Double tile: full-bleed poster image (matching the film doubletile cards' visual
+       language) with a bottom-up gradient tinted in the collection's own colour, and the
+       title/treatment + item count overlaid on top of that gradient at the bottom. */
+    .coll-tile--double {
+      position: relative;
+      aspect-ratio: unset;
+      height: 418px;
+      display: block;
+      overflow: hidden;
+    }
+    .coll-tile-double-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .coll-tile-double-grad {
+      position: absolute; inset: 0;
+      pointer-events: none;
+    }
+    .coll-tile-double-overlay {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: 14px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .coll-tile-double-title-wrap {
+      min-width: 0;
+      margin-bottom: 8px;
+    }
+    .coll-tile-double-title {
+      font-family: Riforma, sans-serif;
+      font-size: 28px; font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: -0.2px;
+      line-height: 1.2;
+      color: #fff;
+    }
+    .coll-tile-double-treatment {
+      display: block;
+      max-height: 100px;
+      max-width: 100%;
+      width: auto; height: auto;
+      object-fit: contain;
+      object-position: left bottom;
+    }
+    .coll-tile-double-count {
+      flex-shrink: 0;
+      display: flex; align-items: center; gap: 4px;
+      color: #fff;
+      font-family: Riforma, sans-serif;
+      font-size: 13px; font-weight: 700;
+    }
+    .coll-tile-double-count svg { flex-shrink: 0; }
+    .coll-tile-left { flex:1; padding:14px; display:flex; flex-direction:column; align-items:flex-start; justify-content:space-between; overflow:hidden; }
+    .coll-tile-count { display:flex; align-items:center; gap:4px; color:#fff; font-family:Riforma,sans-serif; font-size:13px; font-weight:700; }
+    .coll-tile-count svg { flex-shrink:0; }
+    .coll-tile-treatment { display:block; max-width:90%; max-height:82px; object-fit:contain; object-position:left top; }
+    .coll-tile-title { font-family:Riforma,sans-serif; font-size:13px; font-weight:500; text-transform:uppercase; letter-spacing:-0.2px; line-height:1.2; color:#fff; }
+    .coll-tile-title--solo { font-size:22px; }
+    .coll-tile-subtitle { display:block; font-size:22px; font-weight:500; margin-top:2px; }
+    .coll-tile-right { width:185px; flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+    .coll-tile-img { display:block; width:100%; height:100%; object-fit:cover; }
+    /* Terminal tile at the end of a Lane of Lanes carousel track — same convention as the
+       film-row carousel's own see-all tile (background image + tinted overlay + plain
+       "See All" text, no count), just using the LAST collection tile's own image/colour
+       instead of a fixed fill, since there's no single "this row's colour" for a lane of
+       many different collections. */
+    .coll-tile.row-carousel-see-all-tile { position: relative; }
+    .coll-tile-see-all-inner {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background-size: cover; background-position: center;
+    }
+    .coll-tile-see-all-overlay { position: absolute; inset: 0; opacity: 0.45; }
+    .director-card { display:block; cursor:pointer; text-decoration:none; }
+    .director-img-wrap { aspect-ratio:1/1; position:relative; overflow:hidden; background:#d0d0d0; }
+    .director-img-wrap .card-img { filter:grayscale(100%); transition:transform 0.45s ease; }
+    .director-card:hover .card-img { transform:scale(1.03); }
+    .director-info { background:#fff; padding:8px 0 4px; }
+    .director-name { font-family:Riforma,sans-serif; font-size:13px; font-weight:500; text-transform:uppercase; letter-spacing:0.1px; line-height:1.3; color:#323232; margin-bottom:2px; }
+    .director-count { font-family:Riforma,sans-serif; font-size:12px; font-weight:400; text-transform:uppercase; color:rgba(0,0,0,0.45); }
+
+    /* ─── INLINE SEARCH ─── */
+    .search-inline {
+      display: flex;
+      align-items: center;
+      position: relative;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .search-inline.is-open { padding: 0 6px; }
+    #searchNavBg {
+      position: fixed; top: 0;
+      display: none; pointer-events: none;
+      z-index: 9;
+      background: rgba(255,255,255,0.8);
+      border-radius: 0;
+    }
+    .search-inline-input {
+      width: 0;
+      min-width: 0;
+      opacity: 0;
+      border: none;
+      outline: none;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #323232;
+      background: transparent;
+      padding: 0;
+      transition: width 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s;
+      pointer-events: none;
+    }
+    .search-inline-input::placeholder { color: rgba(0,0,0,0.45); }
+    .search-inline.is-open .search-inline-input {
+      width: 320px;
+      opacity: 1;
+      padding: 0 0 0 8px;
+      pointer-events: auto;
+    }
+    .search-icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      color: rgba(255,255,255,0.7);
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+    .search-icon-btn:hover { color: #fff; }
+    .search-inline.is-open .search-icon-btn { color: rgba(0,0,0,0.55); }
+
+    /* ─── SEARCH DROPDOWN ─── */
+    .search-dropdown {
+      position: fixed;
+      top: 50px;
+      width: 350px;
+      height: 448px;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+      z-index: 300;
+      display: none;
+      overflow: hidden;
+      padding-bottom: 5px;
+    }
+    .search-dropdown.is-open { display: block; }
+    .search-drop-label {
+      font-family: Riforma, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(0,0,0,0.4);
+      padding: 10px 12px 6px;
+    }
+    .search-drop-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 2px 12px;
+      text-decoration: none;
+      transition: background 0.1s;
+      cursor: pointer;
+    }
+    .search-drop-item:hover { background: #F4F4F4; }
+    .search-drop-thumb {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      background: #D8D8D8;
+    }
+    .search-drop-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .search-drop-play {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .search-drop-play svg { filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4)); }
+    .search-drop-info { min-width: 0; flex: 1; }
+    .search-drop-title {
+      font-family: Riforma, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #323232;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .search-drop-director {
+      font-family: Riforma, sans-serif;
+      font-size: 12px;
+      color: rgba(0,0,0,0.45);
+    }
+    .search-drop-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 299;
+    }
+    .search-drop-backdrop.is-open { display: block; }
+
+    /* ─── SETTINGS MODAL ─── */
+    .settings-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1110;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+    .settings-overlay.is-open { opacity: 1; pointer-events: auto; }
+    .settings-modal {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -48%) scale(0.97);
+      width: min(1480px, 96vw);
+      height: min(950px, 94vh);
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      z-index: 1111;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.28s cubic-bezier(0.4,0,0.2,1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .settings-modal.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .settings-modal-head { padding: 20px 24px 0; border-bottom: 1px solid #EAEAEA; flex-shrink: 0; }
+    .settings-modal-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .settings-modal-title { font-family: Riforma, sans-serif; font-size: 18px; font-weight: 500; color: #323232; }
+    .settings-modal-close {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(0,0,0,0.45);
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .settings-modal-close:hover { color: #323232; }
+    .settings-tabs { display: flex; gap: 28px; }
+    .settings-tab {
+      font-family: Riforma, sans-serif;
+      font-size: 14px; font-weight: 500;
+      color: #8A8A8A;
+      padding: 0 0 14px;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .settings-tab:hover { color: #323232; }
+    .settings-tab.is-active { color: #323232; border-bottom-color: #001489; }
+    .settings-modal-body { flex: 1; min-height: 0; display: flex; }
+    .settings-tab-panel { display: none; flex: 1; min-height: 0; min-width: 0; }
+    .settings-tab-panel.is-active { display: flex; }
+    .settings-tab-panel--stacked.is-active { flex-direction: column; }
+    .ns-user-select {
+      display: flex; align-items: center; gap: 20px;
+      padding: 22px 24px;
+      border-bottom: 1px solid #EAEAEA;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+    .ns-user-select-label {
+      font-family: Riforma, sans-serif;
+      font-size: 13px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: #8A8A8A;
+      flex-shrink: 0;
+    }
+    .ns-user-list { display: flex; gap: 20px; flex-shrink: 0; }
+    .ns-user-btn {
+      display: flex; align-items: center; gap: 14px;
+      background: none; border: none; cursor: pointer;
+      font-family: Riforma, sans-serif;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .ns-user-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid transparent;
+      box-sizing: border-box;
+      flex-shrink: 0;
+      transition: border-color 0.15s;
+    }
+    .ns-user-btn:hover .ns-user-avatar { border-color: #D0D0D0; }
+    .ns-user-btn.is-active .ns-user-avatar { border-color: #001489; }
+    .ns-user-text { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+    .ns-user-name {
+      font-size: 16px; font-weight: 600; color: #323232;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+    .ns-user-btn.is-active .ns-user-name { color: #001489; }
+    .ns-user-desc {
+      font-size: 14px; font-weight: 400; color: #666;
+      white-space: normal;
+      max-width: 210px;
+      line-height: 1.3;
+    }
+    .ns-type-toggle {
+      display: flex; gap: 8px;
+      margin-top: 10px;
+      flex-shrink: 0;
+    }
+    .ns-type-toggle-btn {
+      font-family: Riforma, sans-serif;
+      font-size: 13px; font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #D0D0D0;
+      background: #fff;
+      color: #5A5A5A;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .ns-type-toggle-btn:hover { border-color: #001489; color: #001489; }
+    .ns-type-toggle-btn.is-active { background: #001489; border-color: #001489; color: #fff; }
+    .settings-row-type-badge {
+      display: inline-block;
+      font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.3px;
+      color: #5A5A5A;
+      background: #EFEFEF;
+      border-radius: 3px;
+      padding: 1px 5px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .settings-placeholder {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      color: #8A8A8A; font-size: 14px; font-family: Riforma, sans-serif;
+    }
+    .settings-columns { position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; }
+    .settings-column { flex: 1; min-width: 0; display: flex; flex-direction: column; border-right: 1px solid #EAEAEA; }
+    .settings-column:last-of-type { border-right: none; }
+    .settings-column-head { padding: 16px 18px 12px; flex-shrink: 0; }
+    .settings-column-title {
+      display: flex; align-items: baseline; gap: 6px;
+      font-family: Riforma, sans-serif;
+      font-size: 13px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: #5A5A5A;
+      margin-bottom: 10px;
+    }
+    .settings-column-count { color: #B0B0B0; font-weight: 400; }
+    .ns-clear-all-btn {
+      margin-left: auto;
+      font-family: Riforma, sans-serif;
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.3px;
+      color: #8A8A8A;
+      background: none; border: none;
+      cursor: pointer;
+      padding: 2px 0;
+      transition: color 0.15s;
+    }
+    .ns-clear-all-btn:hover { color: #B3261E; }
+    .settings-search {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #D0D0D0;
+      border-radius: 6px;
+      font-size: 13.5px;
+      font-family: Riforma, sans-serif;
+      color: #323232;
+      outline: none;
+    }
+    .settings-search:focus { border-color: #001489; }
+    .settings-list { flex: 1; overflow-y: auto; padding: 4px 10px 16px; }
+    .settings-empty { padding: 28px 8px; color: #8A8A8A; font-size: 13px; text-align: center; }
+    .settings-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .settings-row:hover, .settings-row.is-selected { background: #F5F5F5; }
+    .settings-row-thumb { width: 38px; height: 54px; object-fit: cover; border-radius: 3px; flex-shrink: 0; background: #ddd; }
+    .settings-row-info { flex: 1; min-width: 0; }
+    .settings-row-title {
+      font-size: 13.5px; font-weight: 500; color: #323232;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .settings-row-meta {
+      font-size: 12px; color: #8A8A8A;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .settings-row-actions { display: none; gap: 4px; flex-shrink: 0; }
+    .settings-row:hover .settings-row-actions { display: flex; }
+    .settings-row-action-btn {
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid #D0D0D0;
+      color: #5A5A5A;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .settings-row-action-btn:hover { background: #001489; border-color: #001489; color: #fff; }
+    .settings-row-action-btn.is-active { background: #001489; border-color: #001489; color: #fff; }
+    .settings-row-action-btn.is-remove:hover { background: #B3261E; border-color: #B3261E; }
+    .settings-row-action-btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+    .settings-row--slot-picker .settings-row-actions { display: flex; }
+    .settings-row.is-in-slot { background: #EEF3FF; }
+    .settings-row.is-slot-full { opacity: 0.45; }
+    .settings-row-empty-slot {
+      padding: 14px 10px;
+      margin: 3px 0;
+      border: 1px dashed #D8D8D8;
+      border-radius: 6px;
+      color: #B0B0B0;
+      font-size: 13px;
+      font-family: Riforma, sans-serif;
+      text-align: center;
+    }
+    .settings-row--static { cursor: default; }
+    .settings-row--static:hover { background: transparent; }
+    .ns-slider-row { display: flex; align-items: center; gap: 12px; }
+    .ns-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: #E0E0E0;
+      outline: none;
+    }
+    .ns-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #001489;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px #001489;
+    }
+    .ns-slider::-moz-range-thumb {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #001489;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px #001489;
+    }
+    .ns-slider-value {
+      min-width: 26px;
+      text-align: right;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #323232;
+    }
+    .settings-modal-footer {
+      padding: 14px 24px;
+      border-top: 1px solid #EAEAEA;
+      flex-shrink: 0;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .settings-modal-footer .settings-modal-update-btn { width: auto; padding: 10px 28px; }
+    .settings-modal-reset-btn {
+      margin-right: auto;
+      padding: 10px 16px;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #B3261E;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .settings-modal-reset-btn:hover { text-decoration: underline; }
+
+    /* Custom confirm dialog — replaces the browser's native confirm() so destructive
+       actions (like resetting all prototype settings) match the rest of the UI. */
+    .ns-confirm-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1120;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .ns-confirm-overlay.is-open { opacity: 1; pointer-events: auto; }
+    .ns-confirm-panel {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -48%) scale(0.97);
+      width: min(400px, 90vw);
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 24px;
+      z-index: 1121;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.2s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease;
+    }
+    .ns-confirm-panel.is-open { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+    .ns-confirm-title {
+      font-family: Riforma, sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: #141414;
+      margin-bottom: 8px;
+    }
+    .ns-confirm-message {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #5a5a5a;
+      margin-bottom: 24px;
+    }
+    .ns-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .ns-confirm-btn {
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .ns-confirm-btn--cancel { background: none; border: 1px solid #D0D0D0; color: #323232; }
+    .ns-confirm-btn--cancel:hover { border-color: #323232; }
+    .ns-confirm-btn--ok { background: #B3261E; border: 1px solid #B3261E; color: #fff; }
+    .ns-confirm-btn--ok:hover { background: #96201a; border-color: #96201a; }
+
+    /* Keyboard-shortcut hint — a floating bar, fixed to the bottom of the viewport (not the
+       top-of-flow bar from earlier, which pushed .site-header/hero measurements around and
+       broke marquee/nav scroll math). Being fixed and at the bottom, it never occupies
+       document flow space, so nothing else on the page needs to know it exists at all. */
+    .ns-infobar {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #001489;
+      color: #fff;
+      padding: 14px 20px;
+      font-family: Riforma, sans-serif;
+      font-size: 14px;
+      z-index: 1100;
+      box-shadow: 0 -2px 16px rgba(0,0,0,0.25);
+      transform: translateY(0);
+      transition: transform 0.25s ease;
+    }
+    .ns-infobar.is-dismissed { transform: translateY(100%); pointer-events: none; }
+    .ns-infobar-icon { font-size: 19px; flex-shrink: 0; }
+    .ns-infobar-text { flex: 1; }
+    .ns-infobar-text kbd {
+      display: inline-block;
+      font-family: inherit;
+      font-weight: 700;
+      background: rgba(255,255,255,0.18);
+      border-radius: 3px;
+      padding: 1px 6px;
+      margin: 0 1px;
+    }
+    .ns-infobar-close {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      opacity: 0.85;
+      transition: opacity 0.15s;
+    }
+    .ns-infobar-close:hover { opacity: 1; }
+    .ns-infobar-close .material-icons { font-size: 20px; }
+    .settings-details {
+      position: absolute; top: 0; right: 0; bottom: 0;
+      width: 320px; max-width: 92%;
+      background: #fff;
+      border-left: 1px solid #EAEAEA;
+      box-shadow: -8px 0 24px rgba(0,0,0,0.08);
+      transform: translateX(100%);
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+      display: flex; flex-direction: column;
+      z-index: 5;
+    }
+    .settings-details.is-open { transform: translateX(0); }
+    .settings-details-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #EAEAEA;
+      flex-shrink: 0;
+    }
+    .settings-details-title {
+      font-family: Riforma, sans-serif;
+      font-size: 13px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: #5A5A5A;
+    }
+    .settings-details-body { padding: 20px; overflow-y: auto; flex: 1; }
+    .settings-details-footer { padding: 14px 20px; border-top: 1px solid #EAEAEA; flex-shrink: 0; }
+    .settings-details-save {
+      width: 100%;
+      font-family: Riforma, sans-serif;
+      font-size: 14px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.4px;
+      color: #fff; background: #001489; border: 1px solid #001489; border-radius: 4px;
+      cursor: pointer; padding: 10px 16px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .settings-details-save:hover { background: #00106b; border-color: #00106b; }
+    .settings-details-save.is-saved { background: #1E8E3E; border-color: #1E8E3E; }
+    .settings-details-thumb { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 6px; margin-bottom: 14px; background: #eee; }
+    .settings-details-name { font-family: Riforma, sans-serif; font-size: 18px; font-weight: 500; color: #323232; margin-bottom: 4px; }
+    .settings-details-meta { font-size: 13px; color: #8A8A8A; margin-bottom: 6px; }
+    .ns-field { padding: 14px 0; border-bottom: 1px solid #F0F0F0; }
+    .ns-field-label {
+      font-family: Riforma, sans-serif;
+      font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.4px;
+      color: #8A8A8A; margin-bottom: 8px;
+    }
+    .ns-number-input {
+      width: 100%; padding: 8px 10px;
+      border: 1px solid #D0D0D0; border-radius: 6px;
+      font-size: 14px; font-family: Riforma, sans-serif; color: #323232;
+      outline: none;
+    }
+    .ns-number-input:focus { border-color: #001489; }
+    .ns-select {
+      width: 100%; padding: 8px 10px;
+      border: 1px solid #D0D0D0; border-radius: 6px;
+      font-size: 14px; font-family: Riforma, sans-serif; color: #323232;
+      background: #fff;
+      outline: none;
+    }
+    .ns-select:focus { border-color: #001489; }
+    .ns-toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #F0F0F0; }
+    .ns-toggle-label { font-family: Riforma, sans-serif; font-size: 14px; color: #323232; }
+    .ns-toggle-desc { font-family: 'DM Sans', sans-serif; font-size: 12px; color: #8A8A8A; margin-top: 3px; }
+    .ns-toggle-group { border-bottom: 1px solid #F0F0F0; }
+    .ns-toggle-group .ns-toggle-row { border-bottom: none; }
+    .ns-toggle-group .ns-toggle-row:first-child { padding-bottom: 10px; }
+    .ns-toggle-group .ns-toggle-row + .ns-toggle-row { padding-top: 0; padding-bottom: 14px; }
+    .ns-switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; display: block; }
+    .ns-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .ns-switch-track { position: absolute; inset: 0; background: #D0D0D0; border-radius: 22px; transition: background 0.2s; cursor: pointer; }
+    .ns-switch-thumb { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+    .ns-switch input:checked + .ns-switch-track { background: #001489; }
+    .ns-switch input:checked + .ns-switch-track .ns-switch-thumb { transform: translateX(18px); }
+    /* Go Crazy is disabled while Splash is active (see splashToggle's change handler) —
+       greyed out and inert rather than hidden, so it's obvious the two are mutually exclusive. */
+    .ns-switch input:disabled + .ns-switch-track { opacity: 0.4; cursor: not-allowed; }
+    @media (max-width: 900px) {
+      .settings-columns { flex-direction: column; overflow-y: auto; }
+      .settings-column { border-right: none; border-bottom: 1px solid #EAEAEA; }
+      .settings-list { max-height: 220px; }
+      .settings-details { width: 100%; max-width: 100%; }
+    }
+
+    /* This page has no hero/marquee for .site-header to overlay (it's normally an absolutely-
+       positioned transparent bar over a dark hero image, with white text/logo to match) — give
+       it a solid fill so the white logo/nav stay legible, and push the page content down by the
+       header's own height so it isn't hidden underneath it. */
+    .site-header { background: #323232; }
+    .now-showing { padding-top: 92px; }
+    @media (min-width: 1186px) { .now-showing { padding-top: 82px; } }
+  </style>
+</head>
+<body>
+<header class="site-header">
+
+  <!-- Mobile nav -->
+  <div class="nav-mobile">
+    <div class="nav-mobile-left">
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="openMobDrawer()" aria-label="Open menu" id="navHamburgerMob">
+          <span class="material-icons" style="font-size:20px;">menu</span>
+        </button>
+      </div>
+      <button class="search-icon-btn" id="searchOpenBtnMob" aria-label="Search">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+    <a href="mubi-showing.html" class="nav-mobile-logo" aria-label="MUBI">
+      <svg viewBox="0 0 800 240" width="65" style="vertical-align:top" aria-hidden="true">
+        <g fill="#FFFFFF">
+          <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+          <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+          <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+          <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+          <g fill="#FFFFFF">
+            <circle cx="766.5"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="118.11" r="33.13"/>
+            <circle cx="681.2"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="33.13"  r="33.13"/>
+            <circle cx="681.2"  cy="33.13"  r="33.13"/>
+            <circle cx="595.89" cy="203.1"  r="33.13"/>
+            <circle cx="681.2"  cy="203.1"  r="33.13"/>
+          </g>
+        </g>
+      </svg>
+    </a>
+    <div class="nav-mobile-right"></div>
+  </div>
+
+  <!-- Desktop nav -->
+  <div class="nav-desktop">
+    <div class="nav-logo">
+      <a href="mubi-showing.html" aria-label="MUBI">
+        <svg viewBox="0 0 800 240" width="75" style="vertical-align:top" aria-hidden="true">
+          <g fill="#FFFFFF">
+            <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+            <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+            <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+            <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+            <circle cx="766.5"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="118.11" r="33.13"/>
+            <circle cx="681.2"  cy="118.11" r="33.13"/>
+            <circle cx="595.89" cy="33.13"  r="33.13"/>
+            <circle cx="681.2"  cy="33.13"  r="33.13"/>
+            <circle cx="595.89" cy="203.1"  r="33.13"/>
+            <circle cx="681.2"  cy="203.1"  r="33.13"/>
+          </g>
+        </svg>
+      </a>
+    </div>
+
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="mubi-showing.html" class="nav-link">Now Showing</a>
+      <a href="explore.html" class="nav-link">Browse</a>
+      <a href="watchlist.html" class="nav-link">Watchlist</a>
+    </nav>
+
+    <div style="flex: 1;"></div>
+
+    <nav class="nav-links" aria-label="Secondary navigation">
+      <div class="search-inline" id="searchInline">
+        <button class="search-icon-btn" id="searchOpenBtn" aria-label="Search">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <input class="search-inline-input" id="searchInput" type="text" placeholder="Search" autocomplete="off">
+      </div>
+      <div class="nav-avatar-wrap">
+        <a href="#" class="nav-avatar" aria-label="Profile" id="navAvatarBtn" onclick="openProfileModal(event)">
+          <img id="navAvatarImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWBAMAAADOL2zRAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAwUExURf///5mZmczMzLOzs56enq2trcDAwMfHx6amprq6utzc3Pn5+ebm5tLS0uzs7PLy8qLPHf4AAAYhSURBVGje7ZpPaBxVHMe/JrQ1u5uEb3Y22S2J7c6m2S30kE0sthVKR8RKxOKKB0sEkz1ERBA3TbX2YjdUohbFDZ70stUetCisoEV6MeKherJVD0IFU+lFTy3au4fZfzPz/s10UZC8S5th58N7v3/vve9vYPduYIu1xQrD2r/sf7J3LSJrik/6H9WSEVl7mPE9yTtWRNYk/W/myHI0VoVcDzyZicaqkQ95n5TI1WisIn0GyzMyq0qfwXIkRyKzvAZbITkWjeX4l1QjORqNRf80nLtjpTx5cHcsa7YzDtwlKzD+Zyynh6yqiDXWQ9ZID1nR1pgT2t6KxFoRshTFECGXqFqknLVXjGI6AmuF6V+v+EJs9NOfFIuUs0pcAO547b4JXOPR0KwppvDJ9WEPa3z4lY0B+SKlrAJ39p1OokYyOWOfuJ8kz3z5/a6EfIuEfBMa7z9NZMkxAMAlktPf/TECShcpY+Udjg/QQpYcAQDsIDl9gzvjZDIkq0BODFXnUCLT1wEkiiSP7OB0jORyONYiaTWGECNJvu+iOIGvsU2+30JRu54FLrgOXCu6/15FvEYGjj9qlpvX6yf9Mb/8niK/ESqv1fkNWdArx9EQrCk1yrMD61gF/8tF399lc1bN9+r8Dd+DVWNW3r+bHffPM2PMylE3LGPWipYljApEiAhZVIhYeT1KWCsgvG/oh7Vsxlo0YAWvSmJWYGNMzs6WDM4o0CbQm/tuAUDiw6IujaBJoNRvaI8rngkvm7C6zbV6C10jsag0GJTmegveEZ9UGQwqc/lRQDyrMBgU5hpBcAwX5QaD3FypTQELg47UYJAn40ud9x/ocsEdaUpCmoxzHSOVONE1s0VZSkKWjFZnhf0kFzqsmKyGQVa75jsvZ0mOuv+dzNwCzjd/sq5jNUt9qoHY7AvuEh3OlAgA2E7OdSa2qmM13XQOqDTXmeAc+mbaM7zantiohjXVtlaM5E4AiB9smW6Y7rNBcbRCbPpx4G+S3PDE1nZmLpYm2q7010MEtRL3QIMK3/6Fuz2sftYRqwPYJjQ+hKZPAiiOIP5jw8Ma2tdarCMyPoRF4jEAH9UhH9dEpQLCqFdh2uEbiHyIduykDuV61H/Sh8iN92lZqAjKDkRuXAi+G7/odcMXAkdC5MZOhbnc2jpu8vFm/akeBoA+gSMhKF6jQDz3GgAMVZsRNuS0ZrvoeibukH6pDYKQGAfu0KoDuElmGgDwVcsjsVbNWAwGBQTyxhOIl9xrUKlVfLJMVVlHM7PqAG4Ej3QQZPZV7CDJ3Rgkn3ZLajW10ffwJoAKD33LhVYaJRUs917cwG1mCjyCfj6Dn48BQOnBpg9qE8BnDTRrRVrByjUj9Vp6E7k6BpINf2z8vtEdrZaCVXBvUPjrA320lkhSxzKI+nbkl+WsSZI8YsY6r2FlSXLajPV5IIkErN1mrHsDR3MEzxJ1M1a/CWvDjNVnwsK/z0oYsNI9ZCV7xMr+lyxNDvWKVQjL0tSvMH5M6+pqCFZKwcqHYA1q9g67SnLTPIfGdPu2YW4PBK4esANBYVi/tgWkGATF3nfNWPfozkx2lTxjxvomcCPys06Ru8xYWVplNSv/lHuoN9kf13T3jilmjFBxg3uaTTZMWLGgbgWBGlo324ZG9ayq2WZ7O9iRgUDU3mXmxlU9q9a6d6pN75jc3StGxo8JpDkIOuRdCoDqNFHWs/YYRX5WID9C1MvJmJgrbcDKm5SwAZFiKNaZzhkUCROdyS5RGxVxJ/CpgFxLq4etzxLWJMljOi+KpHKI5dV0QxOoIkUaEtl3XsW6KRZ+ZfpqSjGxIUfct4WsEzCvnpap7jtJ5cRijqRLAWlH9B2lzpE21e8dku4lWTAuSbu2kLdOMsJVJqoymVzMKvjVx67sqUjle3Uf5nCQdSFsH6bdH3rRj/pY3gmQsdq97UNeRaig7HHDVjeuHuny5uX207UwrL2dztXMDy7pz5Oa1py0L9rdxUzNrudmu1R9qxyyJ33ibDetuznxeuj+tm2/eqC90KNt8fzR4+VI33XY9vP7z7qLOkWS1hsHn1P9Wv9N4NLSUtm2X15aKut+ufUN5RbLP/4Bz8uwCKSeBacAAAAASUVORK5CYII=" alt="Profile">
+        </a>
+      </div>
+      <div class="nav-hamburger-wrap">
+        <button class="nav-hamburger" onclick="toggleDropdown(event)" aria-label="More" aria-expanded="false" id="navHamburger">
+          <span class="material-icons">menu</span>
+        </button>
+        <div class="nav-dropdown" id="navDropdown">
+          <a href="#">Notebook</a>
+          <a href="film-database-v2.html">Film Database</a>
+          <a href="#">Notebook Magazine</a>
+          <a href="#">MUBI Editions</a>
+          <a href="#">SHOP</a>
+          <a href="#">Gift MUBI</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">About</a>
+          <a href="#">Students</a>
+          <a href="#">Contribute</a>
+          <a href="#">Jobs</a>
+          <a href="#">Terms &amp; Privacy</a>
+          <div class="nav-dropdown-sep"></div>
+          <a href="#">Earn 1 month free</a>
+          <a href="#">Viewing History</a>
+          <a href="#" id="settingsLinkDesktop">Settings</a>
+          <a href="#">Help</a>
+          <a href="#">Log Out</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- ─── COMING SOON ───
+     Standalone page for the "Coming Soon" lane + its "Go Crazy!" flip toggle — both were
+     previously buried in mubi-showing-phase1.html's Settings modal (Page Settings > Layout
+     > Coming Soon Lane > Go Crazy!); moved here as their own dedicated page instead, with
+     the toggle sitting directly on the page rather than behind a settings panel. -->
+<section class="now-showing" id="comingSoonSection">
+  <div class="row-header" style="justify-content: space-between; align-items: center;">
+    <div>
+      <span class="row-title">Coming Soon</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 24px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="row-title" style="white-space: nowrap;">Go Crazy!</span>
+        <label class="ns-switch"><input type="checkbox" id="goCrazyToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="row-title" style="white-space: nowrap;">Splash</span>
+        <label class="ns-switch"><input type="checkbox" id="splashToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+      </div>
+    </div>
+  </div>
+  <div class="film-grid" id="filmGrid">
+    <!-- rendered by JS below -->
+  </div>
+</section>
+
+<!-- ─── BROWSE CTA ─── -->
+<div class="browse-cta">
+  <a href="explore.html" class="browse-cta-link">Browse All</a>
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-logo-col">
+        <a href="mubi-showing.html" aria-label="MUBI">
+          <svg viewBox="0 0 800 240" width="52" aria-hidden="true">
+            <g fill="#7d7d7d">
+              <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
+              <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"/>
+              <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"/>
+              <rect x="468.61" y="85.29" width="28.09" height="151.25"/>
+              <circle cx="766.5" cy="118.11" r="33.13"/><circle cx="595.89" cy="118.11" r="33.13"/><circle cx="681.2" cy="118.11" r="33.13"/>
+              <circle cx="595.89" cy="33.13" r="33.13"/><circle cx="681.2" cy="33.13" r="33.13"/>
+              <circle cx="595.89" cy="203.1" r="33.13"/><circle cx="681.2" cy="203.1" r="33.13"/>
+            </g>
+          </svg>
+        </a>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Ways to Watch</a></li>
+            <li><a href="#">Help</a></li>
+            <li><a href="#">Contribute</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <ul>
+            <li><a href="#">Memberships</a></li>
+            <li><a href="#">Students</a></li>
+            <li><a href="#">Gift MUBI</a></li>
+            <li><a href="#">Jobs</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <ul>
+            <li><a href="#">Funding Policy</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Cookie Preferences</a></li>
+            <li><a href="#">Terms</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <ul>
+            <li><a href="#">MUBI GO</a></li>
+            <li><a href="#">NOTEBOOK</a></li>
+            <li><a href="#">EDITIONS</a></li>
+            <li><a href="#">SHOP</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></a>
+        <a href="#" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" aria-label="TikTok"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.2 8.2 0 0 0 4.79 1.52V6.76a4.85 4.85 0 0 1-1.02-.07z"/></svg></a>
+        <a href="#" aria-label="X / Twitter"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+        <a href="#" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58zM9.75 15.02V8.98L15.5 12z"/></svg></a>
+      </div>
+      <p class="footer-copy">© 2025 MUBI Inc. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+function slugify(title) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+// Real MUBI collection URL image sizing helper — swaps a thumbnail's own "-wNNN" size
+// suffix for a larger crop, used for the doubletile hover-still (see comingSoonTileHTML).
+function nsHeroImageURL(url) {
+  if (!url) return url;
+  return url.replace(/-w\d+\.(jpg|jpeg|png|webp)/i, '-w1920.$1');
+}
+
+// ─── COMING SOON — genuinely upcoming MUBI titles, verified live against
+// api.mubi.com/v4/films/<slug> (consumable.availability === "upcoming"), matching
+// mubifinder.com's GB "upcoming" filter. Sorted soonest-first; releaseDate is a made-up
+// relative countdown (not the real MUBI date). Copied verbatim from mubi-showing-phase1.html. -->
+const COMING_SOON_FILMS = [
+  { title:"Caligula: The Ultimate Cut", director:"Tinto Brass", year:2023, country:"Italy, United States", slug:"caligula-the-ultimate-cut",
+    image:"https://assets.mubicdn.net/images/film/421346/image-w448.jpg?1745503308", titleTreatment:null,
+    fX:0.49, fY:0.41, rating:3.4, releaseDate:"Tomorrow", ourTake:"The extensive reconstruction of the notorious 1980 spectacle. Shadowed by the murder of his family, Caligula eliminates his devious adoptive grandfather and seizes control of the Roman Empire alongside his wife Caesonia before descending into a spiral of depravity, destruction, and madness."},
+  { title:"Black Bear", director:"Lawrence Michael Levine", year:2020, country:"United States", slug:"black-bear",
+    image:"https://assets.mubicdn.net/images/film/251181/image-w448.jpg?1745496595", titleTreatment:null,
+    fX:0.494429, fY:0.383663, rating:3.8, releaseDate:"In 3 Days", ourTake:"At a remote lake house, filmmaker Allison arrives as a house guest to a troubled couple, who have eschewed their life in the city. Battling writer's block, Allison sparks a calculated game of desire and jealousy in pursuit of a new work that blurs the boundaries of autobiography and invention."},
+  { title:"Ancestral Visions of the Future", director:"Lemohang Jeremiah Mosese", year:2025, country:"France, Lesotho", slug:"ancestral-visions-of-the-future",
+    image:"https://assets.mubicdn.net/images/film/434147/image-w448.jpg?1783686614", titleTreatment:null,
+    fX:0.44, fY:0.42, rating:3.5, releaseDate:"In 3 Days", ourTake:"Mythical imagery of the Lesotho landscape tethers to a poetic voiceover, in which a filmmaker muses on his childhood, the dreams and bravery of his mother, the wonder of cinema, and exile. His camera crosses paths with enigmatic figures—the Market Seller, the Puppeteer—on a journey of rediscovery."},
+  { title:"Teenage Sex and Death at Camp Miasma", director:"Jane Schoenbrun", year:2026, country:"United States, Canada", slug:"teenage-sex-and-death-at-camp-miasma",
+    image:"https://assets.mubicdn.net/images/film/368829/image-w448.jpg?1771019329", titleTreatment:"https://images.mubicdn.net/images/artworks/995272/cache-995272-1779889050/images-original.png",
+    fX:0.51, fY:0.45, rating:4.3, releaseDate:"Next Month", ourTake:"After years of slapdash sequels, the Camp Miasma franchise is handed over to an enthusiastic young director for resurrection. But when she visits the original's star, a now-reclusive actress shrouded in mystery, the two women fall into a blood-soaked world of desire, fear, and delirium."},
+  { title:"Obsession", director:"Brian De Palma", year:1976, country:"United States", slug:"obsession",
+    image:"https://assets.mubicdn.net/images/film/2410/image-w448.jpg?1745491170", titleTreatment:null,
+    fX:0.456067, fY:0.425743, rating:3.5, releaseDate:"In 1 Week", ourTake:"In 1959, businessman Michael and his wife are celebrating their anniversary when his daughter and wife are kidnapped and tragically killed in the rescue attempt. Years later, still grieving over his loss, Michael meets a young woman in Florence who bears a remarkable resemblance to his late wife."},
+  { title:"Sisters", director:"Brian De Palma", year:1972, country:"United States", slug:"sisters",
+    image:"https://assets.mubicdn.net/images/film/377/image-w448.jpg?1745489499", titleTreatment:null,
+    fX:0.674095, fY:0.995049, rating:3.5, releaseDate:"In 1 Week", ourTake:"Journalist Grace witnesses a murder in the neighboring apartment of two twin sisters. However, when the police find no evidence of the crime, Grace takes things into her own hands. With the help of a private detective, she soon discovers more about the sisters' relationship than she bargained for."},
+  { title:"Carlito's Way", director:"Brian De Palma", year:1993, country:"United States", slug:"carlito-s-way",
+    image:"https://assets.mubicdn.net/images/film/5264/image-w448.jpg?1776857924", titleTreatment:"https://images.mubicdn.net/images/artworks/989337/cache-989337-1778693448/images-original.png",
+    fX:0.38, fY:0.29, rating:4.1, releaseDate:"In 1 Week", ourTake:"After narrowly escaping a three-decade prison sentence, former drug dealer Carlito Brigante renounces his former life of misconduct. When implicated in the murder of a Mafia don, the race is on to see if he can escape the New York City underworld he is so desperate to leave behind."},
+  { title:"Rosebush Pruning", director:"Karim Aïnouz", year:2026, country:"Italy, Germany", slug:"rosebush-pruning",
+    image:"https://assets.mubicdn.net/images/film/391721/image-w448.jpg?1784791259", titleTreatment:null,
+    fX:0.34, fY:0.15, rating:3.3, releaseDate:"In 2 Weeks", ourTake:"Underneath the Catalonian sun, a rich white American family lives in hedonistic isolation, seeking love and validation through one another, their designer wardrobes and pop music. When an outsider infiltrates the family, buried tensions surface and blood ties are severed."},
+  { title:"Dogtooth", director:"Yorgos Lanthimos", year:2009, country:"Greece", slug:"dogtooth",
+    image:"https://assets.mubicdn.net/images/film/2740/image-w448.jpg?1745490960", titleTreatment:null,
+    fX:0.616992, fY:0.574257, rating:4.0, releaseDate:"In 2 Weeks", ourTake:"In an effort to protect their children from the corrupting influence of the outside world, a couple transforms their home into a gated compound of cultural deprivation. When the father invites a trusted outsider into their home their reality begins to crumble, with devastating consequences."},
+  { title:"The Loneliness of Lizards", director:"Inês Nunes", year:2025, country:"Portugal, Spain", slug:"the-loneliness-of-lizards",
+    image:"https://assets.mubicdn.net/images/film/445147/image-w448.jpg?1784708967", titleTreatment:"https://images.mubicdn.net/images/artworks/997390/cache-997390-1780399538/images-original.png",
+    fX:0.57, fY:0.48, rating:3.2, releaseDate:"In 2 Weeks", ourTake:"Guests at an unusual spa in southern Portugal bathe, exfoliate, slumber, and unwind, as laborers work the terrain's natural salt flats. One woman seems at odds with the other vacationers, in an evening dress creased with unease. When night falls, the space changes, porous to the visitors' desires."},
+  { title:"Romería", director:"Carla Simón", year:2025, country:"Spain, Germany", slug:"romeria",
+    image:"https://assets.mubicdn.net/images/film/421811/image-w448.jpg?1755972643", titleTreatment:"https://images.mubicdn.net/images/artworks/1006213/cache-1006213-1783509514/images-original.png",
+    fX:0.36, fY:0.28, rating:3.5, releaseDate:"Next Month", ourTake:"A woman travels to the Galician city of Vigo to meet her biological father's family. Like her mother, he died of AIDS when she was very young. Through her encounters with the family, she attempts to piece together the story of her father and the love he shared with her mother."},
+  { title:"Ninjababy", director:"Yngvild Sve Flikke", year:2021, country:"Norway", slug:"ninjababy",
+    image:"https://assets.mubicdn.net/images/film/289899/image-w448.jpg?1745497926", titleTreatment:null,
+    fX:0.336123, fY:0.586634, rating:4.3, releaseDate:"Next Month", ourTake:"Astronaut, forest-keeper, cartoonist. Young Rakel has a whole lot of other plans than becoming a mother. She would rather party, get drunk or stoned instead of sitting hours on the toilet. But she can't ignore it. Is it her or the baby?"},
+  { title:"Lady Bird", director:"Greta Gerwig", year:2017, country:"United States", slug:"lady-bird",
+    image:"https://assets.mubicdn.net/images/film/154518/image-w448.jpg?1784631835", titleTreatment:"https://images.mubicdn.net/images/artworks/1009089/cache-1009089-1784632445/images-original.png",
+    fX:0.24, fY:0.28, rating:3.7, releaseDate:"Next Month", ourTake:"Northern California, 2002. \"Lady Bird,\" a precocious teenager at a local Catholic school, feels trapped by provincial life in Sacramento. Navigating fraught relationships with her family and friends, she counts down the days until she can fulfill her dream of attending college on the East Coast."},
+];
+
+// Hover synopsis panel (watch button + synopsis + meta-icon row) shown on every doubletile
+// card's lower half on hover — copied from mubi-showing-phase1.html's cardSynopsisBlockHTML,
+// minus the Hover Settings > Genres option (that toggle isn't offered on this page, so it
+// always shows the meta-icon row rather than genre tags).
+function cardSynopsisBlockHTML(film) {
+  const metaRow = `<div class="card-meta-icons"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.0801 5C21.5881 5.00004 22 5.41188 22 5.91992V18.0801C22 18.5881 21.5881 19 21.0801 19H2.91992C2.41188 19 2.00004 18.5881 2 18.0801V5.91992C2.00004 5.41188 2.41188 5.00004 2.91992 5H21.0801ZM6.76953 8L6.11035 12.4004H7.46289C7.56556 12.1584 7.73847 11.9563 7.98047 11.7949C8.22237 11.6338 8.5081 11.5528 8.83789 11.5527C9.23382 11.5527 9.56195 11.6887 9.82227 11.96C10.0825 12.2312 10.2128 12.5978 10.2129 13.0596C10.2129 13.5069 10.0825 13.881 9.82227 14.1816C9.56202 14.4822 9.22689 14.6327 8.81641 14.6328C8.43514 14.6328 8.11602 14.5283 7.85938 14.3193C7.60276 14.1104 7.44103 13.8484 7.375 13.5332H6C6.03669 13.9731 6.1704 14.3675 6.40137 14.7158C6.63235 15.0641 6.95147 15.3372 7.3584 15.5352C7.7654 15.7332 8.25174 15.832 8.81641 15.832C9.35891 15.832 9.83772 15.7107 10.252 15.4688C10.6661 15.2268 10.9888 14.8964 11.2197 14.4785C11.4506 14.0606 11.5664 13.584 11.5664 13.0488C11.5664 12.5796 11.4709 12.1447 11.2803 11.7451C11.0896 11.3456 10.8109 11.023 10.4443 10.7773C10.0777 10.5317 9.61919 10.4092 9.06934 10.4092C8.72467 10.4092 8.41246 10.4654 8.13379 10.5791C7.85514 10.6928 7.63496 10.8377 7.47363 11.0137L7.82617 9.23242H11.0381V8H6.76953ZM13.4473 14.1162C13.1906 14.1162 12.9795 14.1971 12.8145 14.3584C12.6496 14.5197 12.5674 14.7176 12.5674 14.9521C12.5674 15.1794 12.6495 15.3739 12.8145 15.5352C12.9794 15.6965 13.1906 15.7773 13.4473 15.7773C13.7037 15.7773 13.9142 15.6962 14.0791 15.5352C14.2441 15.3739 14.3271 15.1794 14.3271 14.9521C14.3271 14.7175 14.2441 14.5197 14.0791 14.3584C13.9142 14.1971 13.7038 14.1163 13.4473 14.1162ZM16.6035 8L14.7451 8.8252V9.90332L16.0098 9.60645V15.7002H17.4727V8H16.6035Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.0801 5C21.5881 5.00004 22 5.41188 22 5.91992V18.0801C22 18.5881 21.5881 19 21.0801 19H2.91992C2.41188 19 2.00004 18.5881 2 18.0801V5.91992C2.00004 5.41188 2.41188 5.00004 2.91992 5H21.0801ZM5.67969 8.33105V15.7656H6.95996V12.5264H10.0996V15.7656H11.3799V8.33105H10.0996V11.4219H6.95996V8.33105H5.67969ZM12.7393 8.33105V15.7656H15.1299C15.9495 15.7656 16.6244 15.6115 17.1543 15.3037C17.6843 14.9957 18.0783 14.5636 18.335 14.0078C18.5916 13.452 18.7197 12.7983 18.7197 12.0479C18.7197 11.2976 18.5915 10.6445 18.335 10.0889C18.0783 9.5331 17.6843 9.10095 17.1543 8.79297C16.6244 8.48521 15.9495 8.33108 15.1299 8.33105H12.7393ZM15.0693 9.48828C15.6559 9.48828 16.12 9.59163 16.46 9.79688C16.7998 10.0022 17.0428 10.2965 17.1895 10.6787C17.336 11.0609 17.4101 11.5172 17.4102 12.0479C17.4102 12.586 17.3361 13.045 17.1895 13.4238C17.0428 13.8025 16.7998 14.0932 16.46 14.2949C16.12 14.4966 15.6559 14.5977 15.0693 14.5977H14.0195V9.48828H15.0693Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4C7.6 4 4 7.6 4 12C4 16.4 7.6 20 12 20C16.4 20 20 16.4 20 12C20 7.6 16.4 4 12 4ZM14.9857 14.9108L11.4195 12.9397C11.1573 12.7983 11 12.547 11 12.2721V8.58899C11.0087 8.26701 11.3059 8 11.6643 8C12.0227 8 12.3198 8.26701 12.3198 8.58899V12.0837L15.6762 13.8977C15.9909 14.0705 16.0958 14.4396 15.9035 14.7223C15.7112 14.9972 15.3004 15.0836 14.9857 14.9108Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.8691 5.13105C18.1495 4.9411 18.5209 4.95926 18.7822 5.17499C20.8605 7.07374 22 9.50664 22 12.0441C21.9503 14.6405 20.8208 17.0972 18.8867 18.8166C18.7564 18.9389 18.574 19.0001 18.3916 19.0002C18.2438 19.0002 18.0954 18.9656 17.9736 18.8781C17.7041 18.6856 17.6696 18.3528 17.9043 18.1428C19.6452 16.5942 20.6608 14.3819 20.7041 12.0441C20.6586 9.66556 19.6089 7.41878 17.8174 5.8664C17.5827 5.65642 17.6084 5.32355 17.8691 5.13105ZM11.5303 5.08808C11.7042 4.98308 11.9396 4.97421 12.1309 5.06171C12.3132 5.14928 12.4346 5.32445 12.4346 5.51679V18.4748C12.4346 18.6671 12.3132 18.8423 12.1309 18.9299C12.044 18.9736 11.9567 18.9914 11.8525 18.9914L11.7676 18.9953C11.6841 18.9843 11.6033 18.9557 11.5303 18.9123L6.86914 14.8H2.58301C2.26143 14.8 2.00027 14.5729 2 14.2844V9.12128C2.0001 8.84135 2.26133 8.60566 2.58301 8.60566H6.86914L11.5303 5.08808ZM15.2002 7.76484C15.4037 7.57658 15.719 7.5843 15.9131 7.78242C18.1927 10.1112 18.235 13.8374 16.0088 16.218C15.9045 16.3229 15.7739 16.3752 15.6348 16.3752C15.5131 16.3752 15.3914 16.3317 15.2871 16.2443C15.0871 16.0519 15.0783 15.7366 15.2695 15.5266C17.1385 13.538 17.1 10.4151 15.1826 8.47382C15.091 8.37796 15.0408 8.24932 15.0439 8.1164C15.0472 7.98327 15.1039 7.85615 15.2002 7.76484Z" fill="#323232"/></svg><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.56208 22C3.46596 22 3.36929 21.9747 3.28329 21.9242C3.10792 21.8254 3 21.6401 3 21.4385V4.56208C3 4.25212 3.25294 4 3.56208 4H20.4379C20.7499 4 21 4.25212 21 4.56208V18.0087C21 18.3204 20.7499 18.5714 20.4379 18.5714H9.43973L3.84537 21.9231C3.75768 21.9747 3.661 22 3.56208 22ZM17.0621 11.6411C17.3729 11.6411 17.6253 11.3901 17.6253 11.0785C17.6253 10.7697 17.3729 10.517 17.0621 10.517H6.9368C6.62765 10.517 6.37472 10.7697 6.37472 11.0785C6.37472 11.3901 6.62765 11.6411 6.9368 11.6411H17.0621ZM17.0621 14.7411C17.3752 14.7411 17.6253 14.4901 17.6253 14.1791C17.6253 13.8702 17.3752 13.617 17.0621 13.617H6.9368C6.62765 13.617 6.37472 13.8702 6.37472 14.1791C6.37472 14.4901 6.62765 14.7411 6.9368 14.7411H17.0621Z" fill="#323232"/></svg></div>`;
+  return `<div class="card-synopsis-block"><div class="card-actions"><button class="card-watch-btn"><span class="material-icons" style="font-size:18px;line-height:1;">play_arrow</span>Watch</button><button class="card-icon-btn" onclick="event.preventDefault()"><span class="material-icons" style="font-size:18px;">add</span></button><button class="card-icon-btn" onclick="event.preventDefault()"><span class="material-icons" style="font-size:18px;">star_border</span></button></div><p class="card-synopsis">${film.ourTake || ''}</p>${metaRow}</div>`;
+}
+
+// Plain (non-flip) Coming Soon tile — same markup filmRowSectionHTML's doubletile branch
+// renders for any other row, kept identical here so toggling "Go Crazy!" off looks exactly
+// like the lane always did on mubi-showing-phase1.html before Go Crazy existed.
+function comingSoonTileHTML(film) {
+  const posX = Math.round(film.fX * 100);
+  const posY = Math.round(film.fY * 100);
+  return `
+    <a class="film-card" href="https://mubi.com/films/${film.slug || slugify(film.title)}" target="_self" aria-label="${film.title}">
+      <div class="card-img-wrap">
+        <img class="card-img" src="${film.image}" alt="${film.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
+        <img class="card-hover-still" src="${nsHeroImageURL(film.image)}" alt="" loading="lazy">
+        ${film.releaseDate ? `<span class="card-date-badge">${film.releaseDate}</span>` : ''}
+        <div class="card-overlay">
+          ${film.titleTreatment
+            ? `<img class="card-title-treatment" src="${film.titleTreatment}" alt="${film.title}">`
+            : `<div class="card-title">${film.title}</div>`}
+          <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
+        </div>
+        ${comingSoonSplashHTML()}
+      </div>
+      ${cardSynopsisBlockHTML(film)}
+    </a>`;
+}
+
+// "Splash" hover overlay (see the .card-splash rule set) — lots of white circles, laid out
+// on a jittered grid so their left/top/size still read as random per tile while the grid
+// underneath guarantees they overlap enough to cover the whole poster once every circle is
+// in. Pop-in order is shuffled independently of grid position, so the wave of white fills
+// in scattered spots first rather than sweeping row by row.
+function comingSoonSplashHTML() {
+  const cols = 6, rows = 5;
+  const cells = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) cells.push({ r, c });
+  }
+  for (let i = cells.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cells[i], cells[j]] = [cells[j], cells[i]];
+  }
+  const circles = cells.map(({ r, c }, i) => {
+    const left = ((c + 0.5) / cols) * 100 + (Math.random() * 10 - 5);
+    const top = ((r + 0.5) / rows) * 100 + (Math.random() * 10 - 5);
+    const size = Math.round(120 + Math.random() * 90);
+    const delay = (i * 0.035 + Math.random() * 0.03).toFixed(2);
+    return `<span class="splash-circle" style="left:${left.toFixed(1)}%; top:${top.toFixed(1)}%; width:${size}px; height:${size}px; --delay:${delay}s;"></span>`;
+  }).join('');
+  return `<div class="card-splash" aria-hidden="true">${circles}</div>`;
+}
+
+// Single face (front or back) of a "Go Crazy!" flip tile — same image/date-badge/title/meta
+// markup a normal Coming Soon tile renders, just reusable for both sides of the flip.
+// Copied verbatim from mubi-showing-phase1.html's comingSoonFaceHTML (doubletile is always
+// true here, so that parameter is dropped).
+function comingSoonFaceHTML(film) {
+  const posX = Math.round(film.fX * 100);
+  const posY = Math.round(film.fY * 100);
+  return `
+    <div class="card-img-wrap">
+      <img class="card-img" src="${film.image}" alt="${film.title}" loading="lazy" style="object-position:${posX}% ${posY}%">
+      ${film.releaseDate ? `<span class="card-date-badge">${film.releaseDate}</span>` : ''}
+      <div class="card-overlay">
+        ${film.titleTreatment
+          ? `<img class="card-title-treatment" src="${film.titleTreatment}" alt="${film.title}">`
+          : `<div class="card-title">${film.title}</div>`}
+        <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
+      </div>
+    </div>`;
+}
+
+// "Go Crazy!" tile — holds frontFilm and backFilm; nsSetupComingSoonFlip toggles the
+// .is-flipping class to actually trigger each spin, this just builds the static two-face
+// markup. Axis fixed to Y ("left to right") since this page's row is always doubletile.
+// Copied verbatim from mubi-showing-phase1.html's comingSoonFlipTileHTML.
+function comingSoonFlipTileHTML(frontFilm, backFilm) {
+  return `
+    <a class="film-card film-card--flip flip-axis-y" href="https://mubi.com/films/${frontFilm.slug || slugify(frontFilm.title)}" target="_self" aria-label="${frontFilm.title}">
+      <div class="flip-inner">
+        <div class="flip-face flip-face--front">${comingSoonFaceHTML(frontFilm)}</div>
+        <div class="flip-face flip-face--back flip-face--back-y">${comingSoonFaceHTML(backFilm)}</div>
+      </div>
+    </a>`;
+}
+
+// "Go Crazy!" driver — called after every render since the flip tiles are fresh DOM nodes
+// each time. Waits for the row to actually scroll into view, then fires a left-to-right
+// sweep (each tile's spin staggered behind the last) every few seconds for as long as the
+// row exists. Copied verbatim from mubi-showing-phase1.html's nsSetupComingSoonFlip.
+let nsComingSoonFlipObserver = null;
+let nsComingSoonFlipTimeouts = [];
+function nsSetupComingSoonFlip() {
+  if (nsComingSoonFlipObserver) { nsComingSoonFlipObserver.disconnect(); nsComingSoonFlipObserver = null; }
+  nsComingSoonFlipTimeouts.forEach(clearTimeout);
+  nsComingSoonFlipTimeouts = [];
+
+  const tiles = Array.from(document.querySelectorAll('.film-card--flip'));
+  if (!tiles.length) return;
+
+  const FLIP_DURATION = 700;
+  const STAGGER = 150;
+  const sweepDuration = (tiles.length - 1) * STAGGER + FLIP_DURATION;
+
+  const sweep = () => {
+    tiles.forEach((tile, i) => {
+      nsComingSoonFlipTimeouts.push(setTimeout(() => {
+        const inner = tile.querySelector('.flip-inner');
+        const step = (parseInt(inner.dataset.flipStep, 10) || 0) + 1;
+        inner.dataset.flipStep = step;
+        const axis = tile.classList.contains('flip-axis-y') ? 'Y' : 'X';
+        inner.style.transform = `rotate${axis}(${step * 180}deg)`;
+        tile.classList.remove('is-flipping');
+        void tile.offsetWidth;
+        tile.classList.add('is-flipping');
+      }, i * STAGGER));
+    });
+    nsComingSoonFlipTimeouts.push(setTimeout(sweep, sweepDuration + 2000));
+  };
+
+  const row = tiles[0].closest('.row-section');
+  nsComingSoonFlipObserver = new IntersectionObserver((entries) => {
+    if (!entries.some(e => e.isIntersecting)) return;
+    nsComingSoonFlipObserver.disconnect();
+    nsComingSoonFlipTimeouts.push(setTimeout(sweep, 2000));
+  }, { threshold: 0.2 });
+  nsComingSoonFlipObserver.observe(row || tiles[0]);
+}
+
+// ─── CAROUSEL ROWS — peeking-tile pagination, copied verbatim from
+// mubi-showing-phase1.html's nsUpdateRowCarousel/nsAdvanceRowCarousel/#filmGrid click
+// delegation. Coming Soon has more than 4 films, so it always pages like this here (no
+// separate "Carousel Rows" setting on this page — it's just how the lane looks). ───
+const nsRowCarouselPage = new WeakMap();
+function nsUpdateRowCarousel(wrap) {
+  const track = wrap.querySelector('.row-grid--carousel');
+  const tiles = track ? [...track.children] : [];
+  if (!tiles.length) return;
+  const pageStart = nsRowCarouselPage.get(track) || 0;
+  tiles.forEach(t => t.classList.remove('row-carousel-peek', 'row-carousel-peek--left', 'row-carousel-peek--right'));
+  const prevBtn = wrap.querySelector('.row-carousel-arrow--prev');
+  const nextBtn = wrap.querySelector('.row-carousel-arrow--next');
+  const prevHint = wrap.querySelector('.row-carousel-peek-hint--prev');
+  const nextHint = wrap.querySelector('.row-carousel-peek-hint--next');
+  const peekLeftIdx = pageStart - 1;
+  const peekRightIdx = pageStart + 4;
+  const peekLeft = peekLeftIdx >= 0 ? tiles[peekLeftIdx] : null;
+  const peekRight = peekRightIdx < tiles.length ? tiles[peekRightIdx] : null;
+  if (peekLeft) peekLeft.classList.add('row-carousel-peek', 'row-carousel-peek--left');
+  if (peekRight) peekRight.classList.add('row-carousel-peek', 'row-carousel-peek--right');
+  if (prevBtn) prevBtn.classList.toggle('is-visible', !!peekLeft);
+  if (nextBtn) nextBtn.classList.toggle('is-visible', !!peekRight);
+  if (prevHint) prevHint.classList.toggle('is-visible', !!peekLeft);
+  if (nextHint) nextHint.classList.toggle('is-visible', !!peekRight);
+  const applyPeekV2 = (hint, peekTile) => {
+    if (!hint) return;
+    const peekImg = peekTile ? peekTile.querySelector('.card-img, .coll-tile-double-img, .genre-tile-img') : null;
+    hint.classList.toggle('is-v2', !!peekImg);
+    const hintImg = hint.querySelector('.row-carousel-peek-hint-img');
+    if (!hintImg) return;
+    hintImg.style.backgroundImage = peekImg ? `url('${peekImg.src}')` : '';
+    hintImg.style.backgroundPosition = peekImg ? (peekImg.style.objectPosition || 'center') : '';
+    hintImg.style.transition = 'none';
+    hintImg.style.transform = 'translateX(0)';
+  };
+  applyPeekV2(prevHint, peekLeft);
+  applyPeekV2(nextHint, peekRight);
+  const lastVisibleIdx = peekRight ? peekRightIdx : Math.min(tiles.length - 1, pageStart + 3);
+  tiles.forEach((tile, i) => { tile.style.opacity = i > lastVisibleIdx ? '0' : '1'; });
+  const tileStep = tiles[0].getBoundingClientRect().width + 4;
+  track.style.transform = `translateX(${-pageStart * tileStep}px)`;
+}
+window.addEventListener('resize', () => document.querySelectorAll('.row-carousel-wrap').forEach(nsUpdateRowCarousel));
+
+function nsAdvanceRowCarousel(wrap, dir) {
+  const track = wrap && wrap.querySelector('.row-grid--carousel');
+  const tiles = track ? [...track.children] : [];
+  if (!tiles.length) return;
+  const pageStart = nsRowCarouselPage.get(track) || 0;
+  const maxPageStart = Math.max(0, tiles.length - 4);
+  const newPageStart = Math.min(maxPageStart, Math.max(0, pageStart + dir * 4));
+  nsRowCarouselPage.set(track, newPageStart);
+  if (dir > 0) {
+    const revealUpTo = Math.min(tiles.length - 1, newPageStart + 4);
+    tiles.forEach((tile, i) => { if (i <= revealUpTo) tile.style.opacity = '1'; });
+  }
+  const tileStep = tiles[0].getBoundingClientRect().width + 4;
+  track.style.transform = `translateX(${-newPageStart * tileStep}px)`;
+  wrap.querySelectorAll('.row-carousel-peek-hint-img').forEach(hintImg => {
+    hintImg.style.transition = 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+    hintImg.style.transform = `translateX(${-dir * tileStep}px)`;
+  });
+  setTimeout(() => nsUpdateRowCarousel(wrap), 520);
+}
+document.getElementById('filmGrid').addEventListener('click', e => {
+  const tile = e.target.closest('.row-carousel-wrap .film-card');
+  if (tile) {
+    const wrap = tile.closest('.row-carousel-wrap');
+    const track = wrap.querySelector('.row-grid--carousel');
+    const tiles = [...track.children];
+    const idx = tiles.indexOf(tile);
+    const pageStart = nsRowCarouselPage.get(track) || 0;
+    if (idx === pageStart + 4) { e.preventDefault(); nsAdvanceRowCarousel(wrap, 1); return; }
+    if (idx === pageStart - 1) { e.preventDefault(); nsAdvanceRowCarousel(wrap, -1); return; }
+    return;
+  }
+  const hint = e.target.closest('.row-carousel-peek-hint');
+  if (hint) {
+    const wrap = hint.closest('.row-carousel-wrap');
+    nsAdvanceRowCarousel(wrap, hint.classList.contains('row-carousel-peek-hint--prev') ? -1 : 1);
+    return;
+  }
+  const btn = e.target.closest('.row-carousel-arrow');
+  if (!btn) return;
+  e.preventDefault();
+  nsAdvanceRowCarousel(document.getElementById(btn.dataset.carouselTarget), Number(btn.dataset.carouselDir));
+});
+
+// Renders the Coming Soon row — flip tiles when "Go Crazy!" is on, plain tiles otherwise.
+// 8-film slice (same as mubi-showing-phase1.html showed with Carousel Rows on, its default)
+// paged 4-at-a-time with peeking tiles either side.
+let nsGoCrazy = false;
+function renderComingSoonRow() {
+  const films = COMING_SOON_FILMS.slice(0, 8);
+  // Each visible tile pairs with a different, currently-hidden Coming Soon title (offset by
+  // how many tiles are showing, wrapping back into COMING_SOON_FILMS) so its flip always
+  // reveals something new.
+  const backFilms = films.map((_, i) => COMING_SOON_FILMS[(i + films.length) % COMING_SOON_FILMS.length]);
+  const tilesHTML = films.map((film, i) =>
+    nsGoCrazy ? comingSoonFlipTileHTML(film, backFilms[i]) : comingSoonTileHTML(film)
+  ).join('');
+  document.getElementById('filmGrid').innerHTML = `
+    <div class="row-section row-section--doubletile">
+      <div class="row-carousel-wrap" id="rowCarousel-comingSoon">
+        <div class="row-carousel-inner">
+          <div class="row-carousel-peek-hint row-carousel-peek-hint--prev"><div class="row-carousel-peek-hint-img"></div></div>
+          <button class="row-carousel-arrow row-carousel-arrow--prev" data-carousel-target="rowCarousel-comingSoon" data-carousel-dir="-1" aria-label="Previous">
+            <img src="../../brand_assets/icon_arrowLeft.svg" alt="">
+          </button>
+          <div class="row-carousel-clip">
+          <div class="row-grid row-grid--carousel">
+            ${tilesHTML}
+          </div>
+          </div>
+          <button class="row-carousel-arrow row-carousel-arrow--next" data-carousel-target="rowCarousel-comingSoon" data-carousel-dir="1" aria-label="Next">
+            <img src="../../brand_assets/icon_arrowRight.svg" alt="">
+          </button>
+          <div class="row-carousel-peek-hint row-carousel-peek-hint--next"><div class="row-carousel-peek-hint-img"></div></div>
+        </div>
+      </div>
+    </div>
+  `;
+  nsUpdateRowCarousel(document.getElementById('rowCarousel-comingSoon'));
+  nsSetupComingSoonFlip();
+}
+
+document.getElementById('goCrazyToggle').addEventListener('change', e => {
+  nsGoCrazy = e.target.checked;
+  renderComingSoonRow();
+});
+
+// "Splash" toggle — mutually exclusive with "Go Crazy!" (a flipping tile mid-turn has no
+// stable face for the paint effect to land on), so turning Splash on forces Go Crazy off
+// and disables its switch until Splash is turned off again. The effect itself is pure CSS
+// (see .card-splash) gated by .splash-mode on the section; no re-render needed either way.
+let nsSplash = false;
+const nsGoCrazyToggleEl = document.getElementById('goCrazyToggle');
+document.getElementById('splashToggle').addEventListener('change', e => {
+  nsSplash = e.target.checked;
+  document.getElementById('comingSoonSection').classList.toggle('splash-mode', nsSplash);
+  nsGoCrazyToggleEl.disabled = nsSplash;
+  if (nsSplash && nsGoCrazy) {
+    nsGoCrazy = false;
+    nsGoCrazyToggleEl.checked = false;
+    renderComingSoonRow();
+  }
+});
+
+renderComingSoonRow();
+</script>
+</body>
+</html>
