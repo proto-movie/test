@@ -3369,7 +3369,7 @@
     <button class="ns-confirm-btn ns-confirm-btn--ok" id="nsConfirmOk">OK</button>
   </div>
 </div>
-<div class="ns-infobar" id="nsInfobar">
+<div class="ns-infobar is-dismissed" id="nsInfobar">
   <span class="material-icons ns-infobar-icon" aria-hidden="true">info</span>
   <span class="ns-infobar-text">Press <kbd>S</kbd> for settings.</span>
   <button class="ns-infobar-close" id="nsInfobarClose" aria-label="Dismiss">
@@ -6734,7 +6734,12 @@ function nsShowMarqueeFilm(slug, animate = true, direction = null) {
   const titleTreatment = film.titleTreatment || NS_TITLE_TREATMENTS[film._slug];
 
   const applyFilm = () => {
-    nsReplayHeroVideoFadeIn();
+    // Only replay the video's own fade-in when this is a genuine swap (animate=true) — the
+    // very first call on page load (see nsApplyMarqueeToHero's animate=false) is just
+    // re-confirming the film already baked into the static markup, so replaying it here would
+    // needlessly fade the video out and back in a second time right after its own initial
+    // page-load fade already finished, reading as the marquee "loading twice".
+    if (animate) nsReplayHeroVideoFadeIn();
 
     const stillImg = document.getElementById('heroStillImg');
     if (stillImg && film.image) stillImg.src = nsHeroImageURL(film.image);
@@ -7379,7 +7384,7 @@ function nsOnVParallax2Scroll() {
 window.addEventListener('scroll', nsOnVParallax2Scroll, { passive: true });
 window.addEventListener('resize', nsOnVParallax2Scroll, { passive: true });
 
-function nsApplyMarqueeToHero() {
+function nsApplyMarqueeToHero(animate = true) {
   if (!nsState.marquee.length) return;
   const activeMarquee = nsMarqueeActive();
   // Rebuild before anything below reads nsTradPreviewURL, so every render this triggers
@@ -7397,7 +7402,7 @@ function nsApplyMarqueeToHero() {
   // begin on the left and progress rightward in the same direction slides come in from.
   const startIdx = (nsState.marqueeNavStyle === 'traditional' || nsState.marqueeNavStyle === 'traditionalRounded') ? 0 : activeMarquee.length - 1;
   nsMarqueeIdx = startIdx;
-  nsShowMarqueeFilm(activeMarquee[startIdx]);
+  nsShowMarqueeFilm(activeMarquee[startIdx], animate);
   nsStartMarqueeRotation();
 }
 
@@ -7541,7 +7546,10 @@ document.getElementById('nsInfobarClose').addEventListener('click', () => {
 });
 
 renderGrid(); // moved here — needs nsState/NS_CATALOG, both defined above this point
-if (nsState.marquee.length) nsApplyMarqueeToHero(); // reflect marquee picks already saved locally (starts rotation too)
+// animate=false — the static markup already shows this exact film, so this call is just
+// wiring up the dots/rotation timer/etc. around it, not actually changing what's on screen;
+// animating would fade it out and back in for no visible reason right after page load.
+if (nsState.marquee.length) nsApplyMarqueeToHero(false);
 else nsCheckHeroTitleAspect(document.getElementById('heroTitleImg')); // check the hardcoded default too
 nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
 </script>

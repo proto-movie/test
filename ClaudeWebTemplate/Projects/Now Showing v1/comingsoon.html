@@ -2043,29 +2043,43 @@
     /* "Splash" (Coming Soon page toggle, next to "Go Crazy!") — mutually exclusive with
        Go Crazy (splashToggle's change handler disables/unchecks the Go Crazy switch
        whenever Splash turns on, and vice versa is unnecessary since Go Crazy is inert
-       while disabled). Purely a hover effect, gated by .splash-mode on the Coming Soon
-       section: a wave of white circles (.splash-circle, laid out on a jittered grid by
-       comingSoonSplashHTML so they read as randomly placed/sized but still overlap enough
-       to fully cover the tile) pop in one after another until the poster is all white. */
+       while disabled). Purely a hover effect: nsAttachSplashHover wires real mouseenter/
+       mouseleave listeners (CSS :hover alone can't drive "keep spawning for as long as
+       you're hovering") that repeatedly spawn small, semi-transparent white circles
+       (.splash-circle) into .card-splash for as long as the tile stays hovered, each one
+       landing, then drifting slowly downward while growing slightly and turning more
+       opaque (.is-in, animated by ns-splash-fall) like a bead of paint gradually running
+       down and thickening under its own weight. Sits above .card-synopsis-block's z-index
+       (20) — see the sibling markup in comingSoonTileHTML — so the paint covers the
+       title/synopsis text too, not just the poster image. */
     .card-splash {
       position: absolute; inset: 0;
-      z-index: 6;
+      z-index: 30;
       pointer-events: none;
       overflow: hidden;
     }
     .splash-circle {
       position: absolute;
       border-radius: 50%;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.6);
       transform: translate(-50%, -50%) scale(0);
-      /* Un-hovering falls back to this fast, undelayed shrink (see the more specific
-         hover rule below) so the paint vanishes cleanly instead of un-staggering. */
-      transition: transform 0.25s ease-in;
+      opacity: 0;
     }
-    .splash-mode .film-card:hover .splash-circle {
-      transform: translate(-50%, -50%) scale(1);
-      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-      transition-delay: var(--delay, 0s);
+    .splash-circle.is-in {
+      animation: ns-splash-fall 6s ease-out forwards;
+    }
+    @keyframes ns-splash-fall {
+      0%   { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+      12%  { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+      100% { transform: translate(-50%, calc(-50% + 70px)) scale(1.15); opacity: 0.85; }
+    }
+    /* Mouse-out cancels the multi-second fall wherever it currently is and shrinks the dot
+       back out quickly instead, so the paint clears promptly rather than finishing its drift. */
+    .splash-circle.is-out {
+      animation: none;
+      transition: transform 0.2s ease-in, opacity 0.2s ease-in;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
     }
 
     /* Top Picks row (Page Settings > Layout > Top Picks) — big, faded rank numeral, 1-4,
@@ -3417,10 +3431,18 @@
     }
 
     /* This page has no hero/marquee for .site-header to overlay (it's normally an absolutely-
-       positioned transparent bar over a dark hero image, with white text/logo to match) — give
-       it a solid fill so the white logo/nav stay legible, and push the page content down by the
-       header's own height so it isn't hidden underneath it. */
-    .site-header { background: #323232; }
+       positioned transparent bar over a dark hero image, with white text/logo to match) — the
+       bar stays transparent here too (plain white page background shows through behind it, same
+       transparent treatment as body.marquee-nav-browse elsewhere — see that rule's comment), but
+       since there's no dark photo behind it either, logo/links/icons are recoloured dark grey
+       (rgba(0,0,0,0.45), darkening to #323232 on hover/active — same values marquee-nav-browse
+       uses) instead of the white-on-photo treatment the rest of Now Showing uses. Page content
+       still gets pushed down by the header's own height so it isn't hidden underneath it. */
+    .nav-link { color: rgba(0,0,0,0.45); }
+    .nav-link:hover, .nav-link.is-active { color: #323232; }
+    .nav-hamburger, .search-icon-btn { color: rgba(0,0,0,0.45); }
+    .nav-hamburger:hover, .search-icon-btn:hover { color: #323232; }
+    .nav-logo svg, .nav-mobile-logo svg { filter: brightness(0) invert(0.2); }
     .now-showing { padding-top: 92px; }
     @media (min-width: 1186px) { .now-showing { padding-top: 82px; } }
   </style>
@@ -3716,35 +3738,61 @@ function comingSoonTileHTML(film) {
             : `<div class="card-title">${film.title}</div>`}
           <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
         </div>
-        ${comingSoonSplashHTML()}
       </div>
       ${cardSynopsisBlockHTML(film)}
+      ${comingSoonSplashHTML()}
     </a>`;
 }
 
-// "Splash" hover overlay (see the .card-splash rule set) — lots of white circles, laid out
-// on a jittered grid so their left/top/size still read as random per tile while the grid
-// underneath guarantees they overlap enough to cover the whole poster once every circle is
-// in. Pop-in order is shuffled independently of grid position, so the wave of white fills
-// in scattered spots first rather than sweeping row by row.
+// "Splash" hover overlay (see the .card-splash rule set) — a sibling of .card-img-wrap and
+// .card-synopsis-block (not nested inside either), sized to the whole .film-card so its
+// z-index (30) can sit above the synopsis panel's (20) and the paint covers the title and
+// synopsis text too, not just the poster. Starts empty — nsAttachSplashHover fills it with
+// circles for as long as the tile is actually hovered (see below), rather than a fixed set
+// baked in at render time.
 function comingSoonSplashHTML() {
-  const cols = 6, rows = 5;
-  const cells = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) cells.push({ r, c });
-  }
-  for (let i = cells.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [cells[i], cells[j]] = [cells[j], cells[i]];
-  }
-  const circles = cells.map(({ r, c }, i) => {
-    const left = ((c + 0.5) / cols) * 100 + (Math.random() * 10 - 5);
-    const top = ((r + 0.5) / rows) * 100 + (Math.random() * 10 - 5);
-    const size = Math.round(120 + Math.random() * 90);
-    const delay = (i * 0.035 + Math.random() * 0.03).toFixed(2);
-    return `<span class="splash-circle" style="left:${left.toFixed(1)}%; top:${top.toFixed(1)}%; width:${size}px; height:${size}px; --delay:${delay}s;"></span>`;
-  }).join('');
-  return `<div class="card-splash" aria-hidden="true">${circles}</div>`;
+  return `<div class="card-splash" aria-hidden="true"></div>`;
+}
+
+// Splash spawner — one interval per hovered tile, each tick dropping a new circle at a
+// random spot for the paint to keep building up (rather than a fixed count that runs once)
+// for as long as the mouse stays over the tile. SPLASH_MAX_CIRCLES is a soft cap so an
+// unusually long hover doesn't grow the DOM forever, not a target the effect is meant to hit.
+const SPLASH_SPAWN_MS = 90;
+const SPLASH_MAX_CIRCLES = 140;
+const nsSplashSpawners = new WeakMap();
+const nsSplashCleanups = new WeakMap();
+
+function nsSpawnSplashCircle(container) {
+  if (container.children.length >= SPLASH_MAX_CIRCLES) return;
+  const circle = document.createElement('span');
+  circle.className = 'splash-circle is-in';
+  const size = Math.round(36 + Math.random() * 30);
+  circle.style.left = (Math.random() * 100).toFixed(1) + '%';
+  circle.style.top = (Math.random() * 100).toFixed(1) + '%';
+  circle.style.width = size + 'px';
+  circle.style.height = size + 'px';
+  container.appendChild(circle);
+}
+
+function nsAttachSplashHover(card) {
+  const container = card.querySelector('.card-splash');
+  if (!container) return;
+  card.addEventListener('mouseenter', () => {
+    if (!nsSplash) return;
+    const pendingCleanup = nsSplashCleanups.get(card);
+    if (pendingCleanup) { clearTimeout(pendingCleanup); nsSplashCleanups.delete(card); }
+    nsSpawnSplashCircle(container);
+    nsSplashSpawners.set(card, setInterval(() => nsSpawnSplashCircle(container), SPLASH_SPAWN_MS));
+  });
+  card.addEventListener('mouseleave', () => {
+    const spawner = nsSplashSpawners.get(card);
+    if (spawner) { clearInterval(spawner); nsSplashSpawners.delete(card); }
+    // Cancel each circle's multi-second fall in place and shrink it back out quickly (see
+    // .splash-circle.is-out) instead of leaving paint behind once the mouse has left.
+    Array.from(container.children).forEach(c => { c.classList.remove('is-in'); c.classList.add('is-out'); });
+    nsSplashCleanups.set(card, setTimeout(() => { container.innerHTML = ''; nsSplashCleanups.delete(card); }, 220));
+  });
 }
 
 // Single face (front or back) of a "Go Crazy!" flip tile — same image/date-badge/title/meta
@@ -3949,6 +3997,7 @@ function renderComingSoonRow() {
   `;
   nsUpdateRowCarousel(document.getElementById('rowCarousel-comingSoon'));
   nsSetupComingSoonFlip();
+  document.querySelectorAll('#filmGrid .film-card').forEach(nsAttachSplashHover);
 }
 
 document.getElementById('goCrazyToggle').addEventListener('change', e => {
