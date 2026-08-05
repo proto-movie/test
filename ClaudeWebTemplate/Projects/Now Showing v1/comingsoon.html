@@ -2060,6 +2060,7 @@
     }
     .splash-circle {
       position: absolute;
+      z-index: 1;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.95);
       transform: translate(-50%, -50%) scale(0);
@@ -2083,8 +2084,12 @@
     }
     /* A handful of drops (see nsSpawnSplashCircle) render as a 💦 glyph instead of a plain
        paint circle — same box/fall/opacity animation, just no background fill so the emoji
-       itself (not a white disc behind it) is what's visible, centered in its box. */
+       itself (not a white disc behind it) is what's visible, centered in its box. Raised
+       above the plain .splash-circle drops (z-index 1) so later paint circles landing on
+       top of an emoji can never bury it — it stays legible for its whole fall/lifetime
+       regardless of spawn order. */
     .splash-circle.splash-emoji {
+      z-index: 2;
       background: none;
       display: flex;
       align-items: center;
@@ -3800,7 +3805,7 @@ function nsSpawnSplashCircle(container, left, top, big) {
   const circle = document.createElement('span');
   // A splash emoji here and there among the plain paint circles — skipped for the guaranteed
   // "big" drops so those stay reading as big splatters rather than big emoji.
-  const isEmoji = !big && Math.random() < 0.14;
+  const isEmoji = !big && Math.random() < 0.045;
   circle.className = isEmoji ? 'splash-circle splash-emoji is-in' : 'splash-circle is-in';
   // `big` is forced by nsSpawnSplashBurst for a few circles per burst (see below); otherwise
   // there's still a small per-circle chance, so bursts read as a mix of splatter sizes rather
