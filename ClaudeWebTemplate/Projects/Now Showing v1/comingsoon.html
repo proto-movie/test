@@ -2061,17 +2061,17 @@
     .splash-circle {
       position: absolute;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.95);
       transform: translate(-50%, -50%) scale(0);
       opacity: 0;
     }
     .splash-circle.is-in {
-      animation: ns-splash-fall 6s ease-out forwards;
+      animation: ns-splash-fall 3.5s ease-out forwards;
     }
     @keyframes ns-splash-fall {
       0%   { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-      12%  { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
-      100% { transform: translate(-50%, calc(-50% + 70px)) scale(1.15); opacity: 0.85; }
+      12%  { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+      100% { transform: translate(-50%, calc(-50% + 70px)) scale(1.15); opacity: 1; }
     }
     /* Mouse-out cancels the multi-second fall wherever it currently is and shrinks the dot
        back out quickly instead, so the paint clears promptly rather than finishing its drift. */
@@ -2080,6 +2080,16 @@
       transition: transform 0.2s ease-in, opacity 0.2s ease-in;
       transform: translate(-50%, -50%) scale(0);
       opacity: 0;
+    }
+    /* A handful of drops (see nsSpawnSplashCircle) render as a 💦 glyph instead of a plain
+       paint circle — same box/fall/opacity animation, just no background fill so the emoji
+       itself (not a white disc behind it) is what's visible, centered in its box. */
+    .splash-circle.splash-emoji {
+      background: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
     /* Top Picks row (Page Settings > Layout > Top Picks) — big, faded rank numeral, 1-4,
@@ -3560,7 +3570,7 @@
      previously buried in mubi-showing-phase1.html's Settings modal (Page Settings > Layout
      > Coming Soon Lane > Go Crazy!); moved here as their own dedicated page instead, with
      the toggle sitting directly on the page rather than behind a settings panel. -->
-<section class="now-showing" id="comingSoonSection">
+<section class="now-showing splash-mode" id="comingSoonSection">
   <div class="row-header" style="justify-content: space-between; align-items: center;">
     <div>
       <span class="row-title">Coming Soon</span>
@@ -3568,11 +3578,11 @@
     <div style="display: flex; align-items: center; gap: 24px;">
       <div style="display: flex; align-items: center; gap: 10px;">
         <span class="row-title" style="white-space: nowrap;">Go Crazy!</span>
-        <label class="ns-switch"><input type="checkbox" id="goCrazyToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+        <label class="ns-switch"><input type="checkbox" id="goCrazyToggle" disabled><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
         <span class="row-title" style="white-space: nowrap;">Splash</span>
-        <label class="ns-switch"><input type="checkbox" id="splashToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+        <label class="ns-switch"><input type="checkbox" id="splashToggle" checked><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
       </div>
     </div>
   </div>
@@ -3754,40 +3764,102 @@ function comingSoonSplashHTML() {
   return `<div class="card-splash" aria-hidden="true"></div>`;
 }
 
-// Splash spawner — one interval per hovered tile, each tick dropping a new circle at a
-// random spot for the paint to keep building up (rather than a fixed count that runs once)
-// for as long as the mouse stays over the tile. SPLASH_MAX_CIRCLES is a soft cap so an
-// unusually long hover doesn't grow the DOM forever, not a target the effect is meant to hit.
-const SPLASH_SPAWN_MS = 90;
-const SPLASH_MAX_CIRCLES = 140;
+// Splash spawner — one interval per hovered tile, each tick firing a whole burst of circles
+// at once (rather than a steady trickle), then pausing before the next burst, for as long as
+// the mouse stays over the tile. SPLASH_MAX_CIRCLES is a soft cap so an unusually long hover
+// doesn't grow the DOM forever, not a target the effect is meant to hit.
+const SPLASH_BURST_MIN = 30;
+const SPLASH_BURST_MAX = 55;
+const SPLASH_BURST_SPREAD = 16;
+const SPLASH_BURST_GAP_MS = 550;
+const SPLASH_BURST_STAGGER_MS = 180;
+const SPLASH_MAX_CIRCLES = 320;
 const nsSplashSpawners = new WeakMap();
 const nsSplashCleanups = new WeakMap();
+const nsSplashBurstTimeouts = new WeakMap();
+const nsSplashPointer = new WeakMap();
 
-function nsSpawnSplashCircle(container) {
-  if (container.children.length >= SPLASH_MAX_CIRCLES) return;
+// Tracks where over the tile the cursor actually is (in %, relative to the card's own box),
+// so bursts land under the mouse instead of anywhere on the tile — see nsSpawnSplashBurst.
+function nsUpdateSplashPointer(card, evt) {
+  const rect = card.getBoundingClientRect();
+  nsSplashPointer.set(card, {
+    x: ((evt.clientX - rect.left) / rect.width) * 100,
+    y: ((evt.clientY - rect.top) / rect.height) * 100,
+  });
+}
+
+function nsSpawnSplashCircle(container, left, top, big) {
+  // At the cap, recycle the oldest drop instead of just refusing new ones — otherwise, once
+  // a long hover fills the tile up, the cluster can never actually follow the mouse anymore
+  // because every spawn attempt is silently dropped.
+  if (container.children.length >= SPLASH_MAX_CIRCLES) {
+    const oldest = container.firstElementChild;
+    if (oldest) oldest.remove();
+  }
   const circle = document.createElement('span');
-  circle.className = 'splash-circle is-in';
-  const size = Math.round(36 + Math.random() * 30);
-  circle.style.left = (Math.random() * 100).toFixed(1) + '%';
-  circle.style.top = (Math.random() * 100).toFixed(1) + '%';
+  // A splash emoji here and there among the plain paint circles — skipped for the guaranteed
+  // "big" drops so those stay reading as big splatters rather than big emoji.
+  const isEmoji = !big && Math.random() < 0.14;
+  circle.className = isEmoji ? 'splash-circle splash-emoji is-in' : 'splash-circle is-in';
+  // `big` is forced by nsSpawnSplashBurst for a few circles per burst (see below); otherwise
+  // there's still a small per-circle chance, so bursts read as a mix of splatter sizes rather
+  // than uniform little dots even outside the guaranteed big ones.
+  const isBig = big || Math.random() < 0.1;
+  const size = isBig ? Math.round(110 + Math.random() * 70) : Math.round(36 + Math.random() * 30);
+  circle.style.left = left.toFixed(1) + '%';
+  circle.style.top = top.toFixed(1) + '%';
   circle.style.width = size + 'px';
   circle.style.height = size + 'px';
+  if (isEmoji) {
+    circle.style.fontSize = Math.round(size * 0.85) + 'px';
+    circle.textContent = '💦';
+  }
   container.appendChild(circle);
+}
+
+// One burst = a random-sized batch of circles clustered around wherever the cursor currently
+// is over the tile (nsSplashPointer, falling back to dead centre before the first mousemove),
+// each jittered by up to SPLASH_BURST_SPREAD% so the burst reads as one splash concentrated
+// under the mouse rather than scattered evenly across the whole tile — moving the cursor
+// during a hover shifts where the next burst lands. Each drop also gets its own tiny random
+// delay (SPLASH_BURST_STAGGER_MS) rather than every drop appearing on the exact same frame,
+// so a burst reads as a spray landing rather than one synchronized pop. A few of each burst
+// (bigCount) are forced big rather than left to per-circle chance, so every burst visibly
+// includes some large splatters rather than some bursts having none.
+function nsSpawnSplashBurst(card, container) {
+  const count = SPLASH_BURST_MIN + Math.floor(Math.random() * (SPLASH_BURST_MAX - SPLASH_BURST_MIN + 1));
+  const bigCount = 2 + Math.floor(Math.random() * 3);
+  const pointer = nsSplashPointer.get(card) || { x: 50, y: 50 };
+  const timeouts = nsSplashBurstTimeouts.get(card) || [];
+  for (let i = 0; i < count; i++) {
+    const big = i < bigCount;
+    const left = pointer.x + (Math.random() * 2 - 1) * SPLASH_BURST_SPREAD;
+    const top = pointer.y + (Math.random() * 2 - 1) * SPLASH_BURST_SPREAD;
+    timeouts.push(setTimeout(() => nsSpawnSplashCircle(container, left, top, big), Math.random() * SPLASH_BURST_STAGGER_MS));
+  }
+  nsSplashBurstTimeouts.set(card, timeouts);
 }
 
 function nsAttachSplashHover(card) {
   const container = card.querySelector('.card-splash');
   if (!container) return;
-  card.addEventListener('mouseenter', () => {
+  card.addEventListener('mouseenter', (e) => {
     if (!nsSplash) return;
+    nsUpdateSplashPointer(card, e);
     const pendingCleanup = nsSplashCleanups.get(card);
     if (pendingCleanup) { clearTimeout(pendingCleanup); nsSplashCleanups.delete(card); }
-    nsSpawnSplashCircle(container);
-    nsSplashSpawners.set(card, setInterval(() => nsSpawnSplashCircle(container), SPLASH_SPAWN_MS));
+    nsSpawnSplashBurst(card, container);
+    nsSplashSpawners.set(card, setInterval(() => nsSpawnSplashBurst(card, container), SPLASH_BURST_GAP_MS));
+  });
+  card.addEventListener('mousemove', (e) => {
+    if (nsSplash) nsUpdateSplashPointer(card, e);
   });
   card.addEventListener('mouseleave', () => {
     const spawner = nsSplashSpawners.get(card);
     if (spawner) { clearInterval(spawner); nsSplashSpawners.delete(card); }
+    const pendingBursts = nsSplashBurstTimeouts.get(card);
+    if (pendingBursts) { pendingBursts.forEach(clearTimeout); nsSplashBurstTimeouts.delete(card); }
     // Cancel each circle's multi-second fall in place and shrink it back out quickly (see
     // .splash-circle.is-out) instead of leaving paint behind once the mouse has left.
     Array.from(container.children).forEach(c => { c.classList.remove('is-in'); c.classList.add('is-out'); });
@@ -4005,11 +4077,13 @@ document.getElementById('goCrazyToggle').addEventListener('change', e => {
   renderComingSoonRow();
 });
 
-// "Splash" toggle — mutually exclusive with "Go Crazy!" (a flipping tile mid-turn has no
-// stable face for the paint effect to land on), so turning Splash on forces Go Crazy off
-// and disables its switch until Splash is turned off again. The effect itself is pure CSS
-// (see .card-splash) gated by .splash-mode on the section; no re-render needed either way.
-let nsSplash = false;
+// "Splash" toggle — on by default (see the checked/disabled attributes on the two switches
+// in the markup above, which nsSplash/nsGoCrazy just mirror here). Mutually exclusive with
+// "Go Crazy!" (a flipping tile mid-turn has no stable face for the paint effect to land on),
+// so turning Splash on forces Go Crazy off and disables its switch until Splash is turned off
+// again. The effect itself is driven by nsAttachSplashHover's real mouseenter/mouseleave
+// listeners gated on nsSplash, not CSS :hover, so no re-render is needed either way.
+let nsSplash = true;
 const nsGoCrazyToggleEl = document.getElementById('goCrazyToggle');
 document.getElementById('splashToggle').addEventListener('change', e => {
   nsSplash = e.target.checked;
