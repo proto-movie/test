@@ -2040,10 +2040,11 @@
       100% { opacity: 0; background-position: 150% 150%; }
     }
 
-    /* "Splash" (Coming Soon page toggle, next to "Go Crazy!") — mutually exclusive with
-       Go Crazy (splashToggle's change handler disables/unchecks the Go Crazy switch
-       whenever Splash turns on, and vice versa is unnecessary since Go Crazy is inert
-       while disabled). Purely a hover effect: nsAttachSplashHover wires real mouseenter/
+    /* "Splash" (Coming Soon page toggle, next to "Go Crazy!") — runs independently of Go
+       Crazy; both can be on together (comingSoonFlipTileHTML gives flip tiles their own
+       .card-splash too, and nsSetupComingSoonFlip's sweep defers a tile's flip while it's
+       hovered — see the comment there — so a mid-splash tile never gets yanked out from
+       under the paint). Purely a hover effect: nsAttachSplashHover wires real mouseenter/
        mouseleave listeners (CSS :hover alone can't drive "keep spawning for as long as
        you're hovering") that repeatedly spawn small, semi-transparent white circles
        (.splash-circle) into .card-splash for as long as the tile stays hovered, each one
@@ -2082,12 +2083,12 @@
       transform: translate(-50%, -50%) scale(0);
       opacity: 0;
     }
-    /* A handful of drops (see nsSpawnSplashCircle) render as a 💦 glyph instead of a plain
-       paint circle — same box/fall/opacity animation, just no background fill so the emoji
-       itself (not a white disc behind it) is what's visible, centered in its box. Raised
-       above the plain .splash-circle drops (z-index 1) so later paint circles landing on
-       top of an emoji can never bury it — it stays legible for its whole fall/lifetime
-       regardless of spawn order. */
+    /* A handful of drops (see nsSpawnSplashCircle/SPLASH_EMOJI) render as a 💦😍❤️🤤 glyph
+       instead of a plain paint circle — same box/fall/opacity animation, just no background
+       fill so the emoji itself (not a white disc behind it) is what's visible, centered in
+       its box. Raised above the plain .splash-circle drops (z-index 1) so later paint circles
+       landing on top of an emoji can never bury it — it stays legible for its whole
+       fall/lifetime regardless of spawn order. */
     .splash-circle.splash-emoji {
       z-index: 2;
       background: none;
@@ -2179,6 +2180,15 @@
     .card-title-treatment--square {
       max-height: 110px;
     }
+    /* Camp Miasma's title treatment specifically, 40% bigger (64px -> ~90px) than every other
+       Coming Soon logo — see cardTitleTreatmentHTML. Sizing via max-height/max-width rather
+       than a transform:scale(), since .film-card:hover already sets transform on this same
+       element (a no-op translateX(0) on this page, but higher-specificity — a scale here would
+       just get clobbered by that rule the moment the tile is hovered). */
+    .card-title-treatment--camp-miasma {
+      max-height: 90px;
+      max-width: 100%;
+    }
 
     .card-eyebrow {
       font-family: Riforma, sans-serif;
@@ -2265,6 +2275,13 @@
     }
     .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-img { opacity: 0; }
     .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-hover-still { opacity: 1; }
+    /* Coming Soon (this page) keeps the poster still exactly as-is on hover instead of fading
+       to the more openly-cropped .card-hover-still every other doubletile row swaps to —
+       with Splash painting on top now (see .card-splash), the base image ALSO fading out
+       underneath just read as broken/flickery rather than intentional. #comingSoonSection's
+       ID beats the class-only specificity of the two rules above regardless of selector order. */
+    #comingSoonSection .film-card:hover .card-img { opacity: 1; }
+    #comingSoonSection .film-card:hover .card-hover-still { opacity: 0; }
     /* Lane of Lanes (.coll-tile / .coll-tile--double) and Lane of Genres (.genre-tile) — both
        are single self-contained flex containers with their own overflow:hidden already (no
        separate hover-dropdown panel to seam-square against), so a plain border-radius is all
@@ -3435,8 +3452,9 @@
     .ns-switch-thumb { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
     .ns-switch input:checked + .ns-switch-track { background: #001489; }
     .ns-switch input:checked + .ns-switch-track .ns-switch-thumb { transform: translateX(18px); }
-    /* Go Crazy is disabled while Splash is active (see splashToggle's change handler) —
-       greyed out and inert rather than hidden, so it's obvious the two are mutually exclusive. */
+    /* Generic disabled state for this switch component — greyed out and inert rather than
+       hidden, in case any future toggle here needs to disable another. Unused by Go Crazy/
+       Splash themselves, which now run independently of each other. */
     .ns-switch input:disabled + .ns-switch-track { opacity: 0.4; cursor: not-allowed; }
     @media (max-width: 900px) {
       .settings-columns { flex-direction: column; overflow-y: auto; }
@@ -3583,7 +3601,7 @@
     <div style="display: flex; align-items: center; gap: 24px;">
       <div style="display: flex; align-items: center; gap: 10px;">
         <span class="row-title" style="white-space: nowrap;">Go Crazy!</span>
-        <label class="ns-switch"><input type="checkbox" id="goCrazyToggle" disabled><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+        <label class="ns-switch"><input type="checkbox" id="goCrazyToggle" checked><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
         <span class="row-title" style="white-space: nowrap;">Splash</span>
@@ -3735,6 +3753,13 @@ function cardSynopsisBlockHTML(film) {
   return `<div class="card-synopsis-block"><div class="card-actions"><button class="card-watch-btn"><span class="material-icons" style="font-size:18px;line-height:1;">play_arrow</span>Watch</button><button class="card-icon-btn" onclick="event.preventDefault()"><span class="material-icons" style="font-size:18px;">add</span></button><button class="card-icon-btn" onclick="event.preventDefault()"><span class="material-icons" style="font-size:18px;">star_border</span></button></div><p class="card-synopsis">${film.ourTake || ''}</p>${metaRow}</div>`;
 }
 
+// Title treatment PNG shared by comingSoonTileHTML/comingSoonFaceHTML — Camp Miasma's gets
+// the --camp-miasma sizing bump (see that CSS rule), every other film just the plain class.
+function cardTitleTreatmentHTML(film) {
+  const bigClass = film.slug === 'teenage-sex-and-death-at-camp-miasma' ? ' card-title-treatment--camp-miasma' : '';
+  return `<img class="card-title-treatment${bigClass}" src="${film.titleTreatment}" alt="${film.title}">`;
+}
+
 // Plain (non-flip) Coming Soon tile — same markup filmRowSectionHTML's doubletile branch
 // renders for any other row, kept identical here so toggling "Go Crazy!" off looks exactly
 // like the lane always did on mubi-showing-phase1.html before Go Crazy existed.
@@ -3749,7 +3774,7 @@ function comingSoonTileHTML(film) {
         ${film.releaseDate ? `<span class="card-date-badge">${film.releaseDate}</span>` : ''}
         <div class="card-overlay">
           ${film.titleTreatment
-            ? `<img class="card-title-treatment" src="${film.titleTreatment}" alt="${film.title}">`
+            ? cardTitleTreatmentHTML(film)
             : `<div class="card-title">${film.title}</div>`}
           <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
         </div>
@@ -3779,6 +3804,7 @@ const SPLASH_BURST_SPREAD = 16;
 const SPLASH_BURST_GAP_MS = 550;
 const SPLASH_BURST_STAGGER_MS = 180;
 const SPLASH_MAX_CIRCLES = 320;
+const SPLASH_EMOJI = ['💦', '😍', '❤️', '🤤'];
 const nsSplashSpawners = new WeakMap();
 const nsSplashCleanups = new WeakMap();
 const nsSplashBurstTimeouts = new WeakMap();
@@ -3804,7 +3830,8 @@ function nsSpawnSplashCircle(container, left, top, big) {
   }
   const circle = document.createElement('span');
   // A splash emoji here and there among the plain paint circles — skipped for the guaranteed
-  // "big" drops so those stay reading as big splatters rather than big emoji.
+  // "big" drops so those stay reading as big splatters rather than big emoji. One of
+  // SPLASH_EMOJI is picked per emoji drop, not always the same glyph.
   const isEmoji = !big && Math.random() < 0.045;
   circle.className = isEmoji ? 'splash-circle splash-emoji is-in' : 'splash-circle is-in';
   // `big` is forced by nsSpawnSplashBurst for a few circles per burst (see below); otherwise
@@ -3818,7 +3845,7 @@ function nsSpawnSplashCircle(container, left, top, big) {
   circle.style.height = size + 'px';
   if (isEmoji) {
     circle.style.fontSize = Math.round(size * 0.85) + 'px';
-    circle.textContent = '💦';
+    circle.textContent = SPLASH_EMOJI[Math.floor(Math.random() * SPLASH_EMOJI.length)];
   }
   container.appendChild(circle);
 }
@@ -3846,11 +3873,19 @@ function nsSpawnSplashBurst(card, container) {
   nsSplashBurstTimeouts.set(card, timeouts);
 }
 
+// Cards currently under the mouse — populated here, read by nsSetupComingSoonFlip's sweep so
+// a Go Crazy flip never yanks a tile out from under an in-progress Splash hover; the flip
+// just waits for the mouse to actually leave that tile. Tracked independently of nsSplash so
+// the flip-delay still works even with Splash itself toggled off.
+const nsHoveredCards = new WeakSet();
+// Tiles with a flip already deferred to their next mouseleave — see nsSetupComingSoonFlip.
+const nsPendingFlips = new WeakSet();
+
 function nsAttachSplashHover(card) {
   const container = card.querySelector('.card-splash');
-  if (!container) return;
   card.addEventListener('mouseenter', (e) => {
-    if (!nsSplash) return;
+    nsHoveredCards.add(card);
+    if (!container || !nsSplash) return;
     nsUpdateSplashPointer(card, e);
     const pendingCleanup = nsSplashCleanups.get(card);
     if (pendingCleanup) { clearTimeout(pendingCleanup); nsSplashCleanups.delete(card); }
@@ -3858,9 +3893,11 @@ function nsAttachSplashHover(card) {
     nsSplashSpawners.set(card, setInterval(() => nsSpawnSplashBurst(card, container), SPLASH_BURST_GAP_MS));
   });
   card.addEventListener('mousemove', (e) => {
-    if (nsSplash) nsUpdateSplashPointer(card, e);
+    if (container && nsSplash) nsUpdateSplashPointer(card, e);
   });
   card.addEventListener('mouseleave', () => {
+    nsHoveredCards.delete(card);
+    if (!container) return;
     const spawner = nsSplashSpawners.get(card);
     if (spawner) { clearInterval(spawner); nsSplashSpawners.delete(card); }
     const pendingBursts = nsSplashBurstTimeouts.get(card);
@@ -3885,7 +3922,7 @@ function comingSoonFaceHTML(film) {
       ${film.releaseDate ? `<span class="card-date-badge">${film.releaseDate}</span>` : ''}
       <div class="card-overlay">
         ${film.titleTreatment
-          ? `<img class="card-title-treatment" src="${film.titleTreatment}" alt="${film.title}">`
+          ? cardTitleTreatmentHTML(film)
           : `<div class="card-title">${film.title}</div>`}
         <div class="card-meta"><span class="card-meta-director">${film.director}</span> ${film.country} ${film.year}</div>
       </div>
@@ -3895,7 +3932,10 @@ function comingSoonFaceHTML(film) {
 // "Go Crazy!" tile — holds frontFilm and backFilm; nsSetupComingSoonFlip toggles the
 // .is-flipping class to actually trigger each spin, this just builds the static two-face
 // markup. Axis fixed to Y ("left to right") since this page's row is always doubletile.
-// Copied verbatim from mubi-showing-phase1.html's comingSoonFlipTileHTML.
+// Based on mubi-showing-phase1.html's comingSoonFlipTileHTML, with one addition: its own
+// comingSoonSplashHTML() sibling, outside .flip-inner so the paint doesn't rotate along with
+// the flip — it sits fixed on top of whichever face is currently showing, same as it does on
+// a plain tile, so Splash still works with Go Crazy on.
 function comingSoonFlipTileHTML(frontFilm, backFilm) {
   return `
     <a class="film-card film-card--flip flip-axis-y" href="https://mubi.com/films/${frontFilm.slug || slugify(frontFilm.title)}" target="_self" aria-label="${frontFilm.title}">
@@ -3903,13 +3943,31 @@ function comingSoonFlipTileHTML(frontFilm, backFilm) {
         <div class="flip-face flip-face--front">${comingSoonFaceHTML(frontFilm)}</div>
         <div class="flip-face flip-face--back flip-face--back-y">${comingSoonFaceHTML(backFilm)}</div>
       </div>
+      ${comingSoonSplashHTML()}
     </a>`;
+}
+
+// Actually performs one tile's turn — pulled out of the sweep below so both the normal,
+// on-schedule flip and the hover-deferred one (see nsSetupComingSoonFlip) share it.
+function nsDoTileFlip(tile) {
+  const inner = tile.querySelector('.flip-inner');
+  const step = (parseInt(inner.dataset.flipStep, 10) || 0) + 1;
+  inner.dataset.flipStep = step;
+  const axis = tile.classList.contains('flip-axis-y') ? 'Y' : 'X';
+  inner.style.transform = `rotate${axis}(${step * 180}deg)`;
+  tile.classList.remove('is-flipping');
+  void tile.offsetWidth;
+  tile.classList.add('is-flipping');
 }
 
 // "Go Crazy!" driver — called after every render since the flip tiles are fresh DOM nodes
 // each time. Waits for the row to actually scroll into view, then fires a left-to-right
 // sweep (each tile's spin staggered behind the last) every few seconds for as long as the
-// row exists. Copied verbatim from mubi-showing-phase1.html's nsSetupComingSoonFlip.
+// row exists. Based on mubi-showing-phase1.html's nsSetupComingSoonFlip, with one addition:
+// a tile whose turn comes up while the mouse is on it (nsHoveredCards, populated by
+// nsAttachSplashHover) doesn't flip on schedule — it waits for that one mouseleave instead,
+// so Go Crazy running alongside Splash never spins a tile out from under an in-progress
+// paint hover.
 let nsComingSoonFlipObserver = null;
 let nsComingSoonFlipTimeouts = [];
 function nsSetupComingSoonFlip() {
@@ -3927,14 +3985,21 @@ function nsSetupComingSoonFlip() {
   const sweep = () => {
     tiles.forEach((tile, i) => {
       nsComingSoonFlipTimeouts.push(setTimeout(() => {
-        const inner = tile.querySelector('.flip-inner');
-        const step = (parseInt(inner.dataset.flipStep, 10) || 0) + 1;
-        inner.dataset.flipStep = step;
-        const axis = tile.classList.contains('flip-axis-y') ? 'Y' : 'X';
-        inner.style.transform = `rotate${axis}(${step * 180}deg)`;
-        tile.classList.remove('is-flipping');
-        void tile.offsetWidth;
-        tile.classList.add('is-flipping');
+        if (nsHoveredCards.has(tile)) {
+          // Already waiting on a previous sweep's deferred flip for this tile — don't stack
+          // a second listener on top of it, or a long hover queues up one flip per missed
+          // sweep and they'd all fire at once the moment the mouse finally leaves.
+          if (nsPendingFlips.has(tile)) return;
+          nsPendingFlips.add(tile);
+          const onLeave = () => {
+            tile.removeEventListener('mouseleave', onLeave);
+            nsPendingFlips.delete(tile);
+            nsDoTileFlip(tile);
+          };
+          tile.addEventListener('mouseleave', onLeave);
+          return;
+        }
+        nsDoTileFlip(tile);
       }, i * STAGGER));
     });
     nsComingSoonFlipTimeouts.push(setTimeout(sweep, sweepDuration + 2000));
@@ -4041,7 +4106,7 @@ document.getElementById('filmGrid').addEventListener('click', e => {
 // Renders the Coming Soon row — flip tiles when "Go Crazy!" is on, plain tiles otherwise.
 // 8-film slice (same as mubi-showing-phase1.html showed with Carousel Rows on, its default)
 // paged 4-at-a-time with peeking tiles either side.
-let nsGoCrazy = false;
+let nsGoCrazy = true;
 function renderComingSoonRow() {
   const films = COMING_SOON_FILMS.slice(0, 8);
   // Each visible tile pairs with a different, currently-hidden Coming Soon title (offset by
@@ -4082,23 +4147,16 @@ document.getElementById('goCrazyToggle').addEventListener('change', e => {
   renderComingSoonRow();
 });
 
-// "Splash" toggle — on by default (see the checked/disabled attributes on the two switches
-// in the markup above, which nsSplash/nsGoCrazy just mirror here). Mutually exclusive with
-// "Go Crazy!" (a flipping tile mid-turn has no stable face for the paint effect to land on),
-// so turning Splash on forces Go Crazy off and disables its switch until Splash is turned off
-// again. The effect itself is driven by nsAttachSplashHover's real mouseenter/mouseleave
-// listeners gated on nsSplash, not CSS :hover, so no re-render is needed either way.
+// "Splash" toggle — on by default (see the checked attributes on both switches in the markup
+// above, which nsSplash/nsGoCrazy just mirror here), and independent of "Go Crazy!" — both
+// run together by default (see comingSoonFlipTileHTML's own .card-splash, and the hover-delay
+// on the flip sweep in nsSetupComingSoonFlip). The effect itself is driven by
+// nsAttachSplashHover's real mouseenter/mouseleave listeners gated on nsSplash, not CSS
+// :hover, so no re-render is needed when this toggles.
 let nsSplash = true;
-const nsGoCrazyToggleEl = document.getElementById('goCrazyToggle');
 document.getElementById('splashToggle').addEventListener('change', e => {
   nsSplash = e.target.checked;
   document.getElementById('comingSoonSection').classList.toggle('splash-mode', nsSplash);
-  nsGoCrazyToggleEl.disabled = nsSplash;
-  if (nsSplash && nsGoCrazy) {
-    nsGoCrazy = false;
-    nsGoCrazyToggleEl.checked = false;
-    renderComingSoonRow();
-  }
 });
 
 renderComingSoonRow();
