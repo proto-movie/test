@@ -874,9 +874,28 @@ Title and metadata are shown in an absolute overlay at the card bottom:
   letter-spacing: 0.02em;
   display: flex;
   gap: 8px;
+  overflow: hidden;
 }
-.c3-meta-director { color: rgba(255,255,255,0.85); font-weight: 600; }
+.c3-meta-director {
+  color: rgba(255,255,255,0.85);
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 ```
+
+Director, country, and year must always render on a single line — never wrap. The director name is never truncated; if the row is still too tight, country and year shrink and ellipsize first:
+
+```css
+.c3-meta > span:not(.c3-meta-director) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+```
+
+Long country names are abbreviated in JS before render (e.g. "United Kingdom" → "UK", "United States" → "US") so ellipsis is rarely needed at all — see `abbrevCountry()` / `COUNTRY_ABBR`.
 
 ### Section heading
 
