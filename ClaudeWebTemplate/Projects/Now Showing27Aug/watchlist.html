@@ -118,149 +118,10 @@
       display: flex; align-items: center;
     }
     .nav-mobile-right { margin-left: auto; }
-    .search-icon-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      color: rgba(0,0,0,0.55);
-      transition: color 0.15s;
-      flex-shrink: 0;
-    }
-    .search-icon-btn:hover { color: rgba(0,0,0,0.55); }
-    .search-inline.is-open .search-icon-btn { color: rgba(0,0,0,0.55); }
-    .search-inline { display: none; position: relative; }
+    .search-icon-btn { display: flex; align-items: center; padding: 0 8px; color: rgba(0,0,0,0.45); }
+    .search-icon-btn:hover { color: #323232; }
+    .search-inline { display: none; }
     @media (min-width: 1186px) { .search-inline { display: flex; align-items: center; } }
-    #searchNavBg {
-      position: fixed; top: 0;
-      display: none; pointer-events: none;
-      z-index: 99;
-      background: rgba(255,255,255,0.97);
-      border-radius: 0 0 4px 4px;
-    }
-    .search-inline-input {
-      width: 0;
-      min-width: 0;
-      opacity: 0;
-      border: none;
-      outline: none;
-      font-family: Riforma, sans-serif;
-      font-size: 14px;
-      font-weight: 400;
-      color: rgba(0,0,0,0.65);
-      background: transparent;
-      padding: 0;
-      transition: width 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.2s;
-      pointer-events: none;
-    }
-    .search-inline.is-open .search-inline-input {
-      width: 320px;
-      opacity: 1;
-      padding: 0 0 0 8px;
-      pointer-events: auto;
-    }
-    .search-inline.is-open .search-icon-btn { color: rgba(0,0,0,0.55); }
-
-    /* ─── SEARCH DROPDOWN ─── */
-    .search-dropdown {
-      position: fixed;
-      top: 50px;
-      width: 350px;
-      height: 448px;
-      background: #fff;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.13);
-      z-index: 300;
-      display: none;
-      overflow: hidden;
-      padding-bottom: 5px;
-    }
-    .search-dropdown.is-open { display: block; }
-    .search-drop-label {
-      font-family: Riforma, sans-serif;
-      font-size: 11px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: rgba(0,0,0,0.4);
-      padding: 10px 12px 6px;
-    }
-    .search-drop-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 2px 12px;
-      text-decoration: none;
-      transition: background 0.1s;
-      cursor: pointer;
-    }
-    .search-drop-item:hover { background: #F4F4F4; }
-    .search-drop-thumb {
-      width: 48px;
-      height: 48px;
-      flex-shrink: 0;
-      position: relative;
-      overflow: hidden;
-      background: #D8D8D8;
-    }
-    .search-drop-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .search-drop-play {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .search-drop-play svg { filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4)); }
-    .search-drop-info { min-width: 0; flex: 1; }
-    .search-drop-title {
-      font-family: Riforma, sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      color: #323232;
-      margin-bottom: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .search-drop-director {
-      font-family: Riforma, sans-serif;
-      font-size: 12px;
-      color: rgba(0,0,0,0.45);
-    }
-    .search-drop-suggestion {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      top: 35px;
-      display: none;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 0 12px;
-      border-top: none;
-      font-family: Riforma, sans-serif;
-      font-size: 13px;
-      color: #323232;
-      line-height: 1.6;
-    }
-    .search-drop-suggestion.is-visible { display: flex; flex-direction: column; }
-    .search-drop-suggestion a { text-decoration: none; }
-    .search-drop-suggestion .sug-title { color: #001489; font-weight: 700; }
-    .search-drop-suggestion .sug-title:hover { text-decoration: underline; }
-    .search-drop-suggestion .sug-db { color: #323232; }
-    .search-drop-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 299;
-    }
-    .search-drop-backdrop.is-open { display: block; }
 
     /* ─── MOBILE DRAWER ─── */
     .mob-drawer { position: fixed; inset: 0; z-index: 9999; pointer-events: none; }
@@ -311,16 +172,13 @@
     .nav-dropdown {
       display: none;
       position: absolute;
-      top: calc(100% + 14px);
+      top: calc(100% + 10px);
       right: 0;
       background: #fff;
-      border-radius: 0;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.08);
+      border: 1px solid #E0E0E0;
       min-width: 200px;
-      padding: 6px 0;
-      z-index: 100;
+      z-index: 200;
     }
-    .nav-dropdown.open { display: block; }
     .nav-dropdown::before {
       content: '';
       position: absolute;
@@ -328,20 +186,20 @@
       width: 12px; height: 12px;
       background: #fff;
       transform: rotate(45deg);
-      box-shadow: -2px -2px 4px rgba(0,0,0,0.06);
+      border-left: 1px solid #E0E0E0;
+      border-top: 1px solid #E0E0E0;
     }
+    .nav-dropdown.open { display: block; }
     .nav-dropdown a {
       display: block;
-      padding: 8px 20px;
-      font-family: Riforma, sans-serif;
+      padding: 9px 16px;
       font-size: 14px;
       font-weight: 400;
-      color: #7d7d7d;
-      transition: background 0.1s;
+      color: #666;
       white-space: nowrap;
     }
-    .nav-dropdown a:hover { background: #f5f5f5; color: #323232; }
-    .nav-dropdown-sep { border-top: 1px solid #EAEAEA; margin: 5px 0; }
+    .nav-dropdown a:hover { color: #323232; background: #F8F8F8; }
+    .nav-dropdown-sep { height: 1px; background: #E8E8E8; margin: 4px 0; }
 
     /* ─── PAGE TITLE (centered, per Browse's .page-title styling) ─── */
     .page-hero-center {
@@ -847,33 +705,28 @@
   <div class="mob-drawer-overlay" onclick="closeMobDrawer()"></div>
   <div class="mob-drawer-panel">
     <nav>
-      <a href="mubi-showing-loggedin.html" class="mob-drawer-link">Now Showing</a>
+      <a href="mubi-showing.html" class="mob-drawer-link">Now Showing</a>
       <a href="explore.html" class="mob-drawer-link">Browse</a>
       <a href="watchlist.html" class="mob-drawer-link is-active">Watchlist</a>
-      <a href="profile.html" class="mob-drawer-link">Profile</a>
       <div class="mob-drawer-sep"></div>
-      <a href="notebook.html" class="mob-drawer-link">Notebook</a>
-      <a href="mubi-go.html" class="mob-drawer-link">MUBI GO</a>
+      <a href="#" class="mob-drawer-link">Notebook</a>
+      <a href="film-database-v2.html" class="mob-drawer-link">Film Database</a>
+      <a href="#" class="mob-drawer-link">Notebook Magazine</a>
+      <a href="#" class="mob-drawer-link">MUBI Editions</a>
+      <a href="#" class="mob-drawer-link">SHOP</a>
+      <a href="#" class="mob-drawer-link">Gift MUBI</a>
       <div class="mob-drawer-sep"></div>
-      <a href="viewing-history.html" class="mob-drawer-link">Viewing History</a>
-      <a href="gift-mubi.html" class="mob-drawer-link">Earn 1 month free</a>
+      <a href="#" class="mob-drawer-link">About</a>
+      <a href="#" class="mob-drawer-link">Students</a>
+      <a href="#" class="mob-drawer-link">Contribute</a>
+      <a href="#" class="mob-drawer-link">Jobs</a>
+      <a href="#" class="mob-drawer-link">Terms &amp; Privacy</a>
       <div class="mob-drawer-sep"></div>
-      <a href="film-database.html" class="mob-drawer-link">Film Database</a>
-      <a href="notebook-magazine.html" class="mob-drawer-link">Notebook Magazine</a>
-      <a href="mubi-editions.html" class="mob-drawer-link">MUBI Editions</a>
-      <a href="shop.html" class="mob-drawer-link">Shop</a>
-      <a href="gift-mubi.html" class="mob-drawer-link">Gift MUBI</a>
-      <div class="mob-drawer-sep"></div>
-      <a href="about.html" class="mob-drawer-link">About</a>
-      <a href="#" class="mob-drawer-link">Premiere Membership</a>
-      <a href="students.html" class="mob-drawer-link">Students</a>
-      <a href="contribute.html" class="mob-drawer-link">Contribute</a>
-      <a href="jobs.html" class="mob-drawer-link">Jobs</a>
-      <a href="terms.html" class="mob-drawer-link">Terms &amp; Privacy</a>
-      <div class="mob-drawer-sep"></div>
-      <a href="settings.html" class="mob-drawer-link">Settings</a>
+      <a href="#" class="mob-drawer-link">Earn 1 month free</a>
+      <a href="#" class="mob-drawer-link">Viewing History</a>
+      <a href="#" class="mob-drawer-link">Settings</a>
       <a href="#" class="mob-drawer-link">Help</a>
-      <a href="../logged-out/referrals.html" class="mob-drawer-link">Log Out</a>
+      <a href="#" class="mob-drawer-link">Log Out</a>
     </nav>
   </div>
   <button class="mob-drawer-close" onclick="closeMobDrawer()" aria-label="Close menu">
@@ -902,7 +755,7 @@
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
     </div>
-    <a href="mubi-showing-loggedin.html" class="nav-mobile-logo" aria-label="MUBI">
+    <a href="mubi-showing.html" class="nav-mobile-logo" aria-label="MUBI">
       <svg viewBox="0 0 800 240" width="65" style="vertical-align:top" aria-hidden="true">
         <g fill="#000000">
           <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
@@ -924,7 +777,7 @@
 
   <div class="nav-desktop">
     <div class="nav-logo">
-      <a href="mubi-showing-loggedin.html" aria-label="MUBI">
+      <a href="mubi-showing.html" aria-label="MUBI">
         <svg viewBox="0 0 800 240" width="75" style="vertical-align:top" aria-hidden="true">
           <g fill="#000000">
             <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
@@ -944,7 +797,7 @@
     </div>
 
     <nav class="nav-links" aria-label="Main navigation">
-      <a href="mubi-showing-loggedin.html" class="nav-link">Now Showing</a>
+      <a href="mubi-showing.html" class="nav-link">Now Showing</a>
       <a href="explore.html" class="nav-link">Browse</a>
       <a href="watchlist.html" class="nav-link is-active">Watchlist</a>
     </nav>
@@ -957,7 +810,7 @@
           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </button>
       </div>
-      <a href="profile.html" class="nav-avatar" aria-label="Profile" id="navAvatarBtn">
+      <a href="#" class="nav-avatar" aria-label="Profile" id="navAvatarBtn" onclick="openProfileModal(event)">
         <img id="navAvatarImg" src="data:image/png;base64,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" alt="Profile">
       </a>
       <div class="nav-hamburger-wrap">
@@ -965,41 +818,29 @@
           <span class="material-icons" style="font-size:20px;">menu</span>
         </button>
         <div class="nav-dropdown" id="navDropdown">
-          <a href="notebook.html">Notebook</a>
-          <a href="mubi-go.html">MUBI GO</a>
+          <a href="#">Notebook</a>
+          <a href="film-database-v2.html">Film Database</a>
+          <a href="#">Notebook Magazine</a>
+          <a href="#">MUBI Editions</a>
+          <a href="#">SHOP</a>
+          <a href="#">Gift MUBI</a>
           <div class="nav-dropdown-sep"></div>
-          <a href="viewing-history.html">Viewing History</a>
-          <a href="gift-mubi.html">Earn 1 month free</a>
+          <a href="#">About</a>
+          <a href="#">Students</a>
+          <a href="#">Contribute</a>
+          <a href="#">Jobs</a>
+          <a href="#">Terms &amp; Privacy</a>
           <div class="nav-dropdown-sep"></div>
-          <a href="film-database.html">Film Database</a>
-          <a href="notebook-magazine.html">Notebook Magazine</a>
-          <a href="mubi-editions.html">MUBI Editions</a>
-          <a href="shop.html">Shop</a>
-          <a href="gift-mubi.html">Gift MUBI</a>
-          <div class="nav-dropdown-sep"></div>
-          <a href="about.html">About</a>
-          <a href="#">Premiere Membership</a>
-          <a href="students.html">Students</a>
-          <a href="contribute.html">Contribute</a>
-          <a href="jobs.html">Jobs</a>
-          <a href="terms.html">Terms &amp; Privacy</a>
-          <div class="nav-dropdown-sep"></div>
-          <a href="settings.html">Settings</a>
+          <a href="#">Earn 1 month free</a>
+          <a href="#">Viewing History</a>
+          <a href="#">Settings</a>
           <a href="#">Help</a>
-          <a href="../logged-out/referrals.html">Log Out</a>
+          <a href="#">Log Out</a>
         </div>
       </div>
     </nav>
   </div>
 </header>
-
-<div id="searchNavBg"></div>
-<div id="searchDropdown" class="search-dropdown">
-  <div class="search-drop-label" id="searchDropLabel">Suggested</div>
-  <div id="searchDropList"></div>
-  <div id="searchDropSuggestion" class="search-drop-suggestion"></div>
-</div>
-<div id="searchDropBackdrop" class="search-drop-backdrop"></div>
 
 <main>
   <div class="wrap">
@@ -1030,7 +871,7 @@
   <div class="wrap">
     <div class="footer-top">
       <div class="footer-logo-col">
-        <a href="mubi-showing-loggedin.html" aria-label="MUBI">
+        <a href="mubi-showing.html" aria-label="MUBI">
           <svg viewBox="0 0 800 240" width="52" aria-hidden="true">
             <g fill="#7d7d7d">
               <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"/>
@@ -1047,18 +888,18 @@
       <div class="footer-cols">
         <div class="footer-col">
           <ul>
-            <li><a href="about.html">About</a></li>
+            <li><a href="#">About</a></li>
             <li><a href="#">Ways to Watch</a></li>
             <li><a href="#">Help</a></li>
-            <li><a href="contribute.html">Contribute</a></li>
+            <li><a href="#">Contribute</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <ul>
             <li><a href="#">Memberships</a></li>
             <li><a href="#">Students</a></li>
-            <li><a href="gift-mubi.html">Gift MUBI</a></li>
-            <li><a href="jobs.html">Jobs</a></li>
+            <li><a href="#">Gift MUBI</a></li>
+            <li><a href="#">Jobs</a></li>
           </ul>
         </div>
         <div class="footer-col">
@@ -1074,7 +915,7 @@
             <li><a href="#">MUBI GO</a></li>
             <li><a href="#">NOTEBOOK</a></li>
             <li><a href="#">EDITIONS</a></li>
-            <li><a href="shop.html">Shop</a></li>
+            <li><a href="#">SHOP</a></li>
           </ul>
         </div>
       </div>
@@ -1119,106 +960,6 @@ function closeMobDrawer() {
   document.getElementById('mobDrawer').classList.remove('open');
   document.body.style.overflow = '';
 }
-
-// ─── INLINE SEARCH — reuses the page's own FILMS catalog (declared below) ───
-function searchDropItem(f) {
-  return `<a class="search-drop-item" href="#">
-    <div class="search-drop-thumb">
-      <img src="${f.image}" alt="${f.title}" loading="lazy" style="object-position:${Math.round((f.fX||0.5)*100)}% ${Math.round((f.fY||0.3)*100)}%">
-      <div class="search-drop-play">
-        <svg width="28" height="28" viewBox="0 0 44 44"><g transform="translate(1 1)" fill-rule="evenodd"><circle cx="21" cy="21" r="21" fill="none" stroke="#fff" stroke-width="1.5"/><path fill="#fff" d="M30 21.5L15 29V14z"/></g></svg>
-      </div>
-    </div>
-    <div class="search-drop-info">
-      <div class="search-drop-title">${f.title}</div>
-      <div class="search-drop-director">${f.director}</div>
-    </div>
-  </a>`;
-}
-
-function positionSearchDropdown() {
-  const el = document.getElementById('searchInline');
-  if (!el) return;
-  const r = el.getBoundingClientRect();
-  const dropTop = r.bottom + 8;
-  const dd = document.getElementById('searchDropdown');
-  dd.style.left = r.left + 'px';
-  dd.style.right = 'auto';
-  dd.style.top = dropTop + 'px';
-  const bg = document.getElementById('searchNavBg');
-  if (bg) { bg.style.left = r.left + 'px'; bg.style.width = (r.width - 4) + 'px'; bg.style.height = dropTop + 'px'; bg.style.display = 'block'; }
-}
-
-function openSearch() {
-  const dd = document.getElementById('navDropdown');
-  if (dd && dd.classList.contains('open')) {
-    dd.classList.remove('open');
-    document.getElementById('navHamburger').setAttribute('aria-expanded', 'false');
-  }
-  const inline = document.getElementById('searchInline');
-  inline.classList.add('is-open');
-  setTimeout(() => document.getElementById('searchInput').focus(), 50);
-  const list = document.getElementById('searchDropList');
-  document.getElementById('searchDropLabel').textContent = 'Suggested';
-  list.innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
-  document.getElementById('searchDropBackdrop').classList.add('is-open');
-  document.getElementById('searchInput').addEventListener('transitionend', function handler(e) {
-    if (e.propertyName === 'width') {
-      positionSearchDropdown();
-      document.getElementById('searchDropdown').classList.add('is-open');
-      this.removeEventListener('transitionend', handler);
-    }
-  });
-}
-
-function closeSearch() {
-  document.getElementById('searchInline').classList.remove('is-open');
-  document.getElementById('searchDropdown').classList.remove('is-open');
-  document.getElementById('searchDropBackdrop').classList.remove('is-open');
-  document.getElementById('searchInput').value = '';
-  const bg = document.getElementById('searchNavBg');
-  if (bg) bg.style.display = 'none';
-}
-
-document.getElementById('searchOpenBtn')?.addEventListener('click', e => {
-  e.stopPropagation();
-  const inline = document.getElementById('searchInline');
-  inline.classList.contains('is-open') ? closeSearch() : openSearch();
-});
-document.getElementById('searchOpenBtnMob')?.addEventListener('click', e => {
-  e.stopPropagation();
-  openSearch();
-});
-document.getElementById('searchDropBackdrop')?.addEventListener('click', closeSearch);
-document.getElementById('searchInput')?.addEventListener('input', e => {
-  const q = e.target.value.trim();
-  const list = document.getElementById('searchDropList');
-  const label = document.getElementById('searchDropLabel');
-  const suggestion = document.getElementById('searchDropSuggestion');
-  if (!q) {
-    label.textContent = 'Suggested';
-    list.innerHTML = SEARCH_SUGGESTED.map(searchDropItem).join('');
-    suggestion.classList.remove('is-visible');
-    return;
-  }
-  const ql = q.toLowerCase();
-  const matches = FILMS.filter(f =>
-    f.title.toLowerCase().includes(ql) || f.director.toLowerCase().includes(ql)
-  ).slice(0, 8);
-  const show2001 = ql.includes('2001');
-  if (show2001) {
-    label.textContent = `No results for "${q}" in Now Showing.`;
-    suggestion.innerHTML = `<div>Did you mean <a class="sug-title" href="https://mubi.com/films/2001-a-space-odyssey" target="_self">2001: A Space Odyssey</a>?</div><div class="sug-db">Learn more about the film in the MUBI Film Database</div>`;
-  } else {
-    label.textContent = matches.length ? `${matches.length} result${matches.length !== 1 ? 's' : ''} for "${q}"` : `No results for "${q}"`;
-  }
-  list.innerHTML = matches.map(searchDropItem).join('');
-  suggestion.classList.toggle('is-visible', show2001);
-});
-window.addEventListener('resize', () => {
-  const inline = document.getElementById('searchInline');
-  if (inline && inline.classList.contains('is-open')) positionSearchDropdown();
-});
 
 // ─── Catalog (shared with mubi-showing.html / explore.html) — resolves the current
 // persona's nsState.watchlist slugs into full film objects for the grid below. ───
@@ -1324,8 +1065,6 @@ const FILMS = [
     image:"https://assets.mubicdn.net/images/film/339537/image-w448.jpg?1745499786",
     fX:0.43, fY:0.23, days:1, rating:4.0 , ourTake:"A moving search for identity in neon-drenched Seoul, Davy Chou’s mercurial drama aches with diasporic longing, which thrums through an exquisitely curated soundtrack. Dazzling in her vulnerability, first-time actress Park Ji-Min ferociously embodies the tragicomic chaos of living between cultures."},
 ];
-
-const SEARCH_SUGGESTED = FILMS.slice().sort((a,b) => (b.rating||0)-(a.rating||0)).slice(0,8);
 
 const SEARCH_SERIES = [
   { title:"Hal & Harper", director:"Cooper Raiff", year:2025, country:"United States", image:"https://images.mubicdn.net/images/film/448206/cache-1082712-1757432851/image-w1280.jpg", fX:0.70, fY:0.30 },
@@ -1517,6 +1256,8 @@ function nsApplyDemoUser(idx) {
   }
   nsRenderProfileModal();
   renderWatchlistGrid();
+  const navAvatarImg = document.getElementById('navAvatarImg');
+  if (navAvatarImg) navAvatarImg.src = user.avatar;
 }
 document.getElementById('profileGrid').addEventListener('click', e => {
   const btn = e.target.closest('.profile-card');
@@ -1532,6 +1273,8 @@ function nsRestoreActiveDemoUser() {
   if (idx === null || idx === undefined || !user) return;
   nsActiveDemoUser = idx;
   nsRenderProfileModal();
+  const navAvatarImg = document.getElementById('navAvatarImg');
+  if (navAvatarImg) navAvatarImg.src = user.avatar;
 }
 nsRenderProfileModal();
 nsRestoreActiveDemoUser();

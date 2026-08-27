@@ -5241,6 +5241,9 @@ function nsUnmergeWatchNext() {
 
 function renderGrid() {
   const container = document.getElementById('filmGrid');
+  // Rows below the hero are removed on this page — leave the grid empty.
+  container.innerHTML = '';
+  return;
   const totalNumberedRows = nsState.numberOfRows || 25;
   const numberedRows = [];
   // Each numbered row is a real MUBI collection with its real films (see

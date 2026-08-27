@@ -115,6 +115,60 @@
   .nav-dropdown a:hover { background: #f5f5f5; color: #323232; }
   .nav-dropdown-sep { border-top: 1px solid #EAEAEA; margin: 5px 0; }
 
+  /* ─── MOBILE DRAWER ─── */
+  .mob-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  .mob-drawer.open { pointer-events: auto; }
+  .mob-drawer-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.6);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .mob-drawer.open .mob-drawer-overlay { opacity: 1; }
+  .mob-drawer-panel {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: calc(100% - 60px);
+    max-width: 350px;
+    background: #fff;
+    overflow-y: auto;
+    padding: 20px 0 120px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .mob-drawer.open .mob-drawer-panel { transform: translateX(0); }
+  .mob-drawer-close {
+    position: absolute;
+    top: 20px;
+    left: calc(min(100% - 60px, 350px) + 20px);
+    color: #fff;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .mob-drawer.open .mob-drawer-close { opacity: 1; }
+  .mob-drawer-link {
+    display: block;
+    padding: 0 25px;
+    font-family: Riforma, sans-serif;
+    font-size: 20px;
+    line-height: 42px;
+    color: #7d7d7d;
+    text-decoration: none;
+    transition: color 0.1s;
+  }
+  .mob-drawer-link:hover { color: #323232; }
+  .mob-drawer-link.is-active { color: #323232; }
+  .mob-drawer-sep { border-top: 1px solid #EAEAEA; margin: 10px 0; }
+
   .referrals-screen {
     width: 100%;
     height: 100vh;
@@ -161,7 +215,7 @@
     <div class="nav-right">
       <a href="../logged-in/mubi-showing-loggedin.html" class="nav-link">LOG IN</a>
       <div class="nav-hamburger-wrap">
-        <span class="nav-hamburger" onclick="toggleDropdown(event)" id="navHamburger">
+        <span class="nav-hamburger" onclick="handleHamburgerClick(event)" id="navHamburger">
           <span class="material-icons">menu</span>
         </span>
         <div class="nav-dropdown" id="navDropdown">
@@ -189,18 +243,59 @@
   </div>
 </header>
 
+<div class="mob-drawer" id="mobDrawer" role="dialog" aria-modal="true" aria-label="Navigation">
+  <div class="mob-drawer-overlay" onclick="closeMobDrawer()"></div>
+  <div class="mob-drawer-panel">
+    <nav>
+      <a href="#" class="mob-drawer-link">Premiere Membership</a>
+      <a href="create-account.html" class="mob-drawer-link">Try 7 Days Free</a>
+      <a href="mubi-showing-loggedout.html" class="mob-drawer-link">Now Showing</a>
+      <a href="mubi-go.html" class="mob-drawer-link">MUBI GO</a>
+      <a href="gift-mubi.html" class="mob-drawer-link">Gift MUBI</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="film-database.html" class="mob-drawer-link">Film Database</a>
+      <a href="notebook.html" class="mob-drawer-link">Notebook</a>
+      <a href="notebook-magazine.html" class="mob-drawer-link">Notebook Magazine</a>
+      <a href="mubi-editions.html" class="mob-drawer-link">MUBI Editions</a>
+      <a href="shop.html" class="mob-drawer-link">Shop</a>
+      <div class="mob-drawer-sep"></div>
+      <a href="about.html" class="mob-drawer-link">About</a>
+      <a href="ways-to-watch.html" class="mob-drawer-link">Ways to Watch</a>
+      <a href="students.html" class="mob-drawer-link">Students</a>
+      <a href="jobs.html" class="mob-drawer-link">Jobs</a>
+      <a href="terms.html" class="mob-drawer-link">Terms &amp; Privacy</a>
+      <a href="#" class="mob-drawer-link">Help</a>
+    </nav>
+  </div>
+  <button class="mob-drawer-close" onclick="closeMobDrawer()" aria-label="Close menu">
+    <svg viewBox="0 0 11 11" stroke="currentColor" stroke-width="1.5" width="20"><path d="M1,1 L10,10"/><path d="M10,1 L1,10"/></svg>
+  </button>
+</div>
+
 <main class="referrals-screen">
   <p class="referrals-title">REFERRALS PAGE</p>
 </main>
 
 <script>
-function toggleDropdown(e) {
+function handleHamburgerClick(e) {
   e.stopPropagation();
-  document.getElementById('navDropdown').classList.toggle('open');
+  if (window.innerWidth < 1186) {
+    openMobDrawer();
+  } else {
+    document.getElementById('navDropdown').classList.toggle('open');
+  }
 }
 document.addEventListener('click', () => {
   document.getElementById('navDropdown').classList.remove('open');
 });
+
+function openMobDrawer() {
+  document.getElementById('mobDrawer').classList.add('open');
+}
+function closeMobDrawer() {
+  document.getElementById('mobDrawer').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobDrawer(); });
 </script>
 
 </body>
