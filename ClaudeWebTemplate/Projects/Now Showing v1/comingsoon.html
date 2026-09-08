@@ -1988,12 +1988,26 @@
        effect (.is-flipping, below) synced to the same turn. Axis is picked per tile at render
        time (comingSoonFlipTileHTML): Y ("left to right", like a page turning) when the row is in
        Double Tiles mode, X ("top to bottom") otherwise. */
-    .film-card--flip { perspective: 1400px; position: relative; }
+    /* transform-style/will-change here too (not just on .flip-inner below) — .row-carousel-wrap
+       (an ancestor of this tile) has its own `transform: translateX(-50%)`, and .row-carousel-
+       clip has `clip-path`; either alone is a documented Safari trigger for the same class of
+       bug filter used to cause (see .flip-shade's comment) — a `transform`/`clip-path` on an
+       ancestor of a preserve-3d subtree can break that subtree's 3D context in WebKit even
+       though Chrome isolates it fine. Reinforcing preserve-3d/layer promotion at every level
+       down to each individual .flip-face (translateZ below) is the standard workaround. */
+    .film-card--flip {
+      perspective: 1400px; -webkit-perspective: 1400px;
+      position: relative;
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
+    }
     .film-card--flip .flip-inner {
       position: relative;
       aspect-ratio: 371 / 209;
       transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
       transition: transform 0.7s cubic-bezier(.45,0,.15,1);
+      will-change: transform;
     }
     /* "Make All Tiles Double Tiles" (Page Settings > Layout) switches the row's own
        .card-img-wrap over to a fixed 418px height (see the rule above) — .flip-inner needs
@@ -2003,21 +2017,43 @@
     .flip-face {
       position: absolute; inset: 0;
       backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
+      /* translateZ(1px) forces each face onto its own GPU-composited layer — without it,
+         Safari's backface-visibility can fail to cull the face rotated away, showing it
+         mirrored through the one that should be on top (see the comment on .film-card--flip
+         above for why, structurally, this tile is especially prone to that Safari bug). The
+         front face needs its own translateZ too, not just the rotated back ones, or the two
+         faces still end up flattened onto the same layer. */
+      transform: translateZ(1px);
     }
-    .flip-face--back-y { transform: rotateY(180deg); }
-    .flip-face--back-x { transform: rotateX(180deg); }
+    .flip-face--back-y { transform: rotateY(180deg) translateZ(1px); }
+    .flip-face--back-x { transform: rotateX(180deg) translateZ(1px); }
     /* No fixed "flipped" transform class here on purpose — nsSetupComingSoonFlip sets
        .flip-inner's rotation via inline style instead, always increasing (0deg, 180deg,
        360deg, 540deg, ...) so every sweep spins the same direction as the last (see the
        "flip left to right" comment there) instead of the transition reversing back through
        the same arc on every other sweep. */
     /* Shade — a physical card catches less light edge-on, so brightness/shadow dip together
-       right at the 50% (edge-on) point of the spin. Lives on the outer, non-3D-transformed
-       anchor so `filter` never risks flattening .flip-inner's preserve-3d rendering. */
-    .film-card--flip.is-flipping { animation: ns-flip-shade 0.7s ease-in-out; }
+       right at the 50% (edge-on) point of the spin. A plain overlay div (.flip-shade, a
+       sibling of .flip-inner — see comingSoonFlipTileHTML) rather than a `filter` on any
+       ancestor: Safari has a long-standing bug where an animated `filter` on an ancestor of
+       a preserve-3d/backface-visibility subtree breaks that 3D context entirely, showing the
+       back face mirrored through the front mid-flip. A background/box-shadow overlay gets the
+       same dimmed/shadowed look without ever touching `filter`, so it can't trigger that bug. */
+    .flip-shade {
+      position: absolute; inset: 0;
+      z-index: 8;
+      pointer-events: none;
+      opacity: 0;
+      background: #000;
+      box-shadow: 0 0 0 rgba(0,0,0,0);
+    }
+    .film-card--flip.is-flipping .flip-shade { animation: ns-flip-shade 0.7s ease-in-out; }
     @keyframes ns-flip-shade {
-      0%, 100% { filter: brightness(1) drop-shadow(0 0 0 rgba(0,0,0,0)); }
-      50%      { filter: brightness(0.5) drop-shadow(0 14px 22px rgba(0,0,0,0.6)); }
+      0%, 100% { opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
+      50%      { opacity: 0.5; box-shadow: 0 14px 22px rgba(0,0,0,0.6); }
     }
     /* Light — a diagonal glare sweeps across the tile as it catches the light mid-spin.
        Lives on each .flip-face (not the outer, non-3D anchor) so the glare rotates with
@@ -3932,10 +3968,13 @@ function comingSoonFaceHTML(film) {
 // "Go Crazy!" tile — holds frontFilm and backFilm; nsSetupComingSoonFlip toggles the
 // .is-flipping class to actually trigger each spin, this just builds the static two-face
 // markup. Axis fixed to Y ("left to right") since this page's row is always doubletile.
-// Based on mubi-showing-phase1.html's comingSoonFlipTileHTML, with one addition: its own
-// comingSoonSplashHTML() sibling, outside .flip-inner so the paint doesn't rotate along with
-// the flip — it sits fixed on top of whichever face is currently showing, same as it does on
-// a plain tile, so Splash still works with Go Crazy on.
+// Based on mubi-showing-phase1.html's comingSoonFlipTileHTML, with two additions: .flip-shade
+// (see that CSS rule — a plain overlay div rather than a `filter` on .film-card--flip itself,
+// which is what mubi-showing-phase1.html's original version used and what Safari's
+// backface-visibility bug reacts to) and comingSoonSplashHTML()'s own sibling, outside
+// .flip-inner so the paint doesn't rotate along with the flip — it sits fixed on top of
+// whichever face is currently showing, same as it does on a plain tile, so Splash still works
+// with Go Crazy on.
 function comingSoonFlipTileHTML(frontFilm, backFilm) {
   return `
     <a class="film-card film-card--flip flip-axis-y" href="https://mubi.com/films/${frontFilm.slug || slugify(frontFilm.title)}" target="_self" aria-label="${frontFilm.title}">
@@ -3943,6 +3982,7 @@ function comingSoonFlipTileHTML(frontFilm, backFilm) {
         <div class="flip-face flip-face--front">${comingSoonFaceHTML(frontFilm)}</div>
         <div class="flip-face flip-face--back flip-face--back-y">${comingSoonFaceHTML(backFilm)}</div>
       </div>
+      <div class="flip-shade" aria-hidden="true"></div>
       ${comingSoonSplashHTML()}
     </a>`;
 }
