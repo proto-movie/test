@@ -655,6 +655,8 @@
     body.ratings-mode-hover-all .rating-active .film-card.has-rating .rating-badge { display: none; }
     body.ratings-mode-hover-all .rating-active .film-card.has-rating:hover .rating-badge { display: flex; }
     .film-card:hover .rating-badge { transform: translate(15px, -17px); }
+    body.ratings-mode-hover-all .rating-active .film-card.has-rating .card-img-wrap::after { opacity: 0; }
+    body.ratings-mode-hover-all .rating-active .film-card.has-rating:hover .card-img-wrap::after { opacity: 1; }
     .card-audio-btn {
       position: fixed;
       z-index: 999;
@@ -677,7 +679,7 @@
       opacity: 1;
       pointer-events: auto;
     }
-    .rating-active .card-img-wrap::after {
+    .rating-active .film-card.has-rating .card-img-wrap::after {
       content: '';
       position: absolute;
       inset: 0;
@@ -685,7 +687,7 @@
       z-index: 2;
       pointer-events: none;
       transform-origin: center bottom;
-      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
     }
     .rating-active .film-card:hover .card-img-wrap::after { transform: scale(1.08); }
 
