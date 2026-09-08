@@ -652,6 +652,8 @@
     .rating-active .rating-badge { display: flex; }
     body.ratings-mode-hover .rating-active .film-card.has-rating .rating-badge-count { display: none; }
     body.ratings-mode-hover .rating-active .film-card.has-rating:hover .rating-badge-count { display: block; }
+    body.ratings-mode-hover-all .rating-active .film-card.has-rating .rating-badge { display: none; }
+    body.ratings-mode-hover-all .rating-active .film-card.has-rating:hover .rating-badge { display: flex; }
     .film-card:hover .rating-badge { transform: translate(15px, -17px); }
     .card-audio-btn {
       position: fixed;
@@ -1577,6 +1579,10 @@
   <label class="ratings-settings-option">
     <input type="radio" name="ratingsMode" value="hover" id="ratingsModeHover">
     Only show number of ratings on hover
+  </label>
+  <label class="ratings-settings-option">
+    <input type="radio" name="ratingsMode" value="hover-all" id="ratingsModeHoverAll">
+    Only show rating and number of ratings on hover
   </label>
 </div>
 
@@ -2665,16 +2671,20 @@ function renderGrid(genre) {
 }
 renderGrid();
 
-// Ratings display settings: "always" shows the rating badge on every card,
-// "hover" reveals it only while a card is hovered. Persisted so it survives reloads.
+// Ratings display settings (only take effect when sorted by Rating): "always" shows
+// the score and count always, "hover" keeps the score visible but reveals the count
+// only on hover, "hover-all" hides both until the card is hovered. Persisted so it
+// survives reloads.
 (function () {
-  const stored = localStorage.getItem('ratingsMode') === 'hover' ? 'hover' : 'always';
+  const MODE_IDS = { always: 'ratingsModeAlways', hover: 'ratingsModeHover', 'hover-all': 'ratingsModeHoverAll' };
+  const stored = MODE_IDS[localStorage.getItem('ratingsMode')] ? localStorage.getItem('ratingsMode') : 'always';
   const radios = document.querySelectorAll('input[name="ratingsMode"]');
   function apply(mode) {
     document.body.classList.toggle('ratings-mode-always', mode === 'always');
     document.body.classList.toggle('ratings-mode-hover', mode === 'hover');
+    document.body.classList.toggle('ratings-mode-hover-all', mode === 'hover-all');
   }
-  document.getElementById(stored === 'hover' ? 'ratingsModeHover' : 'ratingsModeAlways').checked = true;
+  document.getElementById(MODE_IDS[stored]).checked = true;
   apply(stored);
   radios.forEach(r => r.addEventListener('change', () => {
     if (!r.checked) return;
