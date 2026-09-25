@@ -70,6 +70,7 @@
       position: relative;
       overflow: hidden;
       scroll-snap-align: start;
+      scroll-snap-stop: always; /* one flick can never carry past a section */
     }
 
     .hero-video {
@@ -162,6 +163,7 @@
       position: relative;
       overflow: hidden;
       scroll-snap-align: start;
+      scroll-snap-stop: always; /* one flick can never carry past a section */
     }
 
     /* Background gradient layers */
@@ -553,14 +555,18 @@
         repeating-linear-gradient(to bottom, rgba(0,0,0,0.55) 0px, rgba(0,0,0,0.55) 2px, transparent 2px, transparent 4px),
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       background-size: auto, 260px 260px;
-      animation: crtFlicker 6.5s infinite, staticJitter 0.5s steps(4) infinite;
+      /* -0.4s: start just past crtFlicker's first dip (at 3%), so the
+         flicker doesn't kick in with a flash the moment it's switched back
+         on after loading — the next dip is ~2.3s later. */
+      animation: crtFlicker 6.5s -0.4s infinite, staticJitter 0.5s steps(4) infinite;
     }
 
     /* While the stills are loading in (startLoading() until finishLoading()
        has settled the list), hold the overlay steady — the flicker and
        jumping static on top of the scale-up read as rough. Opacity pinned
        at crtFlicker's resting value so nothing pops when it resumes. */
-    .film-section.stills-loading .tile-image::before {
+    .film-section.stills-loading .tile-image::before,
+    .film-section.stills-settling .tile-image::before {
       animation: none;
       opacity: 0.85;
     }
@@ -712,6 +718,7 @@
       overflow: hidden;
       background: #000;
       scroll-snap-align: start;
+      scroll-snap-stop: always;
     }
 
     .footer-video {
@@ -1042,7 +1049,7 @@ you can always turn it off.</p>
     <!-- v2: visible before the flash, fades out as the stills drop into
          the list (see finishLoading()); positioned per breakpoint by
          positionFlashLogo(). -->
-    <img id="flashLogo" src="images/Halloween-26_TT_EN.png" alt="">
+    <img id="flashLogo" src="images/Halloween-26_TT_EN_WHITE.png" alt="">
 
     <header class="site-header">
       <a class="mubi-logo-link" id="mubiLogoLink">
@@ -1822,8 +1829,21 @@ you can always turn it off.</p>
       return breaker(live || fallback);
     }
 
+    // Title card over the loading flash, per language. Spanish splits into
+    // its two files (ES → Spain, LATAM → Latin America); anything without
+    // its own file falls back to English.
+    const TITLE_CARD_FILES = {
+      EN: 'EN', FR: 'FR', DE: 'DE', IT: 'IT', NL: 'NL',
+      LATAM: 'ES-LATAM', ES: 'ES-ES', PT: 'PT', TR: 'TR',
+    };
+    function titleCardFor(lang) {
+      return `images/Halloween-26_TT_${TITLE_CARD_FILES[lang] || 'EN'}_WHITE.png`;
+    }
+
     function applyLanguage(lang) {
       currentLang = lang;
+      const flashLogo = document.getElementById('flashLogo');
+      if (flashLogo) flashLogo.src = titleCardFor(lang);
       const labels     = document.querySelectorAll('.time-label');       // left-menu: time-of-day slot names
       const slotEls    = document.querySelectorAll('.film-slot-label');  // same, inside the expanded tile
       const titleEls   = document.querySelectorAll('.film-title');
@@ -2322,7 +2342,7 @@ you can always turn it off.</p>
     function enterIntro() {
       phase = 'intro';
       activeIndex = -1;
-      filmSection.classList.remove('stills-loading');
+      filmSection.classList.remove('stills-loading', 'stills-settling');
       document.getElementById('timeNav').classList.add('hidden');
       document.getElementById('introBg').classList.add('active');
       document.querySelectorAll('.film-bg-layer').forEach(el => el.classList.remove('active'));
@@ -2376,6 +2396,7 @@ you can always turn it off.</p>
 
       tiles.forEach((t) => {
         t.style.transition = 'none';
+        t.style.willChange = fullScreen ? 'transform, width, height' : ''; // cleared in finishLoading()'s cleanup
         t.style.transformOrigin = 'center center'; // scale up from the middle of the spot it's pinned to, not a corner
         t.style.width = boxW + 'px';
         t.style.height = boxH + 'px';
@@ -2420,7 +2441,9 @@ you can always turn it off.</p>
       let i = 0;
       function revealNext() {
         if (i >= order.length) {
-          setTimeout(finishLoading, 550);
+          // Hold on the last still before it shrinks into the list — longer
+          // on desktop, where it's a full-screen image worth a beat.
+          setTimeout(finishLoading, fullScreen ? 1100 : 550);
           return;
         }
         const { t, d } = order[i];
@@ -2503,6 +2526,7 @@ you can always turn it off.</p>
       void tiles[0].offsetHeight;
 
       const lastRects = tiles.map(t => t.getBoundingClientRect());
+      let settleMs = 950;
       if (fullScreen) {
         // v2 desktop: animate the real width/height (and the image's
         // width) from the full-screen size the last still flashed in at,
@@ -2511,26 +2535,56 @@ you can always turn it off.</p>
         // frame the image would jump to the left ~58% of the screen and
         // distort; resizing instead keeps the first frame identical to the
         // last flashed still (object-fit:cover just re-crops as it shrinks).
-        const dur = '0.9s';
-        const ease = 'cubic-bezier(0.55, 0, 0.85, 0.4)';
+        //
+        // Two beats: first tile 0 shrinks from full screen to its final
+        // active size and spot. The rest are invisible for this part, so
+        // they skip straight to their compact size, bottom-left aligned
+        // with tile 0's final spot (tucked under it) — no point animating
+        // their size, and it keeps the per-frame layout work to the one
+        // tile that's actually on screen, which is what makes the shrink
+        // smooth. Only once tile 0 is in place do the rest appear and all
+        // drop down together into their queued spots.
+        //
+        // Ease-in-out weighted toward a long, soft landing: eases gently off
+        // the full-screen still, then glides into place rather than
+        // arriving at speed.
+        const dur = 1.3;
+        const ease = 'cubic-bezier(0.45, 0, 0.15, 1)';
+        const DROP_DUR = 0.7;
+        const DROP_DELAY = 0.6; // pause with tile 0 settled before the rest drop
+        const dropEase = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
+        const slotBottom = lastRects[0].bottom;
         tiles.forEach((t, i) => {
-          const f = firstRects[i], l = lastRects[i];
-          const img = t.querySelector('.tile-image');
-          t.style.width = f.width + 'px';
-          t.style.height = f.height + 'px';
-          img.style.width = f.width + 'px';
-          t.style.transform = `translate(${f.left - l.left}px, ${f.top - l.top}px)`;
+          if (i === 0) return;
+          t.style.opacity = '0';
+          t.style.transform = `translate(0px, ${slotBottom - lastRects[i].bottom}px)`;
         });
-        void tiles[0].offsetHeight;
-        tiles.forEach(t => {
-          const img = t.querySelector('.tile-image');
-          t.style.transition = `transform ${dur} ${ease}, width ${dur} ${ease}, height ${dur} ${ease}`;
-          img.style.transition = `width ${dur} ${ease}`;
-          t.style.width = '';
-          t.style.height = '';
-          img.style.width = '';
-          t.style.transform = 'none';
-        });
+        const f0 = firstRects[0], l0 = lastRects[0];
+        const img0 = activeTile.querySelector('.tile-image');
+        activeTile.style.width = f0.width + 'px';
+        activeTile.style.height = f0.height + 'px';
+        img0.style.width = f0.width + 'px';
+        activeTile.style.transform = `translate(${f0.left - l0.left}px, ${f0.top - l0.top}px)`;
+        void activeTile.offsetHeight;
+        activeTile.style.transition = `transform ${dur}s ${ease}, width ${dur}s ${ease}, height ${dur}s ${ease}`;
+        img0.style.transition = `width ${dur}s ${ease}`;
+        activeTile.style.width = '';
+        activeTile.style.height = '';
+        img0.style.width = '';
+        activeTile.style.transform = 'none';
+        setTimeout(() => {
+          tiles.forEach((t, i) => {
+            if (i === 0) return;
+            t.style.transition = `transform ${DROP_DUR}s ${dropEase}`;
+            t.style.opacity = ''; // back to visible the instant the drop starts
+            t.style.transform = 'none';
+          });
+        }, (dur + DROP_DELAY) * 1000);
+        settleMs = (dur + DROP_DELAY + DROP_DUR) * 1000 + 50;
+        // Still mid-animation until the drop's done — keep input/resize
+        // treating this as loading so a scroll can't re-layout the tiles
+        // under their inline transforms.
+        phase = 'loading';
       } else {
         tiles.forEach((t, i) => {
           const f = firstRects[i], l = lastRects[i];
@@ -2555,9 +2609,11 @@ you can always turn it off.</p>
       }
 
       setTimeout(() => {
+        if (phase === 'loading') phase = 'list'; // desktop held it at 'loading' through the drop (not if the visitor already left for the intro)
         tiles.forEach(t => {
           t.style.transition = '';
           t.style.transform = '';
+          t.style.willChange = '';
           t.querySelector('.tile-image').style.transition = ''; // back to its normal CSS-driven transition for later navigation
         });
         // The loader has now actually transitioned into a list — only now
@@ -2576,8 +2632,22 @@ you can always turn it off.</p>
           activeExpanded = true;
           layoutTiles();
         }
-        filmSection.classList.remove('stills-loading'); // loading done — CRT flicker/static and the play icon back on
-      }, 950);
+        // Loading done — CRT flicker/static and the play icon back on, but
+        // only once the active image has fully settled into the list: right
+        // away on desktop (it arrived at its final size with the flight),
+        // after its 0.8s grow on mobile.
+        //
+        // The play icon comes back then; on desktop the image flicker waits
+        // a beat longer (stills-settling) so it doesn't start the instant
+        // the list lands.
+        setTimeout(() => {
+          if (phase !== 'list') return;
+          filmSection.classList.remove('stills-loading');
+          if (!fullScreen) return;
+          filmSection.classList.add('stills-settling');
+          setTimeout(() => filmSection.classList.remove('stills-settling'), 2000);
+        }, fullScreen ? 0 : 850);
+      }, settleMs);
     }
 
     // Debug menu: language selector
@@ -2684,6 +2754,8 @@ you can always turn it off.</p>
       const isUp   = e.key === 'ArrowUp'   || e.key === 'ArrowLeft';
       if (!isDown && !isUp) return;
       if (phase === 'loading') { e.preventDefault(); return; }
+      // Holding a key down auto-repeats — one press, one step.
+      if (e.repeat) { e.preventDefault(); return; }
 
       // Above the film section (hero) — down enters it; up is already the top.
       if (!inFilmSection && !inFooterSection) {
@@ -2708,15 +2780,14 @@ you can always turn it off.</p>
       // phase === 'list'
       if (isDown) {
         if (activeIndex === films.length - 1) {
+          if (scrollLocked) return; // still animating onto the last film
           smoothScrollToSection(footerSection); // last film, down into the footer
         } else {
-          setActive(activeIndex + 1);
-          playBlip('down');
+          stepFilm(1);
         }
       } else if (isUp) {
-        if (activeIndex === 0) { smoothScrollToSection(hero); return; }
-        setActive(activeIndex - 1);
-        playBlip('up');
+        if (activeIndex === 0) { if (!scrollLocked) smoothScrollToSection(hero); return; }
+        stepFilm(-1);
       }
     });
 
@@ -2751,15 +2822,20 @@ you can always turn it off.</p>
       // hero — the list underneath is left exactly as it is, not torn down.
       if (activeIndex === 0 && deltaY < 0) return false;
 
-      if (scrollLocked) return true;
+      stepFilm(deltaY > 0 ? 1 : -1);
+      return true;
+    }
+
+    // One film forward/back. No input moves the list again until the
+    // tile animation (0.8s) has finished — wheel, swipe and keys alike.
+    // Returns whether it actually stepped.
+    function stepFilm(dir) {
+      if (scrollLocked) return false;
+      const next = Math.max(0, Math.min(films.length - 1, activeIndex + dir));
+      if (next === activeIndex) return false;
       scrollLocked = true;
-      if (deltaY > 0) {
-        setActive(Math.min(activeIndex + 1, films.length - 1));
-        playBlip('down');
-      } else {
-        setActive(activeIndex - 1);
-        playBlip('up');
-      }
+      setActive(next);
+      playBlip(dir > 0 ? 'down' : 'up');
       setTimeout(() => { scrollLocked = false; }, 900);
       return true;
     }
@@ -2776,11 +2852,35 @@ you can always turn it off.</p>
     // Touch doesn't have this failure mode (a whole swipe is one gesture,
     // decided once at touchstart), so it still needs the loose threshold
     // for the reason noted below.
+    //
+    // One step per wheel gesture: a trackpad/Magic Mouse flick keeps
+    // firing momentum events for 1-2s after the fingers lift, far longer
+    // than the step lock, so the tail of one flick used to fire a second
+    // step (skipping a film) — or, landing on the last/first film, carry
+    // straight on out into the footer/hero. Now once a gesture has moved
+    // the list, the rest of it is eaten; a new gesture only counts after
+    // the wheel has gone quiet for WHEEL_QUIET_MS.
+    const WHEEL_QUIET_MS = 200;
+    let lastWheelAt = 0;
+    let wheelGestureSpent = false;
     document.addEventListener('wheel', e => {
+      const now = performance.now();
+      if (now - lastWheelAt > WHEEL_QUIET_MS) wheelGestureSpent = false; // a fresh gesture
+      lastWheelAt = now;
       if (!inFilmSection) return;
       // During section transition, eat all wheel events to prevent momentum bleed
-      if (sectionTransitionLock) { e.preventDefault(); return; }
-      if (handleScrollIntent(e.deltaY)) e.preventDefault();
+      if (sectionTransitionLock) { e.preventDefault(); wheelGestureSpent = true; return; }
+      if (wheelGestureSpent) { e.preventDefault(); return; }
+      // Mid-animation: eat it, and don't let this gesture count later either.
+      if (phase === 'list' && scrollLocked) { e.preventDefault(); wheelGestureSpent = true; return; }
+      // Sideways-only trackpad swipes report deltaY 0 — that isn't an
+      // up/down intent (it used to read as "up" and step back a film).
+      if (Math.abs(e.deltaY) < 1) return;
+      const before = activeIndex, phaseBefore = phase;
+      if (handleScrollIntent(e.deltaY)) {
+        e.preventDefault();
+        if (activeIndex !== before || phase !== phaseBefore) wheelGestureSpent = true;
+      }
     }, { passive: false });
 
     // Touch (mobile) — swipes drive the exact same state machine as the wheel
@@ -2799,6 +2899,7 @@ you can always turn it off.</p>
     document.addEventListener('touchmove', e => {
       if (!touchTracking) return;
       if (sectionTransitionLock) { e.preventDefault(); return; }
+      if (phase === 'list' && scrollLocked) { e.preventDefault(); return; } // no swiping out of the section mid-animation
       const deltaY = touchStartY - e.touches[0].clientY; // positive = finger moved up = scroll-down intent
       if (!wouldReleaseToNativeScroll(deltaY)) e.preventDefault();
     }, { passive: false });
@@ -2810,6 +2911,7 @@ you can always turn it off.</p>
       const deltaY = touchStartY - e.changedTouches[0].clientY;
       touchStartY = null;
       if (Math.abs(deltaY) < SWIPE_THRESHOLD) return; // a tap, or too small to count as a swipe
+      if (phase === 'list' && scrollLocked) return; // still animating the last step
       handleScrollIntent(deltaY);
     }, { passive: true });
 
