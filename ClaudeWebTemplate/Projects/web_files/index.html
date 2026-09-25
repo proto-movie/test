@@ -1,0 +1,3097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halloween Marathon — MUBI</title>
+  <style>
+    @font-face {
+      font-family: 'Riforma';
+      font-display: swap;
+      src: url("fonts/RiformaLLSub-Light.woff2") format("woff2");
+      font-weight: 300;
+    }
+    @font-face {
+      font-family: 'Riforma';
+      font-display: swap;
+      src: url("fonts/RiformaLLWeb-Regular.woff2") format("woff2");
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Riforma';
+      font-display: swap;
+      src: url("fonts/RiformaLLWeb-Medium.woff2") format("woff2");
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: 'Riforma';
+      font-weight: bold;
+      font-display: swap;
+      src: url("fonts/RiformaLLWeb-Bold.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: 'Riforma';
+      font-style: italic;
+      font-display: swap;
+      src: url("fonts/RiformaLLWeb-Italic.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: 'Neue Television';
+      font-display: swap;
+      src: url("fonts/NeueTelevision-BoldLine.woff2") format("woff2");
+      font-weight: 400;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Set by JS (updateResponsiveVars) so CSS and the carousel's own layout
+       math always agree on the same numbers, desktop or mobile. */
+    :root {
+      --nav-w: 360px;
+      --tile-w: 363px;
+      --tile-h: 204.1875px;
+      --active-w: 1042px;
+      --active-h: 337.5px;
+      --active-img-w: 600px;
+      --tile-gap: 20px;
+    }
+
+    html { scroll-snap-type: y mandatory; overflow-y: scroll; }
+    body { font-family: 'Riforma', sans-serif; background: #000; }
+
+    /* ─────────────────────────────────────────
+       SECTION 1 — HERO (above the fold)
+    ───────────────────────────────────────── */
+    .hero {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      overflow: hidden;
+      scroll-snap-align: start;
+    }
+
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Subtle dark vignette */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.5) 100%);
+      pointer-events: none;
+    }
+
+    /* MUBI logo top-left */
+    .hero-logo {
+      position: absolute;
+      top: 26px;
+      left: 32px;
+      z-index: 10;
+      opacity: 1;
+      text-decoration: none;
+    }
+
+    /* Footer headline — only text left in that section now (the
+       what-to-eat/drink/wear list is gone), so it's centered on both axes
+       instead of pinned left, sized/widthed to match the hero's own
+       .intro-lead headline. Doubles as a "press play" CTA back to film 0
+       (see its click handler), hence the pointer cursor. */
+    .hero-headline {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 82%;
+      z-index: 10;
+      margin: 0;
+      font-family: 'Neue Television', 'Riforma', sans-serif;
+      font-weight: 400;
+      font-size: 54px;
+      line-height: 100%;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      text-align: center;
+      color: #fff;
+      max-width: 90vw;
+      cursor: pointer;
+    }
+
+    /* Unmute button — icon only, no border/label. Fixed top-right, sitting
+       immediately left of the globe icon (same size, same row) on both
+       mobile and desktop — see .globe-btn for the matching box size. */
+    .unmute-btn {
+      position: fixed;
+      top: 16px;
+      right: 72px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+    /* Author rules always beat the UA stylesheet's [hidden]{display:none},
+       regardless of specificity — display:flex above would otherwise win
+       and keep the button visible even while .hidden is true. */
+    .unmute-btn[hidden] { display: none; }
+    .unmute-btn svg {
+      width: 30px;
+      height: 30px;
+      display: block;
+    }
+    .unmute-btn svg[hidden] { display: none; }
+
+    /* ─────────────────────────────────────────
+       SECTION 2 — FILM LIST (below the fold)
+    ───────────────────────────────────────── */
+    .film-section {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      overflow: hidden;
+      scroll-snap-align: start;
+    }
+
+    /* Background gradient layers */
+    #bgLayers { position: absolute; inset: 0; z-index: 0; }
+
+    /* v2 — sits above every flashing still
+       (they top out around z-index equal to the film count) for the
+       duration of the loading flash. Positioned inside the section (not
+       fixed to the viewport) and visible by default, so it scrolls into
+       view with the section and is already there before the flashing
+       starts. Faded out via inline style in JS once the stills start
+       dropping into the list (finishLoading()), reset again by enterIntro(). Never receives clicks. */
+    #flashLogo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 600;
+      max-width: 36vw;
+      max-height: 36vh;
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 2s ease;
+      animation: bgLightFlicker 9s infinite;
+    }
+    .bg-layer.active { opacity: 1; }
+
+    /* Irregular, occasional dips rather than a steady pulse — reads as a
+       failing light source, not a strobe. Shallow, so the dim radial edges
+       never flicker in and out of visibility at the sides — no position
+       drift here either, for the same reason. */
+    @keyframes bgLightFlicker {
+      0%, 100% { filter: brightness(1); }
+      6%       { filter: brightness(1); }
+      6.2%     { filter: brightness(0); }
+      6.4%     { filter: brightness(1); }
+      6.6%     { filter: brightness(0); }
+      6.9%     { filter: brightness(1); }
+      17%      { filter: brightness(1); }
+      17.2%    { filter: brightness(0); }
+      17.5%    { filter: brightness(1); }
+      27%      { filter: brightness(1); }
+      27.2%    { filter: brightness(0); }
+      27.4%    { filter: brightness(1); }
+      27.6%    { filter: brightness(0); }
+      27.9%    { filter: brightness(1); }
+      39%      { filter: brightness(1); }
+      39.2%    { filter: brightness(0); }
+      39.5%    { filter: brightness(1); }
+      48%      { filter: brightness(1); }
+      48.2%    { filter: brightness(0); }
+      48.4%    { filter: brightness(1); }
+      48.6%    { filter: brightness(0); }
+      48.8%    { filter: brightness(1); }
+      61%      { filter: brightness(1); }
+      61.2%    { filter: brightness(0); }
+      61.5%    { filter: brightness(1); }
+      70%      { filter: brightness(1); }
+      70.2%    { filter: brightness(0); }
+      70.4%    { filter: brightness(1); }
+      70.6%    { filter: brightness(0); }
+      70.9%    { filter: brightness(1); }
+      82%      { filter: brightness(1); }
+      82.2%    { filter: brightness(0); }
+      82.5%    { filter: brightness(1); }
+      91%      { filter: brightness(1); }
+      91.2%    { filter: brightness(0); }
+      91.4%    { filter: brightness(1); }
+      91.6%    { filter: brightness(0); }
+      91.9%    { filter: brightness(1); }
+    }
+
+    /* Static/snow over the background colour — a fractal-noise SVG tile
+       whose position jumps every frame (stepped, not eased) for a jittery
+       grain rather than a smooth drift. Sits above the .bg-layer gradients
+       (explicit z-index beats their z-index:auto) but still behind
+       .marathon since it lives inside #bgLayers's own stacking context,
+       same as the scanlines below. */
+    #bgLayers::before {
+      content: '';
+      position: absolute;
+      inset: -15%; /* oversized so its own staticJitter translate never exposes a gap at the edge revealing the dark gradient behind it */
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.22;
+      mix-blend-mode: screen;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 260px 260px;
+      animation: staticJitter 0.5s steps(4) infinite;
+    }
+    @keyframes staticJitter {
+      0%   { transform: translate(0, 0); }
+      25%  { transform: translate(-3%, 2%); }
+      50%  { transform: translate(2%, -3%); }
+      75%  { transform: translate(-2%, -2%); }
+      100% { transform: translate(0, 0); }
+    }
+
+    /* Two soft bands of light rolling in opposite directions on a loop, like
+       a CRT momentarily losing vertical sync. Real child elements (not
+       pseudos) since #bgLayers's ::before/::after are already spoken for
+       above. */
+    .crt-scanband {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 140px;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0.1;
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+      animation: crtRoll 8s linear infinite;
+    }
+    @keyframes crtRoll {
+      0%   { top: -140px; }
+      100% { top: 100%; }
+    }
+    .crt-scanband-reverse {
+      animation: crtRollReverse 4s linear infinite;
+    }
+    @keyframes crtRollReverse {
+      0%   { top: 100%; }
+      100% { top: -140px; }
+    }
+
+    /* CRT scanlines + a faint flicker over the background colour, sitting
+       above the .bg-layer gradients but still behind .marathon (the actual
+       tiles/text) since it lives inside #bgLayers's own stacking context. */
+    #bgLayers::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.55) 0px,
+        rgba(0, 0, 0, 0.55) 2px,
+        transparent 2px,
+        transparent 4px
+      );
+      animation: crtFlicker 6.5s infinite, crtGlitchShift 9s infinite;
+    }
+
+    @keyframes crtFlicker {
+      0%, 100% { opacity: 0.85; }
+      3%       { opacity: 0.6; }
+      5%       { opacity: 0.85; }
+      41%      { opacity: 0.85; }
+      43%      { opacity: 0.55; }
+      44%      { opacity: 0.8; }
+      45%      { opacity: 0.85; }
+      72%      { opacity: 0.85; }
+      73%      { opacity: 0.65; }
+      75%      { opacity: 0.85; }
+    }
+
+    /* Broken-signal tear: a couple of abrupt horizontal jolts per cycle,
+       not a smooth wave — sudden skew/shift + a brightness pop, then snaps
+       back. Runs on its own 9s cycle (vs. crtFlicker's 6.5s) so the two
+       don't always land together, reading as more random/faulty. */
+    @keyframes crtGlitchShift {
+      0%, 100%  { transform: translateX(0) skewX(0deg); filter: brightness(1); }
+      41%       { transform: translateX(0) skewX(0deg); filter: brightness(1); }
+      41.3%     { transform: translateX(-10px) skewX(1.2deg); filter: brightness(1.6); }
+      41.6%     { transform: translateX(6px) skewX(-1deg); filter: brightness(1.3); }
+      42%       { transform: translateX(-3px) skewX(0.4deg); filter: brightness(1.1); }
+      42.4%     { transform: translateX(0) skewX(0deg); filter: brightness(1); }
+      77%       { transform: translateX(0) skewX(0deg); filter: brightness(1); }
+      77.3%     { transform: translateX(9px) skewX(-1.4deg); filter: brightness(1.7); }
+      77.6%     { transform: translateX(-5px) skewX(1deg); filter: brightness(1.2); }
+      78%       { transform: translateX(0) skewX(0deg); filter: brightness(1); }
+    }
+
+    /* Shown before any film is selected (intro + loading) */
+    .intro-bg {
+      background: radial-gradient(ellipse at 50% 35%, #2A0508 0%, #150307 35%, #070102 70%, #000000 100%);
+    }
+
+    /* Header */
+    .site-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      padding: 26px 36px;
+      z-index: 100;
+    }
+
+    .mubi-logo-link {
+      display: inline-flex;
+      align-items: center;
+      opacity: 1;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Marathon layout */
+    .marathon {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Left time nav — a "crosshair" list: rows are positioned by JS
+       (layoutNav()) so the active title always sits on the same fixed
+       horizontal line as the active image, and the rest scroll through it. */
+    .time-nav {
+      width: var(--nav-w);
+      flex-shrink: 0;
+      height: 100%;
+      position: relative;
+      z-index: 10;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    .time-nav.hidden { opacity: 0; pointer-events: none; }
+
+    .time-label {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      top: 0; /* set by JS, see layoutNav() */
+      height: 19px;
+      display: flex;
+      align-items: center;
+      font-family: 'Neue Television', 'Riforma', sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.34);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      transition: top 0.8s cubic-bezier(0.22, 0.61, 0.36, 1), color 0.5s ease;
+      user-select: none;
+    }
+    .time-label.active  { color: #fff; }
+    .time-label:hover:not(.active) { color: #fff; }
+
+    /* Hero intro text — lives in the hero section now (used to be the first
+       thing shown on entering the film section, positioned by JS to line up
+       with the loading animation's stills; that coupling is gone now that
+       it's static copy sitting over the hero video instead). */
+    .hero-intro {
+      position: absolute;
+      bottom: 76px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      z-index: 10;
+    }
+    .hero-intro > * { max-width: 800px; }
+
+    /* Independently centered (both axes) over the hero video — decoupled
+       from .hero-intro's left-aligned layout, which still positions the
+       quote below it. */
+    .intro-lead {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 82%;
+      z-index: 10;
+      font-family: 'Neue Television', 'Riforma', sans-serif;
+      font-weight: 400;
+      font-size: 54px;
+      line-height: 100%;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: pre-line;
+      color: #fff;
+    }
+
+    .intro-quote {
+      font-family: 'Times New Roman', Times, serif;
+      font-weight: bold;
+      font-size: 40px;
+      line-height: 100%;
+      white-space: pre-line;
+      color: #fff;
+    }
+
+
+    /* Film area — tiles are positioned absolutely (top set by JS via layoutTiles()),
+       forming a carousel: one big active tile at a fixed top, upcoming tiles
+       stacked below it at a smaller (but still fully visible) size. */
+    .film-area {
+      position: relative;
+      flex: 1;
+      height: 100%;
+      padding: 0 64px 48px 0;
+    }
+
+    /* Film tile — flex row: image | text */
+    .film-tile {
+      position: absolute;
+      left: 0;
+      top: 0; /* set by JS, see layoutTiles() */
+      transform-origin: top left;
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+      cursor: pointer;
+      transition:
+        top    0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+        width  0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+        height 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+        transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+        opacity 0.6s ease;
+      width: var(--tile-w);
+      height: var(--tile-h); /* 16:9 of --tile-w — same size every tile is revealed at while loading */
+      opacity: 1;
+    }
+
+    .film-tile.active {
+      width: var(--active-w);
+      height: var(--active-h);
+    }
+
+    /* Already-passed tiles stay visible (and clickable) as they scroll up;
+       the section's overflow:hidden naturally clips them once they move
+       off-screen, and clicking one jumps back to it just like an upcoming
+       tile below the active one does. */
+
+    .film-tile:hover:not(.active) {
+      filter: brightness(1.15);
+    }
+
+    /* Image column — grows with the tile so it stays uncropped and scales up
+       cleanly, but stops short of the active tile's full width, leaving room
+       for the info panel beside it. */
+    .tile-image {
+      position: relative;
+      width: var(--tile-w);
+      flex-shrink: 0;
+      height: 100%;
+      overflow: hidden;
+      transition: width 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+
+    .film-tile.active .tile-image {
+      width: var(--active-img-w);
+    }
+
+    .tile-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* Same scanline + static-noise textures used on #bgLayers, reapplied
+       directly over every still so the image itself reads as if it's
+       being displayed on the CRT, not just the space around it. Oversized
+       (inset -6%) so its own staticJitter translate never exposes a gap
+       at the tile's edge — safe here since .tile-image has overflow:hidden
+       clipping it anyway. multiply darkens through both textures, which
+       reads as a dirty/lit-from-behind screen rather than washing the
+       image out. Sits above the plain img but below the mobile text
+       gradient and the play icon (see their z-index). */
+    .tile-image::before {
+      content: '';
+      position: absolute;
+      inset: -6%;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0.55;
+      mix-blend-mode: multiply;
+      background-image:
+        repeating-linear-gradient(to bottom, rgba(0,0,0,0.55) 0px, rgba(0,0,0,0.55) 2px, transparent 2px, transparent 4px),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: auto, 260px 260px;
+      animation: crtFlicker 6.5s infinite, staticJitter 0.5s steps(4) infinite;
+    }
+
+    /* While the stills are loading in (startLoading() until finishLoading()
+       has settled the list), hold the overlay steady — the flicker and
+       jumping static on top of the scale-up read as rough. Opacity pinned
+       at crtFlicker's resting value so nothing pops when it resumes. */
+    .film-section.stills-loading .tile-image::before {
+      animation: none;
+      opacity: 0.85;
+    }
+
+    /* Play icon — same mark used on the film's MUBI page — shown centered
+       over the still on hover, matching the MUBI reference. */
+    .tile-play-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 62px; /* the old hover-scaled size (44px * 1.4), now fixed instead of animated */
+      height: 62px;
+      opacity: 0;
+      z-index: 10; /* above the gradient overlay and the info panel's text — neither should ever sit over it */
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+    .film-tile.active:hover .tile-play-icon { opacity: 1; }
+    /* Power-glitch dimming — black layer over the whole film section,
+       opacity keyframed from JS in sync with the glitch sound's stutter
+       (see playPowerGlitch()). Above everything in the section, never
+       catches clicks. */
+    .power-glitch-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 700;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* No play icon until the film list has settled into place (class is
+       on .film-section from startLoading() until finishLoading() is done). */
+    .film-section.stills-loading .film-tile .tile-play-icon { opacity: 0; }
+
+    /* Text panel — sits to the right of the image, not over it. Fixed width
+       (matching the active tile's 1042 - 600 image = 442px) rather than
+       flex:1, so it never reflows while the tile/image are mid-resize —
+       it's laid out at its final size the whole time and simply fades in
+       once the frame has actually finished growing. */
+    .film-info {
+      position: relative;
+      width: calc(var(--active-w) - var(--active-img-w));
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 22px 0 0 16px;
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: opacity 0.3s ease 0s, transform 0.3s ease 0s;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .film-tile.active .film-info {
+      opacity: 1;
+      transform: translateX(0);
+      transition: opacity 0.4s ease 0.8s, transform 0.4s ease 0.8s;
+    }
+
+    .film-slot-label {
+      position: absolute;
+      top: -2px;
+      left: 16px;
+      font-family: 'Neue Television', 'Riforma', sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .film-title {
+      font-family: 'Riforma', sans-serif;
+      font-weight: bold;
+      font-size: 26px;
+      text-transform: uppercase;
+      color: #fff;
+      line-height: 0.9;
+      margin-bottom: 0;
+    }
+
+    .film-meta {
+      font-family: 'Riforma', sans-serif;
+      font-weight: 300;
+      font-size: 26px;
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+      vertical-align: middle;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .film-synopsis {
+      font-family: 'Riforma', sans-serif;
+      font-weight: 300;
+      font-size: 18px;
+      line-height: 1.15;
+      color: #fff;
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .key-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      font-family: 'Riforma', sans-serif;
+      font-weight: 400;
+      font-size: 20px;
+      color: #fff;
+      z-index: 100;
+      animation: keyHintBounce 1.8s ease-in-out infinite;
+    }
+    /* Nudges down while fading out, jumps back above its resting spot
+       (invisible, opacity still 0) then fades back in returning to it —
+       reads as a single continuous drop-and-reappear loop rather than a
+       jump cut. transform always carries the -50% centering alongside
+       the vertical offset, since the animation fully owns transform
+       while running. */
+    @keyframes keyHintBounce {
+      0%   { transform: translate(-50%, 0); opacity: 1; }
+      45%  { transform: translate(-50%, 10px); opacity: 0; }
+      55%  { transform: translate(-50%, -6px); opacity: 0; }
+      100% { transform: translate(-50%, 0); opacity: 1; }
+    }
+
+    /* Only shown once the last film is in focus, as a "there's more below"
+       cue toward the footer — not on every film, which would be noisy.
+       visibility (not opacity) so it doesn't fight the bounce animation's
+       own opacity keyframes above. */
+    .film-section .key-hint {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .film-section .key-hint.visible { visibility: visible; }
+
+    /* ─────────────────────────────────────────
+       SECTION 3 — FOOTER
+    ───────────────────────────────────────── */
+    .footer-section {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      overflow: hidden;
+      background: #000;
+      scroll-snap-align: start;
+    }
+
+    .footer-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* Same subtle vignette as the hero video, for text legibility over footage */
+    .footer-section::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.5) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+
+    /* ─────────────────────────────────────────
+       MOBILE — the nav column is dropped (no room for it beside the
+       carousel), the active tile stacks image-over-text instead of
+       side-by-side, and oversized display type is scaled down. The actual
+       tile/nav pixel sizes are computed and kept in sync by JS
+       (updateResponsiveVars), which sets the --tile-w/--active-h/etc custom
+       properties used above — this block only handles what plain CSS can.
+    ───────────────────────────────────────── */
+    /* Tablet AND mobile: the desktop side-by-side layout (image + a fixed
+       442px text panel beside it, totalling the fixed 1042px active width)
+       doesn't have room to breathe below ~1100px, so the info overlays the
+       bottom of the image instead — same treatment on both, just at
+       different sizes (updateResponsiveVars sets --active-img-w equal to
+       --active-w for both tiers, so the image fills the full tile width
+       and this panel has nothing to sit beside). */
+    @media (max-width: 1100px) {
+      .tile-image,
+      .film-tile.active .tile-image {
+        width: 100%;
+      }
+
+      /* Info overlays the bottom of the active still instead of stacking
+         below it — a gradient behind it (on the image itself) keeps the
+         white text legible over whatever the still looks like there. */
+      .film-tile.active .tile-image::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.35) 35%, rgba(0,0,0,0) 75%);
+        pointer-events: none;
+      }
+
+      /* The active tile's info text sits directly over its own image here.
+         Rather than switching the CRT effect off there, isolate the text
+         into its own top-level stacking context so it always paints last,
+         at full opacity/pure white, completely unaffected by the
+         multiply/blend layers underneath — the scanlines and noise stay
+         visible on the image, they just can't touch the text itself. */
+      .film-info {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: auto;
+        z-index: 5;
+        isolation: isolate;
+        padding: 22px 20px 28px 20px;
+        text-align: left;
+      }
+      .film-slot-label { left: 20px; }
+
+      /* Never truncated here — the info panel is bottom-anchored with an
+         auto-sized height, so letting the full synopsis show just pushes
+         the top of the panel (and the still above it) further up. The
+         active tile's own overflow:hidden has to give too, or an unusually
+         long synopsis would still get clipped at the tile's edge. */
+      .film-synopsis {
+        display: block;
+        -webkit-line-clamp: unset;
+        overflow: visible;
+      }
+      /* .film-info's height is now content-driven (bottom-anchored, no
+         top), so its justify-content:space-between (desktop's side-panel
+         layout) has no extra space left to distribute — title/meta and
+         the synopsis would otherwise sit flush against each other. */
+      .film-info-bottom { margin-top: 16px; }
+      .film-tile.active { overflow: visible; }
+
+      /* No hover here (touch tablets have none, and even with a trackpad
+         the overlay text is easy to hover past) — show the play mark for
+         the active still by default, centered, but only once it's
+         actually done expanding (delay matches .film-tile's own 0.8s grow
+         transition) rather than fading in while the tile's still mid-resize. */
+      .film-tile.active .tile-play-icon {
+        opacity: 1;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transition: opacity 0.3s ease 0.8s;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .time-nav { display: none; }
+
+      /* Mobile: centered over the compact box the stills flash into near
+         the top (see positionFlashLogo()), not the middle of the screen. */
+      #flashLogo { max-width: 80vw; }
+
+      .film-area { padding: 0 0 32px 0; }
+
+      .film-title { font-size: 22px; }
+      .film-meta { font-size: 22px; margin-bottom: 2px; }
+      .film-synopsis { font-size: 14px; }
+      /* Tighter than tablet/desktop's 16px gap above the synopsis. */
+      .film-info-bottom { margin-top: 10px; }
+
+      /* Footer headline just needs a smaller size here — it's still
+         centered on both axes via the base .hero-headline rule. */
+      .hero-headline { width: 90%; font-size: 30px; letter-spacing: -1px; max-width: calc(100vw - 40px); }
+
+      .hero-intro > * { max-width: calc(100vw - 40px); }
+      .intro-lead { width: 90%; font-size: 30px; letter-spacing: -1px; }
+      .intro-quote { width: calc(100vw - 40px); font-size: 22px; }
+
+    }
+
+    /* ─────────────────────────────────────────
+       LANGUAGE / REGION — globe icon + panel, sourced from the
+       FILM_TITLE tab's header row (EN/FR/DE/IT/NL/LATAM/ES/PT/TR)
+    ───────────────────────────────────────── */
+    .globe-btn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 9999;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      border-radius: 50%;
+      padding: 0;
+      cursor: pointer;
+    }
+    .globe-btn svg { width: 30px; height: 30px; display: block; }
+
+    .lang-region-panel {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 10000;
+      min-width: 190px;
+      background: rgba(0,0,0,0.85);
+      border: none;
+      border-radius: 6px;
+      padding: 38px 16px 16px 16px;
+      font-family: 'Riforma', sans-serif;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .lang-region-panel[hidden] { display: none; }
+
+    .panel-close-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      line-height: 1;
+      font-family: 'Riforma', sans-serif;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .panel-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .panel-row:first-of-type { margin-top: 0; }
+
+    .panel-row-label {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #fff;
+      user-select: none;
+    }
+
+    .panel-row select {
+      background: #111;
+      color: #fff;
+      border: 1px solid #fff;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-family: 'Riforma', sans-serif;
+      cursor: pointer;
+    }
+    .panel-row select:focus { outline: none; border-color: #fff; }
+
+  </style>
+</head>
+<body>
+
+  <!-- ── Globe icon: opens the language + region panel ── -->
+  <button class="globe-btn" id="globeBtn" aria-label="Language and region">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.4"/>
+      <ellipse cx="12" cy="12" rx="4" ry="9" stroke="#fff" stroke-width="1.4"/>
+      <line x1="3" y1="12" x2="21" y2="12" stroke="#fff" stroke-width="1.4"/>
+      <line x1="4.2" y1="7.5" x2="19.8" y2="7.5" stroke="#fff" stroke-width="1.1"/>
+      <line x1="4.2" y1="16.5" x2="19.8" y2="16.5" stroke="#fff" stroke-width="1.1"/>
+    </svg>
+  </button>
+
+  <!-- ── Language + region panel, opened by the globe icon ── -->
+  <div class="lang-region-panel" id="langRegionPanel" hidden>
+    <button class="panel-close-btn" id="panelCloseBtn" aria-label="Close">&times;</button>
+    <div class="panel-row">
+      <span class="panel-row-label">Language</span>
+      <select id="langSelect">
+        <option value="EN">EN</option>
+        <option value="FR">FR</option>
+        <option value="DE">DE</option>
+        <option value="IT">IT</option>
+        <option value="NL">NL</option>
+        <option value="LATAM">LATAM</option>
+        <option value="ES">ES</option>
+        <option value="PT">PT</option>
+        <option value="TR">TR</option>
+      </select>
+    </div>
+    <div class="panel-row">
+      <span class="panel-row-label">Region</span>
+      <select id="regionSelect">
+        <option value="UK & IE" selected>UK & IE</option>
+        <option value="NL">NL</option>
+        <option value="IT">IT</option>
+        <option value="LATAM">LATAM</option>
+        <option value="TR">TR</option>
+        <option value="US">US</option>
+        <option value="CA">CA</option>
+        <option value="DE">DE</option>
+        <option value="BR">BR</option>
+        <option value="FR">FR</option>
+        <option value="AU">AU</option>
+        <option value="ROW">ROW</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ── SECTION 1: Hero video ── -->
+  <section class="hero">
+    <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
+      <!-- Desktop/tablet: landscape no-subs cut. Mobile (matches the site's 768px breakpoint, see MOBILE_BREAKPOINT below): portrait no-subs cut, framed for a vertical screen. -->
+      <source src="video/CAMP-MIASMA_Halloween_2026_Landscape_No-Subs.mp4" type="video/mp4" media="(min-width: 769px)">
+      <source src="video/CAMP-MIASMA_Halloween_2026_Portrait_No-Subs.mp4" type="video/mp4">
+    </video>
+
+    <a class="hero-logo" href="https://mubi.com">
+      <svg viewBox="0 0 800 240" width="80px" fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#FFFFFF">
+          <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"></path>
+          <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"></path>
+          <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"></path>
+          <rect x="468.61" y="85.29" width="28.09" height="151.25"></rect>
+          <circle cx="766.5" cy="118.11" r="33.13"></circle>
+          <circle cx="595.89" cy="118.11" r="33.13"></circle>
+          <circle cx="681.2" cy="118.11" r="33.13"></circle>
+          <circle cx="595.89" cy="33.13" r="33.13"></circle>
+          <circle cx="681.2" cy="33.13" r="33.13"></circle>
+          <circle cx="595.89" cy="203.1" r="33.13"></circle>
+          <circle cx="681.2" cy="203.1" r="33.13"></circle>
+        </g>
+      </svg>
+    </a>
+
+    <p class="intro-lead">Gather your friends,
+it's time for a Halloween
+sleepover film marathon.</p>
+
+    <div class="hero-intro" id="heroIntro">
+      <p class="intro-quote">If it gets too real,
+you can always turn it off.</p>
+    </div>
+
+    <button class="unmute-btn" id="unmuteBtn" aria-label="Unmute">
+      <svg class="icon-muted" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 9v6h4l5 5V4L8 9H4z" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>
+        <line x1="16" y1="9" x2="21" y2="15" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="21" y1="9" x2="16" y2="15" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" hidden>
+        <path d="M4 9v6h4l5 5V4L8 9H4z" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M16 8.5a5 5 0 0 1 0 7" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <p class="key-hint">↓</p>
+  </section>
+
+  <!-- ── SECTION 2: Film list ── -->
+  <section class="film-section">
+    <div id="bgLayers">
+      <div class="bg-layer intro-bg active" id="introBg"></div>
+      <div class="crt-scanband"></div>
+      <div class="crt-scanband crt-scanband-reverse"></div>
+    </div>
+
+    <!-- v2: visible before the flash, fades out as the stills drop into
+         the list (see finishLoading()); positioned per breakpoint by
+         positionFlashLogo(). -->
+    <img id="flashLogo" src="images/Halloween-26_TT_EN.png" alt="">
+
+    <header class="site-header">
+      <a class="mubi-logo-link" id="mubiLogoLink">
+        <svg viewBox="0 0 800 240" width="80px" fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
+          <g fill="#FFFFFF">
+            <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"></path>
+            <path d="M268.53,235.24a58,58,0,0,0,19.77-12.42,53.71,53.71,0,0,0,12.42-18.58,60.11,60.11,0,0,0,4.33-22.8V85.29H277v96.15A39.87,39.87,0,0,1,274.47,196a30,30,0,0,1-7,10.8,30.73,30.73,0,0,1-10.91,6.81,43.43,43.43,0,0,1-28.3,0,30.77,30.77,0,0,1-10.92-6.81,30.25,30.25,0,0,1-7-10.8,40.09,40.09,0,0,1-2.48-14.59V85.29H179.73v96.15a60.3,60.3,0,0,0,4.32,22.8,53.71,53.71,0,0,0,12.42,18.58,58.33,58.33,0,0,0,19.67,12.42,77.84,77.84,0,0,0,52.39,0"></path>
+            <path d="M80.13,236.54l34.36-65.9q3-5.61,5.39-10.59t4.54-9.83q2.16-4.86,4.22-9.94t4.43-10.69h.86q-.44,6-.86,11.34c-.3,3.53-.51,6.95-.65,10.26s-.25,6.74-.33,10.27-.11,7.31-.11,11.34v63.74h28.09V85.29H128.75L99.36,142.76q-3,5.85-5.51,10.81c-1.66,3.31-3.24,6.56-4.75,9.72s-3,6.41-4.43,9.73-3,6.84-4.54,10.58Q77.75,178,75.59,173t-4.43-9.73c-1.51-3.16-3.1-6.41-4.75-9.72s-3.49-6.91-5.51-10.81L31.51,85.29H.19V236.54H28.27V172.8q0-6-.1-11.34t-.33-10.27q-.21-5-.65-10.26t-.86-11.34h.86q2.16,5.61,4.32,10.69t4.33,9.94c1.43,3.24,2.95,6.52,4.53,9.83s3.39,6.85,5.4,10.59Z"></path>
+            <rect x="468.61" y="85.29" width="28.09" height="151.25"></rect>
+            <circle cx="766.5" cy="118.11" r="33.13"></circle>
+            <circle cx="595.89" cy="118.11" r="33.13"></circle>
+            <circle cx="681.2" cy="118.11" r="33.13"></circle>
+            <circle cx="595.89" cy="33.13" r="33.13"></circle>
+            <circle cx="681.2" cy="33.13" r="33.13"></circle>
+            <circle cx="595.89" cy="203.1" r="33.13"></circle>
+            <circle cx="681.2" cy="203.1" r="33.13"></circle>
+          </g>
+        </svg>
+      </a>
+    </header>
+
+    <div class="marathon">
+      <nav class="time-nav" id="timeNav"></nav>
+      <div class="film-area" id="filmArea"></div>
+    </div>
+
+    <p class="key-hint" id="filmKeyHint">↓</p>
+
+    <!-- Dims the whole section during a power glitch (playPowerGlitch()). -->
+    <div class="power-glitch-overlay" id="powerGlitchOverlay"></div>
+  </section>
+
+  <!-- ── SECTION 3: Footer ── -->
+  <section class="footer-section">
+    <video class="footer-video" autoplay muted loop playsinline id="footerVideo">
+      <!-- Desktop/tablet: landscape cut. Mobile (matches the site's 768px breakpoint, see MOBILE_BREAKPOINT below): vertical cut. -->
+      <source src="video/CM_Halloween_Clip01_LS.mp4" type="video/mp4" media="(min-width: 769px)">
+      <source src="video/CM_Halloween_Clip01_VRT.mp4" type="video/mp4">
+    </video>
+    <p class="hero-headline">Press play to start watching</p>
+  </section>
+
+  <script>
+    const filmDatabase = {
+      "TEENAGE SEX AND DEATH AT CAMP MIASMA": {
+        title: "Teenage Sex and Death at Camp Miasma",
+        director: "Jane Schoenbrun",
+        country: "United States / Canada",
+        year: 2026,
+        synopsis: "Hannah Einbinder and Gillian Anderson bring wit and sultry eroticism to Jane Schoenbrun’s new kind of remake: a visionary dissection of slasher-movie nostalgia.",
+        still: "images/teenage-sex-and-death-at-camp-miasma.jpg",
+        url: "https://mubi.com/films/teenage-sex-and-death-at-camp-miasma",
+        focalPoint: { x: 0.51, y: 0.45 },
+      },
+      "THE SUBSTANCE": {
+        title: "The Substance",
+        director: "Coralie Fargeat",
+        country: "United States / United Kingdom",
+        year: 2024,
+        synopsis: "Powered by a career-best performance from Demi Moore, Coralie Fargeat's Oscar®-winning THE SUBSTANCE bulldozes its way into the midnight-movie pantheon to turn toxic beauty culture inside out.",
+        still: "images/the-substance.jpg",
+        url: "https://mubi.com/films/the-substance",
+        focalPoint: { x: 0.694019, y: 0.419753 },
+      },
+      "VIDEODROME": {
+        title: "Videodrome",
+        director: "David Cronenberg",
+        country: "Canada",
+        year: 1983,
+        synopsis: "Grappling with pirate TV, pornography, and mass media, David Cronenberg’s VIDEODROME is an intense, quintessential body-horror classic.",
+        still: "images/videodrome.jpg",
+        url: "https://mubi.com/films/videodrome",
+        focalPoint: { x: 0.45, y: 0.46 },
+      },
+      "RAPTURE": {
+        title: "Rapture",
+        director: "Iván Zulueta",
+        country: "Spain",
+        year: 1979,
+        synopsis: "Born from the same 1970s counterculture that gave us Pedro Almodóvar (who dubs a role here!), this anarchic, acid-tinged cult horror is a mind-bending, self-aware trip.",
+        still: "images/rapture.jpg",
+        url: "https://mubi.com/films/rapture-1979",
+        focalPoint: { x: 0.52, y: 0.13 },
+      },
+      "HEREDITARY": {
+        title: "Hereditary",
+        director: "Ari Aster",
+        country: "United States",
+        year: 2018,
+        synopsis: "A troubling study in grief and unreconciled family trauma, HEREDITARY is a leading contender for the scariest film of the century so far.",
+        still: "images/hereditary.jpg",
+        url: "https://mubi.com/films/hereditary",
+        focalPoint: { x: 0.51532, y: 0.304455 },
+      },
+      "THE LOVE WITCH": {
+        title: "The Love Witch",
+        director: "Anna Biller",
+        country: "United States",
+        year: 2016,
+        synopsis: "A vibrant pastiche of 1960s horror, and a contemporary corrective to the genre's sexual politics, THE LOVE WITCH is, at heart, a warm look at loneliness and love.",
+        still: "images/the-love-witch.jpg",
+        url: "https://mubi.com/films/the-love-witch",
+        focalPoint: { x: 0.49, y: 0.52 },
+      },
+      "THE THING": {
+        title: "The Thing",
+        director: "John Carpenter",
+        country: "United States",
+        year: 1982,
+        synopsis: "Updating the paranoid themes of its 1951 antecedent for the age of pioneering special effects, John Carpenter’s body-horror classic has lost none of its vital, visceral power.",
+        still: "images/the-thing.jpg",
+        url: "https://mubi.com/films/the-thing",
+        focalPoint: { x: 0.45, y: 0.37 },
+      },
+      "THE DESCENT": {
+        title: "The Descent",
+        director: "Neil Marshall",
+        country: "United Kingdom",
+        year: 2005,
+        synopsis: "Featuring an all-woman cast and paying careful attention to group dynamics, THE DESCENT is a relentless, adrenalized rush of pure terror.",
+        still: "images/the-descent.jpg",
+        url: "https://mubi.com/films/the-descent",
+        focalPoint: { x: 0.463788, y: 0.462871 },
+      },
+      "GODZILLA": {
+        title: "Godzilla",
+        director: "Ishirô Honda",
+        country: "Japan",
+        year: 1954,
+        synopsis: "In 1954, a cinematic icon was born—and with it, the longest-running franchise in film history. Ishirō Honda’s GODZILLA is the giant-monster movie before which all others must bow.",
+        still: "images/godzilla.jpg",
+        url: "https://mubi.com/films/godzilla",
+        focalPoint: { x: 0.54, y: 0.15 },
+      },
+      "HELLRAISER": {
+        title: "Hellraiser",
+        director: "Clive Barker",
+        country: "United Kingdom / United States",
+        year: 1987,
+        synopsis: "The uniquely terrifying Pinhead makes his grand debut in Clive Barker’s remarkable rarity: a highly original blend of Catholicism, punk rock, and S&M.",
+        still: "images/hellraiser.jpg",
+        url: "https://mubi.com/films/hellraiser",
+        focalPoint: { x: 0.5, y: 0.28 },
+      },
+      "THE NIGHT OF THE HUNTER": {
+        title: "The Night of the Hunter",
+        director: "Charles Laughton",
+        country: "United States",
+        year: 1955,
+        synopsis: "Remarkable for being the sole directorial effort of screen legend Charles Laughton, this tenebrous Southern Gothic simmers with fire-and-brimstone malice.",
+        still: "images/the-night-of-the-hunter.jpg",
+        url: "https://mubi.com/films/the-night-of-the-hunter",
+        focalPoint: { x: 0.57, y: 0.32 },
+      },
+      "HAGAZUSSA": {
+        title: "Hagazussa",
+        director: "Lukas Feigelfeld",
+        country: "Germany / Austria",
+        year: 2017,
+        synopsis: "Writer-director Lukas Feigelfeld ventures all the way back to the fifteenth century for his celebrated, slow-burn debut—a folk-horror tale that unfolds in four parts.",
+        still: "images/hagazussa.jpg",
+        url: "https://mubi.com/films/hagazussa-a-heathen-s-curse",
+        focalPoint: { x: 0.51, y: 0.29 },
+      },
+      "LUZ": {
+        title: "Luz",
+        director: "Tilman Singer",
+        country: "Germany",
+        year: 2018,
+        synopsis: "Before Tilman Singer garnered acclaim with CUCKOO, he took a sledgehammer to the possession-horror playbook with this unsettlingly demonic debut.",
+        still: "images/luz.jpg",
+        url: "https://mubi.com/films/luz",
+        focalPoint: { x: 0.73, y: 0.41 },
+      },
+      "SUSPIRIA": {
+        title: "Suspiria",
+        director: "Dario Argento",
+        country: "Italy",
+        year: 1977,
+        synopsis: "A phantasmagoric nightmare of vibrantly colored expressionism, Dario Argento’s SUSPIRIA is the final word in Gothic psychedelia.",
+        still: "images/suspiria.jpg",
+        url: "https://mubi.com/films/suspiria",
+        focalPoint: { x: 0.346797, y: 0.0247525 },
+      },
+      "DAY OF THE DEAD": {
+        title: "Day of the Dead",
+        director: "George A. Romero",
+        country: "United States",
+        year: 1985,
+        synopsis: "Shot through with George A. Romero’s trademark wit and satirical bite, this mordantly tense follow-up to DAWN OF THE DEAD combines genre-leading gore effects with a provocatively discomfiting vision of humanity.",
+        still: "images/day-of-the-dead.jpg",
+        url: "https://mubi.com/films/day-of-the-dead",
+        focalPoint: { x: 0.55, y: 0.3 },
+      },
+      "THE DRILLER KILLER": {
+        title: "The Driller Killer",
+        director: "Abel Ferrara",
+        country: "United States",
+        year: 1979,
+        synopsis: "A wicked satire drenched in blood, Abel Ferrara's notorious breakthrough transfuses exploitation with gutsy experimentation.",
+        still: "images/the-driller-killer.jpg",
+        url: "https://mubi.com/films/the-driller-killer",
+        focalPoint: { x: 0.29805, y: 0.644444 },
+      },
+      "HOLLYWOOD 90028": {
+        title: "Hollywood 90028",
+        director: "Christina Hornisher",
+        country: "United States",
+        year: 1973,
+        synopsis: "Working with exploitation tropes, Christina Hornisher paints a hallucinatory time capsule of 1970s Los Angeles, smattered with trampled Hollywood dreams and vagabond souls.",
+        still: "images/hollywood-90028.jpg",
+        url: "https://mubi.com/films/hollywood-90028",
+        focalPoint: { x: 0.45, y: 0.99 },
+      },
+      "THE HOUSE OF THE DEVIL": {
+        title: "The House of the Devil",
+        director: "Ti West",
+        country: "United States",
+        year: 2009,
+        synopsis: "Ti West brings Hitchcockian flair to this nostalgic ode to the heyday of the slasher film, eking nail-biting suspense from the things that go bump in the night.",
+        still: "images/the-house-of-the-devil.jpg",
+        url: "https://mubi.com/films/the-house-of-the-devil",
+        focalPoint: { x: 0.64, y: 0.24 },
+      },
+      "NOSFERATU": {
+        title: "Nosferatu",
+        director: "F.W. Murnau",
+        country: "Germany",
+        year: 1922,
+        synopsis: "Cloaked in light and shadow, F.W. Murnau’s expressionist masterpiece creates an eerie atmosphere of gothic decay that laid the foundations for the horror genre.",
+        still: "images/nosferatu.jpg",
+        url: "https://mubi.com/films/nosferatu",
+        focalPoint: { x: 0.529248, y: 0.116337 },
+      },
+      "PHENOMENA": {
+        title: "Phenomena",
+        director: "Dario Argento",
+        country: "Italy",
+        year: 1985,
+        synopsis: "Described by Dario Argento as the favorite of his own films, this nightmarish fairytale obliterates the boundaries of dream and reality.",
+        still: "images/phenomena.jpg",
+        url: "https://mubi.com/films/phenomena",
+        focalPoint: { x: 0.5, y: 0.56 },
+      },
+      "PIRANHA": {
+        title: "Piranha",
+        director: "Joe Dante",
+        country: "United States",
+        year: 1978,
+        synopsis: "One of the finest JAWS copycats ever made, Joe Dante's cheeky creature feature balances sly satirical wit with blood-soaked B-movie thrills.",
+        still: "images/piranha.jpg",
+        url: "https://mubi.com/films/piranha",
+        focalPoint: { x: 0.48, y: 0.02 },
+      },
+      "TITANE": {
+        title: "Titane",
+        director: "Julia Ducournau",
+        country: "France / Belgium",
+        year: 2021,
+        synopsis: "Julia Ducournau's daring Palme d'Or winner is a blazing, gnarled helix of chrome and flesh.",
+        still: "images/titane.jpg",
+        url: "https://mubi.com/films/titane",
+        focalPoint: { x: 0.456189, y: 0.444444 },
+      },
+      "BEAU IS AFRAID": {
+        title: "Beau Is Afraid",
+        director: "Ari Aster",
+        country: "United States",
+        year: 2023,
+        synopsis: "Ari Aster’s mind-blowingly ambitious odyssey reaches into the depths of an anxious psyche and takes horror to frenzied, often hilarious heights.",
+        still: "images/beau-is-afraid.jpg",
+        url: "https://mubi.com/films/beau-is-afraid",
+        focalPoint: { x: 0.44, y: 0.29 },
+      },
+      "DAUGHTERS OF DARKNESS": {
+        title: "Daughters of Darkness",
+        director: "Harry Kümel",
+        country: "Belgium / West Germany",
+        year: 1971,
+        synopsis: "In this striptease of a midnight movie, Delphine Seyrig's sensual countess lulls us into a biddable trance.",
+        still: "images/daughters-of-darkness.jpg",
+        url: "https://mubi.com/films/daughters-of-darkness",
+        focalPoint: { x: 0.68, y: 0.36 },
+      },
+      "LONG WEEKEND": {
+        title: "Long Weekend",
+        director: "Colin Eggleston",
+        country: "Australia",
+        year: 1978,
+        synopsis: "In this late-1970s eco-horror, marital drama is set against the threat and eeriness of the wild Australian landscape.",
+        still: "images/long-weekend.jpg",
+        url: "https://mubi.com/films/long-weekend",
+        focalPoint: { x: 0.58, y: 0.33 },
+      },
+      "POSSESSION": {
+        title: "Possession",
+        director: "Andrzej Żuławski",
+        country: "France / West Germany",
+        year: 1981,
+        synopsis: "Divorce is monstrously messy in Andrzej Żuławski's cult film, a maddening psychological horror starring Isabelle Adjani and Sam Neill.",
+        still: "images/possession.jpg",
+        url: "https://mubi.com/films/possession",
+        focalPoint: { x: 0.245125, y: 0.35396 },
+      },
+      "PULSE": {
+        title: "Pulse",
+        director: "Kiyoshi Kurosawa",
+        country: "Japan",
+        year: 2001,
+        synopsis: "Kiyoshi Kurosawa's cult classic is a prophetic and intensely eerie techno-horror.",
+        still: "images/pulse.jpg",
+        url: "https://mubi.com/films/pulse",
+        focalPoint: { x: 0.57, y: 0.19 },
+      },
+      "SEASON OF THE WITCH": {
+        title: "Season of the Witch",
+        director: "George A. Romero",
+        country: "United States",
+        year: 1972,
+        synopsis: "George A. Romero, well-known for his socially conscious zombie horrors, had the 1970s feminist movement on his mind in this witchy film.",
+        still: "images/season-of-the-witch.jpg",
+        url: "https://mubi.com/films/season-of-the-witch",
+        focalPoint: { x: 0.447075, y: 0.356436 },
+      },
+      "THE VANISHING": {
+        title: "The Vanishing",
+        director: "George Sluizer",
+        country: "Netherlands / France",
+        year: 1988,
+        synopsis: "Described by Stanley Kubrick as the most terrifying film he had ever seen, THE VANISHING is a profound existential thriller.",
+        still: "images/the-vanishing.jpg",
+        url: "https://mubi.com/films/the-vanishing",
+        focalPoint: { x: 0.53, y: 0.3 },
+      },
+      "THE WAILING": {
+        title: "The Wailing",
+        director: "Na Hong-jin",
+        country: "South Korea",
+        year: 2016,
+        synopsis: "THE WAILING is a gripping murder-mystery epic, and one of the most acclaimed horror-thrillers of contemporary South Korean cinema.",
+        still: "images/the-wailing.jpg",
+        url: "https://mubi.com/films/the-wailing",
+        focalPoint: { x: 0.501393, y: 0.148515 },
+      },
+      "THE BALCONETTES": {
+        title: "The Balconettes",
+        director: "Noémie Merlant",
+        country: "France",
+        year: 2024,
+        synopsis: "Playing like a feminist reimagining of REAR WINDOW for the age of the house share, this maximalist celebration of sisterhood skewers phallocentrism with Almodóvar-esque style.",
+        still: "images/the-balconettes.jpg",
+        url: "https://mubi.com/films/the-balconettes",
+        focalPoint: { x: 0.61, y: 0.36 },
+      },
+      "DEEP RED": {
+        title: "Deep Red",
+        director: "Dario Argento",
+        country: "Italy",
+        year: 1975,
+        synopsis: "A symbolic masterpiece of prismatic beauty and rapturous terror, this hallucinatory giallo is home to some of the greatest set pieces Dario Argento ever put on film.",
+        still: "images/deep-red.jpg",
+        url: "https://mubi.com/films/deep-red",
+        focalPoint: { x: 0.60585, y: 0.539604 },
+      },
+      "DRACULA": {
+        title: "Dracula",
+        director: "Radu Jude",
+        country: "Romania / Austria",
+        year: 2025,
+        synopsis: "Anarchic, obscene, and utterly hypnotic, Radu Jude’s monstrous AI satire is an intravenous hit of 21st-century absurdity.",
+        still: "images/dracula.jpg",
+        url: "https://mubi.com/films/dracula-2025",
+        focalPoint: { x: 0.65, y: 0.98 },
+      },
+      "RE-ANIMATOR": {
+        title: "Re-Animator",
+        director: "Stuart Gordon",
+        country: "United States",
+        year: 1985,
+        synopsis: "A cult favorite and a gem of Lovecraftian cinema, Stuart Gordon’s RE-ANIMATOR is a clammily madcap exploitation film that puts the erection in resurrection.",
+        still: "images/re-animator.jpg",
+        url: "https://mubi.com/films/re-animator",
+        focalPoint: { x: 0.48, y: 0.37 },
+      },
+      "THE UGLY STEPSISTER": {
+        title: "The Ugly Stepsister",
+        director: "Emilie Blichfeldt",
+        country: "Norway / Poland",
+        year: 2025,
+        synopsis: "Adapted from the timeless tale, this body-horror spin on Cinderella writhes with the darkness of the Grimm Brothers’ original vision.",
+        still: "images/the-ugly-stepsister.jpg",
+        url: "https://mubi.com/films/the-ugly-stepsister",
+        focalPoint: { x: 0.45, y: 0.45 },
+      },
+      "THE BABADOOK": {
+        title: "The Babadook",
+        director: "Jennifer Kent",
+        country: "Australia",
+        year: 2014,
+        synopsis: "A chilling treatise on the many shapes grief can take, and the battle that is motherhood, THE BABADOOK is a modern horror classic.",
+        still: "images/the-babadook.jpg",
+        url: "https://mubi.com/films/the-babadook",
+        focalPoint: { x: 0.335655, y: 0.294554 },
+      },
+      "CARRIE": {
+        title: "Carrie",
+        director: "Brian De Palma",
+        country: "United States",
+        year: 1976,
+        synopsis: "Brian De Palma turns Stephen King's high-school nightmare into a fever dream of adolescent cruelty in this bona fide horror classic.",
+        still: "images/carrie.jpg",
+        url: "https://mubi.com/films/carrie",
+        focalPoint: { x: 0.34, y: 0.29 },
+      },
+      "RING": {
+        title: "Ring",
+        director: "Hideo Nakata",
+        country: "Japan",
+        year: 1998,
+        synopsis: "Once seen, never forgotten: Hideo Nakata’s cursed-video classic is the definitive Japanese scarefest.",
+        still: "images/ring.jpg",
+        url: "https://mubi.com/films/ringu",
+        focalPoint: { x: 0.612813, y: 0.440594 },
+      },
+      "TETSUO: THE IRON MAN": {
+        title: "Tetsuo: The Iron Man",
+        director: "Shin'ya Tsukamoto",
+        country: "Japan",
+        year: 1989,
+        synopsis: "An out-of-this-world nightmare birthed from metal and flesh, Shin’ya Tsukamoto’s body-horror classic is a frenzied opus of extreme transformation.",
+        still: "images/tetsuo-the-iron-man.jpg",
+        url: "https://mubi.com/films/tetsuo-the-iron-man",
+        focalPoint: { x: 0.435327, y: 0.77037 },
+      },
+    };
+
+    // Which 8 titles play in each region's slots (Opening Feature → Closing
+    // Film, matching the TOD tab's fixed order) — embedded snapshot of the
+    // REGIONS tab, keyed by that tab's header row. Refreshed live by
+    // loadRegionsData() below; this is only the fallback while that hasn't
+    // resolved yet (or if it fails).
+    // ROW ("Rest of World") is a client-side-only region: a catch-all for
+    // every country the REGIONS tab doesn't have a named column for. It
+    // isn't in that sheet, so it must survive both re-renders of the
+    // dropdown (populateRegionOptions) and reloads of the sheet data
+    // (loadRegionsData replaces regionsData wholesale) — see both below.
+    const ROW_LINEUP = ["RE-ANIMATOR", "VIDEODROME", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "THE HOUSE OF THE DEVIL", "HELLRAISER", "DAUGHTERS OF DARKNESS", "THE THING", "CARRIE"];
+
+    let regionsData = {
+      "UK & IE": ["RE-ANIMATOR", "VIDEODROME", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "THE HOUSE OF THE DEVIL", "HELLRAISER", "DAUGHTERS OF DARKNESS", "THE THING", "CARRIE"],
+      "NL": ["THE BALCONETTES", "VIDEODROME", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "GODZILLA", "RAPTURE", "THE VANISHING", "THE THING", "THE SUBSTANCE"],
+      "IT": ["RING", "VIDEODROME", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "PHENOMENA", "RAPTURE", "PULSE", "THE THING", "CARRIE"],
+      "LATAM": ["THE UGLY STEPSISTER", "VIDEODROME", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "DAY OF THE DEAD", "THE DESCENT", "RAPTURE", "THE THING", "THE SUBSTANCE"],
+      "TR": ["CARRIE", "VIDEODROME", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "NOSFERATU", "RAPTURE", "BEAU IS AFRAID", "THE THING", "THE SUBSTANCE"],
+      "US": ["DRACULA", "RING", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "THE DRILLER KILLER", "THE NIGHT OF THE HUNTER", "SEASON OF THE WITCH", "HAGAZUSSA", "THE SUBSTANCE"],
+      "CA": ["DRACULA", "RING", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "RAPTURE", "THE NIGHT OF THE HUNTER", "SEASON OF THE WITCH", "LUZ", "THE SUBSTANCE"],
+      "DE": ["RAPTURE", "VIDEODROME", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "HOLLYWOOD 90028", "GODZILLA", "THE WAILING", "THE THING", "THE SUBSTANCE"],
+      "BR": ["THE UGLY STEPSISTER", "VIDEODROME", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "DAY OF THE DEAD", "THE DESCENT", "RAPTURE", "THE THING", "THE SUBSTANCE"],
+      "FR": ["LONG WEEKEND", "VIDEODROME", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "DEEP RED", "TETSUO: THE IRON MAN", "RAPTURE", "THE THING", "PIRANHA"],
+      "AU": ["THE LOVE WITCH", "THE BABADOOK", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "TITANE", "RAPTURE", "POSSESSION", "SUSPIRIA", "HEREDITARY"],
+      "ROW": ROW_LINEUP,
+    };
+    // The 8 running-order slots. timeLabel/sky are a fixed property of the
+    // *position* in the night (which film fills it changes per region), so
+    // they live here rather than on individual films — this is the EN
+    // wording; localizing it per language would come from the TOD tab.
+    const SLOTS = [
+      { timeLabel: "Opening Feature", sky: "radial-gradient(ellipse at 60% 20%, #7A1512 0%, #3A0906 30%, #170302 65%, #020000 100%)" },
+      { timeLabel: "Twilight Zone",   sky: "radial-gradient(ellipse at 50% 15%, #123A6B 0%, #0A1D3A 32%, #040D17 65%, #000205 100%)" },
+      { timeLabel: "Midnight Feature",sky: "radial-gradient(ellipse at 50% 50%, #8A1218 0%, #40090C 50%, #000000 100%)" },
+      { timeLabel: "Graveyard Shift", sky: "radial-gradient(ellipse at 40% 30%, #1B2A4A 0%, #0D1526 35%, #05080F 70%, #000000 100%)" },
+      { timeLabel: "Dark of Night",   sky: "radial-gradient(ellipse at 65% 25%, #8B0000 0%, #4A0505 30%, #1C0303 65%, #050000 100%)" },
+      { timeLabel: "Hour of the Wolf",sky: "radial-gradient(ellipse at 45% 40%, #16205A 0%, #0B1030 35%, #05081A 70%, #020208 100%)" },
+      { timeLabel: "Dead of Dawn",    sky: "radial-gradient(ellipse at 55% 20%, #601018 0%, #30080C 35%, #150406 68%, #050001 100%)" },
+      { timeLabel: "Closing Film",    sky: "radial-gradient(ellipse at 60% 30%, #0F2A5C 0%, #08152E 32%, #030A16 65%, #01030A 100%)" }
+    ];
+
+    // Builds the 8-film running order for a region by pairing REGIONS-tab
+    // lineup with the fixed slot metadata above.
+    function buildFilmsForRegion(region) {
+      const keys = (regionsData[region] || regionsData['UK & IE'] || []);
+      return keys.map((key, i) => {
+        const base = filmDatabase[key];
+        const slot = SLOTS[i] || SLOTS[SLOTS.length - 1];
+        if (!base) { console.warn('[debug menu] No film metadata for key', key); return null; }
+        return Object.assign({}, base, { timeLabel: slot.timeLabel, sky: slot.sky });
+      }).filter(Boolean);
+    }
+
+    // ── Debug menu: language selector ──
+    // Language codes mirror the header row of the FILM_TITLE tab in the
+    // translations sheet (EN is the sheet's own EN column, i.e. film.title).
+    //
+    // Titles come from two places, in priority order:
+    //  1. sheetTitles — fetched live from the Google Sheet at load time, so
+    //     editorial changes show up without a redeploy while we're iterating.
+    //  2. film.titles — the embedded snapshot baked into this file (see each
+    //     film object above), used as the fallback while sheetTitles hasn't
+    //     loaded yet (or if the fetch fails).
+    // Closer to launch: re-run the fetch, copy its values into film.titles
+    // for every film on this page, then delete loadSheetTitles() and its
+    // call below — the embedded snapshot alone is enough at that point and
+    // removes the runtime dependency on the sheet.
+    const SHEET_ID = '11l5xOHtC4zLLNgJ_Fw5OoT2m-FCAQ-P_sCpAGDETmRY';
+    const SHEET_JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=FILM_TITLE&tqx=out:json`;
+    let currentLang = 'EN';
+    let sheetTitles = null; // { "THE SUBSTANCE": { FR: "...", DE: "...", ... }, ... } once loaded
+
+    // Auto-detect the visitor's language from the browser. `navigator.language`
+    // already *is* "the browser's language setting, falling back to the OS
+    // setting if the browser has none" — that fallback chain is built into
+    // how browsers report it, so reading it once covers both cases; no need
+    // to check a separate "OS language" API (the web platform doesn't expose
+    // one distinct from this). `navigator.languages[0]` is the same value in
+    // practice, kept only as a defensive fallback for older engines.
+    const LATAM_COUNTRY_CODES = new Set([
+      '419', 'AR', 'BO', 'CL', 'CO', 'CR', 'CU', 'DO', 'EC', 'GT',
+      'HN', 'MX', 'NI', 'PA', 'PE', 'PR', 'PY', 'SV', 'UY', 'VE'
+    ]);
+    function detectPreferredLanguage() {
+      const raw = (navigator.language || (navigator.languages && navigator.languages[0]) || 'en').toLowerCase();
+      const [lang, regionRaw] = raw.split('-');
+      const region = (regionRaw || '').toUpperCase();
+      switch (lang) {
+        case 'fr': return 'FR';
+        case 'de': return 'DE';
+        case 'it': return 'IT';
+        case 'nl': return 'NL';
+        case 'pt': return 'PT';
+        case 'tr': return 'TR';
+        case 'es': return LATAM_COUNTRY_CODES.has(region) ? 'LATAM' : 'ES'; // es-419/es-MX/... vs es-ES or bare "es"
+        default:   return 'EN';
+      }
+    }
+
+    async function loadSheetTitles() {
+      try {
+        const res = await fetch(SHEET_JSON_URL);
+        const text = await res.text();
+        // Response is wrapped as: /*O_o*/\ngoogle.visualization.Query.setResponse({...});
+        const json = JSON.parse(text.slice(text.indexOf('(') + 1, text.lastIndexOf(')')));
+        const rows = json.table.rows;
+        if (!rows || !rows.length) return;
+        const header = rows[0].c.map(c => c && c.v); // ["EN","FR","DE","IT","NL","LATAM","ES","PT","TR"]
+        const langCols = header.slice(1);
+        const map = {};
+        for (let i = 1; i < rows.length; i++) {
+          const cells = rows[i].c;
+          if (!cells || !cells[0] || !cells[0].v) continue;
+          const key = String(cells[0].v).trim().toUpperCase();
+          const entry = {};
+          langCols.forEach((lang, idx) => {
+            const cell = cells[idx + 1];
+            if (cell && cell.v) entry[lang] = String(cell.v);
+          });
+          map[key] = entry;
+        }
+        sheetTitles = map;
+        if (currentLang !== 'EN') applyLanguage(currentLang); // refresh anything already on screen with live data
+      } catch (err) {
+        console.warn('[debug menu] Could not load live translations from the sheet — using embedded fallback.', err);
+      }
+    }
+
+    function titleFor(film, lang) {
+      if (lang === 'EN') return film.title;
+      const live = sheetTitles && sheetTitles[film.title.trim().toUpperCase()];
+      if (live && live[lang]) return live[lang];
+      return (film.titles && film.titles[lang]) || film.title; // embedded fallback, then EN
+    }
+
+    // Synopsis comes from the F_DESCRIPTION tab (not the MUBI API's own
+    // synopsis text — that's a different, unrelated editorial copy). Same
+    // live-with-embedded-fallback pattern as titleFor(): film.synopsis is
+    // the F_DESCRIPTION tab's EN column, baked into filmDatabase above;
+    // sheetSynopses is that whole tab fetched live by loadSheetSynopses().
+    //
+    // F_DESCRIPTION's header row (row 1 of the sheet) names each language
+    // column, same as FILM_TITLE — read dynamically here (not a fixed
+    // column-position guess) so renaming/reordering columns in the sheet
+    // (e.g. fixing a mislabeled "ES" column to "LATAM") is picked up
+    // automatically on the next load, with no code change needed.
+    const SYNOPSIS_JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=F_DESCRIPTION&tqx=out:json`;
+    let sheetSynopses = null; // { "THE SUBSTANCE": { FR: "...", DE: "...", ... }, ... } once loaded
+
+    async function loadSheetSynopses() {
+      try {
+        const res = await fetch(SYNOPSIS_JSON_URL);
+        const text = await res.text();
+        const json = JSON.parse(text.slice(text.indexOf('(') + 1, text.lastIndexOf(')')));
+        const rows = json.table.rows;
+        if (!rows || !rows.length) return;
+        // Column 0 is the film-title row label ("FILM TITLE"); columns from
+        // 1 onward are whatever language codes row 1 currently has.
+        const header = rows[0].c.map(c => (c && c.v) ? String(c.v).trim().toUpperCase() : null);
+        const langCols = header.slice(1);
+        const map = {};
+        for (let i = 1; i < rows.length; i++) {
+          const cells = rows[i].c;
+          if (!cells || !cells[0] || !cells[0].v) continue;
+          const key = String(cells[0].v).trim().toUpperCase();
+          const entry = {};
+          langCols.forEach((lang, idx) => {
+            if (!lang) return;
+            const cell = cells[idx + 1];
+            if (cell && cell.v) entry[lang] = String(cell.v);
+          });
+          map[key] = entry;
+        }
+        sheetSynopses = map;
+        if (currentLang !== 'EN') applyLanguage(currentLang);
+      } catch (err) {
+        console.warn('[debug menu] Could not load live synopses from the sheet — using embedded fallback.', err);
+      }
+    }
+
+    function synopsisFor(film, lang) {
+      if (lang === 'EN') return film.synopsis;
+      const live = sheetSynopses && sheetSynopses[film.title.trim().toUpperCase()];
+      if (live && live[lang]) return live[lang];
+      return film.synopsis; // no embedded per-language fallback for synopsis — EN until the sheet loads
+    }
+
+    // Time-of-day slot labels (Opening Feature, Twilight Zone, ...) come
+    // from the TOD tab, one row per slot in the same fixed order as SLOTS
+    // above — so slot index (not film title) is the join key here. Same
+    // live-with-embedded-fallback pattern as titleFor()/synopsisFor():
+    // SLOTS[i].timeLabel is the embedded EN fallback, sheetSlotLabels is
+    // the live-fetched sheet. Some languages (e.g. FR, LATAM) don't have
+    // every row translated yet in the sheet — those fall back to EN too.
+    const TOD_JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=TOD&tqx=out:json`;
+    let sheetSlotLabels = null; // [ { EN:"OPENING FEATURE", FR:"...", ... }, ... ] one per slot, in SLOTS order
+
+    async function loadSlotLabels() {
+      try {
+        const res = await fetch(TOD_JSON_URL);
+        const text = await res.text();
+        const json = JSON.parse(text.slice(text.indexOf('(') + 1, text.lastIndexOf(')')));
+        const rows = json.table.rows;
+        if (!rows || !rows.length) return;
+        const header = rows[0].c.map(c => (c && c.v) ? String(c.v).trim().toUpperCase() : null);
+        const list = [];
+        for (let i = 1; i < rows.length; i++) {
+          const cells = rows[i].c;
+          const entry = {};
+          header.forEach((lang, idx) => {
+            if (!lang) return;
+            const cell = cells[idx];
+            if (cell && cell.v) entry[lang] = String(cell.v);
+          });
+          list.push(entry);
+        }
+        sheetSlotLabels = list;
+        if (currentLang !== 'EN') applyLanguage(currentLang);
+      } catch (err) {
+        console.warn('[debug menu] Could not load live time-of-day labels from the sheet — using embedded fallback.', err);
+      }
+    }
+
+    function slotLabelFor(slotIndex, lang) {
+      const fallback = (SLOTS[slotIndex] || SLOTS[SLOTS.length - 1]).timeLabel;
+      if (lang === 'EN') return fallback;
+      const live = sheetSlotLabels && sheetSlotLabels[slotIndex] && sheetSlotLabels[slotIndex][lang];
+      return live || fallback;
+    }
+
+    // Intro-panel copy (the headline + quote shown before scrolling into the
+    // film list) comes from the INTRO_PAGE tab — only its "heading" and
+    // "quote" rows are wired up (the sheet has a couple of other rows too,
+    // for copy that isn't on this page). Same live-with-embedded-fallback
+    // pattern as everything else above.
+    const INTRO_JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=INTRO_PAGE&tqx=out:json`;
+    const INTRO_FALLBACK = {
+      heading: "Gather your friends, it's time for a Halloween sleepover film marathon.",
+      quote: "If it gets too real, you can always turn it off."
+    };
+
+    // Breaks a line in two right after its first comma (e.g. "Gather your
+    // friends, it's time..." -> "Gather your friends,\nit's time...") — only
+    // where a comma actually exists to break at; text with none (some
+    // languages phrase this without one) is left as a single line rather
+    // than force an awkward break.
+    function breakAfterFirstComma(text) {
+      const idx = text.indexOf(',');
+      if (idx === -1) return text;
+      return text.slice(0, idx + 1) + '\n' + text.slice(idx + 1).trimStart();
+    }
+
+    // Same first-comma break for line 1, then splits whatever's left into a
+    // roughly balanced two more lines at the nearest word boundary to its
+    // midpoint — a language-agnostic stand-in for "the next natural break,"
+    // since only the first break is marked by punctuation.
+    // Nearest space to a target character index (searching outward both
+    // ways), so a cut always lands on a word boundary.
+    function nearestSpace(text, target) {
+      let best = -1, bestDiff = Infinity;
+      for (let i = 0; i < text.length; i++) {
+        if (text[i] !== ' ') continue;
+        const diff = Math.abs(i - target);
+        if (diff < bestDiff) { bestDiff = diff; best = i; }
+      }
+      return best;
+    }
+
+    function breakIntoThreeLines(text) {
+      if (text.length < 20) return text; // short enough as one line
+      const third = text.length / 3;
+      const commaIdx = text.indexOf(',');
+      // A comma close to the ideal first-third mark reads as the more
+      // natural break; anywhere else it'd make line 1 lopsided and risk
+      // wrapping past three lines on narrower screens, so fall back to a
+      // plain even split instead.
+      const cut1 = (commaIdx !== -1 && Math.abs(commaIdx - third) < text.length * 0.2)
+        ? commaIdx + 1
+        : nearestSpace(text, third);
+      if (cut1 === -1) return text;
+      const cut2 = nearestSpace(text, text.length * 2 / 3);
+      if (cut2 === -1 || cut2 <= cut1) return text.slice(0, cut1).trim() + '\n' + text.slice(cut1).trim();
+      return text.slice(0, cut1).trim() + '\n' + text.slice(cut1, cut2).trim() + '\n' + text.slice(cut2).trim();
+    }
+    let sheetIntro = null; // { heading: { EN:"...", FR:"...", ... }, quote: { ... } }
+
+    // The sheet's "quote" row has an editorial note like " [Camp Miasma
+    // quote]" tacked onto some cells (EN, LATAM, ES) — not meant to display —
+    // plus each language wraps the line in its own quote-mark style (“ ”,
+    // « », „ “, etc). Strip both: the bracketed note, then a leading and
+    // trailing quote mark in any of those styles (order-agnostic around a
+    // trailing period, since some languages put the period inside the
+    // marks and some put it outside).
+    const QUOTE_CHARS = '"“”„«»\'‘’';
+    function cleanIntroText(s) {
+      let text = String(s || '').replace(/\s*\[[^\]]*\]\s*$/, '').trim();
+      text = text.replace(new RegExp(`^[${QUOTE_CHARS}]\\s*`), '');
+      text = text.replace(new RegExp(`(\\.)\\s*[${QUOTE_CHARS}]$`), '$1');
+      text = text.replace(new RegExp(`[${QUOTE_CHARS}]\\s*(\\.)$`), '$1');
+      text = text.replace(new RegExp(`\\s*[${QUOTE_CHARS}]$`), '');
+      return text.trim();
+    }
+
+    async function loadIntroText() {
+      try {
+        const res = await fetch(INTRO_JSON_URL);
+        const text = await res.text();
+        const json = JSON.parse(text.slice(text.indexOf('(') + 1, text.lastIndexOf(')')));
+        const rows = json.table.rows;
+        if (!rows || !rows.length) return;
+        // Column 0 is a row key ("heading", "quote", or blank for the
+        // sheet's other, unrelated copy rows); columns from 1 on are
+        // whatever language codes row 1 currently has.
+        const header = rows[0].c.map(c => (c && c.v) ? String(c.v).trim().toUpperCase() : null);
+        const langCols = header.slice(1);
+        const map = {};
+        for (let i = 1; i < rows.length; i++) {
+          const cells = rows[i].c;
+          const key = (cells && cells[0] && cells[0].v) ? String(cells[0].v).trim().toLowerCase() : '';
+          if (!key) continue; // only "heading" and "quote" rows are keyed — skip the rest
+          const entry = {};
+          langCols.forEach((lang, idx) => {
+            if (!lang) return;
+            const cell = cells[idx + 1];
+            if (cell && cell.v) entry[lang] = cleanIntroText(cell.v);
+          });
+          map[key] = entry;
+        }
+        sheetIntro = map;
+        if (currentLang !== 'EN') applyLanguage(currentLang);
+      } catch (err) {
+        console.warn('[debug menu] Could not load live intro text from the sheet — using embedded fallback.', err);
+      }
+    }
+
+    function introFor(key, lang) {
+      const breaker = key === 'heading' ? breakIntoThreeLines : breakAfterFirstComma;
+      const fallback = INTRO_FALLBACK[key];
+      if (lang === 'EN') return breaker(fallback);
+      const live = sheetIntro && sheetIntro[key] && sheetIntro[key][lang];
+      return breaker(live || fallback);
+    }
+
+    function applyLanguage(lang) {
+      currentLang = lang;
+      const labels     = document.querySelectorAll('.time-label');       // left-menu: time-of-day slot names
+      const slotEls    = document.querySelectorAll('.film-slot-label');  // same, inside the expanded tile
+      const titleEls   = document.querySelectorAll('.film-title');
+      const imgs       = document.querySelectorAll('.tile-image img');
+      const synopsisEls = document.querySelectorAll('.film-synopsis');
+      const introLead  = document.querySelector('.intro-lead');
+      const introQuote = document.querySelector('.intro-quote');
+      if (introLead)  introLead.textContent  = introFor('heading', lang);
+      if (introQuote) introQuote.textContent = introFor('quote', lang);
+      films.forEach((film, i) => {
+        const t = titleFor(film, lang);
+        const slotLabel = slotLabelFor(i, lang);
+        if (labels[i])   labels[i].textContent = slotLabel;
+        if (slotEls[i])  slotEls[i].textContent = slotLabel;
+        if (titleEls[i]) titleEls[i].textContent = t;
+        if (imgs[i])     imgs[i].alt = t;
+        if (synopsisEls[i]) synopsisEls[i].textContent = synopsisFor(film, lang);
+      });
+    }
+
+    // ── Debug menu: region selector ──
+    // Region codes mirror the header row of the REGIONS tab. That tab's
+    // rows below the header are each region's 8-slot lineup (see
+    // regionsData/buildFilmsForRegion above); selecting a region here
+    // rebuilds the whole carousel around that lineup — see applyRegion().
+    const REGIONS_JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=Regions&tqx=out:json`;
+    let currentRegion = 'UK & IE';
+    let films = buildFilmsForRegion(currentRegion); // rebuilt whenever the region changes
+
+    // Auto-detect the visitor's region from their IP (GeoIP), same idea as
+    // detectPreferredLanguage() but for country instead of browser language —
+    // there's no browser API for "what country is this visitor in", so this
+    // asks a couple of free GeoIP lookup services instead. Two providers in
+    // sequence (not just one) because free GeoIP APIs rate-limit aggressively
+    // and we'd rather silently fall through to the default region than show
+    // an error. Any country recognized but not one of the named regions
+    // (e.g. Spain, which is distinct from LATAM's Latin America) lands on
+    // ROW, the catch-all — see ROW_LINEUP and regionForCountry() below.
+    const GEOIP_PROVIDERS = [
+      { url: 'https://get.geojs.io/v1/ip/country.json', countryCode: d => d.country },
+      { url: 'https://ipapi.co/json/', countryCode: d => d.country_code || d.country },
+    ];
+    const SPLATAM_COUNTRY_CODES = new Set([
+      'AR', 'BO', 'CL', 'CO', 'CR', 'CU', 'DO', 'EC', 'GT',
+      'HN', 'MX', 'NI', 'PA', 'PE', 'PR', 'PY', 'SV', 'UY', 'VE'
+    ]);
+    const REGION_BY_COUNTRY = {
+      GB: 'UK & IE', IE: 'UK & IE',
+      NL: 'NL', IT: 'IT', TR: 'TR', US: 'US', CA: 'CA', DE: 'DE', BR: 'BR', FR: 'FR', AU: 'AU'
+    };
+    function regionForCountry(cc) {
+      if (!cc) return null; // lookup told us nothing — keep the default rather than guessing
+      cc = cc.toUpperCase();
+      if (SPLATAM_COUNTRY_CODES.has(cc)) return 'LATAM';
+      return REGION_BY_COUNTRY[cc] || 'ROW'; // a known country, just not one of the named regions
+    }
+    async function detectRegionFromIP() {
+      for (const provider of GEOIP_PROVIDERS) {
+        try {
+          const res = await fetch(provider.url);
+          if (!res.ok) continue;
+          const data = await res.json();
+          const region = regionForCountry(provider.countryCode(data));
+          if (region) return region;
+        } catch (err) {
+          // try the next provider
+        }
+      }
+      return null;
+    }
+
+    // A REGIONS-tab cell doesn't always spell a title exactly like
+    // filmDatabase's key (e.g. the sheet has "HAGAZUSSA: A HEATHEN'S CURSE"
+    // where filmDatabase — matching the shorter FILM_TITLE tab — just has
+    // "HAGAZUSSA"). Exact match first, then fall back to a prefix match so
+    // small subtitle differences like that one don't break the lookup.
+    function normalizeFilmKey(raw) {
+      const key = String(raw).trim().toUpperCase();
+      if (filmDatabase[key]) return key;
+      const found = Object.keys(filmDatabase).find(k => key.startsWith(k) || k.startsWith(key));
+      return found || key;
+    }
+
+    // The live sheet's REGIONS tab column header may still read "SpLatam"
+    // (renamed to LATAM everywhere client-side, but that's a manual edit
+    // on the sheet itself) — relabel it here so the dropdown always shows
+    // "LATAM" regardless, while keeping the option's value matching
+    // whatever key the sheet actually uses so lookups elsewhere still work.
+    function regionDisplayLabel(region) {
+      return region === 'SpLatam' ? 'LATAM' : region;
+    }
+
+    function populateRegionOptions(regionList) {
+      // ROW is client-side-only (see ROW_LINEUP above) — keep it in the
+      // dropdown even though the live sheet doesn't know about it.
+      if (!regionList.includes('ROW')) regionList = [...regionList, 'ROW'];
+      const select = document.getElementById('regionSelect');
+      const prevValue = select.value;
+      select.innerHTML = regionList.map(r => `<option value="${r}">${regionDisplayLabel(r)}</option>`).join('');
+      select.value = regionList.includes(prevValue) ? prevValue
+        : (regionList.includes(currentRegion) ? currentRegion : regionList[0]);
+    }
+
+    // Rebuilds `films` for the given region and re-renders the whole
+    // carousel around it, resetting to the intro (the running order changed
+    // under it, so mid-carousel scroll position no longer means anything).
+    function applyRegion(region) {
+      currentRegion = region;
+      films = buildFilmsForRegion(currentRegion);
+      renderFilms();
+      if (currentLang !== 'EN') applyLanguage(currentLang);
+      enterIntro();
+      // getBoundingClientRect() (inside syncColumnCenter) forces a synchronous
+      // layout, so this doesn't need to wait for a paint frame — measuring
+      // right away is what makes startLoading's positions correct instead of
+      // stale ones left over from the previous region. The intro text that
+      // used to live here (prompting a manual scroll to load) has moved to
+      // the hero, so replay the load-in animation right away instead of
+      // leaving an empty screen until the next scroll.
+      syncColumnCenter();
+      if (inFilmSection) startLoading();
+    }
+
+    async function loadRegionsData() {
+      try {
+        const res = await fetch(REGIONS_JSON_URL);
+        const text = await res.text();
+        const json = JSON.parse(text.slice(text.indexOf('(') + 1, text.lastIndexOf(')')));
+        const rows = json.table.rows;
+        if (!rows || !rows.length) return;
+        const header = rows[0].c.map(c => c && c.v).filter(Boolean); // region codes
+        const map = {};
+        header.forEach(region => { map[region] = []; });
+        for (let i = 1; i < rows.length; i++) {
+          const cells = rows[i].c;
+          header.forEach((region, colIdx) => {
+            const cell = cells[colIdx];
+            if (cell && cell.v) map[region].push(normalizeFilmKey(cell.v));
+          });
+        }
+        if (!map['ROW']) map['ROW'] = regionsData['ROW'] || ROW_LINEUP; // sheet doesn't have this column — keep it
+        regionsData = map;
+        populateRegionOptions(header);
+        applyRegion(currentRegion); // refresh what's on screen with the live lineup
+      } catch (err) {
+        console.warn('[debug menu] Could not load live region lineups from the sheet — using embedded fallback.', err);
+      }
+    }
+
+    let activeIndex = -1;
+    let phase = 'intro'; // 'intro' | 'loading' | 'list'
+    let inFilmSection = false;
+    let inFooterSection = false;
+    let columnLeftX = null; // horizontal center of the film-image column, where the list settles
+    let sectionTransitionLock = false;
+    // Mutable — kept in sync with the current viewport (desktop vs mobile) by
+    // updateResponsiveVars(), which also mirrors these into the --tile-w/
+    // --active-h/etc CSS custom properties so the carousel's own JS layout
+    // math and the CSS it's painted with never disagree.
+    let LOAD_BOX_W = 363, LOAD_BOX_H = 204.1875; // size (16:9) every still is revealed at during loading
+    const VERTICAL_SHIFT = -100; // shifts the loader and settled list up together
+    function centerY() { return window.innerHeight / 2 + VERTICAL_SHIFT; }
+
+    const MOBILE_BREAKPOINT = 768;  // keep in sync with the CSS @media rules
+    const TABLET_BREAKPOINT = 1100; // keep in sync with the CSS @media rule
+    function isMobile() { return window.innerWidth <= MOBILE_BREAKPOINT; }
+    function isTablet() { return window.innerWidth > MOBILE_BREAKPOINT && window.innerWidth <= TABLET_BREAKPOINT; }
+
+    // Recomputes every size the carousel depends on for the current viewport
+    // and mirrors it into CSS custom properties. Called on load and resize,
+    // before syncColumnCenter() (which depends on these).
+    function updateResponsiveVars() {
+      const root = document.documentElement.style;
+      if (isMobile()) {
+        const w = window.innerWidth; // stills run edge-to-edge on mobile, no side margin
+        const imgH = Math.round(w * 9 / 16);
+        // Info overlays the bottom of the still rather than stacking below
+        // it, but the active still still grows taller than a compact one —
+        // a portrait-like hero crop (object-fit:cover fills the extra
+        // height), with the overlay sitting over the bottom of it.
+        const activeExtraH = 380;
+        LOAD_BOX_W = w;
+        LOAD_BOX_H = imgH;
+        ACTIVE_H = imgH + activeExtraH;
+        COMPACT_H = imgH;
+        TILE_GAP = 16;
+        root.setProperty('--nav-w', '0px');
+        root.setProperty('--tile-w', w + 'px');
+        root.setProperty('--tile-h', imgH + 'px');
+        root.setProperty('--active-w', w + 'px');
+        root.setProperty('--active-h', (imgH + activeExtraH) + 'px');
+        root.setProperty('--active-img-w', w + 'px');
+      } else if (isTablet()) {
+        // The desktop's fixed 1042px active width (600px image + 442px
+        // side text panel) doesn't fit below ~1100px, so — like mobile —
+        // the tile becomes fluid width and the info overlays the image's
+        // bottom instead (see the shared 1100px CSS media query) rather
+        // than sitting beside it. Active height is a flat 70% of the
+        // viewport rather than image-height-plus-text-budget, so it stays
+        // a fixed proportion of the screen regardless of how wide/tall
+        // that particular viewport is.
+        //
+        // Nav keeps the same 360px as desktop — that's the value tuned
+        // (see .time-label's padding) to fit every language's longest
+        // label at this same 16px size without ellipsis-clipping (Spanish's
+        // "Largometraje de Media Noche" is the longest). Shrinking it just
+        // for tablet clipped titles the same way a narrower value did
+        // before. The tile takes whatever's left.
+        const navW = 360;
+        const rightPad = 64; // matches .film-area's fixed padding-right
+        const tileW = Math.max(320, Math.round(window.innerWidth - navW - rightPad));
+        const imgH = Math.round(tileW * 9 / 16);
+        LOAD_BOX_W = tileW;
+        LOAD_BOX_H = imgH;
+        ACTIVE_H = Math.round(window.innerHeight * 0.7);
+        COMPACT_H = imgH;
+        TILE_GAP = 20;
+        root.setProperty('--nav-w', navW + 'px');
+        root.setProperty('--tile-w', tileW + 'px');
+        root.setProperty('--tile-h', imgH + 'px');
+        root.setProperty('--active-w', tileW + 'px');
+        root.setProperty('--active-h', ACTIVE_H + 'px');
+        root.setProperty('--active-img-w', tileW + 'px');
+      } else {
+        // Desktop's side-by-side layout (image | info panel) wants 1042px
+        // for the active tile (nav-w 360 + active-w 1042 + film-area's own
+        // 64px right padding = 1466px minimum). Between the tablet
+        // breakpoint and that point, clamping active-w to whatever's
+        // actually left keeps both the image and the info panel fitting
+        // on screen instead of overflowing — the image/info split stays
+        // the same ~57.6/42.4 ratio as the fixed 600/442px values, just
+        // scaled. Above 1466px this reproduces the old fixed numbers
+        // exactly, so nothing changes for anyone already comfortable.
+        // nav-w itself is 360 (not the tighter 320 used elsewhere) so the
+        // longest real label — Spanish's "Largometraje de Media Noche" —
+        // fits without the ellipsis clipping it at 320.
+        const navW = 360;
+        const rightPad = 64; // matches .film-area's fixed padding-right
+        const available = window.innerWidth - navW - rightPad;
+        const activeW = Math.min(1042, Math.max(700, available));
+        const activeImgW = Math.round(activeW * (600 / 1042));
+        LOAD_BOX_W = 363;
+        LOAD_BOX_H = 204.1875;
+        ACTIVE_H = 337.5;
+        COMPACT_H = 204.1875;
+        TILE_GAP = 20;
+        root.setProperty('--nav-w', navW + 'px');
+        root.setProperty('--tile-w', '363px');
+        root.setProperty('--tile-h', '204.1875px');
+        root.setProperty('--active-w', activeW + 'px');
+        root.setProperty('--active-h', '337.5px');
+        root.setProperty('--active-img-w', activeImgW + 'px');
+      }
+      root.setProperty('--tile-gap', TILE_GAP + 'px');
+    }
+
+    // Track which section is visible
+    const hero = document.querySelector('.hero');
+    const filmSection = document.querySelector('.film-section');
+    const footerSection = document.querySelector('.footer-section');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.target === filmSection) {
+          if (e.isIntersecting && !inFilmSection) {
+            // Just entered film section — lock film navigation briefly
+            // so scroll momentum from the section transition doesn't skip film 0
+            sectionTransitionLock = true;
+            setTimeout(() => { sectionTransitionLock = false; }, 1200);
+            // The intro text now lives in the hero, so there's nothing to
+            // pause on here — the same scroll that brings this section into
+            // view kicks off the film stills loading in. startLoading()
+            // measures each tile's on-screen position once, synchronously,
+            // and bakes that into a fixed translate() offset — so if CSS
+            // scroll-snap (html { scroll-snap-type }) is still gliding the
+            // last pixels into place when that measurement happens (it can
+            // still be moving after threshold:1.0 already reports "fully
+            // visible"), whatever it glides afterward becomes baked-in
+            // error, flashing the stills in too high/cropped. A fixed
+            // delay here was a guess at how long that glide takes — on a
+            // real desktop trackpad/mouse flick it can vary and occasionally
+            // outlast a short guess. Waiting for the browser's own
+            // scrollend signal (with a fixed-delay fallback for browsers
+            // without it) is exact instead of guessed.
+            if (phase === 'intro') {
+              let started = false;
+              const begin = () => {
+                if (started) return;
+                started = true;
+                window.removeEventListener('scrollend', begin);
+                if (phase === 'intro') startLoading();
+              };
+              if ('onscrollend' in window) {
+                window.addEventListener('scrollend', begin, { once: true });
+                setTimeout(begin, 900); // safety net if scrollend never fires
+              } else {
+                setTimeout(begin, 500);
+              }
+            }
+          }
+          inFilmSection = e.isIntersecting;
+          updateAmbientNoiseForSection();
+        } else if (e.target === footerSection) {
+          inFooterSection = e.isIntersecting;
+        }
+      });
+    }, { threshold: 1.0 }); // only counts as "in" once fully in view — the loading flash never starts mid-transition
+    observer.observe(filmSection);
+    observer.observe(footerSection);
+
+    // Gates whether TOUCH input drives the film carousel — a much looser
+    // threshold than the strict one above, which exists only to time the
+    // loading flash precisely. On real mobile devices, native momentum
+    // scroll bringing the film section into view rarely lands at an exact
+    // 100% intersection (dynamic browser-chrome/address-bar resizing the
+    // viewport, rubber-banding, etc.), so gating swipe navigation on that
+    // same strict signal left touch devices stuck in "native scroll" when
+    // approaching the film section from the footer — a swipe up would sail
+    // straight through into the hero instead of stepping back through the
+    // list film by film. Same fix pattern as heroVideoObserver below.
+    // Wheel input deliberately does NOT use this — see its own listener.
+    let filmSectionNavReady = false;
+    const filmSectionNavObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => { filmSectionNavReady = e.isIntersecting; });
+    }, { threshold: 0.5 });
+    filmSectionNavObserver.observe(filmSection);
+
+    // Pause the hero video once it's scrolled (mostly) out of view, resume
+    // once it's back — a separate, looser-threshold observer from the one
+    // above, since requiring exact full visibility here occasionally never
+    // fires true at all (sub-pixel viewport rounding at the very top of the
+    // page) and leaves the video stuck paused from the start.
+    const heroVideoObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        const heroVideo = document.getElementById('heroVideo');
+        if (!heroVideo) return;
+        if (e.isIntersecting) heroVideo.play(); else heroVideo.pause();
+        // The unmute button only controls this video, so only show it
+        // while the hero itself is in view — otherwise it sits fixed
+        // over the film list/footer controlling a video the visitor
+        // can't even see anymore.
+        const unmuteBtn = document.getElementById('unmuteBtn');
+        if (unmuteBtn) unmuteBtn.hidden = !e.isIntersecting;
+      });
+    }, { threshold: 0.1 });
+    heroVideoObserver.observe(hero);
+
+    // Builds the DOM for the current `films` array (bg layers, nav labels,
+    // tiles) from scratch. Called once at startup and again any time `films`
+    // is rebuilt for a different region (see applyRegion()) — region and
+    // language are orthogonal, so this always renders in English; if a
+    // non-EN language is active, the caller re-applies it right after.
+    function renderFilms() {
+      const bgLayers = document.getElementById('bgLayers');
+      const timeNav  = document.getElementById('timeNav');
+      const filmArea = document.getElementById('filmArea');
+
+      Array.from(bgLayers.querySelectorAll('.film-bg-layer')).forEach(el => el.remove());
+      timeNav.innerHTML = '';
+      filmArea.innerHTML = '';
+
+      films.forEach((film, i) => {
+        const layer = document.createElement('div');
+        layer.className = 'bg-layer film-bg-layer';
+        layer.style.background = film.sky;
+        bgLayers.appendChild(layer);
+
+        const label = document.createElement('div');
+        label.className = 'time-label';
+        label.textContent = film.timeLabel; // the slot's time-of-day name (Opening Feature, ...), not the film title
+        label.addEventListener('click', () => {
+          if (phase !== 'list' || i === activeIndex) return;
+          playBlip(i > activeIndex ? 'down' : 'up');
+          setActive(i);
+        });
+        timeNav.appendChild(label);
+
+        const tile = document.createElement('div');
+        tile.className = 'film-tile';
+        tile.addEventListener('click', () => {
+          if (phase !== 'list') return;
+          if (i === activeIndex) {
+            window.location.href = film.url;
+          } else {
+            playBlip(i > activeIndex ? 'down' : 'up');
+            setActive(i);
+          }
+        });
+        // MUBI's own still_focal_point (0-1 fractions of width/height) —
+        // keeps the shot's actual subject centered when object-fit:cover
+        // crops the image, instead of always cropping around the
+        // geometric middle. Falls back to dead-center for any film
+        // missing one.
+        const focal = film.focalPoint || { x: 0.5, y: 0.5 };
+        const objectPosition = `${(focal.x * 100).toFixed(2)}% ${(focal.y * 100).toFixed(2)}%`;
+        tile.innerHTML = `
+          <div class="tile-image">
+            <img src="${film.still}" alt="${film.title}" referrerpolicy="no-referrer" style="object-position: ${objectPosition};">
+            <svg class="tile-play-icon" viewBox="0 0 44 44" fill="none">
+              <circle cx="21" cy="21" r="21" fill="none" stroke="#FFFFFF" stroke-width="1"/>
+              <path d="M30 21.5L15 29V14z" fill="#FFFFFF"/>
+            </svg>
+          </div>
+          <div class="film-info">
+            <div class="film-info-top">
+              <div class="film-slot-label">${film.timeLabel}</div>
+              <h2 class="film-title">${film.title}</h2>
+              <div class="film-meta">${film.director}, ${film.year}</div>
+            </div>
+            <div class="film-info-bottom">
+              <p class="film-synopsis">${film.synopsis}</p>
+            </div>
+          </div>
+        `;
+        filmArea.appendChild(tile);
+      });
+    }
+
+    function init() {
+      renderFilms();
+      enterIntro();
+    }
+
+    // ── Carousel layout: one fixed "active" slot, upcoming tiles queued below it ──
+    // ACTIVE_Y is kept in sync with the loader's stills' top edge (see
+    // syncColumnCenter()), so the settled list starts exactly where the
+    // loading animation happened, top-aligned with it.
+    let ACTIVE_Y = 80;
+    let ACTIVE_H = 337.5, COMPACT_H = 204.1875, TILE_GAP = 20;
+    const NAV_ROW_H = 19; // nav is hidden on mobile, so this stays fixed
+    // True once the active tile is actually at its full (expanded) height.
+    // While the loader's uniform list is briefly pinned at compact size (see
+    // finishLoading()), this is false, so the row below is spaced assuming
+    // the active slot's *current* (compact) height — keeping the gap a true
+    // 20px in both phases instead of leaving room for a size it hasn't
+    // grown into yet.
+    let activeExpanded = true;
+
+    function tileTop(d) {
+      const activeSlotH = activeExpanded ? ACTIVE_H : COMPACT_H;
+      if (d === 0) return ACTIVE_Y;
+      if (d > 0)  return ACTIVE_Y + activeSlotH + TILE_GAP + (d - 1) * (COMPACT_H + TILE_GAP);
+      return ACTIVE_Y - (-d) * (COMPACT_H + TILE_GAP);
+    }
+
+    // Positions every tile relative to activeIndex: the active tile always
+    // lands at the same fixed top (ACTIVE_Y); tiles ahead queue below it at
+    // compact size; tiles already passed scroll up and out of view.
+    function layoutTiles() {
+      document.querySelectorAll('.film-tile').forEach((t, i) => {
+        const d = i - activeIndex;
+        t.classList.toggle('active', d === 0);
+        t.classList.toggle('passed', d < 0);
+        t.style.top = tileTop(d) + 'px';
+      });
+    }
+
+    // Positions every nav label relative to activeIndex, so the active title
+    // always sits on the same horizontal line as the active image (a
+    // "crosshair"), and the rest scroll through it above/below. Pass
+    // instant=true to snap straight to position with no transition (used for
+    // the first-ever layout, so the nav just fades in where it belongs
+    // instead of flying in from wherever it defaulted to) — later calls
+    // (regular scrolling) keep the normal animated move.
+    function layoutNav(instant) {
+      const labels = document.querySelectorAll('.time-label');
+      const crosshairY = ACTIVE_Y + ACTIVE_H / 2 - NAV_ROW_H / 2;
+      if (instant) labels.forEach(el => { el.style.transition = 'none'; });
+      labels.forEach((el, i) => {
+        const d = i - activeIndex;
+        el.classList.toggle('active', d === 0);
+        el.style.top = (crosshairY + d * NAV_ROW_H) + 'px';
+      });
+      if (instant) {
+        void document.getElementById('timeNav').offsetHeight; // flush before re-enabling
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          labels.forEach(el => { el.style.transition = ''; });
+        }));
+      }
+    }
+
+    function setActive(index, instant) {
+      if (index === activeIndex) return;
+      activeIndex = index;
+      document.getElementById('introBg').classList.remove('active');
+      document.querySelectorAll('.film-bg-layer').forEach((el, i)  => el.classList.toggle('active', i === index));
+      layoutTiles();
+      layoutNav(instant);
+      // Down-arrow hint only shows on the last film — a "there's more
+      // below" cue toward the footer, not needed on every film.
+      document.getElementById('filmKeyHint').classList.toggle('visible', index === films.length - 1);
+    }
+
+    // ── Intro → loading → list sequence ──
+
+    function enterIntro() {
+      phase = 'intro';
+      activeIndex = -1;
+      filmSection.classList.remove('stills-loading');
+      document.getElementById('timeNav').classList.add('hidden');
+      document.getElementById('introBg').classList.add('active');
+      document.querySelectorAll('.film-bg-layer').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.time-label').forEach(el => el.classList.remove('active'));
+      // Back to its CSS default (visible), so it's already on screen when
+      // the section scrolls into view again.
+      const logo = document.getElementById('flashLogo');
+      logo.style.transition = 'none';
+      logo.style.opacity = '';
+      document.querySelectorAll('.film-tile').forEach(t => {
+        t.classList.remove('active');
+        t.removeAttribute('style');
+        t.style.opacity = '0';
+      });
+    }
+
+    // Scrolling past the intro: hide the text, zoom the film stills in one by
+    // one stacked on top of each other, then spread them into the list.
+    // Desktop (v2): the stack fills the whole screen instead of the small
+    // compact box, so each reveal flashes a full-bleed still on top of the
+    // last before finishLoading() flies the pile down into the actual list.
+    // Mobile keeps the original compact-box behavior — there's no spare
+    // screen real estate for a full-bleed detour there.
+    function startLoading() {
+      if (phase !== 'intro') return;
+      phase = 'loading';
+      filmSection.classList.add('stills-loading');
+      startLoadingStack();
+    }
+
+    function startLoadingStack() {
+      // Lock in columnLeftX/ACTIVE_Y right now, synchronously, rather than
+      // trusting the double-rAF sync from page load to have already resolved
+      // (it may not have, on a fast scroll) or to still be current (a resize
+      // could've happened since). The stack's anchor point below and the
+      // list's rest position (ACTIVE_Y, used once this flies out to its
+      // resting spot) are then the exact same values on mobile — the flash
+      // starts exactly where the settled active tile ends up, no seam
+      // between them. Desktop's stack point is the viewport itself instead.
+      syncColumnCenter();
+
+      const tiles = Array.from(document.querySelectorAll('.film-tile'));
+      const fullScreen = !isMobile();
+      // Compact box on mobile (unchanged); full viewport on desktop. Either
+      // way every still, including the one that will become active (tiles[0],
+      // loaded in last — see the reveal order below), loads in at the same
+      // size — nothing needs to move to settle into the list; the active one
+      // resizes afterward, as its own separate step.
+      const boxW = fullScreen ? window.innerWidth : LOAD_BOX_W;
+      const boxH = fullScreen ? window.innerHeight : LOAD_BOX_H;
+
+      tiles.forEach((t) => {
+        t.style.transition = 'none';
+        t.style.transformOrigin = 'center center'; // scale up from the middle of the spot it's pinned to, not a corner
+        t.style.width = boxW + 'px';
+        t.style.height = boxH + 'px';
+        t.style.opacity = '0';
+        t.style.clipPath = 'inset(50% 50% 50% 50%)';
+        if (fullScreen) {
+          // .tile-image's own width is normally driven by --tile-w/
+          // --active-img-w (a few hundred px) — force it to fill this much
+          // bigger full-screen frame instead, just for the flash. It has
+          // its own separate `transition: width 0.8s` in its base CSS
+          // rule (for the compact/active size change elsewhere), which
+          // must be turned off here too — same as .film-tile above —
+          // or this resize itself tries to animate instead of snapping.
+          // Cleared in finishLoading() once the FLIP "before" rect is
+          // captured.
+          const img = t.querySelector('.tile-image');
+          img.style.transition = 'none';
+          img.style.width = boxW + 'px';
+        }
+      });
+      void tiles[0].offsetHeight; // flush the size change before measuring
+
+      const deltas = tiles.map(t => {
+        const r = t.getBoundingClientRect();
+        const targetLeft = fullScreen ? 0 : (columnLeftX != null ? columnLeftX : r.left);
+        const targetTop = fullScreen ? 0 : ACTIVE_Y;
+        return { dx: targetLeft - r.left, dy: targetTop - r.top };
+      });
+      tiles.forEach((t, i) => { t.style.transform = `translate(${deltas[i].dx}px, ${deltas[i].dy}px) scale(0.4)`; });
+      void tiles[0].offsetHeight; // flush the transform before enabling transitions
+
+      // Reveal in reverse order — the first film (index 0) loads in last, so it
+      // ends up on top of the stack and the downward spread into the list,
+      // starting right where it already is, reads smoother.
+      const order = tiles.map((t, i) => ({ t, d: deltas[i] })).reverse();
+      order.forEach((entry, pos) => { entry.t.style.zIndex = String(pos + 1); });
+
+      // The reveals themselves come in fast, then ease off slightly toward
+      // the end (quadratic ease-in on the gap between them) — a subtle
+      // acceleration-then-settle to the stagger's rhythm, rather than a flat
+      // metronome interval.
+      let i = 0;
+      function revealNext() {
+        if (i >= order.length) {
+          setTimeout(finishLoading, 550);
+          return;
+        }
+        const { t, d } = order[i];
+        const dur = '0.6s';
+        const ease = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
+        t.style.transition = `opacity ${dur} ${ease}, clip-path ${dur} ${ease}, transform ${dur} ${ease}`;
+        t.style.opacity = '1';
+        t.style.clipPath = 'inset(0% 0% 0% 0%)';
+        t.style.transform = `translate(${d.dx}px, ${d.dy}px) scale(1)`;
+        i++;
+        const u = order.length > 1 ? i / (order.length - 1) : 0;
+        const gap = Math.round(170 + 110 * u * u); // 170ms early on, up to 280ms by the end
+        setTimeout(revealNext, gap);
+      }
+      requestAnimationFrame(() => requestAnimationFrame(revealNext));
+    }
+
+    // FLIP: fly every stacked/centered tile out to its carousel resting position
+    // (the active tile big at the top, the rest queued below at compact size).
+    function finishLoading() {
+      const tiles = Array.from(document.querySelectorAll('.film-tile'));
+      const firstRects = tiles.map(t => t.getBoundingClientRect());
+      const fullScreen = !isMobile();
+
+      // The logo stays up through the hold after the last still flashes
+      // in, and only fades as the stills start dropping into the list.
+      const logo = document.getElementById('flashLogo');
+      logo.style.transition = 'opacity 0.6s ease';
+      logo.style.opacity = '0';
+
+      tiles.forEach((t, i) => {
+        t.style.transition = 'none';
+        t.style.transformOrigin = ''; // back to the carousel's top-left anchor
+        t.style.width = '';
+        t.style.height = '';
+        t.style.clipPath = '';
+        t.style.transform = 'none';
+        // Release the full-screen image width forced during the flash
+        // (see startLoadingStack()) — transition stays disabled for now
+        // (re-enabled below) so this doesn't itself animate; .tile-image
+        // just snaps straight to whatever size its current class (active
+        // or not) calls for, and rides along with the outer FLIP scale
+        // below rather than animating its width separately.
+        const img = t.querySelector('.tile-image');
+        img.style.transition = 'none';
+        img.style.width = '';
+        // Re-stack to match the list's visual order (tile 0 on top, last tile
+        // at the bottom) instead of clearing z-index, which would fall back
+        // to DOM order (last tile on top) and flip the stacking the instant
+        // the flight starts.
+        t.style.zIndex = String(tiles.length - i);
+        t.style.opacity = '';
+      });
+      phase = 'list';
+      const activeTile = tiles[0];
+      const activeImg = activeTile.querySelector('.tile-image');
+
+      if (fullScreen) {
+        // v2 desktop: the active tile flashed in at full-screen size, so
+        // it flies straight from there to its true final (expanded) size
+        // and position in this one flight — no separate "settle small,
+        // then grow" second beat, which read as an unwanted shrink then
+        // grow-again. Row 1's gap is therefore already spaced for the
+        // active tile's full height from the start (activeExpanded=true),
+        // not a placeholder compact-height gap.
+        activeExpanded = true;
+        setActive(0, true); // applies bg-layer/nav + lays every tile out at its true resting top/size
+      } else {
+        // Mobile: unchanged from before — the active tile is pinned back
+        // to its loaded-in compact size for this flight, and only grows
+        // into its full size afterward (see the trailing setTimeout),
+        // once the list itself has settled. Row 1's gap matches that
+        // compact placeholder height for now.
+        activeExpanded = false;
+        setActive(0, true);
+        activeTile.style.width = LOAD_BOX_W + 'px';
+        activeTile.style.height = LOAD_BOX_H + 'px';
+        activeImg.style.width = LOAD_BOX_W + 'px';
+      }
+      void tiles[0].offsetHeight;
+
+      const lastRects = tiles.map(t => t.getBoundingClientRect());
+      if (fullScreen) {
+        // v2 desktop: animate the real width/height (and the image's
+        // width) from the full-screen size the last still flashed in at,
+        // rather than a scale() FLIP. A scale would stretch the active
+        // tile's image+info layout to fill the screen, so on the first
+        // frame the image would jump to the left ~58% of the screen and
+        // distort; resizing instead keeps the first frame identical to the
+        // last flashed still (object-fit:cover just re-crops as it shrinks).
+        const dur = '0.9s';
+        const ease = 'cubic-bezier(0.55, 0, 0.85, 0.4)';
+        tiles.forEach((t, i) => {
+          const f = firstRects[i], l = lastRects[i];
+          const img = t.querySelector('.tile-image');
+          t.style.width = f.width + 'px';
+          t.style.height = f.height + 'px';
+          img.style.width = f.width + 'px';
+          t.style.transform = `translate(${f.left - l.left}px, ${f.top - l.top}px)`;
+        });
+        void tiles[0].offsetHeight;
+        tiles.forEach(t => {
+          const img = t.querySelector('.tile-image');
+          t.style.transition = `transform ${dur} ${ease}, width ${dur} ${ease}, height ${dur} ${ease}`;
+          img.style.transition = `width ${dur} ${ease}`;
+          t.style.width = '';
+          t.style.height = '';
+          img.style.width = '';
+          t.style.transform = 'none';
+        });
+      } else {
+        tiles.forEach((t, i) => {
+          const f = firstRects[i], l = lastRects[i];
+          // Anchored at top-left (matching .film-tile's transform-origin), so a
+          // tile whose left edge never moves (all of them) gets zero horizontal
+          // drift — it just travels vertically and grows/shrinks from that corner,
+          // instead of appearing to fly in sideways.
+          const dx = f.left - l.left;
+          const dy = f.top - l.top;
+          const sx = l.width  ? f.width  / l.width  : 1;
+          const sy = l.height ? f.height / l.height : 1;
+          t.style.transform = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+        });
+        void tiles[0].offsetHeight;
+
+        tiles.forEach(t => {
+          // Starts slow, then accelerates hard through the rest of the flight
+          // (a mild cushion right at the very end so it doesn't hard-stop).
+          t.style.transition = 'transform 0.9s cubic-bezier(0.55, 0, 0.85, 0.4)';
+          t.style.transform = 'none';
+        });
+      }
+
+      setTimeout(() => {
+        tiles.forEach(t => {
+          t.style.transition = '';
+          t.style.transform = '';
+          t.querySelector('.tile-image').style.transition = ''; // back to its normal CSS-driven transition for later navigation
+        });
+        // The loader has now actually transitioned into a list — only now
+        // does the nav fade in, not while the stack was still flying apart.
+        document.getElementById('timeNav').classList.remove('hidden');
+        if (!fullScreen) {
+          // Mobile only: the list is fully settled, all tiles at the same
+          // size — release the pin immediately so the top tile starts
+          // growing into the active one right away. The row below animates
+          // down in the same instant, keeping a consistent 20px gap as the
+          // active tile expands rather than a gap that was already sized
+          // for it.
+          activeTile.style.width = '';
+          activeTile.style.height = '';
+          activeImg.style.width = '';
+          activeExpanded = true;
+          layoutTiles();
+        }
+        filmSection.classList.remove('stills-loading'); // loading done — CRT flicker/static and the play icon back on
+      }, 950);
+    }
+
+    // Debug menu: language selector
+    document.getElementById('langSelect').addEventListener('change', e => applyLanguage(e.target.value));
+
+    // Debug menu: region selector
+    document.getElementById('regionSelect').addEventListener('change', e => applyRegion(e.target.value));
+
+    // Unmute toggle — icon swap (speaker-muted / speaker-unmuted) instead
+    // of a text label. The icons are inline <svg> (SVGElement, not
+    // HTMLElement) — the .hidden IDL property doesn't reflect onto the
+    // actual hidden attribute for those, so toggling .hidden here was a
+    // silent no-op. toggleAttribute works on any element.
+    function wireUnmuteButton(videoEl, btnEl) {
+      const mutedIcon = btnEl.querySelector('.icon-muted');
+      const unmutedIcon = btnEl.querySelector('.icon-unmuted');
+      btnEl.addEventListener('click', () => {
+        videoEl.muted = !videoEl.muted;
+        mutedIcon.toggleAttribute('hidden', !videoEl.muted);
+        unmutedIcon.toggleAttribute('hidden', videoEl.muted);
+        btnEl.setAttribute('aria-label', videoEl.muted ? 'Unmute' : 'Mute');
+      });
+    }
+    const video = document.getElementById('heroVideo');
+    const btn   = document.getElementById('unmuteBtn');
+    wireUnmuteButton(video, btn);
+
+    // Wraps scrollIntoView for every JS-triggered section jump (the MUBI
+    // logo, "press play", keyboard nav below). Mobile Safari (and some
+    // mobile Chrome) has a known interaction where CSS scroll-snap
+    // (html { scroll-snap-type }) can silently swallow a programmatic
+    // scroll fired right after a native swipe just settled the page into
+    // a snap position — it looks like the tap did nothing, and often only
+    // starts working on a later attempt once whatever internal snap state
+    // has cleared. Toggling snap off for the duration of this one scroll,
+    // then restoring it once scrollend fires (or a fallback timeout),
+    // sidesteps it without affecting native swipe/wheel scrolling, which
+    // never calls this.
+    function smoothScrollToSection(el) {
+      const html = document.documentElement;
+      html.style.scrollSnapType = 'none';
+      el.scrollIntoView({ behavior: 'smooth' });
+      let restored = false;
+      const restore = () => {
+        if (restored) return;
+        restored = true;
+        window.removeEventListener('scrollend', restore);
+        html.style.scrollSnapType = '';
+      };
+      if ('onscrollend' in window) {
+        window.addEventListener('scrollend', restore, { once: true });
+        setTimeout(restore, 1000);
+      } else {
+        setTimeout(restore, 700);
+      }
+    }
+
+    // MUBI logo in the film section header — scrolls back to the top of
+    // the page instead of leaving to mubi.com.
+    document.getElementById('mubiLogoLink').addEventListener('click', () => {
+      smoothScrollToSection(hero);
+    });
+
+    // Footer's "Press play to start watching" — jumps back to the first
+    // film rather than wherever the carousel was left. The scroll alone
+    // re-triggers the same observer that starts the loading flash when
+    // entering the section fresh (phase 'intro'); the explicit setActive(0)
+    // covers the case where the visitor already scrolled through some
+    // films earlier (phase 'list', activeIndex > 0).
+    document.querySelector('.footer-section .hero-headline').addEventListener('click', () => {
+      if (phase === 'list' && activeIndex !== 0) setActive(0);
+      smoothScrollToSection(filmSection);
+    });
+
+    // Globe icon → language/region panel: click the globe to open (it
+    // hides itself while the panel's open so the two don't overlap in the
+    // same corner), the X or Escape or an outside click to close.
+    const globeBtn = document.getElementById('globeBtn');
+    const langRegionPanel = document.getElementById('langRegionPanel');
+    const panelCloseBtn = document.getElementById('panelCloseBtn');
+
+    function openLangRegionPanel() {
+      langRegionPanel.hidden = false;
+      globeBtn.hidden = true;
+    }
+    function closeLangRegionPanel() {
+      langRegionPanel.hidden = true;
+      globeBtn.hidden = false;
+    }
+    globeBtn.addEventListener('click', openLangRegionPanel);
+    panelCloseBtn.addEventListener('click', closeLangRegionPanel);
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !langRegionPanel.hidden) closeLangRegionPanel();
+    });
+    document.addEventListener('pointerdown', e => {
+      if (!langRegionPanel.hidden && !langRegionPanel.contains(e.target)) closeLangRegionPanel();
+    });
+
+    // Keyboard navigation — ↑ ↓ drive the whole page top to bottom: hero →
+    // film list → footer, and back up again, the same three stops the wheel/
+    // touch handlers snap between.
+    document.addEventListener('keydown', e => {
+      const isDown = e.key === 'ArrowDown' || e.key === 'ArrowRight';
+      const isUp   = e.key === 'ArrowUp'   || e.key === 'ArrowLeft';
+      if (!isDown && !isUp) return;
+      if (phase === 'loading') { e.preventDefault(); return; }
+
+      // Above the film section (hero) — down enters it; up is already the top.
+      if (!inFilmSection && !inFooterSection) {
+        if (isDown) { e.preventDefault(); smoothScrollToSection(filmSection); }
+        return;
+      }
+
+      // Below the film section (footer) — up returns to the list; down is already the bottom.
+      if (inFooterSection) {
+        if (isUp) { e.preventDefault(); smoothScrollToSection(filmSection); }
+        return;
+      }
+
+      // Inside the film section
+      e.preventDefault();
+      if (phase === 'intro') {
+        if (isDown) startLoading();
+        else smoothScrollToSection(hero); // up, back to the hero
+        return;
+      }
+
+      // phase === 'list'
+      if (isDown) {
+        if (activeIndex === films.length - 1) {
+          smoothScrollToSection(footerSection); // last film, down into the footer
+        } else {
+          setActive(activeIndex + 1);
+          playBlip('down');
+        }
+      } else if (isUp) {
+        if (activeIndex === 0) { smoothScrollToSection(hero); return; }
+        setActive(activeIndex - 1);
+        playBlip('up');
+      }
+    });
+
+    // Scroll navigation — shared by wheel (desktop trackpad/mouse) and touch
+    // (mobile swipe) input. deltaY follows wheel convention: positive means
+    // "scroll down" / advance, negative means "scroll up" / go back.
+    // Returns true if the intent was handled (caller should suppress the
+    // browser's own scroll for this event), or false to let it through
+    // (releasing to native scroll, e.g. into the hero or footer sections).
+    let scrollLocked = false;
+    function wouldReleaseToNativeScroll(deltaY) {
+      if (phase === 'intro') return deltaY < 0;
+      // At either end of the list, release to native scroll instead of
+      // resetting anything — film 0 stays exactly as loaded (no replay of
+      // the loading flash) if the visitor scrolls back down again.
+      if (phase === 'list') return (activeIndex === films.length - 1 && deltaY > 0) || (activeIndex === 0 && deltaY < 0);
+      return false; // 'loading' never releases — it's an uninterruptible animation
+    }
+    function handleScrollIntent(deltaY) {
+      if (phase === 'loading') return true;
+
+      if (phase === 'intro') {
+        if (deltaY < 0) return false; // scrolling up → release to native scroll, back to hero
+        startLoading();
+        return true;
+      }
+
+      // phase === 'list'
+      // At last film scrolling down → release to native scroll, into the footer section
+      if (activeIndex === films.length - 1 && deltaY > 0) return false;
+      // At first film scrolling up → release to native scroll, back to the
+      // hero — the list underneath is left exactly as it is, not torn down.
+      if (activeIndex === 0 && deltaY < 0) return false;
+
+      if (scrollLocked) return true;
+      scrollLocked = true;
+      if (deltaY > 0) {
+        setActive(Math.min(activeIndex + 1, films.length - 1));
+        playBlip('down');
+      } else {
+        setActive(activeIndex - 1);
+        playBlip('up');
+      }
+      setTimeout(() => { scrollLocked = false; }, 900);
+      return true;
+    }
+
+    // Wheel gates on the strict inFilmSection (not the looser
+    // filmSectionNavReady below), unlike touch. A continuous trackpad/
+    // mouse-wheel gesture fires many wheel events over its course — gating
+    // on the loose 0.5 threshold let the LATER events in a single scroll
+    // gesture (once the section crossed 50% visible) get hijacked and
+    // preventDefault()'d as carousel navigation, truncating the native
+    // scroll/CSS-snap before it ever reached full alignment and stranding
+    // the page mid-transition — the film section (and the loading flash
+    // that starts once "fully visible" fires) ends up cropped at the top.
+    // Touch doesn't have this failure mode (a whole swipe is one gesture,
+    // decided once at touchstart), so it still needs the loose threshold
+    // for the reason noted below.
+    document.addEventListener('wheel', e => {
+      if (!inFilmSection) return;
+      // During section transition, eat all wheel events to prevent momentum bleed
+      if (sectionTransitionLock) { e.preventDefault(); return; }
+      if (handleScrollIntent(e.deltaY)) e.preventDefault();
+    }, { passive: false });
+
+    // Touch (mobile) — swipes drive the exact same state machine as the wheel
+    // handler above. touchmove suppresses the page's own scroll while we're
+    // "inside" the hijacked section (mirroring wheel's preventDefault), and
+    // the actual film-to-film move fires once on touchend, based on total
+    // swipe distance, so small jitters/taps don't trigger a navigation.
+    let touchStartY = null;
+    let touchTracking = false;
+    const SWIPE_THRESHOLD = 40;
+    document.addEventListener('touchstart', e => {
+      touchTracking = filmSectionNavReady;
+      touchStartY = touchTracking ? e.touches[0].clientY : null;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', e => {
+      if (!touchTracking) return;
+      if (sectionTransitionLock) { e.preventDefault(); return; }
+      const deltaY = touchStartY - e.touches[0].clientY; // positive = finger moved up = scroll-down intent
+      if (!wouldReleaseToNativeScroll(deltaY)) e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchend', e => {
+      if (!touchTracking) return;
+      touchTracking = false;
+      if (sectionTransitionLock) return;
+      const deltaY = touchStartY - e.changedTouches[0].clientY;
+      touchStartY = null;
+      if (Math.abs(deltaY) < SWIPE_THRESHOLD) return; // a tap, or too small to count as a swipe
+      handleScrollIntent(deltaY);
+    }, { passive: true });
+
+    // Establishes where the carousel's active slot lives: columnLeftX (the
+    // shared left edge every tile zooms in along) and ACTIVE_Y (the fixed
+    // vertical position the active tile always sits at, both during the
+    // loading stack-and-spread animation and once settled into the list).
+    function syncColumnCenter() {
+      const firstTile = document.querySelector('.film-tile');
+      if (!firstTile) return;
+      const r = firstTile.getBoundingClientRect();
+      columnLeftX = r.left;
+      // On mobile the active still is much taller than the viewport, so
+      // centering it would push its bottom (and the overlaid info) off
+      // screen — pin it near the top instead, clear of the header, so the
+      // whole opened tile reads top-to-bottom as you scroll to it.
+      ACTIVE_Y = isMobile() ? 90 : (centerY() - LOAD_BOX_H / 2);
+      positionFlashLogo();
+      if (phase === 'list') { layoutTiles(); layoutNav(); }
+    }
+
+    // Desktop: the stills flash full-screen, so the logo stays at its CSS
+    // default (the middle of the section). Mobile: they flash into the
+    // compact box at (columnLeftX, ACTIVE_Y), so the logo sits centered
+    // over that box instead, sized to fit inside it.
+    function positionFlashLogo() {
+      const logo = document.getElementById('flashLogo');
+      if (isMobile()) {
+        logo.style.left = ((columnLeftX || 0) + LOAD_BOX_W / 2) + 'px';
+        logo.style.top = (ACTIVE_Y + LOAD_BOX_H / 2) + 'px';
+        logo.style.maxHeight = Math.round(LOAD_BOX_H * 0.7) + 'px';
+      } else {
+        logo.style.left = '';
+        logo.style.top = '';
+        logo.style.maxHeight = '';
+      }
+    }
+
+    // TV-static audio on the film list — a constant, faint hum rather
+    // than discrete bursts, with random brief silent gaps dropped into it
+    // (like a weak signal cutting in and out), plus a short blip whenever
+    // the visitor navigates to the next/previous film (see playBlip,
+    // called from the wheel/touch/keyboard handlers below). Generated on
+    // the fly with the Web Audio API rather than sound files. Browsers
+    // block audio before a user gesture, so the AudioContext — and the
+    // looping noise source, which only needs to be built once — starts
+    // lazily on the page's first click/tap/keypress.
+    let audioCtx = null;
+    let noiseGain = null;
+    const NOISE_VOLUME = 0.02; // faint — a constant hum, not a burst
+
+    // Runs on every gesture, not just the first: Safari (and Chrome after
+    // the tab's been in the background a while) can leave the context
+    // suspended, and iOS puts it into an 'interrupted' state after a call,
+    // an app switch or another media element taking the audio session (the
+    // hero video's own sound starting/stopping), so any later tap/keypress
+    // wakes it back up.
+    //
+    // On touch screens, touchstart/pointerdown do NOT count as the user
+    // gesture browsers require before audio can start — only a completed
+    // tap does (touchend / pointerup / click). Listening only to the
+    // "down" events meant a context created on a touch came up suspended
+    // and silent, depending on exactly how the visitor had touched the page.
+    function resumeAudio() {
+      if (audioCtx && audioCtx.state !== 'running' && audioCtx.state !== 'closed') {
+        audioCtx.resume().catch(() => {});
+      }
+    }
+    function unlockAudio() {
+      if (audioCtx) { resumeAudio(); return; }
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      startAmbientNoise();
+      resumeAudio(); // some mobile browsers still start it suspended, even inside the gesture
+    }
+    ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'].forEach(evt =>
+      document.addEventListener(evt, unlockAudio, { passive: true })
+    );
+    // Coming back to the tab/app: iOS leaves the context interrupted, and
+    // resuming from an interruption doesn't need a fresh gesture.
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) resumeAudio();
+    });
+
+    function startAmbientNoise() {
+      const sampleRate = audioCtx.sampleRate;
+      const durationSec = 3; // short buffer, looped — a few seconds is plenty for noise
+      const frameCount = Math.floor(sampleRate * durationSec);
+      const buffer = audioCtx.createBuffer(1, frameCount, sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < frameCount; i++) data[i] = Math.random() * 2 - 1;
+
+      const source = audioCtx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 2500;
+      filter.Q.value = 0.6;
+
+      noiseGain = audioCtx.createGain();
+      noiseGain.gain.value = inFilmSection ? NOISE_VOLUME : 0;
+
+      source.connect(filter).connect(noiseGain).connect(audioCtx.destination);
+      source.start();
+    }
+
+    // Random electrical glitches, like the power to the set browning out
+    // for a moment (sound + screen dimming) — every 4-14s, only while the film list
+    // is in view (and the tab is visible). Checked at fire time rather
+    // than paused/resumed with the section, so the loop just keeps
+    // ticking quietly in the background.
+    function schedulePowerGlitch() {
+      setTimeout(() => {
+        // Only once the list is built — never over the loading animation.
+        const listReady = phase === 'list' && !filmSection.classList.contains('stills-loading');
+        if (inFilmSection && listReady && !document.hidden) playPowerGlitch();
+        schedulePowerGlitch();
+      }, 4000 + Math.random() * 10000);
+    }
+
+    // The screen side of a glitch: the section dims hard in each gap
+    // where the buzz cuts out (power gone) and only slightly while it's
+    // buzzing (power sagging), then comes straight back. Skipped for
+    // visitors who've asked for reduced motion.
+    function flickerPowerGlitch(segments, total) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const overlay = document.getElementById('powerGlitchOverlay');
+      const frames = [{ opacity: 0, offset: 0 }];
+      const at = sec => Math.min(1, sec / total);
+      segments.forEach(({ start, on, off }) => {
+        const sag = 0.08 + Math.random() * 0.1;
+        const cut = 0.35 + Math.random() * 0.25;
+        frames.push({ opacity: sag, offset: at(start) });
+        frames.push({ opacity: sag, offset: at(start + on) });
+        frames.push({ opacity: cut, offset: at(start + on + 0.004) });
+        frames.push({ opacity: cut, offset: at(start + on + off - 0.002) }); // hold the cut for the whole gap
+      });
+      frames.push({ opacity: 0, offset: 1 });
+      // Offsets must never decrease — clamp any float/rounding overlap.
+      for (let i = 1; i < frames.length; i++) {
+        frames[i].offset = Math.max(frames[i].offset, frames[i - 1].offset);
+      }
+      overlay.animate(frames, { duration: total * 1000, easing: 'linear' });
+    }
+
+    // One glitch, 0.15-0.65s long, three layers at once: a crackle of
+    // sparse decaying pops (arcing), a stuttering mains buzz gated on/off
+    // at irregular intervals, and the ambient hiss sagging then recovering
+    // (the supply dipping under load).
+    function playPowerGlitch() {
+      const dur = 0.15 + Math.random() * 0.5;
+      // Stutter pattern (seconds from the start), shared by the buzz
+      // gating and the screen dimming so they cut out together.
+      const segments = [];
+      let t = 0;
+      while (t < dur) {
+        const on = 0.02 + Math.random() * 0.06;
+        const off = 0.01 + Math.random() * 0.05;
+        segments.push({ start: t, on, off, level: 0.06 + Math.random() * 0.05 });
+        t += on + off;
+      }
+      const total = t;
+      flickerPowerGlitch(segments, total);
+      if (!audioCtx) return; // no sound until the first gesture unlocks audio — the flicker still runs
+
+      const now = audioCtx.currentTime;
+      const sr = audioCtx.sampleRate;
+
+      // Crackle
+      const frames = Math.floor(sr * dur);
+      const buf = audioCtx.createBuffer(1, frames, sr);
+      const data = buf.getChannelData(0);
+      let env = 0;
+      for (let i = 0; i < frames; i++) {
+        if (Math.random() < 0.0015) env = 0.6 + Math.random() * 0.4; // a new pop
+        env *= 0.9985; // ~15ms tail per pop — long enough to actually hear
+        data[i] = (Math.random() * 2 - 1) * env;
+      }
+      const crackle = audioCtx.createBufferSource();
+      crackle.buffer = buf;
+      const hp = audioCtx.createBiquadFilter();
+      hp.type = 'highpass';
+      hp.frequency.value = 800;
+      const crackleGain = audioCtx.createGain();
+      crackleGain.gain.value = 0.22;
+      crackle.connect(hp).connect(crackleGain).connect(audioCtx.destination);
+      crackle.start(now);
+
+      // Stuttering buzz — pitched at 50/60Hz mains itself. Laptop and phone
+      // speakers can't reproduce that fundamental, so it's a sawtooth (a
+      // full stack of harmonics) with the lowpass at 1400Hz: dark and low,
+      // but the harmonics still carry it on small speakers.
+      const buzz = audioCtx.createOscillator();
+      buzz.type = 'sawtooth';
+      buzz.frequency.value = Math.random() < 0.5 ? 50 : 60;
+      const lp = audioCtx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 1400;
+      const buzzGain = audioCtx.createGain();
+      buzzGain.gain.setValueAtTime(0, now);
+      segments.forEach(({ start, on, level }) => {
+        buzzGain.gain.linearRampToValueAtTime(level, now + start + 0.003);
+        buzzGain.gain.setValueAtTime(level, now + start + on); // hold
+        buzzGain.gain.linearRampToValueAtTime(0, now + start + on + 0.003);
+      });
+      buzz.connect(lp).connect(buzzGain).connect(audioCtx.destination);
+      buzz.start(now);
+      buzz.stop(now + total + 0.05);
+
+      // Hiss sag + recovery
+      if (noiseGain) {
+        noiseGain.gain.cancelScheduledValues(now);
+        noiseGain.gain.setValueAtTime(NOISE_VOLUME, now);
+        noiseGain.gain.linearRampToValueAtTime(NOISE_VOLUME * 0.2, now + 0.05);
+        noiseGain.gain.linearRampToValueAtTime(NOISE_VOLUME, now + dur + 0.15);
+      }
+    }
+
+    // Called whenever inFilmSection changes (see the observer above) —
+    // constant hum for as long as the film list is in view, faded in/out
+    // rather than snapped, silent the instant the visitor scrolls back to
+    // the hero or on to the footer. Only once the noise source actually
+    // exists (it may not yet, before the first gesture).
+    function updateAmbientNoiseForSection() {
+      if (!noiseGain) return;
+      if (inFilmSection) resumeAudio(); // e.g. interrupted by the hero video's sound on the way down
+      noiseGain.gain.cancelScheduledValues(audioCtx.currentTime);
+      noiseGain.gain.linearRampToValueAtTime(inFilmSection ? NOISE_VOLUME : 0, audioCtx.currentTime + 0.4);
+    }
+
+    // Short blip on film-to-film navigation — pitched slightly higher
+    // advancing than going back, a common up/down UI-sound convention.
+    function playBlip(direction) {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = direction === 'down' ? 880 : 660;
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.08, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.13);
+    }
+
+    updateResponsiveVars(); // must run before init() so the first paint already uses the right sizes
+    init();
+    schedulePowerGlitch();
+
+    // Default to the visitor's browser/OS language instead of always starting
+    // in English — everything downstream (applyLanguage, the live sheet
+    // fetches below) already knows how to apply a non-EN currentLang.
+    const detectedLang = detectPreferredLanguage();
+    if (detectedLang !== 'EN') {
+      const langSelectEl = document.getElementById('langSelect');
+      if (langSelectEl) langSelectEl.value = detectedLang;
+      applyLanguage(detectedLang);
+    }
+
+    loadSheetTitles();    // async — fetches live titles from the FILM_TITLE tab, non-blocking
+    loadSheetSynopses();  // async — fetches live synopses from the F_DESCRIPTION tab, non-blocking
+    loadRegionsData();    // async — fetches live region lineups from the REGIONS tab, non-blocking
+
+    // Default to the visitor's GeoIP region instead of always starting on
+    // UK & IE. Async (a network round trip), so this lands after the first
+    // paint and swaps the carousel over once it resolves — same pattern as
+    // the sheet fetches above.
+    detectRegionFromIP().then(region => {
+      if (!region || region === currentRegion) return;
+      const regionSelectEl = document.getElementById('regionSelect');
+      if (regionSelectEl) regionSelectEl.value = region;
+      applyRegion(region);
+    });
+    loadSlotLabels();     // async — fetches live time-of-day labels from the TOD tab, non-blocking
+    loadIntroText();      // async — fetches live intro heading/quote from the INTRO_PAGE tab, non-blocking
+    // Sync after layout settles
+    requestAnimationFrame(() => requestAnimationFrame(() => { syncColumnCenter(); }));
+    window.addEventListener('resize', () => { updateResponsiveVars(); syncColumnCenter(); });
+  </script>
+
+</body>
+</html>
