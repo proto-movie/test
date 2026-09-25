@@ -1516,19 +1516,21 @@ you can always turn it off.</p>
       "AU": ["THE LOVE WITCH", "THE BABADOOK", "TEENAGE SEX AND DEATH AT CAMP MIASMA", "TITANE", "RAPTURE", "POSSESSION", "SUSPIRIA", "HEREDITARY"],
       "ROW": ROW_LINEUP,
     };
-    // The 8 running-order slots. timeLabel/sky are a fixed property of the
+    // The 8 running-order slots. Each sky's brightest point sits at
+    // --glow-x/--glow-y, which positionGlow() keeps behind the in-focus
+    // still. timeLabel/sky are a fixed property of the
     // *position* in the night (which film fills it changes per region), so
     // they live here rather than on individual films — this is the EN
     // wording; localizing it per language would come from the TOD tab.
     const SLOTS = [
-      { timeLabel: "Opening Feature", sky: "radial-gradient(ellipse at 60% 20%, #B8070C 0%, #6A0306 30%, #260102 65%, #030000 100%)" },
-      { timeLabel: "Twilight Zone",   sky: "radial-gradient(ellipse at 50% 15%, #123A6B 0%, #0A1D3A 32%, #040D17 65%, #000205 100%)" },
-      { timeLabel: "Midnight Feature",sky: "radial-gradient(ellipse at 50% 50%, #C4060F 0%, #640207 50%, #000000 100%)" },
-      { timeLabel: "Graveyard Shift", sky: "radial-gradient(ellipse at 40% 30%, #1B2A4A 0%, #0D1526 35%, #05080F 70%, #000000 100%)" },
-      { timeLabel: "Dark of Night",   sky: "radial-gradient(ellipse at 65% 25%, #BE0000 0%, #6E0101 30%, #2A0101 65%, #060000 100%)" },
-      { timeLabel: "Hour of the Wolf",sky: "radial-gradient(ellipse at 45% 40%, #16205A 0%, #0B1030 35%, #05081A 70%, #020208 100%)" },
-      { timeLabel: "Dead of Dawn",    sky: "radial-gradient(ellipse at 55% 20%, #9E0514 0%, #52020A 35%, #200104 68%, #060001 100%)" },
-      { timeLabel: "Closing Film",    sky: "radial-gradient(ellipse at 60% 30%, #0F2A5C 0%, #08152E 32%, #030A16 65%, #01030A 100%)" }
+      { timeLabel: "Opening Feature", sky: "radial-gradient(ellipse at var(--glow-x, 50%) var(--glow-y, 50%), #B8070C 0%, #6A0306 30%, #260102 65%, #030000 100%)" },
+      { timeLabel: "Twilight Zone",   sky: "radial-gradient(ellipse at var(--glow-x, 50%) var(--glow-y, 50%), #123A6B 0%, #0A1D3A 32%, #040D17 65%, #000205 100%)" },
+      { timeLabel: "Midnight Feature",sky: "radial-gradient(ellipse at var(--glow-x, 50%) var(--glow-y, 50%), #C4060F 0%, #640207 50%, #000000 100%)" },
+      { timeLabel: "Graveyard Shift", sky: "radial-gradient(ellipse at var(--glow-x, 50%) var(--glow-y, 50%), #1B2A4A 0%, #0D1526 35%, #05080F 70%, #000000 100%)" },
+      { timeLabel: "Dark of Night",   sky: "radial-gradient(ellipse at var(--glow-x, 50%) var(--glow-y, 50%), #BE0000 0%, #6E0101 30%, #2A0101 65%, #060000 100%)" },
+      { timeLabel: "Hour of the Wolf",sky: "radial-gradient(ellipse at var(--glow-x, 50%) var(--glow-y, 50%), #16205A 0%, #0B1030 35%, #05081A 70%, #020208 100%)" },
+      { timeLabel: "Dead of Dawn",    sky: "radial-gradient(ellipse at var(--glow-x, 50%) var(--glow-y, 50%), #9E0514 0%, #52020A 35%, #200104 68%, #060001 100%)" },
+      { timeLabel: "Closing Film",    sky: "radial-gradient(ellipse at var(--glow-x, 50%) var(--glow-y, 50%), #0F2A5C 0%, #08152E 32%, #030A16 65%, #01030A 100%)" }
     ];
 
     // Builds the 8-film running order for a region by pairing REGIONS-tab
@@ -2934,7 +2936,18 @@ you can always turn it off.</p>
       // whole opened tile reads top-to-bottom as you scroll to it.
       ACTIVE_Y = isMobile() ? 90 : (centerY() - LOAD_BOX_H / 2);
       positionFlashLogo();
+      positionGlow();
       if (phase === 'list') { layoutTiles(); layoutNav(); }
+    }
+
+    // The in-focus still always settles at the same spot (the list scrolls
+    // through it), so the film backgrounds' glow is pinned to that spot's
+    // centre rather than each gradient's own position.
+    function positionGlow() {
+      const activeImgW = parseFloat(document.documentElement.style.getPropertyValue('--active-img-w')) || LOAD_BOX_W;
+      const bgLayers = document.getElementById('bgLayers');
+      bgLayers.style.setProperty('--glow-x', ((columnLeftX || 0) + activeImgW / 2) + 'px');
+      bgLayers.style.setProperty('--glow-y', (ACTIVE_Y + ACTIVE_H / 2) + 'px');
     }
 
     // Desktop: the stills flash full-screen, so the logo stays at its CSS
