@@ -101,6 +101,7 @@
       z-index: 10;
       opacity: 1;
       text-decoration: none;
+      cursor: pointer;
     }
 
     /* Footer headline — only text left in that section now (the
@@ -160,14 +161,29 @@
     /* ─────────────────────────────────────────
        SECTION 2 — FILM LIST (below the fold)
     ───────────────────────────────────────── */
+    /* The film section pins (sticky) inside a taller track with one
+       screen of scroll per film on desktop, so the page's scroll position
+       — and so the scrollbar — steps through the list. Each film's snap
+       point is a .film-snap marker (built by buildFilmTrack()); on mobile
+       the track is a single screen with one marker. */
+    .film-track { position: relative; height: 100vh; height: 100dvh; }
+    .film-snap {
+      position: absolute;
+      left: 0;
+      width: 1px;
+      height: 100vh;
+      height: 100dvh;
+      pointer-events: none;
+      scroll-snap-align: start;
+      scroll-snap-stop: always; /* one flick can never carry past a film/section */
+    }
     .film-section {
       height: 100vh;
       height: 100dvh;
       width: 100vw;
-      position: relative;
+      position: sticky;
+      top: 0;
       overflow: hidden;
-      scroll-snap-align: start;
-      scroll-snap-stop: always; /* one flick can never carry past a section */
     }
 
     /* Background gradient layers */
@@ -363,7 +379,12 @@
       align-items: center;
       padding: 26px 36px;
       z-index: 100;
+      /* The bar itself lets clicks through to the film tiles scrolled up
+         behind it (the one two above the active film sits mostly under
+         here); only what's in it — the logo — takes clicks. */
+      pointer-events: none;
     }
+    .site-header > * { pointer-events: auto; }
 
     .mubi-logo-link {
       display: inline-flex;
@@ -1004,7 +1025,7 @@
       <source src="video/CAMP-MIASMA_Halloween_2026_Portrait_No-Subs.mp4" type="video/mp4">
     </video>
 
-    <a class="hero-logo" href="https://mubi.com">
+    <a class="hero-logo" id="heroLogoLink">
       <svg viewBox="0 0 800 240" width="80px" fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
         <g fill="#FFFFFF">
           <path d="M444.53,171.29a45.66,45.66,0,0,0-15.67-14.69,39.3,39.3,0,0,0,11.78-12.32q4.42-7.34,4.43-17.94a40.2,40.2,0,0,0-3.46-16.85,38.1,38.1,0,0,0-9.61-13,43.34,43.34,0,0,0-14.7-8.32,57.32,57.32,0,0,0-18.69-2.92H324.07V236.54h78.86a56.74,56.74,0,0,0,19.34-3.14,44.75,44.75,0,0,0,15-8.74A38.58,38.58,0,0,0,447,211a44,44,0,0,0,3.46-17.71Q450.47,180.36,444.53,171.29Zm-92.37-62.23h44.29q9.72,0,15.13,4.65t5.4,13.72q0,9.06-5.4,14.26t-15.13,5.18H352.16Zm65.14,98q-5.07,5.73-16.53,5.73H352.16V170.64h48.61q11.24,0,16.43,6.37a23.43,23.43,0,0,1,5.18,15.24Q422.38,201.33,417.3,207Z"></path>
@@ -1048,6 +1069,7 @@ you can always turn it off.</p>
   </section>
 
   <!-- ── SECTION 2: Film list ── -->
+  <div class="film-track" id="filmTrack">
   <section class="film-section">
     <div id="bgLayers">
       <div class="bg-layer intro-bg active" id="introBg"></div>
@@ -1090,6 +1112,7 @@ you can always turn it off.</p>
     <!-- Dims the whole section during a power glitch (playPowerGlitch()). -->
     <div class="power-glitch-overlay" id="powerGlitchOverlay"></div>
   </section>
+  </div>
 
   <!-- ── SECTION 3: Footer ── -->
   <section class="footer-section">
@@ -1965,6 +1988,7 @@ you can always turn it off.</p>
       currentRegion = region;
       films = buildFilmsForRegion(currentRegion);
       renderFilms();
+      buildFilmTrack();
       if (currentLang !== 'EN') applyLanguage(currentLang);
       enterIntro();
       // getBoundingClientRect() (inside syncColumnCenter) forces a synchronous
@@ -2005,6 +2029,8 @@ you can always turn it off.</p>
     }
 
     let activeIndex = -1;
+    let filmSnaps = [];        // one .film-snap marker per film's screen in #filmTrack (see buildFilmTrack())
+    let autoScrolling = false; // a smoothScrollToSection() is under way — scroll position isn't the visitor's
     let phase = 'intro'; // 'intro' | 'loading' | 'list'
     let inFilmSection = false;
     let inFooterSection = false;
@@ -2115,6 +2141,59 @@ you can always turn it off.</p>
     const hero = document.querySelector('.hero');
     const filmSection = document.querySelector('.film-section');
     const footerSection = document.querySelector('.footer-section');
+    const filmTrack = document.getElementById('filmTrack');
+
+    // Desktop: the film section pins inside #filmTrack, one screen of scroll
+    // per film, so the page's own scroll position — dragging or clicking
+    // the scrollbar included — steps through the list. Wheel/keys/swipes
+    // still step the list themselves (see handleScrollIntent) and keep the
+    // scroll position in step. Mobile keeps a single screen: touch drives
+    // everything there and there's no scrollbar to drag.
+    function scrollbarSteps() { return !isMobile(); }
+    function buildFilmTrack() {
+      const n = scrollbarSteps() ? films.length : 1;
+      if (n === filmSnaps.length) return;
+      filmSnaps.forEach(el => el.remove());
+      filmSnaps = Array.from({ length: n }, (_, i) => {
+        const m = document.createElement('div');
+        m.className = 'film-snap';
+        m.style.top = `calc(${i} * 100dvh)`;
+        filmTrack.appendChild(m);
+        return m;
+      });
+      filmTrack.style.height = `calc(${n} * 100dvh)`;
+    }
+    // Where a jump "into the film section" lands: the active film's screen.
+    function filmScrollTarget() {
+      return filmSnaps[Math.max(0, Math.min(activeIndex, filmSnaps.length - 1))];
+    }
+    // Which film's screen the page is scrolled to, or null outside the track.
+    function trackIndexAtScroll() {
+      const offset = -filmTrack.getBoundingClientRect().top;
+      const h = window.innerHeight;
+      if (offset < -2 || offset > (filmSnaps.length - 1) * h + 2) return null;
+      return Math.max(0, Math.min(filmSnaps.length - 1, Math.round(offset / h)));
+    }
+    // Wheel/keys/swipes moved the list — move the scroll position (and so
+    // the scrollbar) to match. Instant: the section is pinned, so nothing
+    // visibly moves. Only while already in the list — the footer's "press
+    // play" sets film 0 first and then makes its own jump.
+    function syncScrollToActive() {
+      if (autoScrolling || filmSnaps.length < 2 || activeIndex < 0) return;
+      const at = trackIndexAtScroll();
+      if (at === null || at === activeIndex) return;
+      window.scrollTo({ top: window.scrollY + filmSnaps[activeIndex].getBoundingClientRect().top, behavior: 'instant' });
+    }
+    // Scrollbar drag/click (the only way the page scrolls inside the track
+    // on its own — wheel input there is taken over) → select that film.
+    window.addEventListener('scroll', () => {
+      if (autoScrolling || phase !== 'list' || filmSnaps.length < 2) return;
+      const at = trackIndexAtScroll();
+      if (at === null || at === activeIndex) return;
+      const dir = at > activeIndex ? 'down' : 'up';
+      setActive(at);
+      playBlip(dir);
+    }, { passive: true });
 
     const observer = new IntersectionObserver(entries => {
       entries.forEach(e => {
@@ -2258,6 +2337,7 @@ you can always turn it off.</p>
 
     function init() {
       renderFilms();
+      buildFilmTrack();
       enterIntro();
     }
 
@@ -2322,6 +2402,7 @@ you can always turn it off.</p>
     function setActive(index, instant) {
       if (index === activeIndex) return;
       activeIndex = index;
+      syncScrollToActive();
       document.getElementById('introBg').classList.remove('active');
       document.querySelectorAll('.film-bg-layer').forEach((el, i)  => el.classList.toggle('active', i === index));
       layoutTiles();
@@ -2683,6 +2764,7 @@ you can always turn it off.</p>
     function smoothScrollToSection(el) {
       const html = document.documentElement;
       html.style.scrollSnapType = 'none';
+      autoScrolling = true; // passing other films' screens on the way shouldn't select them
       el.scrollIntoView({ behavior: 'smooth' });
       let restored = false;
       const restore = () => {
@@ -2690,6 +2772,7 @@ you can always turn it off.</p>
         restored = true;
         window.removeEventListener('scrollend', restore);
         html.style.scrollSnapType = '';
+        autoScrolling = false;
       };
       if ('onscrollend' in window) {
         window.addEventListener('scrollend', restore, { once: true });
@@ -2704,6 +2787,11 @@ you can always turn it off.</p>
     document.getElementById('mubiLogoLink').addEventListener('click', () => {
       smoothScrollToSection(hero);
     });
+    // Same for the hero's own logo — stays on this page rather than
+    // leaving for mubi.com.
+    document.getElementById('heroLogoLink').addEventListener('click', () => {
+      smoothScrollToSection(hero);
+    });
 
     // Footer's "Press play to start watching" — jumps back to the first
     // film rather than wherever the carousel was left. The scroll alone
@@ -2713,7 +2801,7 @@ you can always turn it off.</p>
     // films earlier (phase 'list', activeIndex > 0).
     document.querySelector('.footer-section .hero-headline').addEventListener('click', () => {
       if (phase === 'list' && activeIndex !== 0) setActive(0);
-      smoothScrollToSection(filmSection);
+      smoothScrollToSection(filmScrollTarget());
     });
 
     // Globe icon → language/region panel: click the globe to open (it
@@ -2753,13 +2841,13 @@ you can always turn it off.</p>
 
       // Above the film section (hero) — down enters it; up is already the top.
       if (!inFilmSection && !inFooterSection) {
-        if (isDown) { e.preventDefault(); smoothScrollToSection(filmSection); }
+        if (isDown) { e.preventDefault(); smoothScrollToSection(filmScrollTarget()); }
         return;
       }
 
       // Below the film section (footer) — up returns to the list; down is already the bottom.
       if (inFooterSection) {
-        if (isUp) { e.preventDefault(); smoothScrollToSection(filmSection); }
+        if (isUp) { e.preventDefault(); smoothScrollToSection(filmScrollTarget()); }
         return;
       }
 
@@ -2837,21 +2925,35 @@ you can always turn it off.</p>
     // Touch doesn't have this failure mode (a whole swipe is one gesture,
     // decided once at touchend).
     //
-    // One step per wheel gesture: a trackpad/Magic Mouse flick keeps
+    // One step per wheel intent: a trackpad/Magic Mouse flick keeps
     // firing momentum events for 1-2s after the fingers lift, far longer
     // than the step lock, so the tail of one flick used to fire a second
     // step (skipping a film) — or, landing on the last/first film, carry
-    // straight on out into the footer/hero. Now once a gesture has moved
-    // the list, the rest of it is eaten; a new gesture only counts after
-    // the wheel has gone quiet for WHEEL_QUIET_MS.
-    const WHEEL_QUIET_MS = 200;
+    // straight on out into the footer/hero. Once a gesture has moved the
+    // list, the rest of it is eaten. A new intent counts as soon as it's
+    // recognisable, rather than only after the wheel goes fully quiet
+    // (which made a second flick during the first one's momentum do
+    // nothing): either a short pause, or a clear rise in |deltaY| over the
+    // last few events — momentum only ever decays, so a jump back up
+    // means fresh fingers on the trackpad.
+    const WHEEL_QUIET_MS = 100;
+    const WHEEL_RISE = 1.5;   // new |deltaY| vs the largest of the last few
+    const WHEEL_RISE_MIN = 8; // ignore the tiny jitter at the end of momentum
     let lastWheelAt = 0;
+    let recentWheel = [];     // |deltaY| of the last few events
     let wheelGestureSpent = false;
+    let wheelReleased = false; // this gesture was handed to native scroll (out to hero/footer)
     document.addEventListener('wheel', e => {
       const now = performance.now();
-      if (now - lastWheelAt > WHEEL_QUIET_MS) wheelGestureSpent = false; // a fresh gesture
+      const abs = Math.abs(e.deltaY);
+      const fresh = now - lastWheelAt > WHEEL_QUIET_MS ||
+        (abs >= WHEEL_RISE_MIN && abs > Math.max(0, ...recentWheel) * WHEEL_RISE);
+      if (fresh) { wheelGestureSpent = false; wheelReleased = false; }
       lastWheelAt = now;
-      if (!inFilmSection) return;
+      recentWheel.push(abs);
+      if (recentWheel.length > 3) recentWheel.shift();
+
+      if (!inFilmSection || wheelReleased) return;
       // During section transition, eat all wheel events to prevent momentum bleed
       if (sectionTransitionLock) { e.preventDefault(); wheelGestureSpent = true; return; }
       if (wheelGestureSpent) { e.preventDefault(); return; }
@@ -2859,11 +2961,13 @@ you can always turn it off.</p>
       if (phase === 'list' && scrollLocked) { e.preventDefault(); wheelGestureSpent = true; return; }
       // Sideways-only trackpad swipes report deltaY 0 — that isn't an
       // up/down intent (it used to read as "up" and step back a film).
-      if (Math.abs(e.deltaY) < 1) return;
+      if (abs < 1) return;
       const before = activeIndex, phaseBefore = phase;
       if (handleScrollIntent(e.deltaY)) {
         e.preventDefault();
         if (activeIndex !== before || phase !== phaseBefore) wheelGestureSpent = true;
+      } else {
+        wheelReleased = true; // let the rest of this gesture scroll natively
       }
     }, { passive: false });
 
@@ -2906,8 +3010,8 @@ you can always turn it off.</p>
       if (!at) return; // mid-transition between sections
       const down = deltaY > 0;
 
-      if (at === hero) { if (down) smoothScrollToSection(filmSection); return; }
-      if (at === footerSection) { if (!down) smoothScrollToSection(filmSection); return; }
+      if (at === hero) { if (down) smoothScrollToSection(filmScrollTarget()); return; }
+      if (at === footerSection) { if (!down) smoothScrollToSection(filmScrollTarget()); return; }
 
       // Film section
       if (sectionTransitionLock) return;
@@ -3205,7 +3309,7 @@ you can always turn it off.</p>
     loadIntroText();      // async — fetches live intro heading/quote from the INTRO_PAGE tab, non-blocking
     // Sync after layout settles
     requestAnimationFrame(() => requestAnimationFrame(() => { syncColumnCenter(); }));
-    window.addEventListener('resize', () => { updateResponsiveVars(); syncColumnCenter(); });
+    window.addEventListener('resize', () => { updateResponsiveVars(); buildFilmTrack(); syncColumnCenter(); });
   </script>
 
 </body>
