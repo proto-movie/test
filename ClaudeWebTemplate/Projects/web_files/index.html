@@ -2194,54 +2194,64 @@ you can always turn it off.</p>
       playBlip(dir);
     }, { passive: true });
 
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.target === filmSection) {
-          if (e.isIntersecting && !inFilmSection) {
-            // Just entered film section — lock film navigation briefly
-            // so scroll momentum from the section transition doesn't skip film 0
-            sectionTransitionLock = true;
-            setTimeout(() => { sectionTransitionLock = false; }, 1200);
-            // The intro text now lives in the hero, so there's nothing to
-            // pause on here — the same scroll that brings this section into
-            // view kicks off the film stills loading in. startLoading()
-            // measures each tile's on-screen position once, synchronously,
-            // and bakes that into a fixed translate() offset — so if CSS
-            // scroll-snap (html { scroll-snap-type }) is still gliding the
-            // last pixels into place when that measurement happens (it can
-            // still be moving after threshold:1.0 already reports "fully
-            // visible"), whatever it glides afterward becomes baked-in
-            // error, flashing the stills in too high/cropped. A fixed
-            // delay here was a guess at how long that glide takes — on a
-            // real desktop trackpad/mouse flick it can vary and occasionally
-            // outlast a short guess. Waiting for the browser's own
-            // scrollend signal (with a fixed-delay fallback for browsers
-            // without it) is exact instead of guessed.
-            if (phase === 'intro') {
-              let started = false;
-              const begin = () => {
-                if (started) return;
-                started = true;
-                window.removeEventListener('scrollend', begin);
-                if (phase === 'intro') startLoading();
-              };
-              if ('onscrollend' in window) {
-                window.addEventListener('scrollend', begin, { once: true });
-                setTimeout(begin, 900); // safety net if scrollend never fires
-              } else {
-                setTimeout(begin, 500);
-              }
+    // A section counts as "in" once the page has landed on it — its top at
+    // the top of the screen — not once it's 100% visible: on mobile Safari
+    // a 100vh section runs on behind the see-through bottom toolbar, so
+    // while that toolbar is showing it's never fully visible, and a
+    // full-visibility check (the IntersectionObserver this replaces) left
+    // the loading flash unstarted whenever the toolbar was up.
+    function updateSectionState() {
+      const filmIn = Math.abs(filmSection.getBoundingClientRect().top) <= 2;
+      const footerIn = Math.abs(footerSection.getBoundingClientRect().top) <= 2;
+      if (filmIn !== inFilmSection) {
+        if (filmIn) {
+          // Just entered film section — lock film navigation briefly
+          // so scroll momentum from the section transition doesn't skip film 0
+          sectionTransitionLock = true;
+          setTimeout(() => { sectionTransitionLock = false; }, 1200);
+          // The intro text now lives in the hero, so there's nothing to
+          // pause on here — the same scroll that brings this section into
+          // view kicks off the film stills loading in. startLoading()
+          // measures each tile's on-screen position once, synchronously,
+          // and bakes that into a fixed translate() offset — so if CSS
+          // scroll-snap (html { scroll-snap-type }) is still gliding the
+          // last pixels into place when that measurement happens (it can
+          // still be moving after the section's top already reads as
+          // landed), whatever it glides afterward becomes baked-in error,
+          // flashing the stills in too high/cropped. A fixed
+          // delay here was a guess at how long that glide takes — on a
+          // real desktop trackpad/mouse flick it can vary and occasionally
+          // outlast a short guess. Waiting for the browser's own
+          // scrollend signal (with a fixed-delay fallback for browsers
+          // without it) is exact instead of guessed.
+          if (phase === 'intro') {
+            let started = false;
+            const begin = () => {
+              if (started) return;
+              started = true;
+              window.removeEventListener('scrollend', begin);
+              if (phase === 'intro') startLoading();
+            };
+            if ('onscrollend' in window) {
+              window.addEventListener('scrollend', begin, { once: true });
+              setTimeout(begin, 900); // safety net if scrollend never fires
+            } else {
+              setTimeout(begin, 500);
             }
           }
-          inFilmSection = e.isIntersecting;
-          updateAmbientNoiseForSection();
-        } else if (e.target === footerSection) {
-          inFooterSection = e.isIntersecting;
         }
-      });
-    }, { threshold: 1.0 }); // only counts as "in" once fully in view — the loading flash never starts mid-transition
-    observer.observe(filmSection);
-    observer.observe(footerSection);
+        inFilmSection = filmIn;
+        updateAmbientNoiseForSection();
+      }
+      inFooterSection = footerIn;
+    }
+    window.addEventListener('scroll', updateSectionState, { passive: true });
+    window.addEventListener('resize', updateSectionState);
+    window.addEventListener('scrollend', updateSectionState); // belt and braces for the final resting position
+    // Next frame, not now: a reload that restores the scroll onto the film
+    // section would reach updateAmbientNoiseForSection(), whose audio state
+    // is declared further down this script.
+    requestAnimationFrame(updateSectionState);
 
     // Pause the hero video once it's scrolled (mostly) out of view, resume
     // once it's back — a separate, looser-threshold observer from the one
