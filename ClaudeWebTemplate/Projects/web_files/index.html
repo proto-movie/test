@@ -1925,7 +1925,8 @@ you can always turn it off.</p>
     ]);
     const REGION_BY_COUNTRY = {
       GB: 'UK & IE', IE: 'UK & IE',
-      NL: 'NL', IT: 'IT', TR: 'TR', US: 'US', CA: 'CA', DE: 'DE', BR: 'BR', FR: 'FR', AU: 'AU'
+      BR: 'LATAM', // Brazil sees the LATAM lineup, not its own BR column
+      NL: 'NL', IT: 'IT', TR: 'TR', US: 'US', CA: 'CA', DE: 'DE', FR: 'FR', AU: 'AU'
     };
     function regionForCountry(cc) {
       if (!cc) return null; // lookup told us nothing — keep the default rather than guessing
@@ -2412,6 +2413,7 @@ you can always turn it off.</p>
       if (index === activeIndex) return;
       activeIndex = index;
       syncScrollToActive();
+      updateListMusic(); // finishLoading() lands here once the list is up
       document.getElementById('introBg').classList.remove('active');
       document.querySelectorAll('.film-bg-layer').forEach((el, i)  => el.classList.toggle('active', i === index));
       layoutTiles();
@@ -2425,6 +2427,7 @@ you can always turn it off.</p>
 
     function enterIntro() {
       phase = 'intro';
+      updateListMusic();
       activeIndex = -1;
       filmSection.classList.remove('stills-loading', 'stills-settling');
       document.getElementById('timeNav').classList.add('hidden');
@@ -3135,6 +3138,7 @@ you can always turn it off.</p>
       if (audioCtx) { resumeAudio(); return; }
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       startAmbientNoise();
+      connectListMusic();
       resumeAudio(); // some mobile browsers still start it suspended, even inside the gesture
     }
     ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'].forEach(evt =>
@@ -3144,6 +3148,7 @@ you can always turn it off.</p>
     // resuming from an interruption doesn't need a fresh gesture.
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) resumeAudio();
+      updateListMusic(); // pauses with the tab, picks back up on return
     });
 
     function startAmbientNoise() {
@@ -3288,10 +3293,53 @@ you can always turn it off.</p>
     // the hero or on to the footer. Only once the noise source actually
     // exists (it may not yet, before the first gesture).
     function updateAmbientNoiseForSection() {
+      updateListMusic();
       if (!noiseGain) return;
       if (inFilmSection) resumeAudio(); // e.g. interrupted by the hero video's sound on the way down
       noiseGain.gain.cancelScheduledValues(audioCtx.currentTime);
       noiseGain.gain.linearRampToValueAtTime(inFilmSection ? NOISE_VOLUME : 0, audioCtx.currentTime + 0.4);
+    }
+
+    // Background ambience track, played softly for as long as the film
+    // list is up (not over the loading flash) and faded out + paused on
+    // the way back to the hero or on to the footer. It's routed through
+    // the AudioContext rather than played bare: iOS ignores an <audio>
+    // element's own volume (always full), so "softly" and the fades have
+    // to come from a GainNode. Like the rest of the page's sound it needs
+    // the first click/tap/keypress — unlockAudio() connects it then, and
+    // primes it with a play() inside that gesture so iOS lets the later,
+    // gesture-less play() calls (on reaching the list) through.
+    const listMusic = new Audio('audio/dragon-studio-creepy-industrial-sounds-ambience-482892.mp3');
+    listMusic.loop = true;
+    listMusic.preload = 'none'; // 13MB — only fetched once there's a gesture to play it
+    const MUSIC_VOLUME = 0.18;  // soft, under the film list rather than over it
+    let musicGain = null;
+    let musicPauseTimer = null;
+    function listMusicShouldPlay() {
+      return inFilmSection && phase === 'list' && !document.hidden;
+    }
+    function connectListMusic() {
+      const src = audioCtx.createMediaElementSource(listMusic);
+      musicGain = audioCtx.createGain();
+      musicGain.gain.value = 0;
+      src.connect(musicGain).connect(audioCtx.destination);
+      listMusic.play().then(() => { if (!listMusicShouldPlay()) listMusic.pause(); }).catch(() => {});
+      updateListMusic();
+    }
+    function updateListMusic() {
+      if (!musicGain) return;
+      const now = audioCtx.currentTime;
+      musicGain.gain.cancelScheduledValues(now);
+      musicGain.gain.setValueAtTime(musicGain.gain.value, now); // fade on from wherever it is
+      clearTimeout(musicPauseTimer);
+      if (listMusicShouldPlay()) {
+        resumeAudio();
+        if (listMusic.paused) listMusic.play().catch(() => {});
+        musicGain.gain.linearRampToValueAtTime(MUSIC_VOLUME, now + 2);
+      } else {
+        musicGain.gain.linearRampToValueAtTime(0, now + 0.8);
+        musicPauseTimer = setTimeout(() => { if (!listMusicShouldPlay()) listMusic.pause(); }, 900);
+      }
     }
 
     // Short blip on film-to-film navigation — pitched slightly higher
