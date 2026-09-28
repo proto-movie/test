@@ -68,7 +68,9 @@
     ───────────────────────────────────────── */
     .hero {
       height: 100vh;
-      height: 100dvh; /* the visible screen, not the toolbar-hidden max — so the footer can sit flush at the bottom */
+      /* vh, not dvh, on every section: on mobile Safari it reaches down
+         behind the see-through bottom toolbar, so each section's own
+         content (e.g. the next films in the list) shows through there. */
       width: 100vw;
       position: relative;
       overflow: hidden;
@@ -166,20 +168,18 @@
        — and so the scrollbar — steps through the list. Each film's snap
        point is a .film-snap marker (built by buildFilmTrack()); on mobile
        the track is a single screen with one marker. */
-    .film-track { position: relative; height: 100vh; height: 100dvh; }
+    .film-track { position: relative; height: 100vh; }
     .film-snap {
       position: absolute;
       left: 0;
       width: 1px;
       height: 100vh;
-      height: 100dvh;
       pointer-events: none;
       scroll-snap-align: start;
       scroll-snap-stop: always; /* one flick can never carry past a film/section */
     }
     .film-section {
       height: 100vh;
-      height: 100dvh;
       width: 100vw;
       position: sticky;
       top: 0;
@@ -738,7 +738,6 @@
     ───────────────────────────────────────── */
     .footer-section {
       height: 100vh;
-      height: 100dvh;
       width: 100vw;
       position: relative;
       overflow: hidden;
@@ -2157,11 +2156,11 @@ you can always turn it off.</p>
       filmSnaps = Array.from({ length: n }, (_, i) => {
         const m = document.createElement('div');
         m.className = 'film-snap';
-        m.style.top = `calc(${i} * 100dvh)`;
+        m.style.top = `calc(${i} * 100vh)`;
         filmTrack.appendChild(m);
         return m;
       });
-      filmTrack.style.height = `calc(${n} * 100dvh)`;
+      filmTrack.style.height = `calc(${n} * 100vh)`;
     }
     // Where a jump "into the film section" lands: the active film's screen.
     function filmScrollTarget() {
@@ -2761,7 +2760,14 @@ you can always turn it off.</p>
     // then restoring it once scrollend fires (or a fallback timeout),
     // sidesteps it without affecting native swipe/wheel scrolling, which
     // never calls this.
-    function smoothScrollToSection(el) {
+    //
+    // On touch, a finger landing mid-glide can stop the scroll part-way,
+    // stranding the page between two sections (e.g. a fast swipe up from
+    // the footer left it half on the last film) — and since touch never
+    // scrolls the page natively, nothing would ever move it again. So once
+    // the glide ends, a page left between sections carries on to where it
+    // was going (once — `heal` is off for that follow-up scroll).
+    function smoothScrollToSection(el, heal = true) {
       const html = document.documentElement;
       html.style.scrollSnapType = 'none';
       autoScrolling = true; // passing other films' screens on the way shouldn't select them
@@ -2771,6 +2777,9 @@ you can always turn it off.</p>
         if (restored) return;
         restored = true;
         window.removeEventListener('scrollend', restore);
+        // Checked before snap comes back on — re-enabling it would itself
+        // snap a stranded page to the *nearest* section, not this one.
+        if (heal && touchInput && !settledSection()) { smoothScrollToSection(el, false); return; }
         html.style.scrollSnapType = '';
         autoScrolling = false;
       };
@@ -2989,10 +2998,20 @@ you can always turn it off.</p>
         Math.abs(b.getBoundingClientRect().top) < Math.abs(a.getBoundingClientRect().top) ? b : a);
       return Math.abs(el.getBoundingClientRect().top) <= 2 ? el : null;
     }
+    // For a page stranded between two snap points (hero, a film's screen,
+    // footer): the one on the side the visitor swiped towards.
+    function snapTargetToward(down) {
+      const points = [hero, ...filmSnaps, footerSection];
+      return down
+        ? points.find(el => el.getBoundingClientRect().top > 0) || footerSection
+        : points.filter(el => el.getBoundingClientRect().top < 0).pop() || hero;
+    }
     // Touches inside the language/region panel keep native behaviour (its selects).
     const isPanelTouch = e => !langRegionPanel.hidden && langRegionPanel.contains(e.target);
 
+    let touchInput = false; // the visitor is using touch (vs a mouse/trackpad scrolling the page natively)
     document.addEventListener('touchstart', e => {
+      touchInput = true;
       touchStartY = (e.touches.length === 1 && !isPanelTouch(e)) ? e.touches[0].clientY : null;
     }, { passive: true });
 
@@ -3007,8 +3026,13 @@ you can always turn it off.</p>
       touchStartY = null;
       if (Math.abs(deltaY) < SWIPE_THRESHOLD) return; // a tap, or too small to count as a swipe
       const at = settledSection();
-      if (!at) return; // mid-transition between sections
       const down = deltaY > 0;
+      if (!at) {
+        // Mid-glide: ignore it. Stranded between sections (a glide that
+        // got cut short): finish the move in the direction swiped.
+        if (!autoScrolling) smoothScrollToSection(snapTargetToward(down), false);
+        return;
+      }
 
       if (at === hero) { if (down) smoothScrollToSection(filmScrollTarget()); return; }
       if (at === footerSection) { if (!down) smoothScrollToSection(filmScrollTarget()); return; }
