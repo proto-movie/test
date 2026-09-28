@@ -66,6 +66,7 @@
     ───────────────────────────────────────── */
     .hero {
       height: 100vh;
+      height: 100dvh; /* the visible screen, not the toolbar-hidden max — so the footer can sit flush at the bottom */
       width: 100vw;
       position: relative;
       overflow: hidden;
@@ -159,6 +160,7 @@
     ───────────────────────────────────────── */
     .film-section {
       height: 100vh;
+      height: 100dvh;
       width: 100vw;
       position: relative;
       overflow: hidden;
@@ -713,6 +715,7 @@
     ───────────────────────────────────────── */
     .footer-section {
       height: 100vh;
+      height: 100dvh;
       width: 100vw;
       position: relative;
       overflow: hidden;
@@ -2160,23 +2163,6 @@ you can always turn it off.</p>
     observer.observe(filmSection);
     observer.observe(footerSection);
 
-    // Gates whether TOUCH input drives the film carousel — a much looser
-    // threshold than the strict one above, which exists only to time the
-    // loading flash precisely. On real mobile devices, native momentum
-    // scroll bringing the film section into view rarely lands at an exact
-    // 100% intersection (dynamic browser-chrome/address-bar resizing the
-    // viewport, rubber-banding, etc.), so gating swipe navigation on that
-    // same strict signal left touch devices stuck in "native scroll" when
-    // approaching the film section from the footer — a swipe up would sail
-    // straight through into the hero instead of stepping back through the
-    // list film by film. Same fix pattern as heroVideoObserver below.
-    // Wheel input deliberately does NOT use this — see its own listener.
-    let filmSectionNavReady = false;
-    const filmSectionNavObserver = new IntersectionObserver(entries => {
-      entries.forEach(e => { filmSectionNavReady = e.isIntersecting; });
-    }, { threshold: 0.5 });
-    filmSectionNavObserver.observe(filmSection);
-
     // Pause the hero video once it's scrolled (mostly) out of view, resume
     // once it's back — a separate, looser-threshold observer from the one
     // above, since requiring exact full visibility here occasionally never
@@ -2804,14 +2790,6 @@ you can always turn it off.</p>
     // browser's own scroll for this event), or false to let it through
     // (releasing to native scroll, e.g. into the hero or footer sections).
     let scrollLocked = false;
-    function wouldReleaseToNativeScroll(deltaY) {
-      if (phase === 'intro') return deltaY < 0;
-      // At either end of the list, release to native scroll instead of
-      // resetting anything — film 0 stays exactly as loaded (no replay of
-      // the loading flash) if the visitor scrolls back down again.
-      if (phase === 'list') return (activeIndex === films.length - 1 && deltaY > 0) || (activeIndex === 0 && deltaY < 0);
-      return false; // 'loading' never releases — it's an uninterruptible animation
-    }
     function handleScrollIntent(deltaY) {
       if (phase === 'loading') return true;
 
@@ -2846,8 +2824,7 @@ you can always turn it off.</p>
       return true;
     }
 
-    // Wheel gates on the strict inFilmSection (not the looser
-    // filmSectionNavReady below), unlike touch. A continuous trackpad/
+    // Wheel gates on the strict inFilmSection. A continuous trackpad/
     // mouse-wheel gesture fires many wheel events over its course — gating
     // on the loose 0.5 threshold let the LATER events in a single scroll
     // gesture (once the section crossed 50% visible) get hijacked and
@@ -2856,8 +2833,7 @@ you can always turn it off.</p>
     // the page mid-transition — the film section (and the loading flash
     // that starts once "fully visible" fires) ends up cropped at the top.
     // Touch doesn't have this failure mode (a whole swipe is one gesture,
-    // decided once at touchstart), so it still needs the loose threshold
-    // for the reason noted below.
+    // decided once at touchend).
     //
     // One step per wheel gesture: a trackpad/Magic Mouse flick keeps
     // firing momentum events for 1-2s after the fingers lift, far longer
@@ -2889,36 +2865,54 @@ you can always turn it off.</p>
       }
     }, { passive: false });
 
-    // Touch (mobile) — swipes drive the exact same state machine as the wheel
-    // handler above. touchmove suppresses the page's own scroll while we're
-    // "inside" the hijacked section (mirroring wheel's preventDefault), and
-    // the actual film-to-film move fires once on touchend, based on total
-    // swipe distance, so small jitters/taps don't trigger a navigation.
+    // Touch (mobile) — the page never native-scrolls under a finger; every
+    // swipe is one step, driven from JS: hero → film section → each film →
+    // footer, and back. Letting native momentum/snap carry the section-to-
+    // section moves (and only hijacking once the film section was "mostly"
+    // in view) meant a quick second swipe landing while the page was still
+    // gliding went untracked — native scroll took it and sailed straight
+    // through the film list into the footer/hero. The move fires once on
+    // touchend, based on total swipe distance, so jitters/taps don't count.
     let touchStartY = null;
-    let touchTracking = false;
     const SWIPE_THRESHOLD = 40;
+    const sections = [hero, filmSection, footerSection];
+    // The section the page is resting on, or null while it's still gliding
+    // between two (a swipe then is ignored rather than queued).
+    function settledSection() {
+      const el = sections.reduce((a, b) =>
+        Math.abs(b.getBoundingClientRect().top) < Math.abs(a.getBoundingClientRect().top) ? b : a);
+      return Math.abs(el.getBoundingClientRect().top) <= 2 ? el : null;
+    }
+    // Touches inside the language/region panel keep native behaviour (its selects).
+    const isPanelTouch = e => !langRegionPanel.hidden && langRegionPanel.contains(e.target);
+
     document.addEventListener('touchstart', e => {
-      touchTracking = filmSectionNavReady;
-      touchStartY = touchTracking ? e.touches[0].clientY : null;
+      touchStartY = (e.touches.length === 1 && !isPanelTouch(e)) ? e.touches[0].clientY : null;
     }, { passive: true });
 
     document.addEventListener('touchmove', e => {
-      if (!touchTracking) return;
-      if (sectionTransitionLock) { e.preventDefault(); return; }
-      if (phase === 'list' && scrollLocked) { e.preventDefault(); return; } // no swiping out of the section mid-animation
-      const deltaY = touchStartY - e.touches[0].clientY; // positive = finger moved up = scroll-down intent
-      if (!wouldReleaseToNativeScroll(deltaY)) e.preventDefault();
+      if (touchStartY === null || e.touches.length !== 1) return; // pinch-zoom etc. pass through
+      e.preventDefault();
     }, { passive: false });
 
     document.addEventListener('touchend', e => {
-      if (!touchTracking) return;
-      touchTracking = false;
-      if (sectionTransitionLock) return;
-      const deltaY = touchStartY - e.changedTouches[0].clientY;
+      if (touchStartY === null) return;
+      const deltaY = touchStartY - e.changedTouches[0].clientY; // positive = finger moved up = scroll-down intent
       touchStartY = null;
       if (Math.abs(deltaY) < SWIPE_THRESHOLD) return; // a tap, or too small to count as a swipe
+      const at = settledSection();
+      if (!at) return; // mid-transition between sections
+      const down = deltaY > 0;
+
+      if (at === hero) { if (down) smoothScrollToSection(filmSection); return; }
+      if (at === footerSection) { if (!down) smoothScrollToSection(filmSection); return; }
+
+      // Film section
+      if (sectionTransitionLock) return;
       if (phase === 'list' && scrollLocked) return; // still animating the last step
-      handleScrollIntent(deltaY);
+      if (handleScrollIntent(deltaY)) return;
+      // handleScrollIntent released it — out of the list, to the hero or footer
+      smoothScrollToSection(down ? footerSection : hero);
     }, { passive: true });
 
     // Establishes where the carousel's active slot lives: columnLeftX (the
