@@ -478,7 +478,7 @@
     .intro-lead {
       grid-row: 2;
       position: relative; /* anchors .intro-kicker above it */
-      max-width: 13em; /* narrow enough that the headline wraps onto two lines */
+      max-width: 13em; /* narrow enough that the headline wraps onto two lines (em-based, so it scales down with mobile's smaller size) */
       font-family: 'Neue Television', 'Riforma', sans-serif;
       font-weight: 400;
       font-size: 54px;
@@ -497,7 +497,7 @@
       bottom: 100%;
       left: 0;
       right: 0;
-      margin-bottom: -6px; /* overlaps the empty space in both lines' font boxes for a very tight fit */
+      margin-bottom: -4px; /* overlaps the empty space in both lines' font boxes for a very tight fit */
       font-family: 'Times New Roman', Times, serif;
       font-weight: bold;
       font-size: 40px;
@@ -903,9 +903,9 @@
 
       .hero-copy { left: 50%; transform: translateX(-50%); max-width: calc(100vw - 40px); }
       .hero-intro > * { max-width: calc(100vw - 40px); }
-      .intro-lead { font-size: 30px; letter-spacing: -1px; max-width: none; }
+      .intro-lead { font-size: 30px; letter-spacing: -1px; }
       .intro-quote { font-size: 22px; }
-      .intro-kicker { font-size: 22px; margin-bottom: -3px; }
+      .intro-kicker { font-size: 22px; margin-bottom: -1px; }
 
     }
 
