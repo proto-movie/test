@@ -446,39 +446,68 @@
        thing shown on entering the film section, positioned by JS to line up
        with the loading animation's stills; that coupling is gone now that
        it's static copy sitting over the hero video instead). */
-    .hero-intro {
+    /* One shared column for all the hero copy (intro line + headline, and
+       the quote) so every line starts at the same left edge. The column
+       shrinks to its widest line and starts 10% in from the left on
+       desktop/tablet (centered on mobile, see the 768px query); its three
+       rows (1fr / auto / 1fr) keep the headline vertically centered while
+       the quote sits at the bottom. Pointer events pass through to the
+       hero underneath — none of this copy is clickable. */
+    .hero-copy {
       position: absolute;
-      bottom: 76px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+      top: 0;
+      bottom: 0;
+      left: 10%;
+      width: max-content;
+      max-width: 80%;
+      display: grid;
+      grid-template-rows: 1fr auto 1fr;
+      grid-template-columns: minmax(0, 100%); /* never wider than the column, so long headlines wrap instead of overflowing */
+      justify-items: start;
+      text-align: left;
       z-index: 10;
+      pointer-events: none;
+    }
+    .hero-intro {
+      grid-row: 3;
+      align-self: end;
+      padding-bottom: 76px;
     }
     .hero-intro > * { max-width: 800px; }
 
-    /* Independently centered (both axes) over the hero video — decoupled
-       from .hero-intro's left-aligned layout, which still positions the
-       quote below it. */
     .intro-lead {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 82%;
-      z-index: 10;
+      grid-row: 2;
+      position: relative; /* anchors .intro-kicker above it */
+      max-width: 13em; /* narrow enough that the headline wraps onto two lines */
       font-family: 'Neue Television', 'Riforma', sans-serif;
       font-weight: 400;
       font-size: 54px;
       line-height: 100%;
       letter-spacing: -1px;
       text-transform: uppercase;
-      text-align: center;
       white-space: pre-line;
       color: #fff;
     }
+
+    /* Intro line from the sheet's "intro" row, sitting just above the
+       headline in the quote's typeface. Hangs off the headline's top edge
+       (bottom: 100%) so the headline itself stays centered on the video. */
+    .intro-kicker {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      right: 0;
+      margin-bottom: -6px; /* overlaps the empty space in both lines' font boxes for a very tight fit */
+      font-family: 'Times New Roman', Times, serif;
+      font-weight: bold;
+      font-size: 40px;
+      line-height: 100%;
+      letter-spacing: 0;
+      text-transform: none;
+      white-space: nowrap; /* stay one line even where it's wider than a short headline */
+      color: #fff;
+    }
+    .intro-kicker:empty { display: none; }
 
     .intro-quote {
       font-family: 'Times New Roman', Times, serif;
@@ -872,9 +901,11 @@
          centered on both axes via the base .hero-headline rule. */
       .hero-headline { width: 90%; font-size: 30px; letter-spacing: -1px; max-width: calc(100vw - 40px); }
 
+      .hero-copy { left: 50%; transform: translateX(-50%); max-width: calc(100vw - 40px); }
       .hero-intro > * { max-width: calc(100vw - 40px); }
-      .intro-lead { width: 90%; font-size: 30px; letter-spacing: -1px; }
-      .intro-quote { width: calc(100vw - 40px); font-size: 22px; }
+      .intro-lead { font-size: 30px; letter-spacing: -1px; max-width: none; }
+      .intro-quote { font-size: 22px; }
+      .intro-kicker { font-size: 22px; margin-bottom: -3px; }
 
     }
 
@@ -1042,13 +1073,13 @@
       </svg>
     </a>
 
-    <p class="intro-lead">Gather your friends,
-it's time for a Halloween
-sleepover film marathon.</p>
+    <div class="hero-copy">
+      <p class="intro-lead"><span class="intro-kicker">A curation to die for</span><span class="intro-lead-text">The Halloween Sleepover collection</span></p>
 
-    <div class="hero-intro" id="heroIntro">
-      <p class="intro-quote">If it gets too real,
+      <div class="hero-intro" id="heroIntro">
+        <p class="intro-quote">If it gets too real,
 you can always turn it off.</p>
+      </div>
     </div>
 
     <button class="unmute-btn" id="unmuteBtn" aria-label="Unmute">
@@ -1750,13 +1781,14 @@ you can always turn it off.</p>
     }
 
     // Intro-panel copy (the headline + quote shown before scrolling into the
-    // film list) comes from the INTRO_PAGE tab — only its "heading" and
-    // "quote" rows are wired up (the sheet has a couple of other rows too,
+    // film list) comes from the INTRO_PAGE tab — only its "intro", "heading"
+    // and "quote" rows are wired up (the sheet has a couple of other rows too,
     // for copy that isn't on this page). Same live-with-embedded-fallback
     // pattern as everything else above.
     const INTRO_JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=INTRO_PAGE&tqx=out:json`;
     const INTRO_FALLBACK = {
-      heading: "Gather your friends, it's time for a Halloween sleepover film marathon.",
+      intro: "A curation to die for",
+      heading: "The Halloween Sleepover collection",
       quote: "If it gets too real, you can always turn it off."
     };
 
@@ -1788,7 +1820,7 @@ you can always turn it off.</p>
     }
 
     function breakIntoThreeLines(text) {
-      if (text.length < 20) return text; // short enough as one line
+      if (text.length < 45) return text; // a short title — let it wrap naturally instead
       const third = text.length / 3;
       const commaIdx = text.indexOf(',');
       // A comma close to the ideal first-third mark reads as the more
@@ -1838,28 +1870,30 @@ you can always turn it off.</p>
         for (let i = 1; i < rows.length; i++) {
           const cells = rows[i].c;
           const key = (cells && cells[0] && cells[0].v) ? String(cells[0].v).trim().toLowerCase() : '';
-          if (!key) continue; // only "heading" and "quote" rows are keyed — skip the rest
+          if (!key) continue; // only the "intro", "heading" and "quote" rows are keyed — skip the rest
           const entry = {};
           langCols.forEach((lang, idx) => {
             if (!lang) return;
             const cell = cells[idx + 1];
-            if (cell && cell.v) entry[lang] = cleanIntroText(cell.v);
+            if (!cell || !cell.v) return;
+            const value = cleanIntroText(cell.v);
+            entry[lang] = /^n\/?a$/i.test(value) ? '' : value; // "n/a" = deliberately no copy for this language
           });
           map[key] = entry;
         }
         sheetIntro = map;
-        if (currentLang !== 'EN') applyLanguage(currentLang);
+        applyLanguage(currentLang); // EN reads from the sheet too, so refresh even in EN
       } catch (err) {
         console.warn('[debug menu] Could not load live intro text from the sheet — using embedded fallback.', err);
       }
     }
 
     function introFor(key, lang) {
-      const breaker = key === 'heading' ? breakIntoThreeLines : breakAfterFirstComma;
       const fallback = INTRO_FALLBACK[key];
-      if (lang === 'EN') return breaker(fallback);
-      const live = sheetIntro && sheetIntro[key] && sheetIntro[key][lang];
-      return breaker(live || fallback);
+      const row = sheetIntro && sheetIntro[key];
+      if (key === 'intro') return (row && lang in row) ? row[lang] : fallback; // one short line, no breaking; '' hides it
+      const breaker = key === 'heading' ? breakIntoThreeLines : breakAfterFirstComma;
+      return breaker((row && row[lang]) || fallback);
     }
 
     // Footer headline ("Press play to start watching") comes from the FOOTER
@@ -1916,8 +1950,10 @@ you can always turn it off.</p>
       const titleEls   = document.querySelectorAll('.film-title');
       const imgs       = document.querySelectorAll('.tile-image img');
       const synopsisEls = document.querySelectorAll('.film-synopsis');
-      const introLead  = document.querySelector('.intro-lead');
+      const introKicker = document.querySelector('.intro-kicker');
+      const introLead  = document.querySelector('.intro-lead-text');
       const introQuote = document.querySelector('.intro-quote');
+      if (introKicker) introKicker.textContent = introFor('intro', lang);
       if (introLead)  introLead.textContent  = introFor('heading', lang);
       if (introQuote) introQuote.textContent = introFor('quote', lang);
       const footerHeadline = document.querySelector('.footer-section .hero-headline');
