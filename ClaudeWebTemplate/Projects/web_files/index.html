@@ -2138,12 +2138,26 @@ you can always turn it off.</p>
     // math and the CSS it's painted with never disagree.
     let LOAD_BOX_W = 363, LOAD_BOX_H = 204.1875; // size (16:9) every still is revealed at during loading
     const VERTICAL_SHIFT = -100; // shifts the loader and settled list up together
+    const MOBILE_ACTIVE_Y = 90;  // mobile's active-tile top, clear of the header (see syncColumnCenter)
+    const MOBILE_TILE_GAP = 16;
     function centerY() { return window.innerHeight / 2 + VERTICAL_SHIFT; }
 
     const MOBILE_BREAKPOINT = 768;  // keep in sync with the CSS @media rules
     const TABLET_BREAKPOINT = 1100; // keep in sync with the CSS @media rule
     function isMobile() { return window.innerWidth <= MOBILE_BREAKPOINT; }
     function isTablet() { return window.innerWidth > MOBILE_BREAKPOINT && window.innerWidth <= TABLET_BREAKPOINT; }
+
+    // Height of the viewport with the browser's toolbars fully showing
+    // (100svh) — the smallest the visible area ever gets, so a layout sized
+    // to it stays put while Safari's toolbar grows and shrinks.
+    function smallViewportH() {
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:100svh;visibility:hidden;pointer-events:none;';
+      document.body.appendChild(probe);
+      const h = probe.getBoundingClientRect().height;
+      probe.remove();
+      return h || window.innerHeight; // no svh support → plain innerHeight
+    }
 
     // Recomputes every size the carousel depends on for the current viewport
     // and mirrors it into CSS custom properties. Called on load and resize,
@@ -2157,12 +2171,19 @@ you can always turn it off.</p>
         // it, but the active still still grows taller than a compact one —
         // a portrait-like hero crop (object-fit:cover fills the extra
         // height), with the overlay sitting over the bottom of it.
-        const activeExtraH = 380;
+        // Capped so a slice of the next film always peeks in below the
+        // active one above Safari's toolbar (MOBILE_PEEK_H), matching the
+        // passed film peeking in above it (ACTIVE_Y - TILE_GAP) — on shorter
+        // phones the active still gives up height rather than push the
+        // next film out of sight.
+        const MOBILE_PEEK_H = 70;
+        const activeH = Math.min(imgH + 380, Math.round(smallViewportH() - MOBILE_ACTIVE_Y - MOBILE_TILE_GAP - MOBILE_PEEK_H));
+        const activeExtraH = Math.max(0, activeH - imgH);
         LOAD_BOX_W = w;
         LOAD_BOX_H = imgH;
         ACTIVE_H = imgH + activeExtraH;
         COMPACT_H = imgH;
-        TILE_GAP = 16;
+        TILE_GAP = MOBILE_TILE_GAP;
         root.setProperty('--nav-w', '0px');
         root.setProperty('--tile-w', w + 'px');
         root.setProperty('--tile-h', imgH + 'px');
@@ -3200,7 +3221,7 @@ you can always turn it off.</p>
       // centering it would push its bottom (and the overlaid info) off
       // screen — pin it near the top instead, clear of the header, so the
       // whole opened tile reads top-to-bottom as you scroll to it.
-      ACTIVE_Y = isMobile() ? 90 : (centerY() - LOAD_BOX_H / 2);
+      ACTIVE_Y = isMobile() ? MOBILE_ACTIVE_Y : (centerY() - LOAD_BOX_H / 2);
       positionFlashLogo();
       positionGlow();
       if (phase === 'list') { layoutTiles(); layoutNav(); }
