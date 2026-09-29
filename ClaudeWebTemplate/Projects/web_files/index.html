@@ -1862,6 +1862,40 @@ you can always turn it off.</p>
       return breaker(live || fallback);
     }
 
+    // Footer headline ("Press play to start watching") comes from the FOOTER
+    // tab — a single copy row under a language-code header row. Same
+    // live-with-embedded-fallback pattern as everything else above.
+    const FOOTER_JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=FOOTER&tqx=out:json`;
+    const FOOTER_FALLBACK = 'Press play to start watching';
+    let sheetFooter = null; // { EN:"Press play to start watching", FR:"...", ... }
+
+    async function loadFooterText() {
+      try {
+        const res = await fetch(FOOTER_JSON_URL);
+        const text = await res.text();
+        const json = JSON.parse(text.slice(text.indexOf('(') + 1, text.lastIndexOf(')')));
+        const rows = json.table.rows;
+        if (!rows || rows.length < 2) return;
+        const header = rows[0].c.map(c => (c && c.v) ? String(c.v).trim().toUpperCase() : null);
+        const cells = rows[1].c;
+        const entry = {};
+        header.forEach((lang, idx) => {
+          if (!lang) return;
+          const cell = cells[idx];
+          if (cell && cell.v) entry[lang] = String(cell.v).trim();
+        });
+        sheetFooter = entry;
+        if (currentLang !== 'EN') applyLanguage(currentLang);
+      } catch (err) {
+        console.warn('[debug menu] Could not load live footer text from the sheet — using embedded fallback.', err);
+      }
+    }
+
+    function footerFor(lang) {
+      if (lang === 'EN') return FOOTER_FALLBACK;
+      return (sheetFooter && sheetFooter[lang]) || FOOTER_FALLBACK;
+    }
+
     // Title card over the loading flash, per language. Spanish splits into
     // its two files (ES → Spain, LATAM → Latin America); anything without
     // its own file falls back to English.
@@ -1886,6 +1920,8 @@ you can always turn it off.</p>
       const introQuote = document.querySelector('.intro-quote');
       if (introLead)  introLead.textContent  = introFor('heading', lang);
       if (introQuote) introQuote.textContent = introFor('quote', lang);
+      const footerHeadline = document.querySelector('.footer-section .hero-headline');
+      if (footerHeadline) footerHeadline.textContent = footerFor(lang);
       films.forEach((film, i) => {
         const t = titleFor(film, lang);
         const slotLabel = slotLabelFor(i, lang);
@@ -3388,6 +3424,7 @@ you can always turn it off.</p>
     });
     loadSlotLabels();     // async — fetches live time-of-day labels from the TOD tab, non-blocking
     loadIntroText();      // async — fetches live intro heading/quote from the INTRO_PAGE tab, non-blocking
+    loadFooterText();     // async — fetches live footer headline from the FOOTER tab, non-blocking
     // Sync after layout settles
     requestAnimationFrame(() => requestAnimationFrame(() => { syncColumnCenter(); }));
     window.addEventListener('resize', () => { updateResponsiveVars(); buildFilmTrack(); syncColumnCenter(); });
