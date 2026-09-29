@@ -903,13 +903,18 @@
 
       /* Safari 26 (Liquid Glass) leaves a strip below even 100lvh, behind
          the floating toolbar and home indicator (~60–100px on an iPhone),
-         where the next section's black top showed through. Run the hero
-         on past the screen's bottom by --hero-bleed so its video fills
-         that strip, and keep its copy and the ↓ hint inside the original
-         100vh so nothing moves or ends up under the toolbar. */
-      .hero { --hero-bleed: 120px; height: calc(100vh + var(--hero-bleed)); }
-      .hero-copy { bottom: var(--hero-bleed); }
-      .hero > .key-hint { bottom: calc(28px + var(--hero-bleed)); }
+         where the next section's black top showed through. Every section
+         runs on past the screen's bottom by --section-bleed so its own
+         content fills that strip — the hero's video, the film list's
+         peeking films, the footer's video — while anything pinned to a
+         section's bottom or center stays inside the original 100vh so
+         nothing moves or ends up under the toolbar. The film track's
+         height is set from JS (buildFilmTrack), which adds the same bleed. */
+      :root { --section-bleed: 120px; }
+      .hero, .film-section, .footer-section { height: calc(100vh + var(--section-bleed)); }
+      .hero-copy { bottom: var(--section-bleed); }
+      .hero > .key-hint { bottom: calc(28px + var(--section-bleed)); }
+      .hero-headline { top: calc(50% - var(--section-bleed) / 2); }
 
       /* Lines up with the MUBI logo's left edge (.hero-logo, left: 32px). */
       .hero-copy { left: 32px; max-width: calc(100vw - 64px); }
@@ -2252,7 +2257,9 @@ you can always turn it off.</p>
         filmTrack.appendChild(m);
         return m;
       });
-      filmTrack.style.height = `calc(${n} * 100vh)`;
+      // + the mobile bleed (0 elsewhere) so the sticky film section's run-on
+      // under Safari's toolbar isn't covered by the footer — see --section-bleed.
+      filmTrack.style.height = `calc(${n} * 100vh + var(--section-bleed, 0px))`;
     }
     // Where a jump "into the film section" lands: the active film's screen.
     function filmScrollTarget() {
