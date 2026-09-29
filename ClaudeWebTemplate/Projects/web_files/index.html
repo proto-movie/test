@@ -947,6 +947,12 @@
       -webkit-backdrop-filter: blur(6px);
     }
     .lang-region-panel[hidden] { display: none; }
+    .viewport-readout {
+      margin-top: 12px;
+      font: 11px/1.4 ui-monospace, Menlo, monospace;
+      color: #fff;
+      white-space: pre;
+    }
 
     .panel-close-btn {
       position: absolute;
@@ -1046,6 +1052,9 @@
         <option value="ROW">ROW</option>
       </select>
     </div>
+    <!-- Temporary: viewport numbers for diagnosing the black strip under
+         Safari 26's floating (Liquid Glass) toolbar. Remove once fixed. -->
+    <pre class="viewport-readout" id="viewportReadout"></pre>
   </div>
 
   <!-- ── SECTION 1: Hero video ── -->
@@ -2905,9 +2914,40 @@ you can always turn it off.</p>
     const langRegionPanel = document.getElementById('langRegionPanel');
     const panelCloseBtn = document.getElementById('panelCloseBtn');
 
+    // Temporary viewport readout (see .viewport-readout) — each CSS
+    // viewport unit measured with a probe element, next to what JS reports.
+    function updateViewportReadout() {
+      const out = document.getElementById('viewportReadout');
+      if (!out || langRegionPanel.hidden) return;
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:absolute;top:0;left:0;width:1px;visibility:hidden;pointer-events:none;';
+      document.body.appendChild(probe);
+      const unit = h => { probe.style.height = h; return probe.getBoundingClientRect().height; };
+      const units = { vh: unit('100vh'), lvh: unit('100lvh'), svh: unit('100svh'), dvh: unit('100dvh'), safeB: unit('env(safe-area-inset-bottom)') };
+      probe.remove();
+      const hero = document.querySelector('.hero').getBoundingClientRect();
+      const vv = window.visualViewport;
+      out.textContent = [
+        `100vh   ${units.vh}`,
+        `100lvh  ${units.lvh}`,
+        `100svh  ${units.svh}`,
+        `100dvh  ${units.dvh}`,
+        `safe-b  ${units.safeB}`,
+        `innerH  ${window.innerHeight}`,
+        `clientH ${document.documentElement.clientHeight}`,
+        `vv.h    ${vv ? Math.round(vv.height * 10) / 10 : '-'}`,
+        `screenH ${screen.height}`,
+        `hero    ${Math.round(hero.top)}→${Math.round(hero.bottom)}`,
+        `scrollY ${Math.round(window.scrollY)}`,
+      ].join('\n');
+    }
+    window.addEventListener('resize', updateViewportReadout);
+    window.addEventListener('scroll', updateViewportReadout, { passive: true });
+
     function openLangRegionPanel() {
       langRegionPanel.hidden = false;
       globeBtn.hidden = true;
+      updateViewportReadout();
     }
     function closeLangRegionPanel() {
       langRegionPanel.hidden = true;
