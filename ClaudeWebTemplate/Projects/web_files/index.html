@@ -901,6 +901,16 @@
          centered on both axes via the base .hero-headline rule. */
       .hero-headline { width: 90%; font-size: 30px; letter-spacing: -1px; max-width: calc(100vw - 40px); }
 
+      /* Safari 26 (Liquid Glass) leaves a strip below even 100lvh, behind
+         the floating toolbar and home indicator (~60–100px on an iPhone),
+         where the next section's black top showed through. Run the hero
+         on past the screen's bottom by --hero-bleed so its video fills
+         that strip, and keep its copy and the ↓ hint inside the original
+         100vh so nothing moves or ends up under the toolbar. */
+      .hero { --hero-bleed: 120px; height: calc(100vh + var(--hero-bleed)); }
+      .hero-copy { bottom: var(--hero-bleed); }
+      .hero > .key-hint { bottom: calc(28px + var(--hero-bleed)); }
+
       /* Lines up with the MUBI logo's left edge (.hero-logo, left: 32px). */
       .hero-copy { left: 32px; max-width: calc(100vw - 64px); }
       .hero-intro > * { max-width: calc(100vw - 64px); }
