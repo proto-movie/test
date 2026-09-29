@@ -449,7 +449,7 @@
     /* One shared column for all the hero copy (intro line + headline, and
        the quote) so every line starts at the same left edge. The column
        shrinks to its widest line and starts 10% in from the left on
-       desktop/tablet (centered on mobile, see the 768px query); its three
+       desktop/tablet (in line with the logo on mobile, see the 768px query); its three
        rows (1fr / auto / 1fr) keep the headline vertically centered while
        the quote sits at the bottom. Pointer events pass through to the
        hero underneath — none of this copy is clickable. */
@@ -901,8 +901,9 @@
          centered on both axes via the base .hero-headline rule. */
       .hero-headline { width: 90%; font-size: 30px; letter-spacing: -1px; max-width: calc(100vw - 40px); }
 
-      .hero-copy { left: 50%; transform: translateX(-50%); max-width: calc(100vw - 40px); }
-      .hero-intro > * { max-width: calc(100vw - 40px); }
+      /* Lines up with the MUBI logo's left edge (.hero-logo, left: 32px). */
+      .hero-copy { left: 32px; max-width: calc(100vw - 64px); }
+      .hero-intro > * { max-width: calc(100vw - 64px); }
       .intro-lead { font-size: 30px; letter-spacing: -1px; }
       .intro-quote { font-size: 22px; }
       .intro-kicker { font-size: 22px; margin-bottom: -1px; }
