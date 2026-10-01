@@ -87,6 +87,22 @@
   .poster h4{ font-family:var(--font-display); font-style:italic; font-size:13px; line-height:1.15; color:var(--overlay); margin:0 0 2px; }
   .poster span{ font-family:var(--font-mono); font-size:9px; letter-spacing:.03em; color:rgba(244,241,233,.72); text-transform:uppercase; }
 
+  .more-settings{ padding:8px 20px; }
+  .more-setting-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:16px 0; border-bottom:1px solid var(--hairline); }
+  .more-setting-copy{ min-width:0; }
+  .more-setting-name{ font-family:var(--font-riforma); font-weight:500; font-size:15.5px; color:var(--paper); margin:0 0 2px; }
+  .more-setting-desc{ font-family:var(--font-riforma); font-size:12.5px; color:var(--paper-dim); margin:0; line-height:1.35; }
+  .more-toggle{
+    position:relative; width:46px; height:28px; border-radius:16px; flex-shrink:0; border:none; padding:0;
+    background:rgba(120,120,128,.32); transition:background .2s ease; -webkit-tap-highlight-color:transparent;
+  }
+  .more-toggle::after{
+    content:''; position:absolute; top:2px; left:2px; width:24px; height:24px; border-radius:50%; background:#fff;
+    box-shadow:0 2px 4px rgba(0,0,0,.2); transition:transform .2s ease;
+  }
+  .more-toggle.is-on{ background:#001489; }
+  .more-toggle.is-on::after{ transform:translateX(18px); }
+
   .placeholder-screen{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
     font-family:var(--font-ui); font-weight:600; font-size:15px; color:rgba(24,20,15,.35); }
 
@@ -209,10 +225,9 @@
   .gpill{ flex:0 0 auto; font-family:var(--font-riforma); font-size:12.5px; font-weight:500; color:rgba(24,20,15,.72);
     border:1px solid rgba(24,20,15,.28); border-radius:50px; padding:6px 14px; white-space:nowrap; background:none; -webkit-tap-highlight-color:transparent; }
   .gpill.active{ background:var(--paper); color:var(--ink); border-color:var(--paper); }
-  #dirPills .gpill.active{ border-radius:0; }
 
-  #segFilms.list-mode, #segCollections.list-mode{ background:#F2F2F2; }
-  #segFilms.list-mode .gpill:not(.active), #segCollections.list-mode .gpill:not(.active){ background:#fff; border-color:transparent; }
+  #segFilms.list-mode, #segDirectors.list-mode{ background:#F2F2F2; }
+  #segFilms.list-mode .gpill:not(.active), #segDirectors.list-mode .gpill:not(.active){ background:#fff; border-color:transparent; }
 
   .expl-list{ display:flex; flex-direction:column; gap:8px; padding:6px 20px 6px; }
   .expl-card{ position:relative; aspect-ratio:371/209; overflow:hidden; border-radius:3px; background:#d0d0d0; }
@@ -226,23 +241,23 @@
   .expl-rating{ position:absolute; top:10px; right:12px; display:none; align-items:center; gap:4px; color:#fff; font-family:var(--font-riforma); font-size:13px; font-weight:500; }
   .rating-active .expl-rating{ display:flex; }
 
-  #filmGrid.list-mode{ gap:10px; }
-  #filmGrid.list-mode .expl-card{
+  #filmGrid.list-mode, #directorFilmsGrid.list-mode{ gap:10px; }
+  #filmGrid.list-mode .expl-card, #directorFilmsGrid.list-mode .expl-card{
     aspect-ratio:auto; display:flex; align-items:center; gap:12px;
     overflow:visible; border-radius:12px; background:#fff; padding:0 12px 0 0;
   }
-  #filmGrid.list-mode .expl-thumb{
+  #filmGrid.list-mode .expl-thumb, #directorFilmsGrid.list-mode .expl-thumb{
     position:relative; inset:auto; flex-shrink:0; width:45%; aspect-ratio:371/209;
     border-radius:5px 0 0 5px; overflow:hidden; background:#d0d0d0;
   }
-  #filmGrid.list-mode .expl-thumb .scrim{ display:none; }
-  #filmGrid.list-mode .expl-card .overlay{
+  #filmGrid.list-mode .expl-thumb .scrim, #directorFilmsGrid.list-mode .expl-thumb .scrim{ display:none; }
+  #filmGrid.list-mode .expl-card .overlay, #directorFilmsGrid.list-mode .expl-card .overlay{
     position:relative; inset:auto; flex:1; min-width:0; padding:0; justify-content:center;
   }
-  #filmGrid.list-mode .expl-card h3{ color:#3A3A3C; font-size:15px; font-weight:500; text-transform:none; margin-bottom:2px; }
-  #filmGrid.list-mode .expl-card p{ color:#6E6E73; text-transform:none; }
-  #filmGrid.list-mode .expl-card p .fd-director{ color:#6E6E73; font-weight:400; }
-  #filmGrid.list-mode .expl-card p .fd-meta{ display:none; }
+  #filmGrid.list-mode .expl-card h3, #directorFilmsGrid.list-mode .expl-card h3{ color:#3A3A3C; font-size:15px; font-weight:500; text-transform:none; margin-bottom:2px; }
+  #filmGrid.list-mode .expl-card p, #directorFilmsGrid.list-mode .expl-card p{ color:#6E6E73; text-transform:none; }
+  #filmGrid.list-mode .expl-card p .fd-director, #directorFilmsGrid.list-mode .expl-card p .fd-director{ color:#6E6E73; font-weight:400; }
+  #filmGrid.list-mode .expl-card p .fd-meta, #directorFilmsGrid.list-mode .expl-card p .fd-meta{ display:none; }
 
   #filmGrid.poster-mode, #genreDetailGrid.poster-mode{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px 12px; }
   #filmGrid.poster-mode .expl-card, #genreDetailGrid.poster-mode .expl-card{ aspect-ratio:2/3; border-radius:8px; }
@@ -292,9 +307,19 @@
   .director-name{ font-family:var(--font-riforma); font-size:12.5px; font-weight:500; text-transform:uppercase; color:var(--paper); margin:8px 0 1px; letter-spacing:.01em; }
   .director-count{ font-family:var(--font-riforma); font-size:12px; font-weight:500; text-transform:uppercase; color:rgba(24,20,15,.5); }
 
+  .director-grid.list-mode{ display:flex; flex-direction:column; gap:10px; }
+  .director-grid.list-mode .director-card{
+    display:grid; grid-template-columns:45% 1fr; grid-template-rows:1fr auto auto 1fr; column-gap:12px;
+    border-radius:12px; background:#fff; padding:0 12px 0 0;
+  }
+  .director-grid.list-mode .director-imgwrap{ grid-row:1 / -1; aspect-ratio:371/209; border-radius:5px 0 0 5px; }
+  .director-grid.list-mode .director-imgwrap img{ object-position:center 25%; }
+  .director-grid.list-mode .director-name{ grid-row:2; font-size:15px; text-transform:none; letter-spacing:0; color:#3A3A3C; margin:0 0 2px; }
+  .director-grid.list-mode .director-count{ grid-row:3; font-size:11px; font-weight:400; text-transform:none; color:#6E6E73; }
+
   .director-tags-row{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 20px 4px; }
   .director-tags-row:empty{ display:none; }
-  .director-tag{ display:inline-flex; align-items:center; gap:8px; padding:6px 8px 6px 14px; border-radius:999px;
+  .director-tag{ display:inline-flex; align-items:center; gap:8px; padding:6px 8px 6px 14px; border-radius:0;
     background:var(--paper); color:var(--ink); font-family:var(--font-riforma); font-size:12.5px; font-weight:500;
     text-transform:uppercase; letter-spacing:.02em; }
   .director-tag-x{ display:flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%;
@@ -308,6 +333,18 @@
     display:flex; align-items:stretch; gap:10px;
     transition:bottom .34s cubic-bezier(.32,.72,0,1);
   }
+  .back-to-top{
+    position:absolute; right:20px; bottom:calc(16px + 62px + 12px + env(safe-area-inset-bottom)); z-index:12;
+    display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border-radius:50%; color:var(--paper);
+    backdrop-filter:blur(28px) saturate(140%); -webkit-backdrop-filter:blur(28px) saturate(140%);
+    background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
+    border:1px solid rgba(255,255,255,1);
+    box-shadow:0 8px 20px rgba(24,20,15,.16), inset 0 1px 0 rgba(255,255,255,.9);
+    opacity:0; pointer-events:none; transform:translateY(10px);
+    transition:opacity .25s ease, transform .34s cubic-bezier(.32,.72,0,1);
+    -webkit-tap-highlight-color:transparent;
+  }
+  .back-to-top.visible{ opacity:1; pointer-events:auto; transform:translateY(0); }
   .tabbar{
     position:relative; height:100%; flex:1 1 auto; min-width:0;
     display:grid; grid-template-columns:repeat(5,1fr); border-radius:31px;
@@ -565,7 +602,22 @@
           <div class="app-header">
             <h1 class="page-title riforma">More</h1>
           </div>
-          <div class="placeholder-screen">Placeholder</div>
+          <div class="more-settings">
+            <div class="more-setting-row">
+              <div class="more-setting-copy">
+                <div class="more-setting-name">List View</div>
+                <p class="more-setting-desc">Show films in Browse as a compact list</p>
+              </div>
+              <button class="more-toggle" id="listViewToggle" role="switch" aria-checked="false" aria-label="Toggle list view"></button>
+            </div>
+            <div class="more-setting-row">
+              <div class="more-setting-copy">
+                <div class="more-setting-name">Directors</div>
+                <p class="more-setting-desc">Show the Directors tab in Browse</p>
+              </div>
+              <button class="more-toggle" id="directorTabToggle" role="switch" aria-checked="false" aria-label="Toggle Directors tab"></button>
+            </div>
+          </div>
         </div>
 
         <!-- SEARCH -->
@@ -650,6 +702,10 @@
           </div>
           <div style="height:110px"></div>
         </div>
+
+        <button class="back-to-top" id="backToTop" aria-label="Back to top">
+          <svg width="16" height="16" viewBox="0 0 12 12" fill="none"><path d="M6 10.5V1.5M1.5 6L6 1.5L10.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
 
         <div class="tabbar-wrap" id="tabbarWrap">
         <nav class="tabbar" id="tabbar">
@@ -1523,30 +1579,49 @@
 })();
 </script>
 <script>
-  // Prototype 1 defaults, previously driven by the settings panel:
-  // Director tab hidden, list and poster views off, Browse tab shown.
+  // Prototype 1 defaults: Director tab hidden, list and poster views off, Browse tab shown.
+  // List view and the Director tab can be switched on from the More tab.
+  function bindMoreToggle(id, apply){
+    var toggle = document.getElementById(id);
+    if(!toggle) return;
+    function set(on){
+      toggle.classList.toggle('is-on', on);
+      toggle.setAttribute('aria-checked', on ? 'true' : 'false');
+      apply(on);
+    }
+    toggle.addEventListener('click', function(){ set(!toggle.classList.contains('is-on')); });
+    set(false);
+  }
+
   (function(){
     var dirTabBtn = document.querySelector('.expl-tab[data-seg="directors"]');
-    if(dirTabBtn) dirTabBtn.style.display = 'none';
+    var filmsTabBtn = document.querySelector('.expl-tab[data-seg="films"]');
+    if(!dirTabBtn) return;
+    bindMoreToggle('directorTabToggle', function(visible){
+      dirTabBtn.style.display = visible ? '' : 'none';
+      if(!visible && dirTabBtn.classList.contains('active') && filmsTabBtn) filmsTabBtn.click();
+    });
   })();
 
   (function(){
     var filmGrid = document.getElementById('filmGrid');
     var segFilms = document.getElementById('segFilms');
-    var segCollections = document.getElementById('segCollections');
+    var segDirectors = document.getElementById('segDirectors');
+    var directorsGrid = document.getElementById('directorsGrid');
+    var directorFilmsGrid = document.getElementById('directorFilmsGrid');
     if(!filmGrid) return;
 
+    // List view applies to films and directors; collections keep their tile layout.
     function setMode(on){
-      filmGrid.classList.toggle('list-mode', on);
-      if(segFilms) segFilms.classList.toggle('list-mode', on);
-      if(segCollections) segCollections.classList.toggle('list-mode', on);
-      if(window.setCollListMode) window.setCollListMode(on);
+      [filmGrid, segFilms, segDirectors, directorsGrid, directorFilmsGrid].forEach(function(el){
+        if(el) el.classList.toggle('list-mode', on);
+      });
       if(on && window.setPosterViewOn) window.setPosterViewOn(false);
     }
 
     window.setListViewOn = setMode;
 
-    setMode(false);
+    bindMoreToggle('listViewToggle', setMode);
   })();
 
   (function(){
@@ -1574,5 +1649,32 @@
     if(searchBrowseBy) searchBrowseBy.style.display = 'none';
     if(searchFieldWrap) searchFieldWrap.style.display = '';
     browseTabBtn.click();
+  })();
+
+  // Back to top: appears once the visible list has scrolled past ~1.5 screens.
+  (function(){
+    var btn = document.getElementById('backToTop');
+    var screenEl = document.getElementById('screen');
+    var genrePanel = document.getElementById('genreDetailPanel');
+    var genreScroll = document.getElementById('genreDetailScroll');
+    if(!btn || !screenEl) return;
+
+    function currentScroller(){
+      if(genrePanel && genrePanel.classList.contains('open')) return genreScroll;
+      return screenEl.querySelector('.panel.active');
+    }
+    function update(){
+      var el = currentScroller();
+      btn.classList.toggle('visible', !!el && el.scrollTop > el.clientHeight * 1.5);
+    }
+
+    // Scroll events don't bubble, so listen in the capture phase for every scroller.
+    screenEl.addEventListener('scroll', update, true);
+    screenEl.addEventListener('click', function(){ requestAnimationFrame(update); });
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var el = currentScroller();
+      if(el) el.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   })();
 </script>
