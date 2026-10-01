@@ -309,11 +309,10 @@
 
   .director-grid.list-mode{ display:flex; flex-direction:column; gap:10px; }
   .director-grid.list-mode .director-card{
-    display:grid; grid-template-columns:45% 1fr; grid-template-rows:1fr auto auto 1fr; column-gap:12px;
+    display:grid; grid-template-columns:25.35% 1fr; grid-template-rows:1fr auto auto 1fr; column-gap:12px;
     border-radius:12px; background:#fff; padding:0 12px 0 0;
   }
-  .director-grid.list-mode .director-imgwrap{ grid-row:1 / -1; aspect-ratio:371/209; border-radius:5px 0 0 5px; }
-  .director-grid.list-mode .director-imgwrap img{ object-position:center 25%; }
+  .director-grid.list-mode .director-imgwrap{ grid-row:1 / -1; aspect-ratio:1/1; border-radius:5px 0 0 5px; }
   .director-grid.list-mode .director-name{ grid-row:2; font-size:15px; text-transform:none; letter-spacing:0; color:#3A3A3C; margin:0 0 2px; }
   .director-grid.list-mode .director-count{ grid-row:3; font-size:11px; font-weight:400; text-transform:none; color:#6E6E73; }
 
@@ -328,13 +327,15 @@
   .director-tag-x:active{ opacity:1; }
 
 
+  /* Sit down in the home indicator area like iOS 26's floating tab bar, not on top of it. */
+  #screen{ --tabbar-bottom:max(12px, calc(env(safe-area-inset-bottom) - 12px)); }
   .tabbar-wrap{
-    position:absolute; left:20px; right:20px; bottom:calc(16px + env(safe-area-inset-bottom)); height:62px; z-index:12;
+    position:absolute; left:20px; right:20px; bottom:var(--tabbar-bottom); height:62px; z-index:12;
     display:flex; align-items:stretch; gap:10px;
     transition:bottom .34s cubic-bezier(.32,.72,0,1);
   }
   .back-to-top{
-    position:absolute; right:20px; bottom:calc(16px + 62px + 12px + env(safe-area-inset-bottom)); z-index:12;
+    position:absolute; right:20px; bottom:calc(var(--tabbar-bottom) + 62px + 12px); z-index:12;
     display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border-radius:50%; color:var(--paper);
     backdrop-filter:blur(28px) saturate(140%); -webkit-backdrop-filter:blur(28px) saturate(140%);
     background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
@@ -1579,9 +1580,9 @@
 })();
 </script>
 <script>
-  // Prototype 1 defaults: Director tab hidden, list and poster views off, Browse tab shown.
-  // List view and the Director tab can be switched on from the More tab.
-  function bindMoreToggle(id, apply){
+  // Prototype 1 defaults: Director tab and list view on, poster view off, Browse tab shown.
+  // List view and the Director tab can be switched off from the More tab.
+  function bindMoreToggle(id, apply, initial){
     var toggle = document.getElementById(id);
     if(!toggle) return;
     function set(on){
@@ -1590,7 +1591,7 @@
       apply(on);
     }
     toggle.addEventListener('click', function(){ set(!toggle.classList.contains('is-on')); });
-    set(false);
+    set(!!initial);
   }
 
   (function(){
@@ -1600,7 +1601,7 @@
     bindMoreToggle('directorTabToggle', function(visible){
       dirTabBtn.style.display = visible ? '' : 'none';
       if(!visible && dirTabBtn.classList.contains('active') && filmsTabBtn) filmsTabBtn.click();
-    });
+    }, true);
   })();
 
   (function(){
@@ -1621,7 +1622,7 @@
 
     window.setListViewOn = setMode;
 
-    bindMoreToggle('listViewToggle', setMode);
+    bindMoreToggle('listViewToggle', setMode, true);
   })();
 
   (function(){
