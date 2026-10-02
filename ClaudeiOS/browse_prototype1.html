@@ -338,6 +338,10 @@
     display:flex; align-items:stretch; gap:10px;
     transition:bottom .34s cubic-bezier(.32,.72,0,1);
   }
+  /* TEMP: keyboard debug readout, shown while search is focused */
+  .kb-debug{ position:absolute; top:calc(env(safe-area-inset-top) + 6px); left:50%; transform:translateX(-50%); z-index:60;
+    padding:5px 9px; border-radius:6px; background:rgba(0,0,0,.8); color:#0f0; font:11px/1.4 ui-monospace, Menlo, monospace;
+    white-space:pre; pointer-events:none; display:none; }
   .back-to-top{
     position:absolute; right:20px; bottom:calc(var(--tabbar-bottom) + 70px + 12px); z-index:12;
     display:flex; align-items:center; justify-content:center; width:48px; height:48px; padding:0; border-radius:50%; color:var(--paper);
@@ -709,6 +713,8 @@
           <div style="height:110px"></div>
         </div>
 
+        <div class="kb-debug" id="kbDebug"></div>
+
         <button class="back-to-top" id="backToTop" aria-label="Back to top">
           <svg width="16" height="16" viewBox="0 0 12 12" fill="none"><path d="M6 10.5V1.5M1.5 6L6 1.5L10.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
@@ -959,9 +965,24 @@
     // so the results start at the top and the field sits just above the keyboard.
     var stageEl = document.querySelector('.stage');
     var baseViewportHeight = window.innerHeight;
+    var kbDebug = document.getElementById('kbDebug');
+    function showKbDebug(before){
+      if(!kbDebug) return;
+      var vv = window.visualViewport;
+      var se = document.scrollingElement || document.documentElement;
+      var r = stageEl ? stageEl.getBoundingClientRect() : { top:0, height:0 };
+      kbDebug.style.display = searchPill && searchPill.classList.contains('focused') ? 'block' : 'none';
+      kbDebug.textContent =
+        'inner ' + window.innerHeight + '  screen ' + screen.height + '  base ' + Math.round(baseViewportHeight) + '\n' +
+        'vv h ' + (vv ? Math.round(vv.height) : '-') + '  top ' + (vv ? Math.round(vv.offsetTop) : '-') + '  pageTop ' + (vv ? Math.round(vv.pageTop) : '-') + '\n' +
+        'scrollY ' + Math.round(before) + ' -> ' + Math.round(window.scrollY) + '  doc ' + Math.round(se.scrollTop) + '\n' +
+        'stage top ' + Math.round(r.top) + '  h ' + Math.round(r.height) + '  body ' + Math.round(document.body.getBoundingClientRect().top);
+    }
     function liftAboveKeyboard(){
       var vv = window.visualViewport;
       if(!vv || !stageEl || !tabbarWrapEl) return;
+      var scrollBefore = window.scrollY;
+      setTimeout(function(){ showKbDebug(scrollBefore); }, 0);
       // Undo any document scroll iOS adds, then match the stage to exactly what is visible.
       if(window.scrollY || window.scrollX) window.scrollTo(0, 0);
       stageEl.style.top = vv.offsetTop + 'px';
@@ -984,6 +1005,7 @@
     });
     function resetStage(){
       if(stageEl){ stageEl.style.top = ''; stageEl.style.bottom = ''; stageEl.style.height = ''; }
+      if(kbDebug) kbDebug.style.display = 'none';
       if(tabbarWrapEl) tabbarWrapEl.style.bottom = '';
     }
     if(window.visualViewport){
