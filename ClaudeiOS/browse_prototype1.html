@@ -329,12 +329,6 @@
     display:flex; align-items:stretch; gap:10px;
     transition:bottom .34s cubic-bezier(.32,.72,0,1);
   }
-  /* TEMP: safe-area debug readout, tap to hide */
-  .sa-debug{ position:absolute; top:calc(env(safe-area-inset-top) + 2px); left:50%; transform:translateX(-50%); z-index:50;
-    padding:4px 8px; border-radius:6px; background:rgba(0,0,0,.75); color:#0f0; font:10px/1.35 ui-monospace, Menlo, monospace;
-    white-space:pre; pointer-events:auto; }
-  .sa-probe{ position:absolute; visibility:hidden; pointer-events:none;
-    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
   .back-to-top{
     position:absolute; right:20px; bottom:calc(var(--tabbar-bottom) + 62px + 12px); z-index:12;
     display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border-radius:50%; color:var(--paper);
@@ -722,9 +716,6 @@
           </div>
           <div style="height:110px"></div>
         </div>
-
-        <div class="sa-probe" id="saProbe"></div>
-        <div class="sa-debug" id="saDebug"></div>
 
         <button class="back-to-top" id="backToTop" aria-label="Back to top">
           <svg width="16" height="16" viewBox="0 0 12 12" fill="none"><path d="M6 10.5V1.5M1.5 6L6 1.5L10.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1729,22 +1720,4 @@
     });
   })();
 
-  // TEMP: show the safe-area insets and viewport sizes the webview reports. Tap to hide.
-  (function(){
-    var out = document.getElementById('saDebug');
-    var probe = document.getElementById('saProbe');
-    if(!out || !probe) return;
-    function update(){
-      var cs = getComputedStyle(probe);
-      var vv = window.visualViewport;
-      out.textContent =
-        'safe top ' + parseFloat(cs.paddingTop) + '  bottom ' + parseFloat(cs.paddingBottom) + '\n' +
-        'inner ' + window.innerWidth + '×' + window.innerHeight + '  screen ' + screen.width + '×' + screen.height + '\n' +
-        'vv ' + (vv ? Math.round(vv.width) + '×' + Math.round(vv.height) : 'n/a') + '  dpr ' + window.devicePixelRatio;
-    }
-    update();
-    window.addEventListener('resize', update);
-    if(window.visualViewport) window.visualViewport.addEventListener('resize', update);
-    out.addEventListener('click', function(){ out.style.display = 'none'; });
-  })();
 </script>
