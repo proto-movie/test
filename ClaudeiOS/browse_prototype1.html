@@ -125,6 +125,10 @@
   }
   .solo-action-wrap{ position:relative; }
   .icon-btn > svg, .icon-btn-solo > svg{ transform:scale(1.25); }
+  .icon-btn{ position:relative; }
+  .filter-dot{ position:absolute; top:5px; right:5px; width:8px; height:8px; border-radius:50%; background:#2DC75E;
+    box-shadow:0 0 0 1.5px #fff; display:none; pointer-events:none; }
+  .icon-btn.has-filter .filter-dot{ display:block; }
 
   .menu-scrim{ position:absolute; inset:0; z-index:10; display:none; }
   .menu-scrim.open{ display:block; }
@@ -839,6 +843,7 @@
           <div class="header-actions" id="actionsFilms">
             <button class="icon-btn" aria-label="Filters">
               <svg width="16" height="16" viewBox="4 2 16 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="12" x2="8" y2="19"/><line x1="16" y1="6" x2="16" y2="13"/><circle cx="8" cy="9" r="3"/><circle cx="16" cy="16" r="3"/></svg>
+              <span class="filter-dot"></span>
             </button>
             <button class="icon-btn" id="filmSortBtn" aria-label="Sort" aria-haspopup="true">
               <svg width="14" height="11" viewBox="0 0 16 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="0" y1="2" x2="16" y2="2"/><line x1="3" y1="6" x2="13" y2="6"/><line x1="6" y1="10" x2="10" y2="10"/></svg>
@@ -1238,6 +1243,8 @@
 
   function rerenderActiveFilmList(){
     if(filmSortContext === 'genre'){ renderGenreDetail(true); } else { renderFilms(true); }
+    var filterBtn = document.querySelector('#actionsFilms .icon-btn[aria-label="Filters"]');
+    if(filterBtn) filterBtn.classList.toggle('has-filter', filterState.lang !== 'all' || filterState.quality !== '');
   }
 
   function syncSortMenuSelection(sortValue){
