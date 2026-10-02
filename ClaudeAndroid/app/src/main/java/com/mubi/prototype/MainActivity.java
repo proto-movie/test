@@ -37,6 +37,9 @@ public class MainActivity extends Activity {
         settings.setDisplayZoomControls(false);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
+        // Always fetch the live prototype so pushes show up straight away.
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webView.clearCache(true);
 
         // Keep every page inside the app instead of handing links to the browser.
         webView.setWebViewClient(new WebViewClient() {

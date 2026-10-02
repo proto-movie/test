@@ -5,8 +5,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>MUBI — Browse Prototype 1</title>
 <script>
-  // ?platform=android (used by the Android app) adds the top spacing iOS gets from its safe area.
-  if(/[?&]platform=android\b/.test(location.search)) document.documentElement.classList.add('platform-android');
+  // ?platform=android or the Android app's WebView adds the top spacing iOS gets from its safe area.
+  // Android WebViews mark themselves with "; wv)" in the user agent, so this also works without the param.
+  if(/[?&]platform=android\b/.test(location.search) || /Android.*; wv\)/.test(navigator.userAgent)) document.documentElement.classList.add('platform-android');
 </script>
 <style>
   @font-face { font-family: 'Riforma'; font-display: swap;
