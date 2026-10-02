@@ -958,19 +958,30 @@
     // pushes the top of the results off screen. Pin the whole stage to the visible area instead,
     // so the results start at the top and the field sits just above the keyboard.
     var stageEl = document.querySelector('.stage');
+    var baseViewportHeight = window.innerHeight;
     function liftAboveKeyboard(){
       var vv = window.visualViewport;
       if(!vv || !stageEl || !tabbarWrapEl) return;
-      var keyboardUp = vv.height < window.innerHeight - 40;
-      if(keyboardUp){
-        stageEl.style.top = vv.offsetTop + 'px';
-        stageEl.style.bottom = 'auto';
-        stageEl.style.height = vv.height + 'px';
-        tabbarWrapEl.style.bottom = '10px';
-      } else {
-        resetStage();
-      }
+      // Undo any document scroll iOS adds, then match the stage to exactly what is visible.
+      if(window.scrollY || window.scrollX) window.scrollTo(0, 0);
+      stageEl.style.top = vv.offsetTop + 'px';
+      stageEl.style.bottom = 'auto';
+      stageEl.style.height = vv.height + 'px';
+      var keyboardUp = vv.height < baseViewportHeight - 120;
+      tabbarWrapEl.style.bottom = keyboardUp ? '10px' : '';
     }
+    // The keyboard animates in over ~300ms and iOS pans during it, so keep re-fitting for a moment.
+    function followKeyboard(){
+      var until = Date.now() + 900;
+      (function tick(){
+        if(!searchPill || !searchPill.classList.contains('focused')) return;
+        liftAboveKeyboard();
+        if(Date.now() < until) requestAnimationFrame(tick);
+      })();
+    }
+    window.addEventListener('scroll', function(){
+      if(searchPill && searchPill.classList.contains('focused')) liftAboveKeyboard();
+    });
     function resetStage(){
       if(stageEl){ stageEl.style.top = ''; stageEl.style.bottom = ''; stageEl.style.height = ''; }
       if(tabbarWrapEl) tabbarWrapEl.style.bottom = '';
@@ -986,7 +997,9 @@
       searchPill.classList.add('focused');
       if(searchKbCloseBtn) searchKbCloseBtn.style.display = 'flex';
       if(tabbarWrapEl) tabbarWrapEl.classList.add('kb-open');
+      if(window.visualViewport && document.activeElement !== searchPillInput) baseViewportHeight = window.visualViewport.height;
       if(searchPillInput) searchPillInput.focus();
+      followKeyboard();
     }
 
     var resultsShown = false;
@@ -1008,6 +1021,8 @@
         else if(hits) showResults(true);
       });
       searchPillInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') searchPillInput.blur(); });
+      searchPillInput.addEventListener('focus', followKeyboard);
+      searchPillInput.addEventListener('blur', function(){ setTimeout(followKeyboard, 50); });
     }
 
     function closeKeyboard(){
