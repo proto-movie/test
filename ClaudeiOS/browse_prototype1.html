@@ -954,12 +954,26 @@
       indicator.style.width = (btn.offsetWidth + spread * 2) + 'px';
     }
 
-    // Keep the search field above the device keyboard using the visual viewport.
+    // While the device keyboard is up, iOS pans the page to keep the focused field in view, which
+    // pushes the top of the results off screen. Pin the whole stage to the visible area instead,
+    // so the results start at the top and the field sits just above the keyboard.
+    var stageEl = document.querySelector('.stage');
     function liftAboveKeyboard(){
       var vv = window.visualViewport;
-      if(!vv || !tabbarWrapEl) return;
-      var kb = window.innerHeight - vv.height - vv.offsetTop;
-      tabbarWrapEl.style.bottom = kb > 40 ? (kb + 10) + 'px' : '';
+      if(!vv || !stageEl || !tabbarWrapEl) return;
+      var keyboardUp = vv.height < window.innerHeight - 40;
+      if(keyboardUp){
+        stageEl.style.top = vv.offsetTop + 'px';
+        stageEl.style.bottom = 'auto';
+        stageEl.style.height = vv.height + 'px';
+        tabbarWrapEl.style.bottom = '10px';
+      } else {
+        resetStage();
+      }
+    }
+    function resetStage(){
+      if(stageEl){ stageEl.style.top = ''; stageEl.style.bottom = ''; stageEl.style.height = ''; }
+      if(tabbarWrapEl) tabbarWrapEl.style.bottom = '';
     }
     if(window.visualViewport){
       window.visualViewport.addEventListener('resize', function(){ if(searchPill && searchPill.classList.contains('focused')) liftAboveKeyboard(); });
@@ -980,7 +994,10 @@
       if(on === resultsShown) return;
       resultsShown = on;
       var key = on ? 'search' : (lastNonSearchBtn ? lastNonSearchBtn.dataset.tab : 'browse');
-      panels.forEach(function(p){ p.classList.toggle('active', p.dataset.panel === key); });
+      panels.forEach(function(p){
+        p.classList.toggle('active', p.dataset.panel === key);
+        if(on && p.dataset.panel === 'search') p.scrollTop = 0;
+      });
       if(browseActionsOverlay) browseActionsOverlay.style.display = (key === 'browse') ? 'block' : 'none';
     }
 
@@ -995,7 +1012,7 @@
 
     function closeKeyboard(){
       if(searchPill) searchPill.classList.remove('focused');
-      if(tabbarWrapEl) tabbarWrapEl.style.bottom = '';
+      resetStage();
       if(searchPillInput){ searchPillInput.blur(); searchPillInput.value = ''; }
       if(window.renderSearchResults) window.renderSearchResults('');
       showResults(false);
