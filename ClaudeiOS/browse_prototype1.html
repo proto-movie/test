@@ -248,23 +248,23 @@
   .expl-rating{ position:absolute; top:10px; right:12px; display:none; align-items:center; gap:4px; color:#fff; font-family:var(--font-riforma); font-size:13px; font-weight:500; }
   .rating-active .expl-rating{ display:flex; }
 
-  #filmGrid.list-mode, #directorPageGrid{ gap:10px; }
-  #filmGrid.list-mode .expl-card, #directorPageGrid .expl-card{
+  #filmGrid.list-mode, #directorPageGrid, #searchFilmResults{ gap:10px; }
+  #filmGrid.list-mode .expl-card, #directorPageGrid .expl-card, #searchFilmResults .expl-card{
     aspect-ratio:auto; display:flex; align-items:center; gap:12px;
     overflow:visible; border-radius:12px; background:#fff; padding:0 12px 0 0;
   }
-  #filmGrid.list-mode .expl-thumb, #directorPageGrid .expl-thumb{
+  #filmGrid.list-mode .expl-thumb, #directorPageGrid .expl-thumb, #searchFilmResults .expl-thumb{
     position:relative; inset:auto; flex-shrink:0; width:45%; aspect-ratio:371/209;
     border-radius:5px 0 0 5px; overflow:hidden; background:#d0d0d0;
   }
-  #filmGrid.list-mode .expl-thumb .scrim, #directorPageGrid .expl-thumb .scrim{ display:none; }
-  #filmGrid.list-mode .expl-card .overlay, #directorPageGrid .expl-card .overlay{
+  #filmGrid.list-mode .expl-thumb .scrim, #directorPageGrid .expl-thumb .scrim, #searchFilmResults .expl-thumb .scrim{ display:none; }
+  #filmGrid.list-mode .expl-card .overlay, #directorPageGrid .expl-card .overlay, #searchFilmResults .expl-card .overlay{
     position:relative; inset:auto; flex:1; min-width:0; padding:0; justify-content:center;
   }
-  #filmGrid.list-mode .expl-card h3, #directorPageGrid .expl-card h3{ color:#3A3A3C; font-size:15px; font-weight:500; text-transform:none; margin-bottom:2px; }
-  #filmGrid.list-mode .expl-card p, #directorPageGrid .expl-card p{ color:#6E6E73; text-transform:none; }
-  #filmGrid.list-mode .expl-card p .fd-director, #directorPageGrid .expl-card p .fd-director{ color:#6E6E73; font-weight:400; }
-  #filmGrid.list-mode .expl-card p .fd-meta, #directorPageGrid .expl-card p .fd-meta{ display:none; }
+  #filmGrid.list-mode .expl-card h3, #directorPageGrid .expl-card h3, #searchFilmResults .expl-card h3{ color:#3A3A3C; font-size:15px; font-weight:500; text-transform:none; margin-bottom:2px; }
+  #filmGrid.list-mode .expl-card p, #directorPageGrid .expl-card p, #searchFilmResults .expl-card p{ color:#6E6E73; text-transform:none; }
+  #filmGrid.list-mode .expl-card p .fd-director, #directorPageGrid .expl-card p .fd-director, #searchFilmResults .expl-card p .fd-director{ color:#6E6E73; font-weight:400; }
+  #filmGrid.list-mode .expl-card p .fd-meta, #directorPageGrid .expl-card p .fd-meta, #searchFilmResults .expl-card p .fd-meta{ display:none; }
   /* On a director's own page the name is the title, so show year and country instead */
   #directorPageGrid .expl-card p .fd-director{ display:none; }
   #directorPageGrid .expl-card p .fd-meta{ display:inline; }
@@ -449,33 +449,10 @@
   }
   .search-kb-close-btn svg{ width:15px; height:15px; }
 
-  .ios-keyboard{
-    position:absolute; left:0; right:0; bottom:0; z-index:25;
-    background:#d3d5db; padding:8px 4px 4px; box-shadow:0 -2px 14px rgba(0,0,0,.18);
-    transform:translateY(100%); transition:transform .34s cubic-bezier(.32,.72,0,1);
-  }
-  .ios-keyboard.open{ transform:translateY(0); }
-  .kb-row{ display:flex; gap:6px; margin-bottom:6px; }
-  .kb-row.indent{ padding:0 18px; }
-  .kb-key{
-    flex:1; height:38px; border-radius:5px; background:#fff; box-shadow:0 1px 0 rgba(0,0,0,.4);
-    display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-ui); font-size:13.5px; color:#1c1c1e;
-  }
-  .kb-key.wide{ flex:1.5; background:#aeb1b8; color:#1c1c1e; font-size:14px; }
-  .kb-row-bottom{ display:flex; gap:6px; }
-  .kb-key-globe{
-    flex:1; height:38px; border-radius:5px; background:#aeb1b8;
-    display:flex; align-items:center; justify-content:center; color:#1c1c1e; font-size:11px; font-weight:600;
-  }
-  .kb-key-globe svg{ width:15px; height:15px; }
-  .kb-key-space{ flex:5; height:38px; border-radius:5px; background:#fff; box-shadow:0 1px 0 rgba(0,0,0,.4); }
-  .kb-key-search{
-    flex:1.6; height:38px; border-radius:5px; background:#0A84FF; color:#fff;
-    font-family:var(--font-ui); font-size:13px; font-weight:600;
-    display:flex; align-items:center; justify-content:center;
-  }
-
+  .panel[data-panel="search"]{ background:#F2F2F2; }
+  .search-results .search-section-label{ padding:14px 20px 8px; }
+  .search-empty{ font-family:var(--font-riforma); font-size:15px; font-weight:500; color:#6E6E73; padding:24px 20px; margin:0; }
+  .search-empty:empty{ display:none; }
   .search-field-wrap{ padding:8px 20px 4px; }
   .search-field{ display:flex; align-items:center; gap:8px; background:rgba(24,20,15,.06); border-radius:13px; padding:11px 13px; }
   .search-field svg{ color:rgba(24,20,15,.4); flex-shrink:0; }
@@ -648,11 +625,12 @@
           <div class="app-header">
             <h1 class="page-title riforma">Search</h1>
           </div>
-          <div class="search-field-wrap" id="searchFieldWrap">
-            <div class="search-field">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
-              <input type="text" class="search-input" placeholder="Search films, people, genres">
-            </div>
+          <div class="search-results" id="searchResults">
+            <div class="search-section-label" id="searchDirLabel">Directors</div>
+            <div class="director-grid list-mode" id="searchDirResults"></div>
+            <div class="search-section-label" id="searchFilmLabel">Films &amp; Series</div>
+            <div class="expl-list" id="searchFilmResults"></div>
+            <p class="search-empty" id="searchEmpty"></p>
           </div>
           <div class="search-browseby" id="searchBrowseBy" style="display:none">
             <div class="search-section-label">Browse by</div>
@@ -812,26 +790,6 @@
         </button>
         </div>
 
-        <div class="ios-keyboard" id="iosKeyboard">
-          <div class="kb-row">
-            <div class="kb-key">Q</div><div class="kb-key">W</div><div class="kb-key">E</div><div class="kb-key">R</div><div class="kb-key">T</div><div class="kb-key">Y</div><div class="kb-key">U</div><div class="kb-key">I</div><div class="kb-key">O</div><div class="kb-key">P</div>
-          </div>
-          <div class="kb-row indent">
-            <div class="kb-key">A</div><div class="kb-key">S</div><div class="kb-key">D</div><div class="kb-key">F</div><div class="kb-key">G</div><div class="kb-key">H</div><div class="kb-key">J</div><div class="kb-key">K</div><div class="kb-key">L</div>
-          </div>
-          <div class="kb-row">
-            <div class="kb-key wide">&#8679;</div><div class="kb-key">Z</div><div class="kb-key">X</div><div class="kb-key">C</div><div class="kb-key">V</div><div class="kb-key">B</div><div class="kb-key">N</div><div class="kb-key">M</div><div class="kb-key wide">&#9003;</div>
-          </div>
-          <div class="kb-row-bottom">
-            <div class="kb-key-globe">123</div>
-            <div class="kb-key-globe">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18"/></svg>
-            </div>
-            <div class="kb-key-space"></div>
-            <div class="kb-key-search">search</div>
-          </div>
-        </div>
-
         <div class="menu-scrim" id="sortMenuScrim"></div>
 
         <div class="browse-actions-overlay" id="browseActionsOverlay" style="display:none">
@@ -981,7 +939,6 @@
     var searchPillInput = document.getElementById('searchPillInput');
     var tabbarCollapsedBtn = document.getElementById('tabbarCollapsedBtn');
     var tabbarWrapEl = document.getElementById('tabbarWrap');
-    var iosKeyboard = document.getElementById('iosKeyboard');
     var searchKbCloseBtn = document.getElementById('searchKbCloseBtn');
     var lastNonSearchBtn = null;
 
@@ -991,23 +948,51 @@
       indicator.style.width = (btn.offsetWidth - inset * 2) + 'px';
     }
 
+    // Keep the search field above the device keyboard using the visual viewport.
+    function liftAboveKeyboard(){
+      var vv = window.visualViewport;
+      if(!vv || !tabbarWrapEl) return;
+      var kb = window.innerHeight - vv.height - vv.offsetTop;
+      tabbarWrapEl.style.bottom = kb > 40 ? (kb + 10) + 'px' : '';
+    }
+    if(window.visualViewport){
+      window.visualViewport.addEventListener('resize', function(){ if(searchPill && searchPill.classList.contains('focused')) liftAboveKeyboard(); });
+      window.visualViewport.addEventListener('scroll', function(){ if(searchPill && searchPill.classList.contains('focused')) liftAboveKeyboard(); });
+    }
+
+    // Focus synchronously inside the tap so iOS brings up its keyboard.
     function openKeyboard(){
       if(!searchPill) return;
       searchPill.classList.add('focused');
       if(searchKbCloseBtn) searchKbCloseBtn.style.display = 'flex';
       if(tabbarWrapEl) tabbarWrapEl.classList.add('kb-open');
-      if(iosKeyboard){
-        iosKeyboard.classList.add('open');
-        if(tabbarWrapEl) tabbarWrapEl.style.bottom = (16 + iosKeyboard.offsetHeight) + 'px';
-      }
-      if(searchPillInput) setTimeout(function(){ searchPillInput.focus(); }, 60);
+      if(searchPillInput) searchPillInput.focus();
+    }
+
+    var resultsShown = false;
+    function showResults(on){
+      if(on === resultsShown) return;
+      resultsShown = on;
+      var key = on ? 'search' : (lastNonSearchBtn ? lastNonSearchBtn.dataset.tab : 'browse');
+      panels.forEach(function(p){ p.classList.toggle('active', p.dataset.panel === key); });
+      if(browseActionsOverlay) browseActionsOverlay.style.display = (key === 'browse') ? 'block' : 'none';
+    }
+
+    if(searchPillInput){
+      searchPillInput.addEventListener('input', function(){
+        var hits = window.renderSearchResults ? window.renderSearchResults(searchPillInput.value) : 0;
+        if(!searchPillInput.value.trim()) showResults(false);
+        else if(hits) showResults(true);
+      });
+      searchPillInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') searchPillInput.blur(); });
     }
 
     function closeKeyboard(){
       if(searchPill) searchPill.classList.remove('focused');
-      if(iosKeyboard) iosKeyboard.classList.remove('open');
       if(tabbarWrapEl) tabbarWrapEl.style.bottom = '';
       if(searchPillInput){ searchPillInput.blur(); searchPillInput.value = ''; }
+      if(window.renderSearchResults) window.renderSearchResults('');
+      showResults(false);
       if(searchKbCloseBtn) searchKbCloseBtn.style.display = 'none';
       if(tabbarWrapEl) tabbarWrapEl.classList.remove('kb-open');
     }
@@ -1046,13 +1031,16 @@
       searchPillIcon.addEventListener('click', function(){
         var searchBtn = tabs.filter(function(t){ return t.dataset.tab === 'search'; })[0];
         if(searchBtn) activate(searchBtn, true);
+        openKeyboard();
       });
     }
     if(searchPillPrompt){
       searchPillPrompt.addEventListener('click', openKeyboard);
     }
     if(searchKbCloseBtn){
-      searchKbCloseBtn.addEventListener('click', closeKeyboard);
+      searchKbCloseBtn.addEventListener('click', function(){
+        activate(lastNonSearchBtn || tabs[0], true);
+      });
     }
     if(tabbarCollapsedBtn){
       tabbarCollapsedBtn.addEventListener('click', function(){
@@ -1425,6 +1413,26 @@
     directorPageNav.classList.toggle('collapsed', directorPageScroll.scrollTop > titleBottom - directorPageNav.offsetHeight);
   });
   document.getElementById('directorPageBack').addEventListener('click', closeDirectorPage);
+
+  // Search films (title or director) and directors; returns the number of hits.
+  window.renderSearchResults = function(query){
+    var q = query.trim().toLowerCase();
+    var films = !q ? [] : FILMS.filter(function(f){
+      return f.t.toLowerCase().indexOf(q) !== -1 || f.d.toLowerCase().indexOf(q) !== -1;
+    }).slice(0, 40);
+    var dirs = !q ? [] : ALL_DIRECTORS.filter(function(d){ return d.name.toLowerCase().indexOf(q) !== -1; })
+      .sort(function(a,b){ return b.count - a.count; }).slice(0, 6);
+    document.getElementById('searchDirResults').innerHTML = dirs.map(directorCardHTML).join('');
+    document.getElementById('searchFilmResults').innerHTML = films.map(filmCardHTML).join('');
+    document.getElementById('searchDirLabel').style.display = dirs.length ? '' : 'none';
+    document.getElementById('searchFilmLabel').style.display = films.length ? '' : 'none';
+    document.getElementById('searchEmpty').textContent = (q && !films.length && !dirs.length) ? 'No results for \u201c' + query.trim() + '\u201d' : '';
+    return films.length + dirs.length;
+  };
+  document.getElementById('searchDirResults').addEventListener('click', function(e){
+    var card = e.target.closest('[data-director]');
+    if(card) openDirectorPage(card.dataset.director);
+  });
   Array.prototype.slice.call(document.querySelectorAll('.tab[data-tab]')).forEach(function(t){
     t.addEventListener('click', closeDirectorPage);
   });
@@ -1695,11 +1703,9 @@
   (function(){
     var browseTabBtn = document.querySelector('.tab[data-tab="browse"]');
     var searchBrowseBy = document.getElementById('searchBrowseBy');
-    var searchFieldWrap = document.getElementById('searchFieldWrap');
     if(!browseTabBtn) return;
 
     if(searchBrowseBy) searchBrowseBy.style.display = 'none';
-    if(searchFieldWrap) searchFieldWrap.style.display = '';
     browseTabBtn.click();
   })();
 
