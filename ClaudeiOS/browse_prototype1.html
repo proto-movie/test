@@ -325,6 +325,9 @@
 
   /* Sit down in the home indicator area like iOS 26's floating tab bar, not on top of it. */
   #screen{ --tabbar-bottom:max(12px, calc(env(safe-area-inset-bottom) - 12px)); }
+  /* Soft shade under the floating tab bar so it lifts off busy content */
+  .tabbar-shade{ position:absolute; left:0; right:0; bottom:0; height:calc(var(--tabbar-bottom) + 70px + 48px); z-index:11; pointer-events:none;
+    background:linear-gradient(to top, rgba(24,20,15,.16) 0%, rgba(24,20,15,.07) 45%, rgba(24,20,15,0) 100%); }
   .tabbar-wrap{
     position:absolute; left:20px; right:20px; bottom:var(--tabbar-bottom); height:70px; z-index:12;
     display:flex; align-items:stretch; gap:10px;
@@ -722,6 +725,7 @@
           <svg width="16" height="16" viewBox="0 0 12 12" fill="none"><path d="M6 10.5V1.5M1.5 6L6 1.5L10.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
 
+        <div class="tabbar-shade"></div>
         <div class="tabbar-wrap split-mode" id="tabbarWrap">
         <nav class="tabbar tabs-4" id="tabbar">
           <button class="tabbar-collapsed-btn" id="tabbarCollapsedBtn" aria-label="Back to browse">
