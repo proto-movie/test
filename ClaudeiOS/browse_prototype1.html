@@ -367,7 +367,7 @@
     mix-blend-mode:overlay;
   }
   .indicator{
-    position:absolute; top:4px; bottom:4px; border-radius:30px; z-index:0;
+    position:absolute; top:3px; bottom:3px; border-radius:32px; z-index:0;
     background:rgba(24,20,15,.1);
     transition:left .38s cubic-bezier(.22,1,.36,1), width .38s cubic-bezier(.22,1,.36,1);
   }
@@ -942,10 +942,13 @@
     var searchKbCloseBtn = document.getElementById('searchKbCloseBtn');
     var lastNonSearchBtn = null;
 
+    // Stretch the pill past its column so it reads as a capsule, not a circle, clamped to the bar's edges.
     function placeIndicator(btn){
-      var inset = 4;
-      indicator.style.left = (btn.offsetLeft + inset) + 'px';
-      indicator.style.width = (btn.offsetWidth - inset * 2) + 'px';
+      var edge = 3, spread = 10;
+      var left = Math.max(edge, btn.offsetLeft - spread);
+      var right = Math.min(tabbar.clientWidth - edge, btn.offsetLeft + btn.offsetWidth + spread);
+      indicator.style.left = left + 'px';
+      indicator.style.width = (right - left) + 'px';
     }
 
     // Keep the search field above the device keyboard using the visual viewport.
