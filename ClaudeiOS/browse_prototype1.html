@@ -4,6 +4,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <title>MUBI — Browse Prototype 1</title>
+<script>
+  // ?platform=android (used by the Android app) adds the top spacing iOS gets from its safe area.
+  if(/[?&]platform=android\b/.test(location.search)) document.documentElement.classList.add('platform-android');
+</script>
 <style>
   @font-face { font-family: 'Riforma'; font-display: swap;
     src: url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2'); }
@@ -494,6 +498,16 @@
   .director-page-nav.collapsed .director-page-navtitle{ opacity:1; transform:translateY(0); }
   .director-page-header{ padding:104px 20px 10px; }
   .director-page-count{ font-family:var(--font-riforma); font-size:13px; font-weight:500; color:#6E6E73; margin:4px 0 0; }
+
+  /* Android reports no top safe area, so recreate the iOS spacing from a fixed inset. */
+  html.platform-android{ --android-top:40px; }
+  .platform-android .app-header{ padding-top:calc(20px + var(--android-top)); }
+  .platform-android .browse-actions-overlay,
+  .platform-android .genre-detail-back,
+  .platform-android .director-page-navtitle{ top:calc(var(--android-top) - 5px); }
+  .platform-android .director-page-header,
+  .platform-android .genre-detail-header{ padding-top:calc(45px + var(--android-top)); }
+  .platform-android .director-page-nav{ height:calc(39px + var(--android-top)); }
 
   .genre-detail-panel{ position:absolute; inset:0; z-index:9; background:var(--ink); overflow:hidden;
     transform:translateX(100%); transition:transform .34s cubic-bezier(.32,.72,0,1); pointer-events:none; }

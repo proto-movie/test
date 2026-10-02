@@ -1,7 +1,7 @@
 # MUBI Browse (Android)
 
 A fullscreen WebView wrapper around the browse prototype on GitHub Pages:
-https://proto-movie.github.io/test/ClaudeiOS/browse_prototype1.html
+https://proto-movie.github.io/test/ClaudeiOS/browse_prototype1.html?platform=android
 
 It loads the live page, so pushing prototype changes updates the app without a rebuild.
 
