@@ -360,7 +360,11 @@
     transition:flex-grow .4s cubic-bezier(.32,.72,0,1), flex-basis .4s cubic-bezier(.32,.72,0,1), max-width .4s cubic-bezier(.32,.72,0,1),
       opacity .4s cubic-bezier(.32,.72,0,1), margin-right .4s cubic-bezier(.32,.72,0,1);
   }
-  .tabbar-wrap.kb-open .tabbar{ flex:0 0 0; max-width:0; opacity:0; margin-right:-10px; pointer-events:none; }
+  .tabbar-wrap.kb-open .tabbar{ flex:0 0 0; max-width:0; padding:0; border-width:0; opacity:0; margin-right:-10px; pointer-events:none; }
+  /* Active search: full-width field (20px gutters) and a smaller close circle */
+  .tabbar-wrap.kb-open{ height:54px; }
+  .tabbar-wrap.kb-open .search-pill{ height:54px; border-radius:27px; }
+  .tabbar-wrap.kb-open .search-kb-close-btn{ flex:0 0 54px; max-width:54px; height:54px; }
   .tabbar::before{
     content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:0;
     background:linear-gradient(115deg, rgba(255,255,255,.65) 0%, rgba(255,255,255,.15) 22%, rgba(255,255,255,.15) 78%, rgba(255,255,255,.5) 100%);
