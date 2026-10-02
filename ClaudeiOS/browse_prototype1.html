@@ -379,7 +379,7 @@
   }
   .tab:active{ transform:scale(.9); }
   .tab svg{ width:20px; height:20px; }
-  .tabbar.tabs-4{ grid-template-columns:repeat(4,1fr); }
+  .tabbar.tabs-4{ grid-template-columns:repeat(4,1fr); padding:0 8px; }
 
   /* iOS 26 liquid glass search split: main capsule collapses to a leading
      icon while a separate pill on the trailing edge expands into a search field. */
@@ -943,13 +943,11 @@
     var searchKbCloseBtn = document.getElementById('searchKbCloseBtn');
     var lastNonSearchBtn = null;
 
-    // Stretch the pill past its column so it reads as a capsule, not a circle, clamped to the bar's edges.
+    // Same-width capsule centred on every tab; the bar's side padding leaves room at the ends.
     function placeIndicator(btn){
-      var edge = 3, spread = 10;
-      var left = Math.max(edge, btn.offsetLeft - spread);
-      var right = Math.min(tabbar.clientWidth - edge, btn.offsetLeft + btn.offsetWidth + spread);
-      indicator.style.left = left + 'px';
-      indicator.style.width = (right - left) + 'px';
+      var spread = 5;
+      indicator.style.left = (btn.offsetLeft - spread) + 'px';
+      indicator.style.width = (btn.offsetWidth + spread * 2) + 'px';
     }
 
     // Keep the search field above the device keyboard using the visual viewport.
