@@ -219,6 +219,7 @@
     color:rgba(24,20,15,.62); padding:10px 0 9px; border:none; border-bottom:3.5px solid transparent; margin-bottom:-1px;
     background:none; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
   .expl-tab.active{ color:var(--paper); border-bottom-color:var(--paper); }
+  .expl-tabs.list-mode{ border-bottom-color:transparent; }
 
   .gpill-rail{ display:flex; gap:8px; overflow-x:auto; padding:12px 20px 10px; }
   .gpill-rail::-webkit-scrollbar{ display:none; }
@@ -226,8 +227,8 @@
     border:1px solid rgba(24,20,15,.28); border-radius:50px; padding:6px 14px; white-space:nowrap; background:none; -webkit-tap-highlight-color:transparent; }
   .gpill.active{ background:var(--paper); color:var(--ink); border-color:var(--paper); }
 
-  #segFilms.list-mode, #segDirectors.list-mode{ background:#F2F2F2; }
-  #segFilms.list-mode .gpill:not(.active), #segDirectors.list-mode .gpill:not(.active){ background:#fff; border-color:transparent; }
+  #segFilms.list-mode, #segCollections.list-mode, #segDirectors.list-mode{ background:#F2F2F2; }
+  #segFilms.list-mode .gpill:not(.active), #segCollections.list-mode .gpill:not(.active), #segDirectors.list-mode .gpill:not(.active){ background:#fff; border-color:transparent; }
 
   .expl-list{ display:flex; flex-direction:column; gap:8px; padding:6px 20px 6px; }
   .expl-card{ position:relative; aspect-ratio:371/209; overflow:hidden; border-radius:3px; background:#d0d0d0; }
@@ -241,23 +242,26 @@
   .expl-rating{ position:absolute; top:10px; right:12px; display:none; align-items:center; gap:4px; color:#fff; font-family:var(--font-riforma); font-size:13px; font-weight:500; }
   .rating-active .expl-rating{ display:flex; }
 
-  #filmGrid.list-mode, #directorFilmsGrid.list-mode{ gap:10px; }
-  #filmGrid.list-mode .expl-card, #directorFilmsGrid.list-mode .expl-card{
+  #filmGrid.list-mode, #directorPageGrid{ gap:10px; }
+  #filmGrid.list-mode .expl-card, #directorPageGrid .expl-card{
     aspect-ratio:auto; display:flex; align-items:center; gap:12px;
     overflow:visible; border-radius:12px; background:#fff; padding:0 12px 0 0;
   }
-  #filmGrid.list-mode .expl-thumb, #directorFilmsGrid.list-mode .expl-thumb{
+  #filmGrid.list-mode .expl-thumb, #directorPageGrid .expl-thumb{
     position:relative; inset:auto; flex-shrink:0; width:45%; aspect-ratio:371/209;
     border-radius:5px 0 0 5px; overflow:hidden; background:#d0d0d0;
   }
-  #filmGrid.list-mode .expl-thumb .scrim, #directorFilmsGrid.list-mode .expl-thumb .scrim{ display:none; }
-  #filmGrid.list-mode .expl-card .overlay, #directorFilmsGrid.list-mode .expl-card .overlay{
+  #filmGrid.list-mode .expl-thumb .scrim, #directorPageGrid .expl-thumb .scrim{ display:none; }
+  #filmGrid.list-mode .expl-card .overlay, #directorPageGrid .expl-card .overlay{
     position:relative; inset:auto; flex:1; min-width:0; padding:0; justify-content:center;
   }
-  #filmGrid.list-mode .expl-card h3, #directorFilmsGrid.list-mode .expl-card h3{ color:#3A3A3C; font-size:15px; font-weight:500; text-transform:none; margin-bottom:2px; }
-  #filmGrid.list-mode .expl-card p, #directorFilmsGrid.list-mode .expl-card p{ color:#6E6E73; text-transform:none; }
-  #filmGrid.list-mode .expl-card p .fd-director, #directorFilmsGrid.list-mode .expl-card p .fd-director{ color:#6E6E73; font-weight:400; }
-  #filmGrid.list-mode .expl-card p .fd-meta, #directorFilmsGrid.list-mode .expl-card p .fd-meta{ display:none; }
+  #filmGrid.list-mode .expl-card h3, #directorPageGrid .expl-card h3{ color:#3A3A3C; font-size:15px; font-weight:500; text-transform:none; margin-bottom:2px; }
+  #filmGrid.list-mode .expl-card p, #directorPageGrid .expl-card p{ color:#6E6E73; text-transform:none; }
+  #filmGrid.list-mode .expl-card p .fd-director, #directorPageGrid .expl-card p .fd-director{ color:#6E6E73; font-weight:400; }
+  #filmGrid.list-mode .expl-card p .fd-meta, #directorPageGrid .expl-card p .fd-meta{ display:none; }
+  /* On a director's own page the name is the title, so show year and country instead */
+  #directorPageGrid .expl-card p .fd-director{ display:none; }
+  #directorPageGrid .expl-card p .fd-meta{ display:inline; }
 
   #filmGrid.poster-mode, #genreDetailGrid.poster-mode{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px 12px; }
   #filmGrid.poster-mode .expl-card, #genreDetailGrid.poster-mode .expl-card{ aspect-ratio:2/3; border-radius:8px; }
@@ -316,15 +320,6 @@
   .director-grid.list-mode .director-name{ grid-row:2; font-size:15px; text-transform:none; letter-spacing:0; color:#3A3A3C; margin:0 0 2px; }
   .director-grid.list-mode .director-count{ grid-row:3; font-size:11px; font-weight:400; text-transform:none; color:#6E6E73; }
 
-  .director-tags-row{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 20px 4px; }
-  .director-tags-row:empty{ display:none; }
-  .director-tag{ display:inline-flex; align-items:center; gap:8px; padding:6px 8px 6px 14px; border-radius:0;
-    background:var(--paper); color:var(--ink); font-family:var(--font-riforma); font-size:12.5px; font-weight:500;
-    text-transform:uppercase; letter-spacing:.02em; }
-  .director-tag-x{ display:flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%;
-    background:none; color:var(--ink); font-size:16px; line-height:1; cursor:pointer; border:none; padding:0;
-    font-family:inherit; flex-shrink:0; opacity:.7; -webkit-tap-highlight-color:transparent; }
-  .director-tag-x:active{ opacity:1; }
 
 
   /* Sit down in the home indicator area like iOS 26's floating tab bar, not on top of it. */
@@ -334,6 +329,12 @@
     display:flex; align-items:stretch; gap:10px;
     transition:bottom .34s cubic-bezier(.32,.72,0,1);
   }
+  /* TEMP: safe-area debug readout, tap to hide */
+  .sa-debug{ position:absolute; top:calc(env(safe-area-inset-top) + 2px); left:50%; transform:translateX(-50%); z-index:50;
+    padding:4px 8px; border-radius:6px; background:rgba(0,0,0,.75); color:#0f0; font:10px/1.35 ui-monospace, Menlo, monospace;
+    white-space:pre; pointer-events:auto; }
+  .sa-probe{ position:absolute; visibility:hidden; pointer-events:none;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
   .back-to-top{
     position:absolute; right:20px; bottom:calc(var(--tabbar-bottom) + 62px + 12px); z-index:12;
     display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border-radius:50%; color:var(--paper);
@@ -488,6 +489,27 @@
   .search-genre-row:active{ background:rgba(24,20,15,.045); }
   .search-genre-row svg{ color:rgba(24,20,15,.28); flex-shrink:0; }
 
+  /* Director page: iOS push with a large title that collapses into the nav bar */
+  .director-page{ position:absolute; inset:0; z-index:9; background:#F2F2F2; overflow:hidden;
+    transform:translateX(100%); transition:transform .34s cubic-bezier(.32,.72,0,1); pointer-events:none;
+    box-shadow:-8px 0 24px rgba(24,20,15,.08); }
+  .director-page.open{ transform:translateX(0); pointer-events:auto; }
+  .director-page-scroll{ position:absolute; inset:0; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
+    -ms-overflow-style:none; scrollbar-width:none; }
+  .director-page-scroll::-webkit-scrollbar{ display:none; }
+  .director-page-nav{ position:absolute; top:0; left:0; right:0; height:98px; z-index:2; pointer-events:none;
+    border-bottom:1px solid transparent; transition:background .2s ease, border-color .2s ease; }
+  .director-page-nav.collapsed{ background:rgba(242,242,242,.82); border-bottom-color:var(--hairline);
+    backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); }
+  .director-page-nav .genre-detail-back{ pointer-events:auto; }
+  .director-page-navtitle{ position:absolute; top:54px; left:64px; right:64px; height:34px; line-height:34px; text-align:center;
+    font-family:var(--font-riforma); font-size:16px; font-weight:500; color:var(--paper);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; opacity:0; transform:translateY(4px);
+    transition:opacity .2s ease, transform .2s ease; }
+  .director-page-nav.collapsed .director-page-navtitle{ opacity:1; transform:translateY(0); }
+  .director-page-header{ padding:104px 20px 10px; }
+  .director-page-count{ font-family:var(--font-riforma); font-size:13px; font-weight:500; color:#6E6E73; margin:4px 0 0; }
+
   .genre-detail-panel{ position:absolute; inset:0; z-index:9; background:var(--ink); overflow:hidden;
     transform:translateX(100%); transition:transform .34s cubic-bezier(.32,.72,0,1); pointer-events:none; }
   .genre-detail-panel.open{ transform:translateX(0); pointer-events:auto; }
@@ -584,11 +606,8 @@
               <div class="gpill" data-cat="Award Winning">Award Winning</div>
             </div>
 
-            <div class="director-tags-row" id="directorTagsRow"></div>
-
             <div class="director-grid" id="directorsGrid"></div>
             <div id="dirLoadSentinel"></div>
-            <div class="expl-list" id="directorFilmsGrid" style="display:none"></div>
             <div style="height:110px"></div>
           </div>
         </div>
@@ -703,6 +722,9 @@
           </div>
           <div style="height:110px"></div>
         </div>
+
+        <div class="sa-probe" id="saProbe"></div>
+        <div class="sa-debug" id="saDebug"></div>
 
         <button class="back-to-top" id="backToTop" aria-label="Back to top">
           <svg width="16" height="16" viewBox="0 0 12 12" fill="none"><path d="M6 10.5V1.5M1.5 6L6 1.5L10.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -877,6 +899,23 @@
                 <span>A-Z</span>
               </button>
             </div>
+          </div>
+        </div>
+
+        <div class="director-page" id="directorPage" aria-hidden="true">
+          <div class="director-page-nav" id="directorPageNav">
+            <button class="genre-detail-back" id="directorPageBack" aria-label="Back to Directors">
+              <svg width="11" height="18" viewBox="0 0 11 18" fill="none"><path d="M9.5 1L1.5 9L9.5 17" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="director-page-navtitle" id="directorPageNavTitle"></div>
+          </div>
+          <div class="director-page-scroll" id="directorPageScroll">
+            <div class="director-page-header">
+              <h1 class="page-title riforma" id="directorPageTitle"></h1>
+              <p class="director-page-count" id="directorPageCount"></p>
+            </div>
+            <div class="expl-list" id="directorPageGrid"></div>
+            <div style="height:110px"></div>
           </div>
         </div>
 
@@ -1345,44 +1384,50 @@
     dirState.hasMore = visible.length < list.length;
   }
 
-  function clearDirectorSelection(){
-    document.getElementById('directorTagsRow').innerHTML = '';
-    document.getElementById('directorFilmsGrid').style.display = 'none';
-    document.getElementById('directorsGrid').style.display = '';
-    document.getElementById('dirLoadSentinel').style.display = '';
-    document.getElementById('dirPills').style.display = '';
-    var actionsDirectors = document.getElementById('actionsDirectors');
-    if(actionsDirectors) actionsDirectors.style.display = 'flex';
+  var directorPage = document.getElementById('directorPage');
+  var directorPageScroll = document.getElementById('directorPageScroll');
+  var directorPageNav = document.getElementById('directorPageNav');
+  var directorPageTitle = document.getElementById('directorPageTitle');
+
+  function openDirectorPage(name){
+    var films = FILMS.filter(function(f){ return f.d.split(', ')[0] === name; });
+    directorPageTitle.textContent = name;
+    document.getElementById('directorPageNavTitle').textContent = name;
+    document.getElementById('directorPageCount').textContent = films.length + ' film' + (films.length !== 1 ? 's' : '');
+    document.getElementById('directorPageGrid').innerHTML = films.map(filmCardHTML).join('');
+    directorPageScroll.scrollTop = 0;
+    directorPageNav.classList.remove('collapsed');
+    directorPage.classList.add('open');
+    directorPage.setAttribute('aria-hidden', 'false');
+    document.getElementById('browsePanel').classList.add('push-back');
+    var overlay = document.getElementById('browseActionsOverlay');
+    if(overlay) overlay.style.display = 'none';
   }
 
-  function selectDirector(name){
-    var row = document.getElementById('directorTagsRow');
-    row.innerHTML = '';
-    var tag = document.createElement('span');
-    tag.className = 'director-tag';
-    tag.appendChild(document.createTextNode(name + ' '));
-    var btn = document.createElement('button');
-    btn.className = 'director-tag-x';
-    btn.setAttribute('aria-label', 'Clear director filter');
-    btn.textContent = '×';
-    btn.addEventListener('click', clearDirectorSelection);
-    tag.appendChild(btn);
-    row.appendChild(tag);
-
-    var films = FILMS.filter(function(f){ return f.d === name; });
-    document.getElementById('directorFilmsGrid').innerHTML = films.map(filmCardHTML).join('');
-    document.getElementById('directorFilmsGrid').style.display = '';
-    document.getElementById('directorsGrid').style.display = 'none';
-    document.getElementById('dirLoadSentinel').style.display = 'none';
-    document.getElementById('dirPills').style.display = 'none';
-    var actionsDirectors = document.getElementById('actionsDirectors');
-    if(actionsDirectors) actionsDirectors.style.display = 'none';
+  function closeDirectorPage(){
+    if(!directorPage.classList.contains('open')) return;
+    directorPage.classList.remove('open');
+    directorPage.setAttribute('aria-hidden', 'true');
+    var browsePanel = document.getElementById('browsePanel');
+    browsePanel.classList.remove('push-back');
+    var overlay = document.getElementById('browseActionsOverlay');
+    if(overlay && browsePanel.classList.contains('active')) overlay.style.display = 'block';
   }
+
+  // The nav bar picks up the title once the large title has scrolled under it.
+  directorPageScroll.addEventListener('scroll', function(){
+    var titleBottom = directorPageTitle.offsetTop + directorPageTitle.offsetHeight;
+    directorPageNav.classList.toggle('collapsed', directorPageScroll.scrollTop > titleBottom - directorPageNav.offsetHeight);
+  });
+  document.getElementById('directorPageBack').addEventListener('click', closeDirectorPage);
+  Array.prototype.slice.call(document.querySelectorAll('.tab[data-tab]')).forEach(function(t){
+    t.addEventListener('click', closeDirectorPage);
+  });
 
   document.getElementById('directorsGrid').addEventListener('click', function(e){
     var card = e.target.closest('[data-director]');
     if(!card) return;
-    selectDirector(card.dataset.director);
+    openDirectorPage(card.dataset.director);
   });
 
   Array.prototype.slice.call(document.querySelectorAll('.search-genre-row')).forEach(function(row){
@@ -1609,12 +1654,13 @@
     var segFilms = document.getElementById('segFilms');
     var segDirectors = document.getElementById('segDirectors');
     var directorsGrid = document.getElementById('directorsGrid');
-    var directorFilmsGrid = document.getElementById('directorFilmsGrid');
+    var segCollections = document.getElementById('segCollections');
+    var browseTabs = document.getElementById('browseTabs');
     if(!filmGrid) return;
 
-    // List view applies to films and directors; collections keep their tile layout.
+    // List view applies to films and directors; collections only take the grey background and pills.
     function setMode(on){
-      [filmGrid, segFilms, segDirectors, directorsGrid, directorFilmsGrid].forEach(function(el){
+      [filmGrid, browseTabs, segFilms, segCollections, segDirectors, directorsGrid].forEach(function(el){
         if(el) el.classList.toggle('list-mode', on);
       });
       if(on && window.setPosterViewOn) window.setPosterViewOn(false);
@@ -1660,7 +1706,11 @@
     var genreScroll = document.getElementById('genreDetailScroll');
     if(!btn || !screenEl) return;
 
+    var dirPage = document.getElementById('directorPage');
+    var dirScroll = document.getElementById('directorPageScroll');
+
     function currentScroller(){
+      if(dirPage && dirPage.classList.contains('open')) return dirScroll;
       if(genrePanel && genrePanel.classList.contains('open')) return genreScroll;
       return screenEl.querySelector('.panel.active');
     }
@@ -1677,5 +1727,24 @@
       var el = currentScroller();
       if(el) el.scrollTo({ top: 0, behavior: 'smooth' });
     });
+  })();
+
+  // TEMP: show the safe-area insets and viewport sizes the webview reports. Tap to hide.
+  (function(){
+    var out = document.getElementById('saDebug');
+    var probe = document.getElementById('saProbe');
+    if(!out || !probe) return;
+    function update(){
+      var cs = getComputedStyle(probe);
+      var vv = window.visualViewport;
+      out.textContent =
+        'safe top ' + parseFloat(cs.paddingTop) + '  bottom ' + parseFloat(cs.paddingBottom) + '\n' +
+        'inner ' + window.innerWidth + '×' + window.innerHeight + '  screen ' + screen.width + '×' + screen.height + '\n' +
+        'vv ' + (vv ? Math.round(vv.width) + '×' + Math.round(vv.height) : 'n/a') + '  dpr ' + window.devicePixelRatio;
+    }
+    update();
+    window.addEventListener('resize', update);
+    if(window.visualViewport) window.visualViewport.addEventListener('resize', update);
+    out.addEventListener('click', function(){ out.style.display = 'none'; });
   })();
 </script>
