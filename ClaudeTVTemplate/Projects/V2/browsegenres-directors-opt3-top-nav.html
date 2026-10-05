@@ -2003,8 +2003,8 @@ body.carousel-active .long-press-hint {
 }
 .dir-page-films { margin-top: 56px; }
 
-/* Browse sub-menu (option 1) — tabs styled like the page title, which they replace.
-   The selected tab sits at the left; the other two only appear while the row has focus. */
+/* Browse sub-menu (option 1) — three tabs styled like the page title, which they replace.
+   Always shown in a fixed order; the current section is white, the others dimmed. */
 .browse-subnav-viewport {
   margin-top: 17px;
   flex-shrink: 0;
@@ -2012,30 +2012,35 @@ body.carousel-active .long-press-hint {
 .browse-subnav {
   display: flex;
   align-items: center;
-  gap: 56px;
+  gap: 32px;
 }
 .browse-subnav-item {
   font-family: 'Riforma', sans-serif;
   font-size: 72px;
   font-weight: 700;
   line-height: 1;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.16);
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
   outline: none;
   position: relative;
-  opacity: 0;
-  transition: opacity 0.2s, color 0.15s;
 }
-.browse-subnav-item.is-active,
-.browse-subnav:focus-within .browse-subnav-item { opacity: 1; }
-.browse-subnav-item.is-active,
-.browse-subnav-item:focus { color: #fff; }
-/* while another title is highlighted, the current section dims like the rest */
-.browse-subnav:focus-within .browse-subnav-item.is-active:not(:focus) { color: rgba(255,255,255,0.35); }
-.browse-subnav.is-instant .browse-subnav-item { transition: none !important; }
+.browse-subnav-item.is-active { color: #fff; }
+/* the current section is underlined while the row has focus */
+.browse-subnav:focus-within .browse-subnav-item.is-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -16px;
+  height: 6px;
+  border-radius: 3px;
+  background: #fff;
+}
+/* while the row has focus the other tabs brighten a little */
+.browse-subnav:focus-within .browse-subnav-item:not(.is-active) { color: rgba(255,255,255,0.4); }
 .browse-subnav-viewport + .browse-genre-bar-wrap { margin-top: 44px; }
 </style>
 </head>
@@ -5422,6 +5427,7 @@ const searchPlaceholder = document.getElementById('searchPlaceholder');
 const SEARCH_GENRES = [
   { name: 'Drama',       bg: 'linear-gradient(135deg,#0d1b3e 0%,#192b52 100%)', accent: '#4a7fc1' },
   { name: 'Comedy',      bg: 'linear-gradient(135deg,#281d06 0%,#3a2a08 100%)', accent: '#c4a03a' },
+  { name: 'Series',      bg: 'linear-gradient(135deg,#0a1030 0%,#0e1844 100%)', accent: '#4a6ab4' },
   { name: 'Documentary', bg: 'linear-gradient(135deg,#0a2218 0%,#0e3022 100%)', accent: '#3ab87a' },
   { name: 'Thriller',    bg: 'linear-gradient(135deg,#280808 0%,#3a0e0e 100%)', accent: '#c14a4a' },
   { name: 'Horror',      bg: 'linear-gradient(135deg,#0c0816 0%,#140d22 100%)', accent: '#8a5fc1' },
@@ -5432,7 +5438,6 @@ const SEARCH_GENRES = [
   { name: 'Mystery',     bg: 'linear-gradient(135deg,#100c20 0%,#18122e 100%)', accent: '#7a60c0' },
   { name: 'Romance',     bg: 'linear-gradient(135deg,#280e1e 0%,#3a1630 100%)', accent: '#c47aa0' },
   { name: 'Sci-Fi',      bg: 'linear-gradient(135deg,#081c28 0%,#0b283a 100%)', accent: '#3ab8d0' },
-  { name: 'Series',      bg: 'linear-gradient(135deg,#0a1030 0%,#0e1844 100%)', accent: '#4a6ab4' },
   { name: 'Animation',   bg: 'linear-gradient(135deg,#1c0828 0%,#2a0e3c 100%)', accent: '#c07ae0' },
   { name: 'Short',       bg: 'linear-gradient(135deg,#081820 0%,#0c2430 100%)', accent: '#5ab4d0' },
   { name: 'Avant-Garde', bg: 'linear-gradient(135deg,#080808 0%,#161616 100%)', accent: '#707070' },
@@ -6652,38 +6657,29 @@ if (DIR_OPTION === 1) {
     directors:   () => focusDirectorsFilter(directorsFilterIdx),
   };
   const subnavs = {};
-  // Current section first, then the others in loop order to its right
-  const canonicalOrder = key => {
-    const at = SECTIONS.findIndex(s => s.key === key);
-    return SECTIONS.map((_, n) => SECTIONS[(at + n) % SECTIONS.length].key);
-  };
   const itemIn = (key, section) => subnavs[key].querySelector(`[data-section="${section}"]`);
-  const arrange = (key, order) => order.forEach(k => subnavs[key].appendChild(itemIn(key, k)));
-  const rowOrder = bar => [...bar.querySelectorAll('.browse-subnav-item')].map(el => el.dataset.section);
   const openSection = () => SECTIONS.find(s => s.modal.classList.contains('is-open'));
 
+  // Every section's title row shows all three tabs in the same fixed order
   SECTIONS.forEach(sec => {
     const bar = document.createElement('div');
     bar.className = 'browse-subnav';
-    canonicalOrder(sec.key).forEach(k => {
-      const s = SECTIONS.find(x => x.key === k);
+    SECTIONS.forEach((s, i) => {
       const b = document.createElement('button');
       b.className = 'browse-subnav-item' + (s.key === sec.key ? ' is-active' : '');
       b.textContent = s.label;
       b.tabIndex = -1;
       b.dataset.section = s.key;
-      b.addEventListener('click', () => { highlightSection(s.key, rowOrder(bar)); leaveRow(s.key, () => itemIn(s.key, s.key).focus({ preventScroll: true })); });
+      b.addEventListener('click', () => highlightSection(s.key));
       b.addEventListener('keydown', e => {
-        const order = rowOrder(bar);
-        const i = order.indexOf(s.key);
-        // Left/Right preview the neighbouring section underneath; the row keeps its order
-        if (e.key === 'ArrowRight' && i < order.length - 1) { e.preventDefault(); highlightSection(order[i + 1], order); }
-        if (e.key === 'ArrowLeft'  && i > 0)                { e.preventDefault(); highlightSection(order[i - 1], order); }
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') e.preventDefault();
-        if (e.key === 'ArrowUp')   { e.preventDefault(); leaveRow(s.key, m => m.querySelector('.marquee-nav .is-active').focus()); }
-        if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault(); leaveRow(s.key, (m, key) => pillsDown[key]());
+        // Left/Right switch the section underneath; the row itself never moves
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const next = SECTIONS[i + (e.key === 'ArrowRight' ? 1 : -1)];
+          if (next) highlightSection(next.key);
         }
+        if (e.key === 'ArrowUp') { e.preventDefault(); sec.modal.querySelector('.marquee-nav .is-active').focus(); }
+        if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pillsDown[sec.key](); }
       });
       bar.appendChild(b);
     });
@@ -6691,71 +6687,17 @@ if (DIR_OPTION === 1) {
     const viewport = document.createElement('div');
     viewport.className = 'browse-subnav-viewport';
     viewport.appendChild(bar);
-    const title = sec.modal.querySelector('.browse-modal-title');
-    title.replaceWith(viewport);
+    sec.modal.querySelector('.browse-modal-title').replaceWith(viewport);
     subnavs[sec.key] = bar;
   });
   const activeSubnav = key => itemIn(key, key);
 
-  // Shows `key`'s content underneath while keeping the title row in `order`
-  function highlightSection(key, order) {
-    // Swap rows with transitions off so the titles don't fade back in (flash)
-    const bar = subnavs[key];
-    bar.classList.add('is-instant');
-    arrange(key, order);
+  // Opens `key`'s section and focuses its tab
+  function highlightSection(key) {
     SECTIONS.forEach(s => s.modal.classList.toggle('is-open', s.key === key));
-    itemIn(key, key).focus({ preventScroll: true });
-    void bar.offsetWidth;
-    setTimeout(() => bar.classList.remove('is-instant'), 60);
+    activeSubnav(key).focus({ preventScroll: true });
   }
-
-  // Where each title sits on screen in a section's tab row
-  const tabPositions = bar => Object.fromEntries(
-    [...bar.querySelectorAll('.browse-subnav-item')].map(el => [el.dataset.section, el.getBoundingClientRect().left]));
-  const SLIDE = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease, color 0.3s ease';
-
-  // The chosen title slides from where it was into the title spot. If focus has
-  // left the row the other titles fade out where they were; if the row keeps
-  // focus (a click) they slide to their new places.
-  function animateCommit(key, before, rowKeepsFocus) {
-    const bar = subnavs[key];
-    bar.classList.remove('is-instant');
-    const items = [...bar.querySelectorAll('.browse-subnav-item')];
-    const after = tabPositions(bar);
-    items.forEach(el => {
-      el.style.transition = 'none';
-      el.style.transform = `translateX(${before[el.dataset.section] - after[el.dataset.section]}px)`;
-      el.style.opacity = '1';
-      if (el.dataset.section !== key) el.style.color = 'rgba(255,255,255,0.35)';
-    });
-    void bar.offsetWidth;
-    items.forEach(el => {
-      const fadeInPlace = !rowKeepsFocus && el.dataset.section !== key;
-      el.style.transition = fadeInPlace ? 'opacity 0.25s ease' : SLIDE;
-      if (!fadeInPlace) el.style.transform = '';
-      el.style.opacity = '';
-      el.style.color = '';
-    });
-    setTimeout(() => items.forEach(el => { el.style.transition = 'none'; el.style.transform = ''; void el.offsetWidth; el.style.transition = ''; }), 450);
-  }
-
-  // Leaving the row settles the highlighted section: its title moves to the
-  // front of the row, then focus moves on with focusNext(modal, key)
-  function leaveRow(key, focusNext) {
-    const sec = SECTIONS.find(s => s.key === key);
-    const target = canonicalOrder(key);
-    const settled = rowOrder(subnavs[key]).join() === target.join();
-    const before = settled ? null : tabPositions(subnavs[key]);
-    if (!settled) arrange(key, target);
-    focusNext(sec.modal, key);
-    if (before) animateCommit(key, before, subnavs[key].contains(document.activeElement));
-  }
-
-  function switchBrowseSection(key) {
-    const from = openSection();
-    highlightSection(key, from ? rowOrder(subnavs[from.key]) : canonicalOrder(key));
-    leaveRow(key, () => activeSubnav(key).focus({ preventScroll: true }));
-  }
+  const switchBrowseSection = highlightSection;
 
   // Up from pills → sub-menu; Down from the top nav → sub-menu
   document.addEventListener('keydown', e => {
@@ -6769,7 +6711,6 @@ if (DIR_OPTION === 1) {
     }
     if (e.key === 'Escape') {
       e.preventDefault(); e.stopImmediatePropagation();
-      SECTIONS.forEach(s => arrange(s.key, canonicalOrder(s.key)));
       closeAllPanels(); setTimeout(() => navCollections.focus({ preventScroll: true }), 50);
     }
   }, true);
