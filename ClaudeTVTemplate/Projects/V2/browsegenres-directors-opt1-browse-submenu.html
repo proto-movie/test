@@ -2028,17 +2028,23 @@ body.carousel-active .long-press-hint {
   position: relative;
 }
 .browse-subnav-item.is-active { color: #fff; }
-/* the current section is underlined while the row has focus */
-.browse-subnav:focus-within .browse-subnav-item.is-active::after {
-  content: '';
+/* the current section is underlined while the row has focus; the line
+   slides between tabs as the titles change colour (is-moving) */
+.browse-subnav { position: relative; }
+.browse-subnav-item { transition: color 0.2s ease; }
+.browse-subnav-line {
   position: absolute;
   left: 0;
-  right: 0;
   bottom: -16px;
   height: 6px;
   border-radius: 3px;
   background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1), width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.browse-subnav:focus-within .browse-subnav-line { opacity: 1; }
+.browse-subnav.is-moving .browse-subnav-item:not(.is-active) { transition: none; }
 /* while the row has focus the other tabs brighten a little */
 .browse-subnav:focus-within .browse-subnav-item:not(.is-active) { color: rgba(255,255,255,0.4); }
 .browse-subnav-viewport + .browse-genre-bar-wrap { margin-top: 44px; }
@@ -6676,13 +6682,18 @@ if (DIR_OPTION === 1) {
         if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
           e.preventDefault();
           const next = SECTIONS[i + (e.key === 'ArrowRight' ? 1 : -1)];
-          if (next) highlightSection(next.key);
+          if (next) highlightSection(next.key, s.key);
         }
         if (e.key === 'ArrowUp') { e.preventDefault(); sec.modal.querySelector('.marquee-nav .is-active').focus(); }
         if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pillsDown[sec.key](); }
       });
       bar.appendChild(b);
     });
+    // One underline per row; it slides between tabs
+    const line = document.createElement('span');
+    line.className = 'browse-subnav-line';
+    bar.appendChild(line);
+    bar.addEventListener('focusin', () => { if (!bar.classList.contains('is-moving')) placeLine(bar, sec.key, false); });
     // The tabs take the place of the page title
     const viewport = document.createElement('div');
     viewport.className = 'browse-subnav-viewport';
@@ -6692,10 +6703,48 @@ if (DIR_OPTION === 1) {
   });
   const activeSubnav = key => itemIn(key, key);
 
-  // Opens `key`'s section and focuses its tab
-  function highlightSection(key) {
+  // Puts a row's underline under the tab for `section`
+  function placeLine(bar, section, animate) {
+    const line = bar.querySelector('.browse-subnav-line');
+    const tab = bar.querySelector(`[data-section="${section}"]`);
+    if (!animate) line.style.transition = 'none';
+    line.style.left = tab.offsetLeft + 'px';
+    line.style.width = tab.offsetWidth + 'px';
+    if (!animate) { void line.offsetWidth; line.style.transition = ''; }
+  }
+
+  // Opens `key`'s section and focuses its tab. Coming from another tab, the
+  // underline slides across from it while the old title dims and the new one lights up.
+  const LINE_MS = 280;
+  const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
+  function highlightSection(key, fromKey) {
+    const bar = subnavs[key];
+    const tabs = [...bar.querySelectorAll('.browse-subnav-item')];
+    clearTimeout(bar._moveTimer);
+    tabs.forEach(t => { t.style.transition = ''; t.style.color = ''; });
     SECTIONS.forEach(s => s.modal.classList.toggle('is-open', s.key === key));
-    activeSubnav(key).focus({ preventScroll: true });
+    if (fromKey && fromKey !== key) {
+      const fromTab = itemIn(key, fromKey), toTab = activeSubnav(key);
+      // Start this row where the previous one left off, then animate both together
+      bar.classList.add('is-moving');
+      placeLine(bar, fromKey, false);
+      fromTab.style.transition = toTab.style.transition = 'none';
+      fromTab.style.color = '#fff';
+      toTab.style.color = 'rgba(255,255,255,0.4)';
+      toTab.focus({ preventScroll: true });
+      void bar.offsetWidth;
+      fromTab.style.transition = toTab.style.transition = `color ${LINE_MS}ms ${EASE}`;
+      fromTab.style.color = toTab.style.color = '';
+      placeLine(bar, key, true);
+      bar._moveTimer = setTimeout(() => {
+        bar.classList.remove('is-moving');
+        tabs.forEach(t => { t.style.transition = ''; });
+      }, LINE_MS);
+    } else {
+      bar.classList.remove('is-moving');
+      activeSubnav(key).focus({ preventScroll: true });
+      placeLine(bar, key, false);
+    }
   }
   const switchBrowseSection = highlightSection;
 
