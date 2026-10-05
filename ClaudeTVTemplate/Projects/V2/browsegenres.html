@@ -5742,8 +5742,10 @@ function renderBrowseFilms(films, label) {
       if (e.key === 'ArrowUp') {
         e.preventDefault();
         if (row === 0) {
+          // hand focus straight to the pills so the tile doesn't keep glowing while the grid scrolls back
+          getBrowseCards().forEach(c => c.classList.remove('is-result-focused'));
+          getBrowsePills()[browseGenreIdx]?.focus({ preventScroll: true });
           browseModalBody.scrollTo({ top: 0, behavior: 'smooth' });
-          setTimeout(() => getBrowsePills()[browseGenreIdx]?.focus({ preventScroll: true }), 380);
         } else {
           focusBrowseCard(idx - cols);
         }
@@ -6075,8 +6077,9 @@ function renderCollectionsTiles(catKey) {
       if (e.key === 'ArrowUp') {
         e.preventDefault();
         if (row === 0) {
+          getCollectionsTiles().forEach(t => t.classList.remove('is-coll-focused'));
+          getCollectionsPills()[collectionsCatIdx]?.focus({ preventScroll: true });
           collectionsModalBody.scrollTo({ top: 0, behavior: 'smooth' });
-          setTimeout(() => getCollectionsPills()[collectionsCatIdx]?.focus({ preventScroll: true }), 380);
         } else {
           focusCollectionsTile(idx - cols);
         }
