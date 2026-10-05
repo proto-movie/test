@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Directors in Browse — Options</title>
+<style>
+@font-face { font-family:'Riforma'; font-display:swap; src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2'); }
+@font-face { font-family:'Riforma'; font-display:swap; src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2'); font-weight:500; }
+@font-face { font-family:'Riforma'; font-display:swap; src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Bold.woff2) format('woff2'); font-weight:bold; }
+
+:root {
+  --bg: #1f1f1f;
+  --card: #2a2a2a;
+  --text: #fff;
+  --muted: rgba(255,255,255,0.6);
+  --faint: rgba(255,255,255,0.12);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Riforma', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+.wrap { max-width: 1400px; margin: 0 auto; padding: 56px 32px 80px; }
+
+header { display: flex; align-items: center; gap: 20px; }
+.logo { width: 40px; height: 40px; flex-shrink: 0; }
+.eyebrow {
+  font-size: 15px; font-weight: 500; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--muted);
+}
+h1 { font-size: 56px; font-weight: bold; line-height: 1.05; margin-top: 28px; letter-spacing: -1px; }
+.intro { font-size: 19px; line-height: 1.5; color: var(--muted); max-width: 760px; margin-top: 16px; }
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin-top: 48px;
+}
+.option {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border-radius: 20px;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+  border: 3px solid transparent;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.option:hover, .option:focus-visible { transform: translateY(-4px); border-color: #fff; }
+.shot { aspect-ratio: 16 / 9; background: #111; overflow: hidden; }
+.shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.body { padding: 24px 26px 28px; display: flex; flex-direction: column; flex: 1; }
+.num {
+  font-size: 14px; font-weight: 500; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--muted);
+}
+h2 { font-size: 28px; font-weight: bold; line-height: 1.15; margin-top: 8px; letter-spacing: -0.3px; }
+.desc { font-size: 16px; line-height: 1.55; color: var(--muted); margin-top: 12px; }
+.points { list-style: none; margin-top: 16px; display: grid; gap: 8px; }
+.points li {
+  font-size: 15px; line-height: 1.45; color: rgba(255,255,255,0.8);
+  padding-left: 18px; position: relative;
+}
+.points li::before {
+  content: ''; position: absolute; left: 0; top: 8px;
+  width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5);
+}
+.open {
+  margin-top: auto; padding-top: 24px;
+  font-size: 15px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.open span {
+  display: inline-block; padding: 10px 18px; border-radius: 100px;
+  background: var(--faint); transition: background 0.15s, color 0.15s;
+}
+.option:hover .open span, .option:focus-visible .open span { background: #fff; color: #000; }
+
+.note { margin-top: 40px; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.45); }
+.note kbd {
+  font-family: inherit; font-size: 12px; padding: 2px 7px; border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.7);
+}
+
+@media (max-width: 1000px) {
+  .options { grid-template-columns: 1fr; max-width: 640px; }
+  h1 { font-size: 40px; }
+}
+@media (max-width: 480px) {
+  .wrap { padding: 32px 16px 56px; }
+  h1 { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <svg class="logo" viewBox="0 0 80 80" fill="#fff" aria-label="MUBI">
+      <circle cx="11" cy="11" r="11"/><circle cx="40" cy="11" r="11"/><circle cx="69" cy="11" r="11"/>
+      <circle cx="11" cy="40" r="11"/><circle cx="40" cy="40" r="11"/><circle cx="69" cy="40" r="11"/>
+      <circle cx="11" cy="69" r="11"/><circle cx="40" cy="69" r="11"/>
+    </svg>
+    <div class="eyebrow">MUBI TV · Browse prototype</div>
+  </header>
+
+  <h1>Directors in Browse</h1>
+  <p class="intro">Three ways to bring the website's director browsing to the TV app. Pick one to open the prototype. In every option, selecting a director opens their page with a back arrow and their films on MUBI (UK catalogue).</p>
+
+  <div class="options">
+    <a class="option" href="browsegenres-directors-opt1-browse-submenu.html">
+      <div class="shot"><img src="option-previews/option-1.jpg" alt="Browse page titled Directors, with Films &amp; Series and Collections shown to its right"></div>
+      <div class="body">
+        <div class="num">Option 1</div>
+        <h2>Browse sections</h2>
+        <p class="desc">Browse holds three sections: Films &amp; Series, Collections and Directors. The section you're in is the page title. Highlight it and the other two appear to its right; move across them and the page underneath switches to that section, and when you leave the row your pick slides into the title spot as the others fade away.</p>
+        <ul class="points">
+          <li>Collections moves out of the top nav and into Browse</li>
+          <li>The top nav stays short: Now Showing, Browse, Watchlist</li>
+          <li>Directors filters: All, Emerging, Women, Classic Auteurs, Award Winning</li>
+        </ul>
+        <div class="open"><span>Open prototype →</span></div>
+      </div>
+    </a>
+
+    <a class="option" href="browsegenres-directors-opt2-genre-tab.html">
+      <div class="shot"><img src="option-previews/option-2.jpg" alt="Browse page with a Directors tab among the genre tabs"></div>
+      <div class="body">
+        <div class="num">Option 2</div>
+        <h2>Directors tab in Browse</h2>
+        <p class="desc">Browse stays as it is, with a Directors tab added to the genre row, right after Recently Added. Selecting it swaps the film grid for director tiles.</p>
+        <ul class="points">
+          <li>Smallest change to the current navigation</li>
+          <li>Directors sorted by number of films on MUBI</li>
+        </ul>
+        <div class="open"><span>Open prototype →</span></div>
+      </div>
+    </a>
+
+    <a class="option" href="browsegenres-directors-opt3-top-nav.html">
+      <div class="shot"><img src="option-previews/option-3.jpg" alt="Directors page opened from the top navigation"></div>
+      <div class="body">
+        <div class="num">Option 3</div>
+        <h2>Directors in the top nav</h2>
+        <p class="desc">Watchlist leaves the top nav and Directors takes its place. Directors gets its own page that follows the Browse and Collections template.</p>
+        <ul class="points">
+          <li>Directors is one press away from anywhere</li>
+          <li>Same filters as option 1</li>
+        </ul>
+        <div class="open"><span>Open prototype →</span></div>
+      </div>
+    </a>
+  </div>
+
+  <p class="note">Prototypes are built for a 1920×1080 TV screen and driven with the arrow keys, <kbd>Enter</kbd> and <kbd>Esc</kbd> / <kbd>Backspace</kbd> for back.</p>
+</div>
+</body>
+</html>
