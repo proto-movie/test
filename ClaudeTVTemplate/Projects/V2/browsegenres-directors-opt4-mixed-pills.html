@@ -2053,6 +2053,212 @@ body.carousel-active .long-press-hint {
 .browse-genre-pill.is-group-start { margin-left: 28px; }
 #browseModal .browse-modal-title { transition: opacity 0.14s ease; }
 #browseModal .browse-modal-title.is-swapping { opacity: 0; }
+
+/* Options 5–8: the pill row shows one group at a time */
+.browse-genre-pill.is-out-of-group { display: none; }
+
+/* Option 5: collapsible side rail */
+#browseModal.has-rail .browse-modal-body { padding-left: 196px; }
+#browseModal.has-rail .marquee-nav { margin-left: -196px; }
+#browseModal.has-rail .browse-film-area { grid-template-columns: repeat(3, minmax(0, 1fr)); justify-content: stretch; }
+#browseModal.has-rail .browse-film-area .tv-coll-tile { width: 100%; }
+#browseModal.has-rail .browse-film-area.is-directors { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 40px 24px; }
+#browseModal.has-rail .dir-tile,
+#browseModal.has-rail .dir-tile-img { width: 100%; }
+#browseModal.has-rail .dir-tile-img { height: auto; aspect-ratio: 1; }
+.browse-rail {
+  position: absolute;
+  left: 0; top: 196px; bottom: 0;
+  width: 150px;
+  padding: 40px 0 0 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 5;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+.browse-rail:focus-within {
+  width: 560px;
+  background: linear-gradient(90deg, rgba(24,24,24,0.98) 0%, rgba(24,24,24,0.95) 60%, rgba(24,24,24,0) 100%);
+}
+.browse-rail-item {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: fit-content;
+  height: 72px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 36px;
+  background: transparent;
+  color: rgba(255,255,255,0.4);
+  font-family: 'Riforma', sans-serif;
+  font-size: 30px;
+  font-weight: 500;
+  white-space: nowrap;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.browse-rail-item svg { flex-shrink: 0; }
+.browse-rail-item span { opacity: 0; transition: opacity 0.2s ease; }
+.browse-rail:focus-within .browse-rail-item span { opacity: 1; }
+.browse-rail-item.is-active { color: #fff; }
+.browse-rail-item:focus { background: #fff; color: #000; }
+
+/* Options 6 & 7: hub with a section view behind a back button */
+.browse-title-row { display: flex; align-items: center; gap: 32px; margin-top: 17px; flex-shrink: 0; }
+.browse-title-row .browse-modal-title { margin: 0; }
+#browseModal.is-hub .browse-back { display: none; }
+.browse-hub { display: none; }
+#browseModal.is-hub .browse-hub { display: block; }
+#browseModal.is-hub .browse-genre-bar-wrap,
+#browseModal.is-hub .browse-film-area { display: none; }
+
+/* Option 6: rows */
+.hub-row { margin-top: 44px; }
+.hub-row-title {
+  font-family: 'Riforma', sans-serif;
+  font-size: 34px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 18px;
+}
+.hub-row-viewport { overflow-x: clip; overflow-y: visible; padding: 14px; margin: -14px -96px -14px -14px; }
+.hub-row-strip { display: flex; gap: 26px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.hub-card {
+  position: relative;
+  flex: 0 0 420px;
+  height: 236px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #2c2c2c;
+  border: 3.5px solid transparent;
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.hub-card > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hub-card-shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0) 65%); }
+.hub-card-label {
+  position: absolute; left: 22px; right: 22px; bottom: 18px;
+  font-family: 'Riforma', sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+  text-transform: uppercase;
+}
+.hub-card-label span { display: block; margin-top: 6px; font-size: 18px; font-weight: 500; color: rgba(255,255,255,0.75); }
+.hub-card:focus { transform: scale(1.05); z-index: 1; animation: card-focus-pulse 3s ease-in-out infinite; }
+.hub-card--dir { flex: 0 0 220px; width: 220px; min-width: 0; height: auto; background: none; border: none; overflow: visible; border-radius: 0; }
+.hub-card--dir:focus { animation: none; }
+.hub-dir-img {
+  width: 220px; height: 220px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #2c2c2c;
+  border: 3.5px solid transparent;
+}
+.hub-dir-img img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; display: block; filter: grayscale(100%); }
+.hub-dir-all { display: grid; grid-template-columns: 1fr 1fr; }
+.hub-card--dir:focus .hub-dir-img { animation: browse-card-focus-pulse 3s ease-in-out infinite; }
+.hub-dir-name {
+  font-family: 'Riforma', sans-serif;
+  font-size: 22px; font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  text-transform: uppercase;
+  margin-top: 14px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hub-card--dir:focus .hub-dir-name { color: #fff; }
+.hub-dir-count { font-family: 'Riforma', sans-serif; font-size: 18px; font-weight: 500; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-top: 4px; }
+
+/* Option 7: three big cards */
+#browseModal.is-hub .browse-big-hub { display: grid; }
+.browse-big-hub { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: 56px; }
+.big-card {
+  position: relative;
+  height: 660px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #2c2c2c;
+  border: 4px solid transparent;
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.big-card-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: opacity 0.2s; }
+.big-card-faces { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; }
+.big-card-faces img { position: static; width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; filter: grayscale(100%); }
+.big-card-wash { position: absolute; inset: 0; opacity: 0.9; }
+.big-card-shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 55%); }
+.big-card-label {
+  position: absolute; left: 40px; right: 40px; bottom: 40px;
+  font-family: 'Riforma', sans-serif;
+  font-size: 56px; font-weight: 700; line-height: 1.05;
+  color: #fff;
+}
+.big-card-label span { display: block; margin-top: 12px; font-size: 24px; font-weight: 500; color: rgba(255,255,255,0.75); }
+.big-card:focus { transform: scale(1.03); z-index: 1; animation: card-focus-pulse 3s ease-in-out infinite; }
+.big-card:focus .big-card-art img { opacity: 1; }
+
+/* Option 8: the title is a dropdown */
+.browse-title-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  align-self: flex-start;
+  margin: 9px 0 0 -24px;
+  padding: 8px 20px 8px 24px;
+  border: none;
+  border-radius: 18px;
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  outline: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.browse-title-select .browse-modal-title { margin: 0; }
+.browse-title-chevron { transition: transform 0.2s ease; }
+.browse-title-select:focus,
+.browse-title-select.is-open { background: #fff; color: #000; }
+.browse-title-select:focus .browse-modal-title,
+.browse-title-select.is-open .browse-modal-title { color: #000; }
+.browse-title-select.is-open .browse-title-chevron { transform: rotate(180deg); }
+.browse-title-menu {
+  display: none;
+  position: absolute;
+  left: 58px; top: 240px;
+  min-width: 560px;
+  padding: 14px;
+  border-radius: 26px;
+  background: #2c2c2c;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+  z-index: 10;
+}
+.browse-title-menu.is-open { display: block; }
+.browse-title-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 18px 22px;
+  border: none;
+  border-radius: 16px;
+  background: transparent;
+  color: rgba(255,255,255,0.75);
+  font-family: 'Riforma', sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  text-align: left;
+  outline: none;
+  cursor: pointer;
+}
+.browse-title-menu-check { display: inline-flex; width: 36px; visibility: hidden; }
+.browse-title-menu-item.is-current .browse-title-menu-check { visibility: visible; }
+.browse-title-menu-item:focus { background: #fff; color: #000; }
 </style>
 </head>
 <body>
@@ -6860,7 +7066,7 @@ function renderBrowseCollections(catKey) {
   });
 }
 
-if (DIR_OPTION === 2 || DIR_OPTION === 4) {
+if (DIR_OPTION === 2 || DIR_OPTION >= 4) {
   // Down from a director or collection pill lands on its first tile
   document.addEventListener('keydown', e => {
     if (e.key !== 'ArrowDown' || !e.target.classList.contains('browse-genre-pill') || !browseGenreBar.contains(e.target)) return;
@@ -6874,31 +7080,355 @@ if (DIR_OPTION === 2 || DIR_OPTION === 4) {
   }, true);
 }
 
-// ══ Option 4 — one Browse page; Collections leaves the top nav ═════════════
-if (DIR_OPTION === 4) {
-  document.querySelectorAll('[id$="NavCollectionsItem"], #navCollectionsItem').forEach(b => { b.style.display = 'none'; });
+// ══ Options 4–8 — one Browse page with grouped pills; Collections leaves the top nav ══
+const GROUP_TITLES = { films: 'Films & Series', collections: 'Collections', directors: 'Directors' };
+const GROUP_KEYS = ['films', 'collections', 'directors'];
+const groupOf = pill => pill?.group || 'films';
+const groupPillIdxs = g => BROWSE_GENRES_LIST.map((p, i) => [p, i]).filter(([p]) => groupOf(p) === g).map(([, i]) => i);
+const browseTitle = browseModal.querySelector('.browse-modal-title');
+const lastPillOf = {};
+let titleTimer = null;
 
-  // The page title names the group of the selected pill
-  const GROUP_TITLES = { films: 'Films & Series', collections: 'Collections', directors: 'Directors' };
-  const groupOf = pill => pill?.group || 'films';
-  const browseTitle = browseModal.querySelector('.browse-modal-title');
+// Cross-fades the page title to `text`
+function setBrowseTitle(text) {
+  if ((browseTitle.dataset.title || browseTitle.textContent) === text) return;
+  browseTitle.dataset.title = text;
+  clearTimeout(titleTimer);
+  browseTitle.classList.add('is-swapping');
+  titleTimer = setTimeout(() => { browseTitle.textContent = text; browseTitle.classList.remove('is-swapping'); }, 140);
+}
+
+// Hooks the options below fill in
+let navDownHook = null;   // returns true when it handled Down from the top nav
+let pillUpHook  = null;   // Up from a pill
+let pillEdgeHook = null;  // Left/Right past the ends of the visible pills (dir: -1 | 1)
+
+if (DIR_OPTION >= 4) {
+  document.querySelectorAll('[id$="NavCollectionsItem"], #navCollectionsItem').forEach(b => { b.style.display = 'none'; });
   browseTitle.textContent = GROUP_TITLES.films;
+
+  const focusBrowsePillBase = focusBrowsePill;
+  focusBrowsePill = function (idx) {
+    if (document.activeElement?.closest?.('.marquee-nav') && navDownHook && navDownHook()) return;
+    focusBrowsePillBase(idx);
+    const g = groupOf(BROWSE_GENRES_LIST[browseGenreIdx]);
+    lastPillOf[g] = browseGenreIdx;
+    if (DIR_OPTION === 4) setBrowseTitle(GROUP_TITLES[g]);
+  };
+}
+
+// ══ Option 4 — every group in one pill row; the title follows the group ════
+if (DIR_OPTION === 4) {
   // a little extra space where each group starts
   getBrowsePills().forEach((p, i) => {
     if (i > 0 && groupOf(BROWSE_GENRES_LIST[i]) !== groupOf(BROWSE_GENRES_LIST[i - 1])) p.classList.add('is-group-start');
   });
-  let titleTimer = null;
-  const focusBrowsePillBase = focusBrowsePill;
-  focusBrowsePill = function (idx) {
-    focusBrowsePillBase(idx);
-    const title = GROUP_TITLES[groupOf(BROWSE_GENRES_LIST[browseGenreIdx])];
-    if (browseTitle.dataset.title === title || (!browseTitle.dataset.title && title === GROUP_TITLES.films)) return;
-    browseTitle.dataset.title = title;
-    // quick cross-fade so the title change reads as the row moving into a new group
-    clearTimeout(titleTimer);
-    browseTitle.classList.add('is-swapping');
-    titleTimer = setTimeout(() => { browseTitle.textContent = title; browseTitle.classList.remove('is-swapping'); }, 140);
+}
+
+// ══ Options 5–8 — the pill row shows one group at a time ══════════════════
+let browseGroup = 'films';
+// Shows only `g`'s pills and names the page after it
+function applyGroup(g) {
+  browseGroup = g;
+  getBrowsePills().forEach((p, i) => p.classList.toggle('is-out-of-group', groupOf(BROWSE_GENRES_LIST[i]) !== g));
+  setBrowseTitle(GROUP_TITLES[g]);
+}
+// Switches to group `g`, selecting pill `idx` (or the group's last-used pill)
+function showGroup(g, idx) {
+  applyGroup(g);
+  focusBrowsePill(idx ?? lastPillOf[g] ?? groupPillIdxs(g)[0]);
+}
+
+if (DIR_OPTION >= 5) {
+  applyGroup('films');
+  // Left/Right stay inside the visible group; Up goes wherever the option says
+  document.addEventListener('keydown', e => {
+    const pill = e.target;
+    if (!pill.classList?.contains('browse-genre-pill') || !browseGenreBar.contains(pill)) return;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault(); e.stopImmediatePropagation();
+      const idxs = groupPillIdxs(browseGroup);
+      const at = idxs.indexOf(browseGenreIdx) + (e.key === 'ArrowRight' ? 1 : -1);
+      if (at >= 0 && at < idxs.length) focusBrowsePill(idxs[at]);
+      else pillEdgeHook?.(e.key === 'ArrowRight' ? 1 : -1);
+    }
+    if (e.key === 'ArrowUp' && pillUpHook) { e.preventDefault(); e.stopImmediatePropagation(); pillUpHook(); }
+  }, true);
+}
+
+// Section view with a back button, for the options that open on a hub (6 & 7)
+let hubMode = false, hubReturn = null, hubFocusFirst = null;
+let browseBack = null;
+function buildSectionHeader() {
+  const row = document.createElement('div');
+  row.className = 'browse-title-row';
+  browseBack = document.createElement('button');
+  browseBack.className = 'dir-page-back browse-back';
+  browseBack.tabIndex = -1;
+  browseBack.setAttribute('aria-label', 'Back to Browse');
+  browseBack.innerHTML = BACK_ARROW_SVG;
+  browseTitle.replaceWith(row);
+  row.append(browseBack, browseTitle);
+  browseBack.addEventListener('click', () => enterHub());
+  browseBack.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); enterHub(); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); focusBrowsePill(browseGenreIdx); }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); browseNavCollections.focus(); }
+  });
+}
+function enterHub(focusEl) {
+  hubMode = true;
+  browseModal.classList.add('is-hub');
+  setBrowseTitle('Browse');
+  browseModalBody.scrollTop = 0;
+  const el = focusEl || hubReturn || hubFocusFirst();
+  el?.focus({ preventScroll: true });
+  el && scrollIntoModal(el, browseModalBody);
+}
+function enterSection(g, idx, fromEl) {
+  hubMode = false;
+  hubReturn = fromEl;
+  browseModal.classList.remove('is-hub');
+  showGroup(g, idx);
+}
+if (DIR_OPTION === 6 || DIR_OPTION === 7) {
+  buildSectionHeader();
+  // Down from the top nav always lands on the hub's top row
+  navDownHook = () => { if (!hubMode) return false; enterHub(hubFocusFirst()); return true; };
+  pillUpHook = () => browseBack.focus({ preventScroll: true });
+  // Selecting Browse in the top nav goes back to the hub
+  browseNavCollections.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && !hubMode) { e.preventDefault(); enterHub(hubFocusFirst()); }
+  });
+  // Back from a section returns to the hub instead of closing Browse
+  browseModal.addEventListener('keydown', e => {
+    if ((e.key === 'Escape' || e.key === 'Backspace') && !hubMode && !e.target.closest('.marquee-nav')) {
+      e.preventDefault(); e.stopImmediatePropagation(); enterHub();
+    }
+  }, true);
+}
+
+// A card for the hubs: image, optional colour wash, label
+function hubCard(cls, { img, color, label, sub, html }) {
+  const card = document.createElement('div');
+  card.className = cls;
+  card.tabIndex = -1;
+  card.innerHTML = html || `
+    ${img ? `<img src="${img}" alt="" loading="lazy">` : ''}
+    <div class="hub-card-shade"${color ? ` style="background:linear-gradient(90deg, ${color} 0%, ${color}cc 35%, transparent 75%)"` : ''}></div>
+    <div class="hub-card-label">${label}${sub ? `<span>${sub}</span>` : ''}</div>`;
+  return card;
+}
+const firstCollectionOf = key => COLLECTIONS_DATA.find(c => c.category === key);
+
+// ══ Option 5 — collapsible side rail (Android TV navigation drawer / Apple TV sidebar) ══
+if (DIR_OPTION === 5) {
+  const ICONS = {
+    films: `<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg>`,
+    collections: `<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="15" height="12" rx="2"/><path d="M6 4h13a2 2 0 0 1 2 2v10"/><path d="M9 10.5v5l4-2.5z" fill="currentColor"/></svg>`,
+    directors: `<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>`,
   };
+  browseModal.classList.add('has-rail');
+  const rail = document.createElement('div');
+  rail.className = 'browse-rail';
+  GROUP_KEYS.forEach((g, i) => {
+    const b = document.createElement('button');
+    b.className = 'browse-rail-item' + (g === 'films' ? ' is-active' : '');
+    b.tabIndex = -1;
+    b.dataset.group = g;
+    b.innerHTML = `${ICONS[g]}<span>${GROUP_TITLES[g]}</span>`;
+    b.addEventListener('click', () => showGroup(g));
+    b.addEventListener('keydown', e => {
+      const next = GROUP_KEYS[i + (e.key === 'ArrowDown' ? 1 : -1)];
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        // moving along the rail previews that section underneath
+        if (next) { railFocus(next); }
+        else if (e.key === 'ArrowUp') browseNavCollections.focus();
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); focusBrowsePill(browseGenreIdx); }
+    });
+    rail.appendChild(b);
+  });
+  browseModal.appendChild(rail);
+  const railItem = g => rail.querySelector(`[data-group="${g}"]`);
+  function railFocus(g) {
+    if (g !== browseGroup) { showGroup(g); }
+    rail.querySelectorAll('.browse-rail-item').forEach(b => b.classList.toggle('is-active', b.dataset.group === g));
+    railItem(g).focus({ preventScroll: true });
+  }
+  const toRail = () => railFocus(browseGroup);
+  pillEdgeHook = dir => { if (dir < 0) toRail(); };
+  // Left from the first column of tiles also opens the rail
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' || !browseFilmArea.contains(e.target) || e.target.parentElement !== browseFilmArea) return;
+    const minLeft = Math.min(...[...browseFilmArea.children].map(c => c.offsetLeft));
+    if (e.target.offsetLeft > minLeft + 2) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    e.target.classList.remove('is-result-focused', 'is-coll-focused');
+    toRail();
+  }, true);
+}
+
+// ══ Option 6 — Browse home made of rows (Netflix / Android TV browse rows) ══
+if (DIR_OPTION === 6) {
+  const hub = document.createElement('div');
+  hub.className = 'browse-hub browse-rows';
+  const allDirectorsIdx = BROWSE_GENRES_LIST.findIndex(p => p.directors === true);
+  const ROWS = [
+    { title: 'Films & Series', cards: groupPillIdxs('films').map(i => {
+        const p = BROWSE_GENRES_LIST[i];
+        return { el: hubCard('hub-card', { img: p.films[0]?.img, label: p.name }), open: el => enterSection('films', i, el) };
+      }) },
+    { title: 'Collections', cards: groupPillIdxs('collections').map(i => {
+        const p = BROWSE_GENRES_LIST[i], c = firstCollectionOf(p.collections);
+        const n = COLLECTIONS_DATA.filter(x => x.category === p.collections).length;
+        return { el: hubCard('hub-card', { img: c?.img, color: c?.color, label: p.name, sub: `${n} collections` }), open: el => enterSection('collections', i, el) };
+      }) },
+    { title: 'Directors', cards: [
+        { el: hubCard('hub-card hub-card--dir hub-card--all', { html: `<div class="hub-dir-img hub-dir-all">${DIRECTORS_DATA.filter(d => d.image).slice(0, 4).map(d => `<img src="${d.image}" alt="" loading="lazy">`).join('')}</div><div class="hub-dir-name">All Directors</div><div class="hub-dir-count">${DIRECTORS_DATA.length} directors</div>` }),
+          open: el => enterSection('directors', allDirectorsIdx, el) },
+        ...DIRECTORS_DATA.filter(d => d.image).slice(0, 15).map(d => ({
+          el: hubCard('hub-card hub-card--dir', { html: `<div class="hub-dir-img"><img src="${d.image}" alt="" loading="lazy"></div><div class="hub-dir-name">${d.name}</div><div class="hub-dir-count">${d.count} film${d.count !== 1 ? 's' : ''}</div>` }),
+          open: el => openDirectorPage(d, el) })),
+      ] },
+  ];
+  const strips = [], colOf = [];
+  ROWS.forEach((row, r) => {
+    const rowEl = document.createElement('section');
+    rowEl.className = 'hub-row';
+    rowEl.innerHTML = `<h2 class="hub-row-title">${row.title}</h2><div class="hub-row-viewport"><div class="hub-row-strip"></div></div>`;
+    const strip = rowEl.querySelector('.hub-row-strip');
+    strips.push(strip); colOf.push(0);
+    row.cards.forEach((c, i) => {
+      c.el.addEventListener('click', () => c.open(c.el));
+      c.el.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') { e.preventDefault(); focusHubCard(r, i + 1); }
+        if (e.key === 'ArrowLeft')  { e.preventDefault(); focusHubCard(r, i - 1); }
+        if (e.key === 'ArrowDown')  { e.preventDefault(); if (r < ROWS.length - 1) focusHubCard(r + 1, colOf[r + 1]); }
+        if (e.key === 'ArrowUp')    { e.preventDefault(); if (r > 0) focusHubCard(r - 1, colOf[r - 1]); else { browseModalBody.scrollTo({ top: 0, behavior: 'smooth' }); browseNavCollections.focus(); } }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.open(c.el); }
+      });
+      strip.appendChild(c.el);
+    });
+    hub.appendChild(rowEl);
+  });
+  // Keeps the focused card in view by sliding its row
+  function focusHubCard(r, i) {
+    const cards = [...strips[r].children];
+    i = Math.max(0, Math.min(cards.length - 1, i));
+    colOf[r] = i;
+    // the viewport runs to the screen edge; keep focus inside the page margin
+    const card = cards[i], vw = strips[r].parentElement.offsetWidth - 96 - 28;
+    const cur = -(parseFloat(strips[r].dataset.x) || 0);
+    let x = cur;
+    if (card.offsetLeft + card.offsetWidth > cur + vw) x = card.offsetLeft + card.offsetWidth - vw + 8;
+    if (card.offsetLeft < cur) x = card.offsetLeft;
+    strips[r].dataset.x = String(-x);
+    strips[r].style.transform = `translateX(${-x}px)`;
+    card.focus({ preventScroll: true });
+    if (r === 0) browseModalBody.scrollTo({ top: 0, behavior: 'smooth' });
+    else scrollIntoModal(card, browseModalBody);
+  }
+  hubFocusFirst = () => strips[0].children[colOf[0]];
+  browseFilmArea.before(hub);
+  enterHub();
+}
+
+// ══ Option 7 — three big section cards (Apple TV / Disney+ style hub) ═══════
+if (DIR_OPTION === 7) {
+  const hub = document.createElement('div');
+  hub.className = 'browse-hub browse-big-hub';
+  const coll = firstCollectionOf('spotlight');
+  const recent = BROWSE_GENRES_LIST[0].films;
+  const CARDS = [
+    { g: 'films', html: `<img src="${recent[1]?.img || recent[0]?.img}" alt="" loading="lazy">`,
+      sub: `${groupPillIdxs('films').length} genres, series and new arrivals` },
+    { g: 'collections', html: `<img src="${coll?.img}" alt="" loading="lazy"><div class="big-card-wash" style="background:linear-gradient(180deg, transparent 30%, ${coll?.color} 100%)"></div>`,
+      sub: `${COLLECTIONS_DATA.length} hand-picked collections` },
+    { g: 'directors', html: `<div class="big-card-faces">${DIRECTORS_DATA.filter(d => d.image).slice(0, 4).map(d => `<img src="${d.image}" alt="" loading="lazy">`).join('')}</div>`,
+      sub: `${DIRECTORS_DATA.length} directors and their films` },
+  ];
+  const cards = CARDS.map((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'big-card';
+    el.tabIndex = -1;
+    el.innerHTML = `<div class="big-card-art">${c.html}</div><div class="big-card-shade"></div>
+      <div class="big-card-label">${GROUP_TITLES[c.g]}<span>${c.sub}</span></div>`;
+    const open = () => enterSection(c.g, undefined, el);
+    el.addEventListener('click', open);
+    el.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); cards[i + 1]?.focus({ preventScroll: true }); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); cards[i - 1]?.focus({ preventScroll: true }); }
+      if (e.key === 'ArrowUp')    { e.preventDefault(); browseNavCollections.focus(); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+    });
+    hub.appendChild(el);
+    return el;
+  });
+  hubFocusFirst = () => cards[0];
+  browseFilmArea.before(hub);
+  enterHub();
+}
+
+// ══ Option 8 — the title is a dropdown that switches section (Netflix-style category picker) ══
+if (DIR_OPTION === 8) {
+  const CHEVRON = `<svg class="browse-title-chevron" viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+  const select = document.createElement('button');
+  select.className = 'browse-title-select';
+  select.tabIndex = -1;
+  select.setAttribute('aria-haspopup', 'listbox');
+  browseTitle.replaceWith(select);
+  select.append(browseTitle);
+  select.insertAdjacentHTML('beforeend', CHEVRON);
+
+  const menu = document.createElement('div');
+  menu.className = 'browse-title-menu';
+  menu.setAttribute('role', 'listbox');
+  const CHECK = `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
+  const items = GROUP_KEYS.map((g, i) => {
+    const b = document.createElement('button');
+    b.className = 'browse-title-menu-item';
+    b.tabIndex = -1;
+    b.dataset.group = g;
+    b.innerHTML = `<span class="browse-title-menu-check">${CHECK}</span>${GROUP_TITLES[g]}`;
+    b.addEventListener('click', () => choose(g));
+    b.addEventListener('keydown', e => {
+      e.stopPropagation();
+      if (e.key === 'ArrowDown') { e.preventDefault(); items[i + 1]?.focus(); }
+      if (e.key === 'ArrowUp')   { e.preventDefault(); items[i - 1]?.focus(); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(g); }
+      if (e.key === 'Escape' || e.key === 'Backspace' || e.key === 'ArrowLeft') { e.preventDefault(); closeMenu(); }
+    });
+    menu.appendChild(b);
+    return b;
+  });
+  select.after(menu);
+  function openMenu() {
+    items.forEach(b => b.classList.toggle('is-current', b.dataset.group === browseGroup));
+    menu.classList.add('is-open');
+    select.classList.add('is-open');
+    items[GROUP_KEYS.indexOf(browseGroup)].focus({ preventScroll: true });
+  }
+  function closeMenu() {
+    menu.classList.remove('is-open');
+    select.classList.remove('is-open');
+    select.focus({ preventScroll: true });
+  }
+  function choose(g) {
+    menu.classList.remove('is-open');
+    select.classList.remove('is-open');
+    showGroup(g);
+  }
+  select.addEventListener('click', openMenu);
+  select.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openMenu(); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); focusBrowsePill(browseGenreIdx); }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); browseNavCollections.focus(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.preventDefault();
+  });
+  navDownHook = () => { select.focus({ preventScroll: true }); return true; };
+  pillUpHook = () => select.focus({ preventScroll: true });
 }
 
 // ══ Option 3 — Directors replaces Watchlist in the top nav ═════════════════

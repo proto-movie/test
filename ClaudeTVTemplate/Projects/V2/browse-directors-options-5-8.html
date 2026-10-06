@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Directors in Browse — Options 1–4</title>
+<title>Directors in Browse — Options 5–8</title>
 <style>
 @font-face { font-family:'Riforma'; font-display:swap; src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Regular.woff2) format('woff2'); }
 @font-face { font-family:'Riforma'; font-display:swap; src:url(https://assets.mubicdn.net/static/fonts/RiformaLLWeb-Medium.woff2) format('woff2'); font-weight:500; }
@@ -129,68 +129,67 @@ h2 { font-size: 28px; font-weight: bold; line-height: 1.15; margin-top: 8px; let
   </header>
 
   <h1>Directors in Browse</h1>
-  <p class="intro">Four ways to bring the website's director browsing to the TV app: as a section of Browse alongside Films &amp; Series and Collections, as a tab among the genres, as its own page in the top nav, or as a group of pills in a single Browse row that also holds the genres and collections. Pick one to open the prototype. In every option, selecting a director opens their page with a back arrow and their films on MUBI (UK catalogue).</p>
+  <p class="intro">Four more ways to bring Films &amp; Series, Collections and Directors together in one Browse, each based on a common TV app pattern: a side rail, browse rows, large section cards and a title dropdown. Pick one to open the prototype. In every option, selecting a director opens their page with a back arrow and their films on MUBI (UK catalogue).</p>
 
   <nav class="switch">
-    <a href="browse-directors-options.html" aria-current="page">Options 1–4</a>
-    <a href="browse-directors-options-5-8.html">Options 5–8</a>
+    <a href="browse-directors-options.html">Options 1–4</a>
+    <a href="browse-directors-options-5-8.html" aria-current="page">Options 5–8</a>
   </nav>
 
   <div class="options">
-    <a class="option" href="browsegenres-directors-opt1-browse-submenu.html">
-      <div class="shot"><img src="option-previews/option-1.jpg" alt="Browse page titled Directors, with Films &amp; Series and Collections shown to its right"></div>
+    <a class="option" href="browsegenres-directors-opt5-side-rail.html">
+      <div class="shot"><img src="option-previews/option-5.jpg" alt="Collections page with a side rail listing Films &amp; Series, Collections and Directors"></div>
       <div class="body">
-        <div class="num">Option 1</div>
-        <h2>Browse sections</h2>
-        <p class="desc">Browse holds three sections: Films &amp; Series, Collections and Directors. All three sit in the title row in a fixed order, with the section you're in shown in white, and underlined while the row has focus. Move Left or Right along the row and the page underneath switches to that section.</p>
+        <div class="num">Option 5</div>
+        <h2>Side rail</h2>
+        <p class="desc">A slim rail of three icons sits on the left of Browse. Press Left from the pills or the first column and it opens out with labels; Up and Down switch section and the page updates underneath. Each section keeps its own pills.</p>
         <ul class="points">
-          <li>Collections moves out of the top nav and into Browse</li>
-          <li>The top nav stays short: Now Showing, Browse, Watchlist</li>
-          <li>Directors filters: All, Emerging, Women, Classic Auteurs, Award Winning</li>
+          <li>Sections are always one press away from the content</li>
+          <li>The rail stays collapsed, so the grid keeps its width</li>
         </ul>
+        <p class="pattern"><b>Based on:</b> Android TV / Google TV navigation drawer and the Apple TV app sidebar (tvOS 17.2).</p>
         <div class="open"><span>Open prototype →</span></div>
       </div>
     </a>
-
-    <a class="option" href="browsegenres-directors-opt2-genre-tab.html">
-      <div class="shot"><img src="option-previews/option-2.jpg" alt="Browse page with a Directors tab among the genre tabs"></div>
+    <a class="option" href="browsegenres-directors-opt6-browse-rows.html">
+      <div class="shot"><img src="option-previews/option-6.jpg" alt="Browse home with rows for Films &amp; Series, Collections and Directors"></div>
       <div class="body">
-        <div class="num">Option 2</div>
-        <h2>Directors tab in Browse</h2>
-        <p class="desc">Browse stays as it is, with a Directors tab added to the genre row, right after Recently Added. Selecting it swaps the film grid for director tiles.</p>
+        <div class="num">Option 6</div>
+        <h2>Browse rows</h2>
+        <p class="desc">Browse opens on a page of rows: genres, collection groups and directors. Pick a genre or group to open it with its pills; pick a director to go straight to their page. Back returns to the rows.</p>
         <ul class="points">
-          <li>Smallest change to the current navigation</li>
-          <li>Directors sorted by number of films on MUBI</li>
+          <li>Shows a taste of all three at once</li>
+          <li>Directors are one press from Browse</li>
         </ul>
+        <p class="pattern"><b>Based on:</b> Netflix and Android TV browse rows (Leanback BrowseFragment).</p>
         <div class="open"><span>Open prototype →</span></div>
       </div>
     </a>
-
-    <a class="option" href="browsegenres-directors-opt3-top-nav.html">
-      <div class="shot"><img src="option-previews/option-3.jpg" alt="Directors page opened from the top navigation"></div>
+    <a class="option" href="browsegenres-directors-opt7-section-cards.html">
+      <div class="shot"><img src="option-previews/option-7.jpg" alt="Browse page with three large cards: Films &amp; Series, Collections and Directors"></div>
       <div class="body">
-        <div class="num">Option 3</div>
-        <h2>Directors in the top nav</h2>
-        <p class="desc">Watchlist leaves the top nav and Directors takes its place. Directors gets its own page that follows the Browse and Collections template.</p>
+        <div class="num">Option 7</div>
+        <h2>Section cards</h2>
+        <p class="desc">Browse opens on three large cards, one per section. Selecting a card opens that section with its pills, under a title with a back arrow.</p>
         <ul class="points">
-          <li>Directors is one press away from anywhere</li>
-          <li>Same filters as option 1</li>
+          <li>Clearest choice of the three sections</li>
+          <li>Room for artwork that sets the tone of each</li>
         </ul>
+        <p class="pattern"><b>Based on:</b> Apple TV and Disney+ hub tiles, Google TV immersive cards.</p>
         <div class="open"><span>Open prototype →</span></div>
       </div>
     </a>
-
-    <a class="option" href="browsegenres-directors-opt4-mixed-pills.html">
-      <div class="shot"><img src="option-previews/option-4.jpg" alt="Browse page titled Collections, with the Spotlight pill selected just after the genre pills"></div>
+    <a class="option" href="browsegenres-directors-opt8-title-dropdown.html">
+      <div class="shot"><img src="option-previews/option-8.jpg" alt="Collections title open as a dropdown listing the three sections"></div>
       <div class="body">
-        <div class="num">Option 4</div>
-        <h2>One Browse, grouped pills</h2>
-        <p class="desc">A single Browse page with one pill row, grouped: genres (including Series), then collections, then directors. The page title follows the group you're in (Films &amp; Series, Collections or Directors), and each pill shows the right kind of tile.</p>
+        <div class="num">Option 8</div>
+        <h2>Title dropdown</h2>
+        <p class="desc">The page title is a dropdown. Press Up to the title, then Enter, and pick Films &amp; Series, Collections or Directors; the pills and grid switch to that section.</p>
         <ul class="points">
-          <li>Collections moves out of the top nav and into Browse</li>
-          <li>Collection pills: Spotlight, Award Winners, Director Retrospectives, Decades, Around the World</li>
-          <li>Director pills: All Directors, Women Directors, Emerging Directors, Classic Auteurs, Award Winning</li>
+          <li>Keeps the current Browse layout almost unchanged</li>
+          <li>The title always says where you are</li>
         </ul>
+        <p class="pattern"><b>Based on:</b> The Netflix TV category picker and Google TV tabs.</p>
         <div class="open"><span>Open prototype →</span></div>
       </div>
     </a>
