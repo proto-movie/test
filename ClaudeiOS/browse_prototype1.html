@@ -259,6 +259,11 @@
   .expl-card p b{ font-weight:700; }
   .expl-rating{ position:absolute; top:10px; right:12px; display:none; align-items:center; gap:4px; color:#fff; font-family:var(--font-riforma); font-size:13px; font-weight:500; }
   .rating-active .expl-rating{ display:flex; }
+  .expl-rating{ z-index:1; }
+  /* Darken the top right corner so the rating reads on bright stills */
+  .rating-active .expl-thumb::after{ content:''; position:absolute; top:0; right:0; width:65%; height:75%; pointer-events:none;
+    background:radial-gradient(ellipse at top right, rgba(0,0,0,.6) 0%, rgba(0,0,0,.28) 38%, rgba(0,0,0,0) 72%); }
+  #filmGrid.poster-mode .expl-thumb::after, #genreDetailGrid.poster-mode .expl-thumb::after{ display:none; }
 
   #filmGrid.list-mode, #directorPageGrid, #searchFilmResults{ gap:10px; }
   #filmGrid.list-mode .expl-card, #directorPageGrid .expl-card, #searchFilmResults .expl-card{
@@ -845,7 +850,7 @@
             </button>
             <button class="glass-menu-item" data-sort="rating">
               <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.75 12.5L9.5 17.25L19.25 6.5"/></svg>
-              <span>Highest Rated</span>
+              <span>Rating</span>
             </button>
             <button class="glass-menu-item" data-sort="title">
               <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.75 12.5L9.5 17.25L19.25 6.5"/></svg>
