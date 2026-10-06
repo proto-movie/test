@@ -2048,6 +2048,11 @@ body.carousel-active .long-press-hint {
 /* while the row has focus the other tabs brighten a little */
 .browse-subnav:focus-within .browse-subnav-item:not(.is-active) { color: rgba(255,255,255,0.4); }
 .browse-subnav-viewport + .browse-genre-bar-wrap { margin-top: 44px; }
+
+/* Option 4: grouped pills with a group title */
+.browse-genre-pill.is-group-start { margin-left: 28px; }
+#browseModal .browse-modal-title { transition: opacity 0.14s ease; }
+#browseModal .browse-modal-title.is-swapping { opacity: 0; }
 </style>
 </head>
 <body>
@@ -5928,7 +5933,8 @@ function focusBrowsePill(idx) {
   browseGenreBar.scrollTo({ left: Math.max(0, targetScroll), behavior: 'smooth' });
   const _bg = BROWSE_GENRES_LIST[browseGenreIdx];
   browseFilmArea.classList.toggle('is-directors', !!_bg.directors);
-  if (_bg.directors) { renderBrowseDirectors(); return; }
+  if (_bg.directors) { renderBrowseDirectors(_bg.directors); return; }
+  if (_bg.collections) { renderBrowseCollections(_bg.collections); return; }
   renderBrowseFilms(_bg.films, _bg.name === 'Series' ? 'SERIES' : null);
 }
 
@@ -6774,19 +6780,105 @@ if (DIR_OPTION === 1) {
   }, true));
 }
 
-// ══ Option 2 — "Directors" tab among the Browse genres ═════════════════════
-function renderBrowseDirectors() {
-  renderDirectorTiles(browseFilmArea, browseModalBody, DIRECTORS_DATA,
+// ══ Options 2 & 4 — director (and collection) pills among the Browse genres ═
+// `key` is a director filter (option 4) or `true` for every director (option 2)
+function renderBrowseDirectors(key) {
+  renderDirectorTiles(browseFilmArea, browseModalBody, typeof key === 'string' ? directorsFor(key) : DIRECTORS_DATA,
                       () => getBrowsePills()[browseGenreIdx]?.focus({ preventScroll: true }));
 }
-if (DIR_OPTION === 2) {
-  // Down from the Directors pill lands on the first director tile
+
+// Collection tiles for one collections category, in the Browse grid (option 4)
+function renderBrowseCollections(catKey) {
+  const cols = COLLECTIONS_DATA.filter(c => c.category === catKey);
+  if (catKey === 'decade') {
+    const decadeOf = c => { const m = c.slug.match(/^(\d{4})/); return m ? parseInt(m[1]) : 9999; };
+    cols.sort((a, b) => decadeOf(a) - decadeOf(b));
+  }
+  browseFilmArea.innerHTML = '';
+  browseModalBody.scrollTop = 0;
+  const focusAt = idx => {
+    const tiles = [...browseFilmArea.querySelectorAll('.tv-coll-tile')];
+    const t = tiles[Math.max(0, Math.min(tiles.length - 1, idx))];
+    if (!t) return;
+    tiles.forEach(x => x.classList.remove('is-coll-focused'));
+    t.classList.add('is-coll-focused');
+    t.focus({ preventScroll: true });
+    scrollIntoModal(t, browseModalBody);
+  };
+  cols.forEach((col, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'tv-coll-tile';
+    tile.tabIndex = -1;
+    const leftContent = col.treatment
+      ? `<img class="tv-coll-tile-treatment" src="${col.treatment}" alt="${col.title}" loading="lazy">`
+      : col.subtitle
+        ? `<div class="tv-coll-tile-title">${col.title}<span class="tv-coll-tile-subtitle">${col.subtitle}</span></div>`
+        : `<div class="tv-coll-tile-title tv-coll-tile-title--solo">${col.title}</div>`;
+    tile.innerHTML = `
+      <div class="tv-coll-tile-left" style="background:${col.color}">
+        <div>${leftContent}</div>
+        <div class="tv-coll-tile-count">${FILM_GROUP_ICON}${col.items}</div>
+      </div>
+      <div class="tv-coll-tile-right">
+        <img class="tv-coll-tile-img" src="${col.img}" alt="${col.title}" loading="lazy">
+      </div>`;
+    tile.addEventListener('keydown', e => {
+      const n = 3;
+      if (e.key === 'ArrowRight') { e.preventDefault(); focusAt(i + 1); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); focusAt(i - 1); }
+      if (e.key === 'ArrowDown')  { e.preventDefault(); focusAt(i + n); }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (i < n) {
+          tile.classList.remove('is-coll-focused');
+          getBrowsePills()[browseGenreIdx]?.focus({ preventScroll: true });
+          browseModalBody.scrollTo({ top: 0, behavior: 'smooth' });
+        } else focusAt(i - n);
+      }
+    });
+    browseFilmArea.appendChild(tile);
+  });
+}
+
+if (DIR_OPTION === 2 || DIR_OPTION === 4) {
+  // Down from a director or collection pill lands on its first tile
   document.addEventListener('keydown', e => {
     if (e.key !== 'ArrowDown' || !e.target.classList.contains('browse-genre-pill') || !browseGenreBar.contains(e.target)) return;
-    if (!BROWSE_GENRES_LIST[browseGenreIdx]?.directors) return;
+    const pill = BROWSE_GENRES_LIST[browseGenreIdx];
+    if (!pill?.directors && !pill?.collections) return;
     e.preventDefault(); e.stopImmediatePropagation();
-    browseFilmArea.querySelector('.dir-tile')?.focus({ preventScroll: true });
+    const first = browseFilmArea.querySelector('.dir-tile, .tv-coll-tile');
+    if (!first) return;
+    if (first.classList.contains('tv-coll-tile')) first.classList.add('is-coll-focused');
+    first.focus({ preventScroll: true });
   }, true);
+}
+
+// ══ Option 4 — one Browse page; Collections leaves the top nav ═════════════
+if (DIR_OPTION === 4) {
+  document.querySelectorAll('[id$="NavCollectionsItem"], #navCollectionsItem').forEach(b => { b.style.display = 'none'; });
+
+  // The page title names the group of the selected pill
+  const GROUP_TITLES = { films: 'Films & Series', collections: 'Collections', directors: 'Directors' };
+  const groupOf = pill => pill?.group || 'films';
+  const browseTitle = browseModal.querySelector('.browse-modal-title');
+  browseTitle.textContent = GROUP_TITLES.films;
+  // a little extra space where each group starts
+  getBrowsePills().forEach((p, i) => {
+    if (i > 0 && groupOf(BROWSE_GENRES_LIST[i]) !== groupOf(BROWSE_GENRES_LIST[i - 1])) p.classList.add('is-group-start');
+  });
+  let titleTimer = null;
+  const focusBrowsePillBase = focusBrowsePill;
+  focusBrowsePill = function (idx) {
+    focusBrowsePillBase(idx);
+    const title = GROUP_TITLES[groupOf(BROWSE_GENRES_LIST[browseGenreIdx])];
+    if (browseTitle.dataset.title === title || (!browseTitle.dataset.title && title === GROUP_TITLES.films)) return;
+    browseTitle.dataset.title = title;
+    // quick cross-fade so the title change reads as the row moving into a new group
+    clearTimeout(titleTimer);
+    browseTitle.classList.add('is-swapping');
+    titleTimer = setTimeout(() => { browseTitle.textContent = title; browseTitle.classList.remove('is-swapping'); }, 140);
+  };
 }
 
 // ══ Option 3 — Directors replaces Watchlist in the top nav ═════════════════

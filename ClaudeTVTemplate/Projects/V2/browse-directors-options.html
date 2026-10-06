@@ -24,7 +24,7 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
-.wrap { max-width: 1400px; margin: 0 auto; padding: 56px 32px 80px; }
+.wrap { max-width: 1680px; margin: 0 auto; padding: 56px 32px 80px; }
 
 header { display: flex; align-items: center; gap: 20px; }
 .logo { width: 40px; height: 40px; flex-shrink: 0; }
@@ -37,8 +37,8 @@ h1 { font-size: 56px; font-weight: bold; line-height: 1.05; margin-top: 28px; le
 
 .options {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
   margin-top: 48px;
 }
 .option {
@@ -89,7 +89,10 @@ h2 { font-size: 28px; font-weight: bold; line-height: 1.15; margin-top: 8px; let
   border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.7);
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1300px) {
+  .options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
   .options { grid-template-columns: 1fr; max-width: 640px; }
   h1 { font-size: 40px; }
 }
@@ -111,7 +114,7 @@ h2 { font-size: 28px; font-weight: bold; line-height: 1.15; margin-top: 8px; let
   </header>
 
   <h1>Directors in Browse</h1>
-  <p class="intro">Three ways to bring the website's director browsing to the TV app. Pick one to open the prototype. In every option, selecting a director opens their page with a back arrow and their films on MUBI (UK catalogue).</p>
+  <p class="intro">Four ways to bring the website's director browsing to the TV app: as a section of Browse alongside Films &amp; Series and Collections, as a tab among the genres, as its own page in the top nav, or as a group of pills in a single Browse row that also holds the genres and collections. Pick one to open the prototype. In every option, selecting a director opens their page with a back arrow and their films on MUBI (UK catalogue).</p>
 
   <div class="options">
     <a class="option" href="browsegenres-directors-opt1-browse-submenu.html">
@@ -152,6 +155,21 @@ h2 { font-size: 28px; font-weight: bold; line-height: 1.15; margin-top: 8px; let
         <ul class="points">
           <li>Directors is one press away from anywhere</li>
           <li>Same filters as option 1</li>
+        </ul>
+        <div class="open"><span>Open prototype →</span></div>
+      </div>
+    </a>
+
+    <a class="option" href="browsegenres-directors-opt4-mixed-pills.html">
+      <div class="shot"><img src="option-previews/option-4.jpg" alt="Browse page titled Collections, with the Spotlight pill selected just after the genre pills"></div>
+      <div class="body">
+        <div class="num">Option 4</div>
+        <h2>One Browse, grouped pills</h2>
+        <p class="desc">A single Browse page with one pill row, grouped: genres (including Series), then collections, then directors. The page title follows the group you're in (Films &amp; Series, Collections or Directors), and each pill shows the right kind of tile.</p>
+        <ul class="points">
+          <li>Collections moves out of the top nav and into Browse</li>
+          <li>Collection pills: Spotlight, Award Winners, Director Retrospectives, Decades, Around the World</li>
+          <li>Director pills: All Directors, Women Directors, Emerging Directors, Classic Auteurs, Award Winning</li>
         </ul>
         <div class="open"><span>Open prototype →</span></div>
       </div>
