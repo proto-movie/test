@@ -6994,8 +6994,11 @@ function renderBrowseDirectors(key) {
 }
 
 // Collection tiles for one collections category, in the Browse grid (option 4)
+// Recently Added shows every collection, newest first, like the Collections page
+const collectionsIn = key => key === 'recent' ? COLLECTIONS_DATA.slice() : COLLECTIONS_DATA.filter(c => c.category === key);
+
 function renderBrowseCollections(catKey) {
-  const cols = COLLECTIONS_DATA.filter(c => c.category === catKey);
+  const cols = collectionsIn(catKey);
   if (catKey === 'decade') {
     const decadeOf = c => { const m = c.slug.match(/^(\d{4})/); return m ? parseInt(m[1]) : 9999; };
     cols.sort((a, b) => decadeOf(a) - decadeOf(b));
@@ -7199,7 +7202,7 @@ function hubCard(cls, { img, color, label, sub, html }) {
     <div class="hub-card-label">${label}${sub ? `<span>${sub}</span>` : ''}</div>`;
   return card;
 }
-const firstCollectionOf = key => COLLECTIONS_DATA.find(c => c.category === key);
+const firstCollectionOf = key => collectionsIn(key)[0];
 
 // ══ Option 5 — collapsible side rail (Android TV navigation drawer / Apple TV sidebar) ══
 if (DIR_OPTION === 5) {
@@ -7262,7 +7265,7 @@ if (DIR_OPTION === 6) {
       }) },
     { title: 'Collections', cards: groupPillIdxs('collections').map(i => {
         const p = BROWSE_GENRES_LIST[i], c = firstCollectionOf(p.collections);
-        const n = COLLECTIONS_DATA.filter(x => x.category === p.collections).length;
+        const n = collectionsIn(p.collections).length;
         return { el: hubCard('hub-card', { img: c?.img, color: c?.color, label: p.name, sub: `${n} collections` }), open: el => enterSection('collections', i, el) };
       }) },
     { title: 'Directors', cards: [
