@@ -649,6 +649,13 @@
               </div>
               <button class="more-toggle" id="directorTabToggle" role="switch" aria-checked="false" aria-label="Toggle Directors tab"></button>
             </div>
+            <div class="more-setting-row">
+              <div class="more-setting-copy">
+                <div class="more-setting-name">Filters</div>
+                <p class="more-setting-desc">Show the Filter by button on Films &amp; Series</p>
+              </div>
+              <button class="more-toggle" id="filterToggle" role="switch" aria-checked="false" aria-label="Toggle filters"></button>
+            </div>
           </div>
         </div>
 
@@ -1787,6 +1794,17 @@
     toggle.addEventListener('click', function(){ set(!toggle.classList.contains('is-on')); });
     set(!!initial);
   }
+
+  (function(){
+    var filterBtn = document.querySelector('#actionsFilms .icon-btn[aria-label="Filters"]');
+    var clearBtn = document.getElementById('filterSheetClear');
+    if(!filterBtn) return;
+    bindMoreToggle('filterToggle', function(on){
+      filterBtn.style.display = on ? '' : 'none';
+      // Hidden filters shouldn't keep narrowing the list.
+      if(!on && clearBtn && filterBtn.classList.contains('has-filter')) clearBtn.click();
+    }, false);
+  })();
 
   (function(){
     var dirTabBtn = document.querySelector('.expl-tab[data-seg="directors"]');
