@@ -864,21 +864,6 @@
               <span>A-Z</span>
             </button>
           </div>
-          <div class="solo-action-wrap" id="actionsCollections" style="display:none">
-            <button class="icon-btn-solo" id="collSortBtn" aria-label="Sort">
-              <svg width="14" height="11" viewBox="0 0 16 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="0" y1="2" x2="16" y2="2"/><line x1="3" y1="6" x2="13" y2="6"/><line x1="6" y1="10" x2="10" y2="10"/></svg>
-            </button>
-            <div class="glass-menu" id="collSortMenu">
-              <button class="glass-menu-item is-selected" data-sort="recent">
-                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.75 12.5L9.5 17.25L19.25 6.5"/></svg>
-                <span>Recently Added</span>
-              </button>
-              <button class="glass-menu-item" data-sort="title">
-                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.75 12.5L9.5 17.25L19.25 6.5"/></svg>
-                <span>A-Z</span>
-              </button>
-            </div>
-          </div>
           <div class="solo-action-wrap" id="actionsDirectors" style="display:none">
             <button class="icon-btn-solo" id="dirSortBtn" aria-label="Sort">
               <svg width="14" height="11" viewBox="0 0 16 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="0" y1="2" x2="16" y2="2"/><line x1="3" y1="6" x2="13" y2="6"/><line x1="6" y1="10" x2="10" y2="10"/></svg>
@@ -1141,7 +1126,8 @@
     if(!seg) return;
     var segBtns = Array.prototype.slice.call(seg.querySelectorAll('.expl-tab'));
     var views = { films: document.getElementById('segFilms'), collections: document.getElementById('segCollections'), directors: document.getElementById('segDirectors') };
-    var actions = { films: document.getElementById('actionsFilms'), collections: document.getElementById('actionsCollections'), directors: document.getElementById('actionsDirectors') };
+    // Collections has no sort, so it shows no actions.
+    var actions = { films: document.getElementById('actionsFilms'), directors: document.getElementById('actionsDirectors') };
 
     var line = document.createElement('span');
     line.className = 'expl-tab-line';
@@ -1399,11 +1385,9 @@
     if(searchPanel) searchPanel.classList.add('push-back');
     var overlay = document.getElementById('browseActionsOverlay');
     var actionsFilms = document.getElementById('actionsFilms');
-    var actionsColl = document.getElementById('actionsCollections');
     var actionsDir = document.getElementById('actionsDirectors');
     if(overlay) overlay.style.display = 'block';
     if(actionsFilms) actionsFilms.style.display = 'flex';
-    if(actionsColl) actionsColl.style.display = 'none';
     if(actionsDir) actionsDir.style.display = 'none';
     var scroll = document.getElementById('genreDetailScroll');
     if(scroll) scroll.scrollTop = 0;
@@ -1672,7 +1656,6 @@
       if(filmSortContext === 'genre'){ genreDetailState.sort = v; renderGenreDetail(true); }
       else { filmState.sort = v; renderFilms(true); }
     });
-    setupSortMenu('collSortBtn', 'collSortMenu', function(v){ collState.sort = v; renderCollections(true); });
     setupSortMenu('dirSortBtn', 'dirSortMenu', function(v){ dirState.sort = v; renderDirectors(true); });
   })();
 
