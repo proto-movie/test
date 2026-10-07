@@ -547,11 +547,6 @@
   .platform-android .director-page-navtitle{ top:calc(var(--android-top) - 5px); }
   .platform-android .director-page-header,
   .platform-android .genre-detail-header{ padding-top:calc(45px + var(--android-top)); }
-  /* Flat glass: no drop shadow on the top-right buttons or the back button */
-  .header-actions, .icon-btn-solo, .genre-detail-back{ box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
-  :root[data-theme="dark"] .header-actions, :root[data-theme="dark"] .icon-btn-solo,
-  :root[data-theme="dark"] .genre-detail-back{ box-shadow:inset 0 1px 0 rgba(255,255,255,.06) !important; }
-
   .platform-android .director-page-nav{ height:calc(39px + var(--android-top)); }
   /* Material back arrow on Android: plain icon, no glass circle */
   .back-android{ display:none; }
@@ -649,6 +644,12 @@
   :root[data-theme="dark"] .tabbar-wrap.classic{ background:var(--dm-surface); border-top-color:var(--dm-seam); }
   :root[data-theme="dark"] .tabbar-wrap.classic .tab{ color:var(--dm-text-dimmer); }
   :root[data-theme="dark"] .tabbar-wrap.classic .tab.active{ color:var(--dm-text); }
+
+  /* Flat glass: no drop shadow on the top-right buttons or the back button */
+  .header-actions, .icon-btn-solo, .genre-detail-back{ box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
+  :root[data-theme="dark"] .header-actions, :root[data-theme="dark"] .icon-btn-solo,
+  :root[data-theme="dark"] .genre-detail-back{ box-shadow:inset 0 1px 0 rgba(255,255,255,.06); }
+
 </style>
 
 <div class="stage">
