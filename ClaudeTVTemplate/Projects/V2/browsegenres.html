@@ -2226,7 +2226,7 @@ body.carousel-active .long-press-hint {
   </nav>
 
   <div class="search-header">
-    <img src="../brand_assets/icons/Search.svg" class="search-right-icon" width="82" height="82">
+    <img src="../../brand_assets/icons/Search.svg" class="search-right-icon" width="82" height="82">
     <span id="searchQueryEyebrow"></span><span class="search-query-text" id="searchQueryText"></span>
     <span class="search-placeholder" id="searchPlaceholder">Search</span>
     <span class="search-cursor-blink"></span>
@@ -2365,7 +2365,7 @@ const FILMS = [
       { stars: "★★★★", text: "Joachim Trier's most personal and most brilliant film.", source: "Little White Lies" },
     ],
     festival: "Cannes", award: "Best Director",
-    video: "../brand_assets/worstperson.mp4",
+    video: "../../brand_assets/worstperson.mp4",
   },
   {
     title: "High & Low — John Galliano",
@@ -2383,7 +2383,7 @@ const FILMS = [
       { stars: "★★★★", text: "Naomi Campbell alone is worth the price of admission.", source: "Little White Lies" },
     ],
     festival: "Tribeca", award: "Best Documentary",
-    video: "../brand_assets/worstperson.mp4",
+    video: "../../brand_assets/worstperson.mp4",
   },
   {
     title: "Fallen Leaves",
@@ -2401,7 +2401,7 @@ const FILMS = [
       { stars: "★★★★", text: "A film to warm even the coldest of hearts.", source: "The Times" },
     ],
     festival: "Cannes", award: "Jury Prize",
-    video: "../brand_assets/worstperson.mp4",
+    video: "../../brand_assets/worstperson.mp4",
   },
   {
     title: "Aftersun",
@@ -2419,7 +2419,7 @@ const FILMS = [
       { stars: "★★★★", text: "Charlotte Wells announces herself as a major new filmmaker.", source: "Screen International" },
     ],
     festival: "Cannes", award: "Critics' Week",
-    video: "../brand_assets/worstperson.mp4",
+    video: "../../brand_assets/worstperson.mp4",
   },
   {
     title: "Perfect Days",
@@ -2437,7 +2437,7 @@ const FILMS = [
       { stars: "★★★★", text: "A beautiful meditation on solitude and the art of living.", source: "Little White Lies" },
     ],
     festival: "Cannes", award: "Best Actor",
-    video: "../brand_assets/worstperson.mp4",
+    video: "../../brand_assets/worstperson.mp4",
   },
   {
     title: "Grand Tour",
@@ -2455,7 +2455,7 @@ const FILMS = [
       { stars: "★★★★", text: "Miguel Gomes remains one of cinema's great originals.", source: "Little White Lies" },
     ],
     festival: "Cannes", award: "Best Director",
-    video: "../brand_assets/worstperson.mp4",
+    video: "../../brand_assets/worstperson.mp4",
   },
   {
     title: "Priscilla",
@@ -2473,7 +2473,7 @@ const FILMS = [
       { stars: "★★★★★", text: "Coppola understands entrapment better than any filmmaker alive.", source: "Little White Lies" },
     ],
     festival: "Venice", award: "Best Actress",
-    video: "../brand_assets/worstperson.mp4",
+    video: "../../brand_assets/worstperson.mp4",
   },
 ];
 
@@ -5347,8 +5347,8 @@ KB_ROWS.forEach((row, ri) => {
     btn.dataset.row = String(ri);
     btn.dataset.col = String(ci);
     if (key === 'SPACE')      { btn.classList.add('key-space');  btn.textContent = 'SPACE'; }
-    else if (key === 'CLEAR') { btn.classList.add('key-clear');  btn.innerHTML = `<img src="../brand_assets/icons/delete.svg" width="60" height="60" style="pointer-events:none">`; }
-    else if (key === '⌫')    { btn.classList.add('key-delete'); btn.innerHTML = `<img src="../brand_assets/icons/backspace.svg" width="60" height="60" style="pointer-events:none">`; }
+    else if (key === 'CLEAR') { btn.classList.add('key-clear');  btn.innerHTML = `<img src="../../brand_assets/icons/delete.svg" width="60" height="60" style="pointer-events:none">`; }
+    else if (key === '⌫')    { btn.classList.add('key-delete'); btn.innerHTML = `<img src="../../brand_assets/icons/backspace.svg" width="60" height="60" style="pointer-events:none">`; }
     else { btn.textContent = key; }
     btn.tabIndex = -1;
     btn.addEventListener('click', () => { kbRow = ri; kbCol = ci; handleKeyPress(key); });
