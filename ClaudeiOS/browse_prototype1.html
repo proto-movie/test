@@ -1825,10 +1825,13 @@
     var header = panel && panel.querySelector('.app-header');
     var tabs = document.getElementById('browseTabs');
     if(!panel || !header || !tabs) return;
-    // Stack the sticky rows: tabs sit under the header, pills under the tabs.
+    // Stack the sticky rows: tabs sit under the header, pills under the tabs. Each row tucks 1px under
+    // the one above, because on Android's fractional pixel ratios rounding otherwise leaves a hairline
+    // gap that the list shows through.
     function measure(){
-      panel.style.setProperty('--sticky-tabs-top', header.offsetHeight + 'px');
-      panel.style.setProperty('--sticky-rail-top', (header.offsetHeight + tabs.offsetHeight) + 'px');
+      var h = header.getBoundingClientRect().height, t = tabs.getBoundingClientRect().height;
+      panel.style.setProperty('--sticky-tabs-top', Math.max(0, Math.floor(h) - 1) + 'px');
+      panel.style.setProperty('--sticky-rail-top', Math.max(0, Math.floor(h + t) - 2) + 'px');
     }
     if(window.ResizeObserver){ var ro = new ResizeObserver(measure); ro.observe(header); ro.observe(tabs); }
     bindMoreToggle('stickyHeaderToggle', function(on){
