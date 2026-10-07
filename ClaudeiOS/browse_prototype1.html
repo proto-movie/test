@@ -240,6 +240,11 @@
   .expl-tabs.list-mode .expl-tab{ margin-bottom:0; border-bottom-width:2.5px; }
 
   .gpill-rail{ display:flex; gap:8px; overflow-x:auto; padding:12px 20px 10px; }
+  /* Sticky header (More → Sticky Header): title, tabs and pills stay put while the list scrolls */
+  #browsePanel.sticky-head .app-header{ position:sticky; top:0; z-index:4; background:var(--ink); }
+  #browsePanel.sticky-head #browseTabs{ position:sticky; top:var(--sticky-tabs-top, 0px); z-index:4; background:var(--ink); }
+  #browsePanel.sticky-head .gpill-rail{ position:sticky; top:var(--sticky-rail-top, 0px); z-index:3; background:var(--ink); }
+  #browsePanel.sticky-head .list-mode > .gpill-rail{ background:#F2F2F2; }
   .gpill-rail::-webkit-scrollbar{ display:none; }
   .gpill{ flex:0 0 auto; font-family:var(--font-riforma); font-size:12.5px; font-weight:500; color:rgba(24,20,15,.72);
     border:1px solid rgba(24,20,15,.28); border-radius:50px; padding:6px 14px; white-space:nowrap; background:none; -webkit-tap-highlight-color:transparent; }
@@ -648,6 +653,13 @@
                 <p class="more-setting-desc">Show the Directors tab in Browse</p>
               </div>
               <button class="more-toggle" id="directorTabToggle" role="switch" aria-checked="false" aria-label="Toggle Directors tab"></button>
+            </div>
+            <div class="more-setting-row">
+              <div class="more-setting-copy">
+                <div class="more-setting-name">Sticky Header</div>
+                <p class="more-setting-desc">Keep the Browse title, tabs and pills in view while scrolling</p>
+              </div>
+              <button class="more-toggle" id="stickyHeaderToggle" role="switch" aria-checked="false" aria-label="Toggle sticky header"></button>
             </div>
             <div class="more-setting-row">
               <div class="more-setting-copy">
@@ -1777,6 +1789,23 @@
     toggle.addEventListener('click', function(){ set(!toggle.classList.contains('is-on')); });
     set(!!initial);
   }
+
+  (function(){
+    var panel = document.getElementById('browsePanel');
+    var header = panel && panel.querySelector('.app-header');
+    var tabs = document.getElementById('browseTabs');
+    if(!panel || !header || !tabs) return;
+    // Stack the sticky rows: tabs sit under the header, pills under the tabs.
+    function measure(){
+      panel.style.setProperty('--sticky-tabs-top', header.offsetHeight + 'px');
+      panel.style.setProperty('--sticky-rail-top', (header.offsetHeight + tabs.offsetHeight) + 'px');
+    }
+    if(window.ResizeObserver){ var ro = new ResizeObserver(measure); ro.observe(header); ro.observe(tabs); }
+    bindMoreToggle('stickyHeaderToggle', function(on){
+      panel.classList.toggle('sticky-head', on);
+      measure();
+    }, false);
+  })();
 
   (function(){
     var filterBtn = document.querySelector('#actionsFilms .icon-btn[aria-label="Filters"]');
