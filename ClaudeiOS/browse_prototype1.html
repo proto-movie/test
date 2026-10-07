@@ -8,6 +8,8 @@
   // ?platform=android or the Android app's WebView adds the top spacing iOS gets from its safe area.
   // Android WebViews mark themselves with "; wv)" in the user agent, so this also works without the param.
   if(/[?&]platform=android\b/.test(location.search) || /Android.*; wv\)/.test(navigator.userAgent)) document.documentElement.classList.add('platform-android');
+  // Any Android device (app or browser) gets Android-style controls; the extra top spacing above is app-only.
+  if(/[?&]platform=android\b/.test(location.search) || /Android/.test(navigator.userAgent)) document.documentElement.classList.add('os-android');
 </script>
 <style>
   @font-face { font-family: 'Riforma'; font-display: swap;
@@ -528,11 +530,11 @@
   .platform-android .director-page-nav{ height:calc(39px + var(--android-top)); }
   /* Material back arrow on Android: plain icon, no glass circle */
   .back-android{ display:none; }
-  .platform-android #directorPageBack .back-ios{ display:none; }
-  .platform-android #directorPageBack .back-android{ display:block; }
-  .platform-android #directorPageBack{ width:40px; height:40px; left:12px; background:none; border:none; box-shadow:none;
+  .os-android #directorPageBack .back-ios{ display:none; }
+  .os-android #directorPageBack .back-android{ display:block; }
+  .os-android #directorPageBack{ width:40px; height:40px; left:12px; background:none; border:none; box-shadow:none;
     -webkit-backdrop-filter:none; backdrop-filter:none; }
-  .platform-android #directorPageBack:active{ background:rgba(24,20,15,.08); opacity:1; }
+  .os-android #directorPageBack:active{ background:rgba(24,20,15,.08); opacity:1; }
 
   .genre-detail-panel{ position:absolute; inset:0; z-index:9; background:var(--ink); overflow:hidden;
     transform:translateX(100%); transition:transform .34s cubic-bezier(.32,.72,0,1); pointer-events:none; }
