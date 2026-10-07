@@ -2174,33 +2174,35 @@ body.carousel-active .long-press-hint {
 .hub-card--dir:focus .hub-dir-name { color: #fff; }
 .hub-dir-count { font-family: 'Riforma', sans-serif; font-size: 18px; font-weight: 500; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-top: 4px; }
 
-/* Option 7: three big cards */
-#browseModal.is-hub .browse-big-hub { display: grid; }
-.browse-big-hub { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: 56px; }
+/* Option 7: big cards, the size of Now Showing's double tiles (498×554), in a sliding row */
+#browseModal.is-hub .browse-big-hub { display: block; }
+.browse-big-hub { margin: 26px -96px 0 -28px; padding: 30px 96px 30px 28px; overflow-x: clip; }
+.big-card-strip { display: flex; gap: 30px; transition: transform 0.28s cubic-bezier(0.65, 0, 0.35, 1); }
 .big-card {
   position: relative;
-  height: 660px;
-  border-radius: 28px;
+  flex: 0 0 498px;
+  height: 554px;
+  border-radius: 20px;
   overflow: hidden;
   background: #2c2c2c;
-  border: 4px solid transparent;
   outline: none;
   cursor: pointer;
-  transition: transform 0.15s;
+  transition: transform 0.25s ease;
 }
 .big-card-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: opacity 0.2s; }
 .big-card-faces { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; }
 .big-card-faces img { position: static; width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; filter: grayscale(100%); }
+.big-card-stills img { filter: none; object-position: 50% 50%; }
 .big-card-wash { position: absolute; inset: 0; opacity: 0.9; }
 .big-card-shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 55%); }
 .big-card-label {
-  position: absolute; left: 40px; right: 40px; bottom: 40px;
+  position: absolute; left: 32px; right: 32px; bottom: 32px;
   font-family: 'Riforma', sans-serif;
-  font-size: 56px; font-weight: 700; line-height: 1.05;
+  font-size: 48px; font-weight: 700; line-height: 1.05;
   color: #fff;
 }
-.big-card-label span { display: block; margin-top: 12px; font-size: 24px; font-weight: 500; color: rgba(255,255,255,0.75); }
-.big-card:focus { transform: scale(1.03); z-index: 1; animation: card-focus-pulse 3s ease-in-out infinite; }
+.big-card-label span { display: block; margin-top: 10px; font-size: 22px; font-weight: 500; color: rgba(255,255,255,0.75); }
+.big-card:focus { transform: scale(1.1); z-index: 1; animation: card-focus-pulse 3s ease-in-out infinite; }
 .big-card:focus .big-card-art img { opacity: 1; }
 
 /* Option 8: the title is a dropdown */
@@ -7064,7 +7066,7 @@ if (DIR_OPTION === 2 || DIR_OPTION >= 4) {
 }
 
 // ══ Options 4–8 — one Browse page with grouped pills; Collections leaves the top nav ══
-const GROUP_TITLES = { films: 'Films & Series', collections: 'Collections', directors: 'Directors' };
+const GROUP_TITLES = { films: 'Films & Series', collections: 'Collections', directors: 'Directors', languages: 'Language' };
 const GROUP_KEYS = ['films', 'collections', 'directors'];
 const groupOf = pill => pill?.group || 'films';
 const groupPillIdxs = g => BROWSE_GENRES_LIST.map((p, i) => [p, i]).filter(([p]) => groupOf(p) === g).map(([, i]) => i);
@@ -7318,12 +7320,17 @@ if (DIR_OPTION === 6) {
   enterHub();
 }
 
-// ══ Option 7 — three big section cards (Apple TV / Disney+ style hub) ═══════
+// ══ Option 7 — big section cards (Apple TV / Disney+ style hub), Now Showing double-tile size ══
 if (DIR_OPTION === 7) {
   const hub = document.createElement('div');
   hub.className = 'browse-hub browse-big-hub';
+  const strip = document.createElement('div');
+  strip.className = 'big-card-strip';
+  hub.appendChild(strip);
   const coll = firstCollectionOf('spotlight');
   const recent = BROWSE_GENRES_LIST[0].films;
+  const langIdxs = groupPillIdxs('languages');
+  const langStills = langIdxs.slice(1, 5).map(i => BROWSE_GENRES_LIST[i].films[0]?.img);
   const CARDS = [
     { g: 'films', html: `<img src="${recent[1]?.img || recent[0]?.img}" alt="" loading="lazy">`,
       sub: `${groupPillIdxs('films').length} genres, series and new arrivals` },
@@ -7331,7 +7338,18 @@ if (DIR_OPTION === 7) {
       sub: `${COLLECTIONS_DATA.length} hand-picked collections` },
     { g: 'directors', html: `<div class="big-card-faces">${DIRECTORS_DATA.filter(d => d.image).slice(0, 4).map(d => `<img src="${d.image}" alt="" loading="lazy">`).join('')}</div>`,
       sub: `${DIRECTORS_DATA.length} directors and their films` },
+    { g: 'languages', html: `<div class="big-card-faces big-card-stills">${langStills.map(src => `<img src="${src}" alt="" loading="lazy">`).join('')}</div>`,
+      sub: `${langIdxs.slice(0, 3).map(i => BROWSE_GENRES_LIST[i].name).join(', ')} and more` },
   ];
+  // Slides the row so the focused card is fully on screen
+  const focusCard = i => {
+    const card = cards[i];
+    if (!card) return;
+    const vw = hub.clientWidth - 28 - 96;   // the strip's visible width, inside the hub's padding
+    const x = Math.max(0, card.offsetLeft + card.offsetWidth - vw);   // offsetLeft is within the strip
+    strip.style.transform = `translateX(${-x}px)`;
+    card.focus({ preventScroll: true });
+  };
   const cards = CARDS.map((c, i) => {
     const el = document.createElement('div');
     el.className = 'big-card';
@@ -7340,13 +7358,14 @@ if (DIR_OPTION === 7) {
       <div class="big-card-label">${GROUP_TITLES[c.g]}<span>${c.sub}</span></div>`;
     const open = () => enterSection(c.g, undefined, el);
     el.addEventListener('click', open);
+    el.addEventListener('focus', () => focusCard(i));
     el.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); cards[i + 1]?.focus({ preventScroll: true }); }
-      if (e.key === 'ArrowLeft')  { e.preventDefault(); cards[i - 1]?.focus({ preventScroll: true }); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); focusCard(i + 1); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); focusCard(i - 1); }
       if (e.key === 'ArrowUp')    { e.preventDefault(); browseNavCollections.focus(); }
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
     });
-    hub.appendChild(el);
+    strip.appendChild(el);
     return el;
   });
   hubFocusFirst = () => cards[0];
