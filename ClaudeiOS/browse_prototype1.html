@@ -580,7 +580,7 @@
      Same palette as mubi-showing.html: greys tinted toward MUBI navy. The page's own tokens
      (--ink background, --paper text, --hairline) flip, and the hard-coded light colours get overrides. */
   :root[data-theme="dark"]{
-    --dm-bg:#171a23; --dm-surface:#1d2029; --dm-row:#2a2e3b; --dm-seam:#2f3341;
+    --dm-bg:#12141c; --dm-surface:#1a1d28; --dm-row:#242835; --dm-seam:#262a37;
     --dm-text:#EDEDF2; --dm-text-dim:rgba(237,237,242,.55); --dm-text-dimmer:rgba(237,237,242,.4);
     --ink:var(--dm-bg); --paper:var(--dm-text); --paper-dim:var(--dm-text-dim); --hairline:var(--dm-seam);
     color-scheme:dark;
@@ -600,7 +600,7 @@
   :root[data-theme="dark"] #segDirectors.list-mode .gpill:not(.active){ background:var(--dm-row); border-color:transparent; color:var(--dm-text-dim); }
 
   /* A slightly darker band for the Browse title and tabs, above the list */
-  :root[data-theme="dark"]{ --dm-top:#1d2029; }
+  :root[data-theme="dark"]{ --dm-top:#0c0d13; }
   :root[data-theme="dark"] #browsePanel{ background:var(--dm-top); }
   :root[data-theme="dark"] #browsePanel.sticky-head .app-header,
   :root[data-theme="dark"] #browsePanel.sticky-head #browseTabs{ background:var(--dm-top); }
@@ -626,13 +626,13 @@
   /* Glass buttons, menus and the filter sheet */
   :root[data-theme="dark"] .header-actions, :root[data-theme="dark"] .icon-btn-solo, :root[data-theme="dark"] .back-to-top,
   :root[data-theme="dark"] .genre-detail-back, :root[data-theme="dark"] .glass-menu, :root[data-theme="dark"] .filter-sheet{
-    background:rgba(42,46,59,.92); border-color:rgba(255,255,255,.08);
+    background:rgba(26,29,40,.9); border-color:rgba(255,255,255,.08);
     box-shadow:0 6px 18px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06); }
   :root[data-theme="dark"] .glass-menu::before{ display:none; }
   :root[data-theme="dark"] .glass-menu-item{ color:var(--dm-text); }
   :root[data-theme="dark"] .glass-menu-item:active{ background:var(--dm-seam); }
   :root[data-theme="dark"] .glass-menu-item .check{ color:var(--dm-text); }
-  :root[data-theme="dark"] .filter-dot{ box-shadow:0 0 0 1.5px rgba(42,46,59,1); }
+  :root[data-theme="dark"] .filter-dot{ box-shadow:0 0 0 1.5px var(--dm-surface); }
   :root[data-theme="dark"] .os-android .genre-detail-back, :root[data-theme="dark"].os-android .genre-detail-back{ background:none; box-shadow:none; }
   :root[data-theme="dark"] .filter-sheet-grabber{ background:rgba(255,255,255,.2); }
   :root[data-theme="dark"] .filter-sheet-title{ color:var(--dm-text); }
@@ -646,7 +646,7 @@
   :root[data-theme="dark"] .filter-sheet-clear{ color:#8FA2FF; }
 
   /* Director page nav, tab bar */
-  :root[data-theme="dark"] .director-page-nav.collapsed{ background:rgba(29,32,41,.85); }
+  :root[data-theme="dark"] .director-page-nav.collapsed{ background:rgba(18,20,28,.82); }
   :root[data-theme="dark"] .tabbar-wrap.classic{ background:var(--dm-surface); border-top-color:var(--dm-seam); }
   :root[data-theme="dark"] .tabbar-wrap.classic .tab{ color:var(--dm-text-dimmer); }
   :root[data-theme="dark"] .tabbar-wrap.classic .tab.active{ color:var(--dm-text); }
