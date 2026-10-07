@@ -547,6 +547,11 @@
   .platform-android .director-page-navtitle{ top:calc(var(--android-top) - 5px); }
   .platform-android .director-page-header,
   .platform-android .genre-detail-header{ padding-top:calc(45px + var(--android-top)); }
+  /* Flat glass: no drop shadow on the top-right buttons or the back button */
+  .header-actions, .icon-btn-solo, .genre-detail-back{ box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
+  :root[data-theme="dark"] .header-actions, :root[data-theme="dark"] .icon-btn-solo,
+  :root[data-theme="dark"] .genre-detail-back{ box-shadow:inset 0 1px 0 rgba(255,255,255,.06) !important; }
+
   .platform-android .director-page-nav{ height:calc(39px + var(--android-top)); }
   /* Material back arrow on Android: plain icon, no glass circle */
   .back-android{ display:none; }
@@ -575,6 +580,75 @@
   @media (prefers-reduced-motion: reduce){
     *{ transition-duration:.001ms !important; animation-duration:.001ms !important; }
   }
+
+  /* ─── DARK MODE (More → Dark Mode) ───
+     Same palette as mubi-showing.html: greys tinted toward MUBI navy. The page's own tokens
+     (--ink background, --paper text, --hairline) flip, and the hard-coded light colours get overrides. */
+  :root[data-theme="dark"]{
+    --dm-bg:#12141c; --dm-surface:#1a1d28; --dm-seam:#262a37;
+    --dm-text:#EDEDF2; --dm-text-dim:rgba(237,237,242,.55); --dm-text-dimmer:rgba(237,237,242,.4);
+    --ink:var(--dm-bg); --paper:var(--dm-text); --paper-dim:var(--dm-text-dim); --hairline:var(--dm-seam);
+    color-scheme:dark;
+  }
+  :root[data-theme="dark"] body{ background:var(--dm-bg); }
+  :root[data-theme="dark"] .placeholder-screen{ color:var(--dm-text-dimmer); }
+
+  /* Tabs, pills, grey list backgrounds */
+  :root[data-theme="dark"] .expl-tab{ color:var(--dm-text-dim); }
+  :root[data-theme="dark"] .expl-tab.active{ color:var(--dm-text); }
+  :root[data-theme="dark"] .gpill{ color:var(--dm-text-dim); border-color:var(--dm-seam); }
+  :root[data-theme="dark"] .gpill.active{ background:var(--dm-text); color:var(--dm-bg); border-color:var(--dm-text); }
+  :root[data-theme="dark"] #segFilms.list-mode, :root[data-theme="dark"] #segCollections.list-mode,
+  :root[data-theme="dark"] #segDirectors.list-mode, :root[data-theme="dark"] #browsePanel.sticky-head .list-mode > .gpill-rail,
+  :root[data-theme="dark"] .panel[data-panel="search"], :root[data-theme="dark"] .director-page{ background:var(--dm-bg); }
+  :root[data-theme="dark"] #segFilms.list-mode .gpill:not(.active), :root[data-theme="dark"] #segCollections.list-mode .gpill:not(.active),
+  :root[data-theme="dark"] #segDirectors.list-mode .gpill:not(.active){ background:var(--dm-surface); border-color:transparent; color:var(--dm-text-dim); }
+
+  /* List rows and tiles */
+  :root[data-theme="dark"] #filmGrid.list-mode .expl-card, :root[data-theme="dark"] #directorPageGrid .expl-card,
+  :root[data-theme="dark"] #searchFilmResults .expl-card, :root[data-theme="dark"] .coll-tile--list,
+  :root[data-theme="dark"] .director-grid.list-mode .director-card{ background:var(--dm-surface); }
+  :root[data-theme="dark"] #filmGrid.list-mode .expl-card h3, :root[data-theme="dark"] #directorPageGrid .expl-card h3,
+  :root[data-theme="dark"] #searchFilmResults .expl-card h3, :root[data-theme="dark"] .coll-tile--list .coll-info h3,
+  :root[data-theme="dark"] .director-grid.list-mode .director-name{ color:var(--dm-text); }
+  :root[data-theme="dark"] #filmGrid.list-mode .expl-card p, :root[data-theme="dark"] #directorPageGrid .expl-card p,
+  :root[data-theme="dark"] #searchFilmResults .expl-card p, :root[data-theme="dark"] .list-mode .expl-card p .fd-director,
+  :root[data-theme="dark"] .coll-tile--list .coll-info p, :root[data-theme="dark"] .director-count,
+  :root[data-theme="dark"] .director-grid.list-mode .director-count, :root[data-theme="dark"] .director-page-count,
+  :root[data-theme="dark"] .search-empty{ color:var(--dm-text-dim); }
+  :root[data-theme="dark"] .search-section-label{ color:var(--dm-text-dimmer); }
+  :root[data-theme="dark"] .expl-card, :root[data-theme="dark"] .expl-thumb, :root[data-theme="dark"] .coll-tile-right,
+  :root[data-theme="dark"] .coll-thumb, :root[data-theme="dark"] .director-imgwrap{ background-color:var(--dm-seam); }
+  :root[data-theme="dark"] #filmGrid.list-mode .expl-card, :root[data-theme="dark"] #directorPageGrid .expl-card,
+  :root[data-theme="dark"] #searchFilmResults .expl-card{ background:var(--dm-surface); }
+
+  /* Glass buttons, menus and the filter sheet */
+  :root[data-theme="dark"] .header-actions, :root[data-theme="dark"] .icon-btn-solo, :root[data-theme="dark"] .back-to-top,
+  :root[data-theme="dark"] .genre-detail-back, :root[data-theme="dark"] .glass-menu, :root[data-theme="dark"] .filter-sheet{
+    background:rgba(26,29,40,.9); border-color:rgba(255,255,255,.08);
+    box-shadow:0 6px 18px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06); }
+  :root[data-theme="dark"] .glass-menu::before{ display:none; }
+  :root[data-theme="dark"] .glass-menu-item{ color:var(--dm-text); }
+  :root[data-theme="dark"] .glass-menu-item:active{ background:var(--dm-seam); }
+  :root[data-theme="dark"] .glass-menu-item .check{ color:var(--dm-text); }
+  :root[data-theme="dark"] .filter-dot{ box-shadow:0 0 0 1.5px var(--dm-surface); }
+  :root[data-theme="dark"] .os-android .genre-detail-back, :root[data-theme="dark"].os-android .genre-detail-back{ background:none; box-shadow:none; }
+  :root[data-theme="dark"] .filter-sheet-grabber{ background:rgba(255,255,255,.2); }
+  :root[data-theme="dark"] .filter-sheet-title{ color:var(--dm-text); }
+  :root[data-theme="dark"] .filter-sheet-divider{ background:var(--dm-seam); }
+  :root[data-theme="dark"] .lang-type-toggle{ background:var(--dm-bg); border-color:var(--dm-seam); }
+  :root[data-theme="dark"] .lang-type-seg, :root[data-theme="dark"] .filter-chip, :root[data-theme="dark"] .lang-show-more{ color:var(--dm-text-dim); }
+  :root[data-theme="dark"] .lang-type-seg.is-active{ background:var(--dm-seam); border-color:var(--dm-text-dim); color:var(--dm-text); }
+  :root[data-theme="dark"] .filter-chip{ background:var(--dm-bg); border-color:var(--dm-seam); }
+  :root[data-theme="dark"] .filter-chip.is-active{ background:var(--dm-text); color:var(--dm-bg); border-color:var(--dm-text); }
+  :root[data-theme="dark"] .filter-sheet-footer{ border-top-color:var(--dm-seam); }
+  :root[data-theme="dark"] .filter-sheet-clear{ color:#8FA2FF; }
+
+  /* Director page nav, tab bar */
+  :root[data-theme="dark"] .director-page-nav.collapsed{ background:rgba(18,20,28,.82); }
+  :root[data-theme="dark"] .tabbar-wrap.classic{ background:var(--dm-surface); border-top-color:var(--dm-seam); }
+  :root[data-theme="dark"] .tabbar-wrap.classic .tab{ color:var(--dm-text-dimmer); }
+  :root[data-theme="dark"] .tabbar-wrap.classic .tab.active{ color:var(--dm-text); }
 </style>
 
 <div class="stage">
@@ -682,6 +756,13 @@
                 <p class="more-setting-desc">Show the Directors tab in Browse</p>
               </div>
               <button class="more-toggle" id="directorTabToggle" role="switch" aria-checked="false" aria-label="Toggle Directors tab"></button>
+            </div>
+            <div class="more-setting-row">
+              <div class="more-setting-copy">
+                <div class="more-setting-name">Dark Mode</div>
+                <p class="more-setting-desc">Use the MUBI dark palette from Now Showing</p>
+              </div>
+              <button class="more-toggle" id="darkModeToggle" role="switch" aria-checked="false" aria-label="Toggle dark mode"></button>
             </div>
             <div class="more-setting-row">
               <div class="more-setting-copy">
@@ -1819,6 +1900,11 @@
     toggle.addEventListener('click', function(){ set(!toggle.classList.contains('is-on')); });
     set(!!initial);
   }
+
+  bindMoreToggle('darkModeToggle', function(on){
+    if(on) document.documentElement.setAttribute('data-theme', 'dark');
+    else document.documentElement.removeAttribute('data-theme');
+  }, false);
 
   (function(){
     var panel = document.getElementById('browsePanel');
