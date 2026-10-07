@@ -1959,22 +1959,6 @@ body.carousel-active .long-press-hint {
   margin-top: 72px;
   flex-shrink: 0;
 }
-.dir-page-back {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,0.12);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  outline: none;
-  flex-shrink: 0;
-  transition: background 0.15s, color 0.15s;
-}
-.dir-page-back:focus { background: #fff; color: #000; }
 .dir-page-photo {
   width: 120px;
   height: 120px;
@@ -2106,10 +2090,8 @@ body.carousel-active .long-press-hint {
 .browse-rail-item.is-active { color: #fff; }
 .browse-rail-item:focus { background: #fff; color: #000; }
 
-/* Options 6 & 7: hub with a section view behind a back button */
-.browse-title-row { display: flex; align-items: center; gap: 32px; margin-top: 17px; flex-shrink: 0; }
-.browse-title-row .browse-modal-title { margin: 0; }
-#browseModal.is-hub .browse-back { display: none; }
+/* Options 6 & 7: a hub, with each section opening behind it */
+#directorPageModal .browse-modal-body { outline: none; }
 .browse-hub { display: none; }
 #browseModal.is-hub .browse-hub { display: block; }
 #browseModal.is-hub .browse-genre-bar-wrap,
@@ -6592,7 +6574,6 @@ const DIR_FILTERS = [
   { key: 'Award Winning',      label: 'Award Winning' },
 ];
 const DIR_GRID_COLS = 6;
-const BACK_ARROW_SVG = `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>`;
 
 function directorsFor(filterKey) {
   if (!filterKey) return DIRECTORS_DATA;
@@ -6652,7 +6633,6 @@ directorPageModal.setAttribute('aria-modal', 'true');
 directorPageModal.innerHTML = `
   <div class="browse-modal-body">
     <div class="dir-page-head">
-      <button class="dir-page-back" id="dirPageBack" aria-label="Back">${BACK_ARROW_SVG}</button>
       <img class="dir-page-photo" id="dirPagePhoto" alt="">
       <div>
         <h1 class="dir-page-name" id="dirPageName"></h1>
@@ -6663,7 +6643,7 @@ directorPageModal.innerHTML = `
   </div>`;
 document.body.appendChild(directorPageModal);
 const dirPageBody  = directorPageModal.querySelector('.browse-modal-body');
-const dirPageBack  = document.getElementById('dirPageBack');
+dirPageBody.tabIndex = -1;   // holds focus (and the Back key) when a director has no films
 const dirPageFilms = document.getElementById('dirPageFilms');
 let dirPageReturnFocus = null;
 
@@ -6702,7 +6682,7 @@ function openDirectorPage(d, returnTo) {
       if (e.key === 'ArrowDown')  { e.preventDefault(); focusAt(i + 3); }
       if (e.key === 'ArrowUp') {
         e.preventDefault();
-        if (i < 3) { dirPageBody.scrollTo({ top: 0, behavior: 'smooth' }); dirPageBack.focus({ preventScroll: true }); }
+        if (i < 3) dirPageBody.scrollTo({ top: 0, behavior: 'smooth' });
         else focusAt(i - 3);
       }
     });
@@ -6710,7 +6690,8 @@ function openDirectorPage(d, returnTo) {
   });
   dirPageBody.scrollTop = 0;
   directorPageModal.classList.add('is-open');
-  setTimeout(() => dirPageBack.focus({ preventScroll: true }), 50);
+  // TV remotes have their own Back button, so the page opens on the first film
+  setTimeout(() => (dirPageFilms.querySelector('.search-result-card') || dirPageBody).focus({ preventScroll: true }), 50);
 }
 
 function closeDirectorPage() {
@@ -6719,15 +6700,6 @@ function closeDirectorPage() {
   setTimeout(() => target && target.focus({ preventScroll: true }), 50);
 }
 
-dirPageBack.addEventListener('click', closeDirectorPage);
-dirPageBack.addEventListener('keydown', e => {
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeDirectorPage(); }
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    const first = dirPageFilms.querySelector('.search-result-card');
-    if (first) first.focus({ preventScroll: true });
-  }
-});
 directorPageModal.addEventListener('keydown', e => {
   if (e.key === 'Escape' || e.key === 'Backspace') { e.preventDefault(); e.stopPropagation(); closeDirectorPage(); }
 });
@@ -7141,26 +7113,8 @@ if (DIR_OPTION >= 5) {
   }, true);
 }
 
-// Section view with a back button, for the options that open on a hub (6 & 7)
+// Section view, for the options that open on a hub (6 & 7); the remote's Back returns to the hub
 let hubMode = false, hubReturn = null, hubFocusFirst = null;
-let browseBack = null;
-function buildSectionHeader() {
-  const row = document.createElement('div');
-  row.className = 'browse-title-row';
-  browseBack = document.createElement('button');
-  browseBack.className = 'dir-page-back browse-back';
-  browseBack.tabIndex = -1;
-  browseBack.setAttribute('aria-label', 'Back to Browse');
-  browseBack.innerHTML = BACK_ARROW_SVG;
-  browseTitle.replaceWith(row);
-  row.append(browseBack, browseTitle);
-  browseBack.addEventListener('click', () => enterHub());
-  browseBack.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); enterHub(); }
-    if (e.key === 'ArrowDown') { e.preventDefault(); focusBrowsePill(browseGenreIdx); }
-    if (e.key === 'ArrowUp')   { e.preventDefault(); browseNavCollections.focus(); }
-  });
-}
 function enterHub(focusEl) {
   hubMode = true;
   browseModal.classList.add('is-hub');
@@ -7177,10 +7131,8 @@ function enterSection(g, idx, fromEl) {
   showGroup(g, idx);
 }
 if (DIR_OPTION === 6 || DIR_OPTION === 7) {
-  buildSectionHeader();
   // Down from the top nav always lands on the hub's top row
   navDownHook = () => { if (!hubMode) return false; enterHub(hubFocusFirst()); return true; };
-  pillUpHook = () => browseBack.focus({ preventScroll: true });
   // Selecting Browse in the top nav goes back to the hub
   browseNavCollections.addEventListener('keydown', e => {
     if ((e.key === 'Enter' || e.key === ' ') && !hubMode) { e.preventDefault(); enterHub(hubFocusFirst()); }
