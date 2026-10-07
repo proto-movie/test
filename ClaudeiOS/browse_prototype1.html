@@ -599,6 +599,12 @@
   :root[data-theme="dark"] #segFilms.list-mode .gpill:not(.active), :root[data-theme="dark"] #segCollections.list-mode .gpill:not(.active),
   :root[data-theme="dark"] #segDirectors.list-mode .gpill:not(.active){ background:var(--dm-surface); border-color:transparent; color:var(--dm-text-dim); }
 
+  /* A slightly darker band for the Browse title and tabs, above the list */
+  :root[data-theme="dark"]{ --dm-top:#0c0d13; }
+  :root[data-theme="dark"] #browsePanel{ background:var(--dm-top); }
+  :root[data-theme="dark"] #browsePanel.sticky-head .app-header,
+  :root[data-theme="dark"] #browsePanel.sticky-head #browseTabs{ background:var(--dm-top); }
+
   /* List rows and tiles */
   :root[data-theme="dark"] #filmGrid.list-mode .expl-card, :root[data-theme="dark"] #directorPageGrid .expl-card,
   :root[data-theme="dark"] #searchFilmResults .expl-card, :root[data-theme="dark"] .coll-tile--list,
