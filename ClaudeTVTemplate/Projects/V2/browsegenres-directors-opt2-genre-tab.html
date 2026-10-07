@@ -2041,54 +2041,67 @@ body.carousel-active .long-press-hint {
 /* Options 5–8: the pill row shows one group at a time */
 .browse-genre-pill.is-out-of-group { display: none; }
 
-/* Option 5: collapsible side rail */
-#browseModal.has-rail .browse-modal-body { padding-left: 196px; }
-#browseModal.has-rail .marquee-nav { margin-left: -196px; }
-#browseModal.has-rail .browse-film-area { grid-template-columns: repeat(3, minmax(0, 1fr)); justify-content: stretch; }
+/* Option 5: the top nav becomes a left rail */
+body.has-nav-rail .marquee-nav { display: none; }
+body.has-nav-rail #pageScroll { transform: translateX(64px); }
+body.has-nav-rail .search-modal { padding-left: 64px; padding-top: 40px; }
+body.has-nav-rail .browse-modal-body { padding-left: 146px; padding-top: 56px; }
+#browseModal.has-rail .browse-film-area,
+body.has-nav-rail #directorPageModal .browse-film-area { grid-template-columns: repeat(3, minmax(0, 1fr)); justify-content: stretch; }
+body.has-nav-rail #directorPageModal .dir-page-head { margin-top: 16px; }
 #browseModal.has-rail .browse-film-area .tv-coll-tile { width: 100%; }
 #browseModal.has-rail .browse-film-area.is-directors { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 40px 24px; }
 #browseModal.has-rail .dir-tile,
 #browseModal.has-rail .dir-tile-img { width: 100%; }
 #browseModal.has-rail .dir-tile-img { height: auto; aspect-ratio: 1; }
-.browse-rail {
-  position: absolute;
-  left: 0; top: 196px; bottom: 0;
-  width: 150px;
-  padding: 40px 0 0 64px;
+.nav-rail {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 128px;
+  z-index: 980;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  z-index: 5;
-  transition: width 0.25s ease, background 0.25s ease;
+  padding: 52px 0 56px 28px;
+  background: linear-gradient(90deg, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.6) 70%, rgba(10,10,10,0) 100%);
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.browse-rail:focus-within {
-  width: 560px;
-  background: linear-gradient(90deg, rgba(24,24,24,0.98) 0%, rgba(24,24,24,0.95) 60%, rgba(24,24,24,0) 100%);
+.nav-rail-scrim {
+  position: fixed; inset: 0; z-index: -1;
+  background: linear-gradient(90deg, rgba(12,12,12,0.98) 0%, rgba(12,12,12,0.92) 26%, rgba(12,12,12,0.55) 48%, rgba(12,12,12,0) 70%);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
 }
-.browse-rail-item {
+.nav-rail:focus-within { width: 520px; }
+.nav-rail:focus-within .nav-rail-scrim { opacity: 1; }
+.nav-rail-logo { padding-left: 20px; height: 48px; }
+.nav-rail-logo svg { width: 44px; height: 44px; }
+.nav-rail-items { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+.nav-rail-item {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 24px;
   width: fit-content;
   height: 72px;
-  padding: 0 16px;
+  padding: 0 17px;
   border: none;
   border-radius: 36px;
   background: transparent;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.5);
   font-family: 'Riforma', sans-serif;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 500;
   white-space: nowrap;
   outline: none;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
-.browse-rail-item svg { flex-shrink: 0; }
-.browse-rail-item span { opacity: 0; transition: opacity 0.2s ease; }
-.browse-rail:focus-within .browse-rail-item span { opacity: 1; }
-.browse-rail-item.is-active { color: #fff; }
-.browse-rail-item:focus { background: #fff; color: #000; }
+.nav-rail-item.is-bottom { margin-top: auto; }
+.nav-rail-items:has(.is-bottom) { justify-content: flex-start; padding-top: 150px; }
+.nav-rail-item svg { flex-shrink: 0; }
+.nav-rail-item span { opacity: 0; transition: opacity 0.2s ease; padding-right: 10px; }
+.nav-rail:focus-within .nav-rail-item span { opacity: 1; }
+.nav-rail-item.is-active { color: #fff; }
+.nav-rail-item:focus { background: #fff; color: #000; }
 
 /* Options 6 & 7: a hub, with each section opening behind it */
 #directorPageModal .browse-modal-body { outline: none; }
@@ -7158,52 +7171,129 @@ function hubCard(cls, { img, color, label, sub, html }) {
 }
 const firstCollectionOf = key => collectionsIn(key)[0];
 
-// ══ Option 5 — collapsible side rail (Android TV navigation drawer / Apple TV sidebar) ══
+// ══ Option 5 — the whole top nav becomes a left rail (Android TV / Google TV navigation drawer,
+// Netflix and Apple TV sidebars): icons when collapsed, labels over a scrim when focused.
+// Left at the edge of a page or Back opens it on the current page; Up/Down move, Enter opens,
+// Right goes back to the content. Search sits at the top, Account & Settings at the bottom.
 if (DIR_OPTION === 5) {
-  const ICONS = {
-    films: `<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg>`,
-    collections: `<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="15" height="12" rx="2"/><path d="M6 4h13a2 2 0 0 1 2 2v10"/><path d="M9 10.5v5l4-2.5z" fill="currentColor"/></svg>`,
-    directors: `<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>`,
-  };
+  const I = d => `<svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const DESTS = [
+    { key: 'search',      label: 'Search',             icon: I('<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>') },
+    { key: 'nowshowing',  label: 'Now Showing',        icon: I('<path d="M4 10.5L12 4l8 6.5V20H4z"/><path d="M10 20v-6h4v6"/>') },
+    { key: 'films',       label: 'Films & Series',     icon: I('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/>') },
+    { key: 'directors',   label: 'Directors',          icon: I('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>') },
+    { key: 'collections', label: 'Collections',        icon: I('<rect x="3" y="7" width="15" height="12" rx="2"/><path d="M6 4h13a2 2 0 0 1 2 2v10"/><path d="M9 10.5v5l4-2.5z" fill="currentColor"/>') },
+    { key: 'watchlist',   label: 'Watchlist',          icon: I('<path d="M6 3h12v18l-6-4.5L6 21z"/>') },
+    { key: 'account',     label: 'Account & Settings', icon: I('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 18.5c1.2-2 3.2-3 5.5-3s4.3 1 5.5 3"/>'), bottom: true },
+  ];
+  document.body.classList.add('has-nav-rail');
   browseModal.classList.add('has-rail');
-  const rail = document.createElement('div');
-  rail.className = 'browse-rail';
-  GROUP_KEYS.forEach((g, i) => {
+  const rail = document.createElement('nav');
+  rail.className = 'nav-rail';
+  rail.innerHTML = `<div class="nav-rail-scrim"></div><div class="nav-rail-logo">${document.querySelector('.marquee-nav-logo')?.outerHTML || ''}</div>`;
+  const list = document.createElement('div');
+  list.className = 'nav-rail-items';
+  rail.appendChild(list);
+  const items = DESTS.map((d, i) => {
     const b = document.createElement('button');
-    b.className = 'browse-rail-item' + (g === 'films' ? ' is-active' : '');
+    b.className = 'nav-rail-item' + (d.bottom ? ' is-bottom' : '');
     b.tabIndex = -1;
-    b.dataset.group = g;
-    b.innerHTML = `${ICONS[g]}<span>${GROUP_TITLES[g]}</span>`;
-    b.addEventListener('click', () => showGroup(g));
+    b.dataset.dest = d.key;
+    b.innerHTML = `${d.icon}<span>${d.label}</span>`;
+    b.addEventListener('click', () => go(d.key));
     b.addEventListener('keydown', e => {
-      const next = GROUP_KEYS[i + (e.key === 'ArrowDown' ? 1 : -1)];
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        // moving along the rail previews that section underneath
-        if (next) { railFocus(next); }
-        else if (e.key === 'ArrowUp') browseNavCollections.focus();
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); focusBrowsePill(browseGenreIdx); }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); items[i + (e.key === 'ArrowDown' ? 1 : -1)]?.focus({ preventScroll: true }); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(d.key); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); closeRail(); }
     });
-    rail.appendChild(b);
+    list.appendChild(b);
+    return b;
   });
-  browseModal.appendChild(rail);
-  const railItem = g => rail.querySelector(`[data-group="${g}"]`);
-  function railFocus(g) {
-    if (g !== browseGroup) { showGroup(g); }
-    rail.querySelectorAll('.browse-rail-item').forEach(b => b.classList.toggle('is-active', b.dataset.group === g));
-    railItem(g).focus({ preventScroll: true });
+  document.body.appendChild(rail);
+
+  let current = 'nowshowing', returnFocus = null;
+  const FOCUS_CLASSES = ['is-result-focused', 'is-coll-focused'];
+  const setCurrent = key => { current = key; items.forEach(b => b.classList.toggle('is-active', b.dataset.dest === key)); };
+  setCurrent('nowshowing');
+  const railOpen = () => rail.contains(document.activeElement);
+  function openRail() {
+    if (railOpen()) return;
+    returnFocus = document.activeElement;
+    returnFocus?.classList?.remove(...FOCUS_CLASSES);
+    items.find(b => b.dataset.dest === current).focus({ preventScroll: true });
   }
-  const toRail = () => railFocus(browseGroup);
-  pillEdgeHook = dir => { if (dir < 0) toRail(); };
-  // Left from the first column of tiles also opens the rail
+  function closeRail() {
+    const el = returnFocus;
+    if (el && document.contains(el) && el.getClientRects().length) {
+      if (el.classList.contains('search-result-card') && browseFilmArea.contains(el)) el.classList.add('is-result-focused');
+      if (el.classList.contains('tv-coll-tile')) el.classList.add('is-coll-focused');
+      el.focus({ preventScroll: true });
+    } else go(current);
+  }
+  // Closes every full-screen page without the base code's focus hand-offs to the (hidden) top nav
+  function closePages() {
+    [searchModal, browseModal, seriesModal, collectionsModal, directorPageModal].forEach(m => m.classList.remove('is-open'));
+  }
+  const later = fn => setTimeout(fn, 120);   // after the base close/open timers
+  function go(key) {
+    if (key === 'account') { openSettings(); return; }
+    setCurrent(key);
+    if (key === 'search') { closePages(); openSearch(); return; }
+    if (key === 'nowshowing') { closePages(); later(() => goToMarquee()); return; }
+    if (key === 'watchlist') {
+      closePages();
+      if (!wlVisible) {
+        wlVisible = true;
+        tvScreenWL.style.display = 'block';
+        if (typeof buildCarouselWL === 'function') buildCarouselWL();
+        [...document.querySelectorAll('.tv-checkbox')].find(c => c.textContent.trim() === 'Your Watchlist')?.classList.add('is-checked');
+      }
+      later(() => { carouselWLActive = true; renderWL(); tvScreenWL.scrollIntoView({ behavior: 'smooth', block: 'center' }); tvScreenWL.focus({ preventScroll: true }); });
+      return;
+    }
+    // Films & Series, Directors and Collections are the three groups of the Browse page
+    [searchModal, seriesModal, collectionsModal, directorPageModal].forEach(m => m.classList.remove('is-open'));
+    browseModal.classList.add('is-open');
+    later(() => showGroup(key));
+  }
+  // Settings is a dialog over the page: when it closes, come back to the rail
+  new MutationObserver(() => {
+    if (!settingsModal.classList.contains('is-open')) later(() => items.find(b => b.dataset.dest === 'account').focus({ preventScroll: true }));
+  }).observe(settingsModal, { attributes: true, attributeFilter: ['class'] });
+
+  pillEdgeHook = dir => { if (dir < 0) openRail(); };
+  const isDialogUp = () => settingsModal.classList.contains('is-open');
+  // Left from the first column of a Browse grid opens the rail (the base grid would wrap to the row above)
   document.addEventListener('keydown', e => {
     if (e.key !== 'ArrowLeft' || !browseFilmArea.contains(e.target) || e.target.parentElement !== browseFilmArea) return;
     const minLeft = Math.min(...[...browseFilmArea.children].map(c => c.offsetLeft));
     if (e.target.offsetLeft > minLeft + 2) return;
     e.preventDefault(); e.stopImmediatePropagation();
-    e.target.classList.remove('is-result-focused', 'is-coll-focused');
-    toRail();
+    openRail();
+  }, true);
+  // Anywhere else: if Left changed nothing, we're at the left edge, so open the rail
+  const focusSig = () => { const a = document.activeElement; return [a, a?.querySelector?.('.is-focused, .is-result-focused, .is-coll-focused')]; };
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' || railOpen() || isDialogUp()) return;
+    // Now Showing rows keep their position in currentN; the first row loops, so it never has an edge
+    if (e.target.classList?.contains('tv-screen')) {
+      if (e.target.id === 'tvScreen') return;
+      let at = 1;
+      try { at = (0, eval)('current' + e.target.id.replace('tvScreen', '')); } catch (_) {}
+      if (at === 0) { e.preventDefault(); e.stopImmediatePropagation(); openRail(); }
+      return;
+    }
+    const [a, f] = focusSig();
+    setTimeout(() => { const [a2, f2] = focusSig(); if (a === a2 && f === f2 && !railOpen()) openRail(); }, 0);
+  }, true);
+  // Back opens the rail; Back on the rail goes to Now Showing
+  document.addEventListener('keydown', e => {
+    const back = e.key === 'Escape' || (e.key === 'Backspace' && !searchModal.classList.contains('is-open'));
+    if (!back || isDialogUp() || directorPageModal.classList.contains('is-open')) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (!railOpen()) openRail();
+    else if (current !== 'nowshowing') go('nowshowing');
+    else closeRail();
   }, true);
 }
 
