@@ -580,7 +580,7 @@
      Same palette as mubi-showing.html: greys tinted toward MUBI navy. The page's own tokens
      (--ink background, --paper text, --hairline) flip, and the hard-coded light colours get overrides. */
   :root[data-theme="dark"]{
-    --dm-bg:#12141c; --dm-surface:#1a1d28; --dm-seam:#262a37;
+    --dm-bg:#12141c; --dm-surface:#1a1d28; --dm-row:#242835; --dm-seam:#262a37;
     --dm-text:#EDEDF2; --dm-text-dim:rgba(237,237,242,.55); --dm-text-dimmer:rgba(237,237,242,.4);
     --ink:var(--dm-bg); --paper:var(--dm-text); --paper-dim:var(--dm-text-dim); --hairline:var(--dm-seam);
     color-scheme:dark;
@@ -597,7 +597,7 @@
   :root[data-theme="dark"] #segDirectors.list-mode, :root[data-theme="dark"] #browsePanel.sticky-head .list-mode > .gpill-rail,
   :root[data-theme="dark"] .panel[data-panel="search"], :root[data-theme="dark"] .director-page{ background:var(--dm-bg); }
   :root[data-theme="dark"] #segFilms.list-mode .gpill:not(.active), :root[data-theme="dark"] #segCollections.list-mode .gpill:not(.active),
-  :root[data-theme="dark"] #segDirectors.list-mode .gpill:not(.active){ background:var(--dm-surface); border-color:transparent; color:var(--dm-text-dim); }
+  :root[data-theme="dark"] #segDirectors.list-mode .gpill:not(.active){ background:var(--dm-row); border-color:transparent; color:var(--dm-text-dim); }
 
   /* A slightly darker band for the Browse title and tabs, above the list */
   :root[data-theme="dark"]{ --dm-top:#0c0d13; }
@@ -608,7 +608,7 @@
   /* List rows and tiles */
   :root[data-theme="dark"] #filmGrid.list-mode .expl-card, :root[data-theme="dark"] #directorPageGrid .expl-card,
   :root[data-theme="dark"] #searchFilmResults .expl-card, :root[data-theme="dark"] .coll-tile--list,
-  :root[data-theme="dark"] .director-grid.list-mode .director-card{ background:var(--dm-surface); }
+  :root[data-theme="dark"] .director-grid.list-mode .director-card{ background:var(--dm-row); }
   :root[data-theme="dark"] #filmGrid.list-mode .expl-card h3, :root[data-theme="dark"] #directorPageGrid .expl-card h3,
   :root[data-theme="dark"] #searchFilmResults .expl-card h3, :root[data-theme="dark"] .coll-tile--list .coll-info h3,
   :root[data-theme="dark"] .director-grid.list-mode .director-name{ color:var(--dm-text); }
@@ -621,7 +621,7 @@
   :root[data-theme="dark"] .expl-card, :root[data-theme="dark"] .expl-thumb, :root[data-theme="dark"] .coll-tile-right,
   :root[data-theme="dark"] .coll-thumb, :root[data-theme="dark"] .director-imgwrap{ background-color:var(--dm-seam); }
   :root[data-theme="dark"] #filmGrid.list-mode .expl-card, :root[data-theme="dark"] #directorPageGrid .expl-card,
-  :root[data-theme="dark"] #searchFilmResults .expl-card{ background:var(--dm-surface); }
+  :root[data-theme="dark"] #searchFilmResults .expl-card{ background:var(--dm-row); }
 
   /* Glass buttons, menus and the filter sheet */
   :root[data-theme="dark"] .header-actions, :root[data-theme="dark"] .icon-btn-solo, :root[data-theme="dark"] .back-to-top,
