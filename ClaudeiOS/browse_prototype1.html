@@ -429,7 +429,7 @@
   .tabbar-wrap.split-mode .search-pill{ display:block; }
 
   /* Classic iOS tab bar: full width, flush to the bottom, tinted icon for the active tab, no search.
-     iOS packs Home, Browse and GO on the left with More at the far right; Android spreads all four evenly. */
+     iOS centres Home, Browse and GO with More at the far right; Android spreads all four evenly. */
   #screen{ --classic-bar:98px; }
   .tabbar-wrap.classic{ left:0; right:0; bottom:0; height:auto; gap:0; padding-bottom:env(safe-area-inset-bottom);
     background:#fff; border-top:.5px solid rgba(0,0,0,.22); }
@@ -440,9 +440,11 @@
   .tabbar-wrap.classic .search-pill{ display:none; }
   .tabbar-wrap.classic .tab{ flex:0 0 64px; color:#A6A6AB; }
   .tabbar-wrap.classic .tab.active{ color:var(--paper); }
-  .tabbar-wrap.classic .tab[data-tab="more"]{ margin-left:auto; }
+  .tabbar-wrap.classic .tabbar{ justify-content:center; }
+  .tabbar-wrap.classic .tab[data-tab="more"]{ position:absolute; top:0; bottom:0; right:8px; width:64px; }
+  .os-android .tabbar-wrap.classic .tabbar{ justify-content:flex-start; }
   .os-android .tabbar-wrap.classic .tab{ flex:1 1 0; }
-  .os-android .tabbar-wrap.classic .tab[data-tab="more"]{ margin-left:0; }
+  .os-android .tabbar-wrap.classic .tab[data-tab="more"]{ position:relative; right:auto; width:auto; }
   .search-pill-icon{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
     background:none; border:none; color:var(--paper); -webkit-tap-highlight-color:transparent;
