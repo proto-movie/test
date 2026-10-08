@@ -281,6 +281,9 @@
   .expl-card h3{ font-family:var(--font-riforma); font-size:19px; font-weight:400; text-transform:uppercase; letter-spacing:-.01em; line-height:1.18; color:#fff; margin:0 0 2px; }
   .expl-card p{ font-family:var(--font-riforma); font-size:11px; font-weight:400; text-transform:uppercase; color:#fff; margin:0; }
   .expl-card p b{ font-weight:700; }
+  /* ", 1994" after the director, shown only in list rows (the director page shows country and year instead) */
+  .expl-card .fd-year{ display:none; }
+  #filmGrid.list-mode .expl-card .fd-year, #searchFilmResults .expl-card .fd-year{ display:inline; }
   .expl-rating{ position:absolute; top:10px; right:12px; display:none; align-items:center; gap:4px; color:#fff; font-family:var(--font-riforma); font-size:13px; font-weight:500; }
   .rating-active .expl-rating{ display:flex; }
   .expl-rating{ z-index:1; }
@@ -1391,7 +1394,7 @@
         '<img class="expl-bg" src="' + imgSrc + '" alt="' + esc(f.t) + '" loading="lazy">' +
         '<div class="scrim"></div>' + rating +
       '</div>' +
-      '<div class="overlay"><h3>' + esc(f.t) + '</h3><p><b class="fd-director">' + esc(f.d) + '</b> <span class="fd-meta">' + esc(meta) + '</span></p></div>' +
+      '<div class="overlay"><h3>' + esc(f.t) + '</h3><p><b class="fd-director">' + esc(f.d) + '</b><span class="fd-year">' + (f.y ? ', ' + esc(f.y) : '') + '</span> <span class="fd-meta">' + esc(meta) + '</span></p></div>' +
       '</div>';
   }
 
