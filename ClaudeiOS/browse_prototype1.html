@@ -262,7 +262,9 @@
   .gpill-rail{ display:flex; gap:8px; overflow-x:auto; padding:12px 20px 10px; }
   /* Sticky pills (More → Sticky Pills): the pill row pins below the status bar while the title and
      tabs scroll away. A strip of the same colour fills in behind the status bar. */
-  #browsePanel.sticky-head .gpill-rail{ --rail-bg:var(--ink); position:sticky; top:env(safe-area-inset-top); z-index:3; background:var(--rail-bg);
+  #browsePanel.sticky-head .gpill-rail{ --rail-bg:var(--ink); position:sticky; top:env(safe-area-inset-top); z-index:3; background:var(--rail-bg); }
+  /* Only once pinned (set from script): fill in behind the status bar */
+  #browsePanel.sticky-head .gpill-rail.is-stuck{
     box-shadow:0 calc(env(safe-area-inset-top) * -.5) 0 0 var(--rail-bg), 0 calc(env(safe-area-inset-top) * -1) 0 0 var(--rail-bg); }
   #browsePanel.sticky-head .list-mode > .gpill-rail{ --rail-bg:#F2F2F2; }
   /* The fill reaches up behind the status bar, so keep the title and tabs layered above it until they scroll away */
@@ -1967,7 +1969,19 @@
   (function(){
     var panel = document.getElementById('browsePanel');
     if(!panel) return;
-    bindMoreToggle('stickyHeaderToggle', function(on){ panel.classList.toggle('sticky-head', on); }, false);
+    var probe = document.createElement('div');
+    probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;height:env(safe-area-inset-top)';
+    panel.appendChild(probe);
+    // A rail counts as pinned when it sits at the top of the panel (below the status bar inset).
+    function markStuck(){
+      var top = panel.getBoundingClientRect().top + probe.offsetHeight;
+      Array.prototype.forEach.call(panel.querySelectorAll('.gpill-rail'), function(r){
+        r.classList.toggle('is-stuck', panel.classList.contains('sticky-head') && r.offsetParent !== null &&
+          r.getBoundingClientRect().top <= top + 0.5 && panel.scrollTop > 0);
+      });
+    }
+    panel.addEventListener('scroll', markStuck, { passive: true });
+    bindMoreToggle('stickyHeaderToggle', function(on){ panel.classList.toggle('sticky-head', on); markStuck(); }, false);
   })();
 
   (function(){
