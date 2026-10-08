@@ -662,6 +662,7 @@
   :root[data-theme="dark"] .sort-sheet .glass-menu-item .check{ color:#8FA2FF; }
   :root[data-theme="dark"] .sort-sheet-grabber{ background:rgba(255,255,255,.2); }
   :root[data-theme="dark"] .glass-menu.sort-sheet:not(.open){ box-shadow:none; }
+  :root[data-theme="dark"] .filter-dot{ background:#fff; }
   :root[data-theme="dark"] .filter-dot{ box-shadow:0 0 0 1.5px var(--dm-surface); }
   :root[data-theme="dark"] .os-android .genre-detail-back, :root[data-theme="dark"].os-android .genre-detail-back{ background:none; box-shadow:none; }
   :root[data-theme="dark"] .filter-sheet-grabber{ background:rgba(255,255,255,.2); }
@@ -1790,6 +1791,11 @@
       sortScrim.classList.remove('open');
     }
     sortScrim.addEventListener('click', closeAllMenus);
+
+    // The filter/sort buttons live in the Browse page so they scroll away with the title.
+    var actionsOverlay = document.getElementById('browseActionsOverlay');
+    var browsePanelEl = document.getElementById('browsePanel');
+    if(actionsOverlay && browsePanelEl) browsePanelEl.appendChild(actionsOverlay);
 
     // Lift the scrim and menus out of the top-right overlay so they can cover the whole screen as a sheet.
     var screenEl = document.getElementById('screen');
