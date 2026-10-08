@@ -280,7 +280,8 @@
   .expl-list{ display:flex; flex-direction:column; gap:8px; padding:6px 20px 6px; }
   .expl-card{ position:relative; aspect-ratio:371/209; overflow:hidden; border-radius:3px; background:#d0d0d0; }
   .expl-thumb{ position:absolute; inset:0; }
-  .expl-card .expl-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  /* 1px overhang on every side: hides sub-pixel gaps and light edge pixels in some stills (visible in dark mode) */
+  .expl-card .expl-bg{ position:absolute; top:-1px; left:-1px; width:calc(100% + 2px); height:calc(100% + 2px); object-fit:cover; }
   .expl-card .scrim{ position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.78) 0%, rgba(0,0,0,.12) 55%, transparent 100%); }
   .expl-card .overlay{ position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:12px 14px 12px 16px; }
   .expl-card h3{ font-family:var(--font-riforma); font-size:19px; font-weight:400; text-transform:uppercase; letter-spacing:-.01em; line-height:1.18; color:#fff; margin:0 0 2px; }
@@ -338,7 +339,7 @@
   #collectionsGrid.list-mode{ gap:10px; }
   .coll-tile--list{ display:flex; align-items:center; gap:12px; aspect-ratio:auto; overflow:visible; border-radius:8px; background:#fff; padding:0 12px 0 0; }
   .coll-tile--list .coll-thumb{ position:relative; flex-shrink:0; width:45%; aspect-ratio:371/209; border-radius:8px 0 0 8px; overflow:hidden; background:#d0d0d0; }
-  .coll-thumb-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+  .coll-thumb-bg{ position:absolute; top:-1px; left:-1px; width:calc(100% + 2px); height:calc(100% + 2px); object-fit:cover; display:block; }
   .coll-thumb-scrim{ position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.5) 0%, rgba(0,0,0,.1) 55%, transparent 100%); }
   .coll-thumb-treatment{ position:absolute; left:8px; right:8px; bottom:8px; max-height:60%; width:auto; max-width:85%; object-fit:contain; object-position:left bottom; }
   .coll-thumb-treatment.tr-wide{ max-width:65%; max-height:42%; }
