@@ -167,6 +167,21 @@
   .glass-menu-item .check{ width:15px; height:15px; flex-shrink:0; opacity:0; color:rgba(24,20,15,.78); }
   .glass-menu-item.is-selected .check{ opacity:1; }
 
+  /* Sort menus open as a bottom sheet over a dimmed screen */
+  .menu-scrim.sheet-dim{ display:block; z-index:14; background:rgba(10,8,6,.32); opacity:0; pointer-events:none; transition:opacity .28s ease; }
+  .menu-scrim.sheet-dim.open{ opacity:1; pointer-events:auto; }
+  .glass-menu.sort-sheet{ top:auto; left:0; right:0; bottom:0; z-index:15; min-width:0; border-radius:24px 24px 0 0;
+    padding:4px 16px calc(18px + env(safe-area-inset-bottom)); border-bottom:none; opacity:1; transform:translateY(100%);
+    transition:transform .34s cubic-bezier(.32,.72,0,1); box-shadow:none; }
+  .glass-menu.sort-sheet.open{ transform:translateY(0); box-shadow:0 -12px 36px rgba(24,20,15,.28); }
+  .glass-menu.sort-sheet::before{ display:none; }
+  .sort-sheet-grabber{ width:36px; height:5px; border-radius:3px; background:rgba(24,20,15,.18); margin:8px auto 10px; }
+  .sort-sheet-title{ font-family:var(--font-riforma); font-weight:500; font-size:14px; letter-spacing:.2px; color:var(--paper);
+    padding:0 8px 6px; }
+  .sort-sheet .glass-menu-item{ justify-content:space-between; padding:15px 8px; font-size:16px; border-radius:10px; }
+  .sort-sheet .glass-menu-item .check{ order:2; width:18px; height:18px; color:#001489; }
+  .sort-sheet .glass-menu-item + .glass-menu-item{ border-top:1px solid var(--hairline); border-radius:0; }
+
   .sheet-scrim{ position:absolute; inset:0; z-index:14; background:rgba(10,8,6,.32); opacity:0; pointer-events:none; transition:opacity .28s ease; }
   .sheet-scrim.open{ opacity:1; pointer-events:auto; }
   .filter-sheet{
@@ -632,6 +647,9 @@
   :root[data-theme="dark"] .glass-menu-item{ color:var(--dm-text); }
   :root[data-theme="dark"] .glass-menu-item:active{ background:var(--dm-seam); }
   :root[data-theme="dark"] .glass-menu-item .check{ color:var(--dm-text); }
+  :root[data-theme="dark"] .sort-sheet .glass-menu-item .check{ color:#8FA2FF; }
+  :root[data-theme="dark"] .sort-sheet-grabber{ background:rgba(255,255,255,.2); }
+  :root[data-theme="dark"] .glass-menu.sort-sheet:not(.open){ box-shadow:none; }
   :root[data-theme="dark"] .filter-dot{ box-shadow:0 0 0 1.5px var(--dm-surface); }
   :root[data-theme="dark"] .os-android .genre-detail-back, :root[data-theme="dark"].os-android .genre-detail-back{ background:none; box-shadow:none; }
   :root[data-theme="dark"] .filter-sheet-grabber{ background:rgba(255,255,255,.2); }
@@ -1761,10 +1779,21 @@
     }
     sortScrim.addEventListener('click', closeAllMenus);
 
+    // Lift the scrim and menus out of the top-right overlay so they can cover the whole screen as a sheet.
+    var screenEl = document.getElementById('screen');
+    sortScrim.classList.add('sheet-dim');
+    screenEl.appendChild(sortScrim);
+    function makeSheet(menu){
+      menu.classList.add('sort-sheet');
+      menu.insertAdjacentHTML('afterbegin', '<div class="sort-sheet-grabber"></div><div class="sort-sheet-title">Sort by</div>');
+      screenEl.appendChild(menu);
+    }
+
     function setupSortMenu(btnId, menuId, onSelect){
       var btn = document.getElementById(btnId);
       var menu = document.getElementById(menuId);
       var items = Array.prototype.slice.call(menu.querySelectorAll('.glass-menu-item'));
+      makeSheet(menu);
 
       btn.addEventListener('click', function(e){
         e.stopPropagation();
