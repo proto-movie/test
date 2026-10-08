@@ -3,6 +3,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" id="themeColorMeta" content="#ffffff">
 <title>MUBI — Browse Prototype 1</title>
 <script>
   // ?platform=android or the Android app's WebView adds the top spacing iOS gets from its safe area.
@@ -605,6 +606,7 @@
     --ink:var(--dm-bg); --paper:var(--dm-text); --paper-dim:var(--dm-text-dim); --hairline:var(--dm-seam);
     color-scheme:dark;
   }
+  :root{ color-scheme:light; }
   :root[data-theme="dark"] body{ background:var(--dm-bg); }
   :root[data-theme="dark"] .placeholder-screen{ color:var(--dm-text-dimmer); }
 
@@ -1945,9 +1947,21 @@
     set(!!initial);
   }
 
+  // Status bar text follows the theme: Safari reads theme-color, and a native iOS wrapper can listen for
+  // the "statusBarStyle" message ("light" = black text, "dark" = white text) and set preferredStatusBarStyle.
+  function syncStatusBar(dark){
+    var meta = document.getElementById('themeColorMeta');
+    if(meta) meta.setAttribute('content', dark ? '#0c0d13' : '#ffffff');
+    try {
+      var h = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.statusBarStyle;
+      if(h) h.postMessage(dark ? 'dark' : 'light');
+    } catch(e){}
+  }
+
   bindMoreToggle('darkModeToggle', function(on){
     if(on) document.documentElement.setAttribute('data-theme', 'dark');
     else document.documentElement.removeAttribute('data-theme');
+    syncStatusBar(on);
   }, false);
 
   (function(){
