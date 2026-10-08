@@ -693,17 +693,11 @@
   :root[data-theme="dark"] .header-actions, :root[data-theme="dark"] .icon-btn-solo{
     background:none; border-color:transparent; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
 
-  /* A–Z section index (Films & Series / Directors sorted A-Z) */
-  .az-index{ position:absolute; right:2px; top:50%; transform:translateY(-46%); z-index:8; display:none;
-    flex-direction:column; align-items:center; padding:6px 2px; touch-action:none; -webkit-user-select:none; user-select:none; }
-  .az-index.show{ display:flex; }
-  .az-index span{ display:block; width:18px; text-align:center; font-family:var(--font-ui); font-size:10.5px; font-weight:700;
-    line-height:15px; color:#9A9AA0; }
+  /* A–Z letter bubble: shows the current letter while scrolling a list sorted A-Z */
   .az-bubble{ position:absolute; left:50%; top:50%; z-index:8; width:76px; height:76px; margin:-38px 0 0 -38px; border-radius:18px;
     display:flex; align-items:center; justify-content:center; background:rgba(24,20,15,.72); color:#fff;
     font-family:var(--font-riforma); font-size:38px; font-weight:500; opacity:0; pointer-events:none; transition:opacity .2s ease; }
   .az-bubble.show{ opacity:1; transition:none; }
-  :root[data-theme="dark"] .az-index span{ color:rgba(237,237,242,.75); }
   :root[data-theme="dark"] .az-bubble{ background:#000; }
 </style>
 
@@ -921,7 +915,6 @@
           <div style="height:110px"></div>
         </div>
 
-        <div class="az-index" id="azIndex" aria-label="Jump to letter"></div>
         <div class="az-bubble" id="azBubble"></div>
 
         <button class="back-to-top" id="backToTop" aria-label="Back to top">
@@ -1804,82 +1797,39 @@
   renderCollections(true);
   renderDirectors(true);
 
-  // A–Z index: shown when Films & Series or Directors is sorted A-Z. Tapping or dragging a letter jumps to the
-  // first title starting with it, loading more of the list first if that letter isn't rendered yet.
+  // A–Z letter bubble: while Films & Series or Directors is sorted A-Z, scrolling shows the first letter of
+  // the top visible title in the middle of the screen, fading out shortly after scrolling stops.
   (function(){
-    var index = document.getElementById('azIndex');
     var bubble = document.getElementById('azBubble');
     var panel = document.getElementById('browsePanel');
-    if(!index || !panel) return;
-    var LETTERS = ['#'].concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''));
-    index.innerHTML = LETTERS.map(function(l){ return '<span data-letter="' + l + '">' + l + '</span>'; }).join('');
+    if(!bubble || !panel) return;
 
     function letterOf(text){
       var c = (text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().charAt(0).toUpperCase();
       return /[A-Z]/.test(c) ? c : '#';
     }
-    function activeSeg(){
-      var a = document.querySelector('.expl-tab.active');
-      return a ? a.dataset.seg : '';
-    }
     function context(){
-      var seg = activeSeg();
-      if(seg === 'films' && filmState.sort === 'title') return { grid: document.getElementById('filmGrid'), item: '.expl-card', label: 'h3', state: filmState, more: function(){ filmState.page++; renderFilms(false); } };
+      var a = document.querySelector('.expl-tab.active'), seg = a ? a.dataset.seg : '';
+      if(seg === 'films' && filmState.sort === 'title') return { grid: document.getElementById('filmGrid'), item: '.expl-card', label: 'h3' };
       if(seg === 'directors' && dirState.sort === 'title' && document.getElementById('directorsGrid').style.display !== 'none')
-        return { grid: document.getElementById('directorsGrid'), item: '.director-card', label: '.director-name', state: dirState, more: function(){ dirState.page++; renderDirectors(false); } };
+        return { grid: document.getElementById('directorsGrid'), item: '.director-card', label: '.director-name' };
       return null;
-    }
-    function update(){
-      var on = !!context() && panel.classList.contains('active') && !document.getElementById('directorPage').classList.contains('open');
-      index.classList.toggle('show', on);
-    }
-    window.updateAzIndex = update;
-
-    function jump(letter){
-      var ctx = context();
-      if(!ctx) return;
-      var target = LETTERS.indexOf(letter), guard = 0, found = null;
-      while(!found && guard++ < 60){
-        var items = ctx.grid.querySelectorAll(ctx.item);
-        for(var i = 0; i < items.length; i++){
-          var l = letterOf((items[i].querySelector(ctx.label) || items[i]).textContent);
-          if(LETTERS.indexOf(l) >= target){ found = items[i]; break; }
-        }
-        if(!found){ if(ctx.state.hasMore) ctx.more(); else { found = items[items.length - 1]; } }
-      }
-      if(!found) return;
-      var rail = panel.classList.contains('sticky-head') ? found.closest('[id^="seg"]').querySelector('.gpill-rail') : null;
-      var offset = (rail ? rail.offsetHeight : 0) + 8;
-      panel.scrollTop = found.getBoundingClientRect().top - panel.getBoundingClientRect().top + panel.scrollTop - offset;
     }
 
     var hideTimer = null;
-    function pick(e){
-      var t = e.touches ? e.touches[0] : e;
-      var el = document.elementFromPoint(t.clientX, t.clientY);
-      var letter = el && el.dataset && el.dataset.letter;
-      if(!letter || letter === index.dataset.current) return;
-      index.dataset.current = letter;
+    panel.addEventListener('scroll', function(){
+      var ctx = context();
+      if(!ctx) return;
+      var top = panel.getBoundingClientRect().top + 80, items = ctx.grid.querySelectorAll(ctx.item), letter = '';
+      for(var i = 0; i < items.length; i++){
+        if(items[i].getBoundingClientRect().bottom > top){ letter = letterOf((items[i].querySelector(ctx.label) || items[i]).textContent); break; }
+      }
+      if(!letter) return;
       bubble.textContent = letter;
       bubble.classList.add('show');
-      jump(letter);
-    }
-    function end(){
-      index.dataset.current = '';
       clearTimeout(hideTimer);
-      hideTimer = setTimeout(function(){ bubble.classList.remove('show'); }, 350);
-    }
-    index.addEventListener('touchstart', function(e){ e.preventDefault(); pick(e); }, { passive: false });
-    index.addEventListener('touchmove', function(e){ e.preventDefault(); pick(e); }, { passive: false });
-    index.addEventListener('touchend', end);
-    index.addEventListener('mousedown', function(e){ pick(e); end(); });
-
-    // Re-check visibility whenever the lists re-render or the user changes tab, page or sort.
-    var mo = new MutationObserver(update);
-    ['filmGrid', 'directorsGrid'].forEach(function(id){ mo.observe(document.getElementById(id), { childList: true, attributes: true, attributeFilter: ['style'] }); });
-    mo.observe(document.getElementById('directorPage'), { attributes: true, attributeFilter: ['class'] });
-    document.addEventListener('click', function(){ setTimeout(update, 0); }, true);
-    update();
+      hideTimer = setTimeout(function(){ bubble.classList.remove('show'); }, 600);
+    }, { passive: true });
   })();
 
   (function(){
