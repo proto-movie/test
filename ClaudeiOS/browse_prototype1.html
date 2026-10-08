@@ -259,11 +259,11 @@
   .expl-tabs.list-mode .expl-tab{ margin-bottom:0; border-bottom-width:2.5px; }
 
   .gpill-rail{ display:flex; gap:8px; overflow-x:auto; padding:12px 20px 10px; }
-  /* Sticky header (More → Sticky Header): title, tabs and pills stay put while the list scrolls */
-  #browsePanel.sticky-head .app-header{ position:sticky; top:0; z-index:4; background:var(--ink); }
-  #browsePanel.sticky-head #browseTabs{ position:sticky; top:var(--sticky-tabs-top, 0px); z-index:4; background:var(--ink); }
-  #browsePanel.sticky-head .gpill-rail{ position:sticky; top:var(--sticky-rail-top, 0px); z-index:3; background:var(--ink); }
-  #browsePanel.sticky-head .list-mode > .gpill-rail{ background:#F2F2F2; }
+  /* Sticky pills (More → Sticky Pills): the pill row pins below the status bar while the title and
+     tabs scroll away. A strip of the same colour fills in behind the status bar. */
+  #browsePanel.sticky-head .gpill-rail{ --rail-bg:var(--ink); position:sticky; top:env(safe-area-inset-top); z-index:3; background:var(--rail-bg);
+    box-shadow:0 calc(env(safe-area-inset-top) * -.5) 0 0 var(--rail-bg), 0 calc(env(safe-area-inset-top) * -1) 0 0 var(--rail-bg); }
+  #browsePanel.sticky-head .list-mode > .gpill-rail{ --rail-bg:#F2F2F2; }
   .gpill-rail::-webkit-scrollbar{ display:none; }
   .gpill{ flex:0 0 auto; font-family:var(--font-riforma); font-size:12.5px; font-weight:500; color:rgba(24,20,15,.72);
     border:1px solid rgba(24,20,15,.28); border-radius:50px; padding:6px 14px; white-space:nowrap; background:none; -webkit-tap-highlight-color:transparent; }
@@ -609,7 +609,7 @@
   :root[data-theme="dark"] .gpill{ color:var(--dm-text-dim); border-color:var(--dm-seam); }
   :root[data-theme="dark"] .gpill.active{ background:#001489; color:#fff; border-color:#001489; }
   :root[data-theme="dark"] #segFilms.list-mode, :root[data-theme="dark"] #segCollections.list-mode,
-  :root[data-theme="dark"] #segDirectors.list-mode, :root[data-theme="dark"] #browsePanel.sticky-head .list-mode > .gpill-rail,
+  :root[data-theme="dark"] #segDirectors.list-mode,
   :root[data-theme="dark"] .panel[data-panel="search"], :root[data-theme="dark"] .director-page{ background:var(--dm-bg); }
   :root[data-theme="dark"] #segFilms.list-mode .gpill:not(.active), :root[data-theme="dark"] #segCollections.list-mode .gpill:not(.active),
   :root[data-theme="dark"] #segDirectors.list-mode .gpill:not(.active){ background:var(--dm-row); border-color:transparent; color:var(--dm-text-dim); }
@@ -617,8 +617,8 @@
   /* A slightly darker band for the Browse title and tabs, above the list */
   :root[data-theme="dark"]{ --dm-top:#0c0d13; }
   :root[data-theme="dark"] #browsePanel{ background:var(--dm-top); }
-  :root[data-theme="dark"] #browsePanel.sticky-head .app-header,
-  :root[data-theme="dark"] #browsePanel.sticky-head #browseTabs{ background:var(--dm-top); }
+
+  :root[data-theme="dark"] #browsePanel.sticky-head .list-mode > .gpill-rail{ --rail-bg:var(--dm-bg); }
 
   /* List rows and tiles */
   :root[data-theme="dark"] #filmGrid.list-mode .expl-card, :root[data-theme="dark"] #directorPageGrid .expl-card,
@@ -793,10 +793,10 @@
             </div>
             <div class="more-setting-row">
               <div class="more-setting-copy">
-                <div class="more-setting-name">Sticky Header</div>
-                <p class="more-setting-desc">Keep the Browse title, tabs and pills in view while scrolling</p>
+                <div class="more-setting-name">Sticky Pills</div>
+                <p class="more-setting-desc">Keep the Browse pills in view while scrolling</p>
               </div>
-              <button class="more-toggle" id="stickyHeaderToggle" role="switch" aria-checked="false" aria-label="Toggle sticky header"></button>
+              <button class="more-toggle" id="stickyHeaderToggle" role="switch" aria-checked="false" aria-label="Toggle sticky pills"></button>
             </div>
             <div class="more-setting-row">
               <div class="more-setting-copy">
@@ -1946,22 +1946,8 @@
 
   (function(){
     var panel = document.getElementById('browsePanel');
-    var header = panel && panel.querySelector('.app-header');
-    var tabs = document.getElementById('browseTabs');
-    if(!panel || !header || !tabs) return;
-    // Stack the sticky rows: tabs sit under the header, pills under the tabs. Each row tucks 1px under
-    // the one above, because on Android's fractional pixel ratios rounding otherwise leaves a hairline
-    // gap that the list shows through.
-    function measure(){
-      var h = header.getBoundingClientRect().height, t = tabs.getBoundingClientRect().height;
-      panel.style.setProperty('--sticky-tabs-top', Math.max(0, Math.floor(h) - 1) + 'px');
-      panel.style.setProperty('--sticky-rail-top', Math.max(0, Math.floor(h + t) - 2) + 'px');
-    }
-    if(window.ResizeObserver){ var ro = new ResizeObserver(measure); ro.observe(header); ro.observe(tabs); }
-    bindMoreToggle('stickyHeaderToggle', function(on){
-      panel.classList.toggle('sticky-head', on);
-      measure();
-    }, false);
+    if(!panel) return;
+    bindMoreToggle('stickyHeaderToggle', function(on){ panel.classList.toggle('sticky-head', on); }, false);
   })();
 
   (function(){
