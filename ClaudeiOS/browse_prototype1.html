@@ -689,6 +689,9 @@
   :root[data-theme="dark"] .header-actions, :root[data-theme="dark"] .icon-btn-solo,
   :root[data-theme="dark"] .genre-detail-back{ box-shadow:inset 0 1px 0 rgba(255,255,255,.06); }
 
+  /* Dark mode: bare filter/sort icons, no circle behind them */
+  :root[data-theme="dark"] .header-actions, :root[data-theme="dark"] .icon-btn-solo{
+    background:none; border-color:transparent; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
 </style>
 
 <div class="stage">
