@@ -97,6 +97,9 @@
 
   .more-settings{ padding:8px 20px; }
   .more-setting-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:16px 0; border-bottom:1px solid var(--hairline); }
+  /* Sub-option, indented under its parent and greyed out while the parent is off */
+  .more-setting-sub{ padding-left:18px; }
+  .more-setting-sub.is-disabled{ opacity:.4; pointer-events:none; }
   .more-setting-copy{ min-width:0; }
   .more-setting-name{ font-family:var(--font-riforma); font-weight:500; font-size:15.5px; color:var(--paper); margin:0 0 2px; }
   .more-setting-desc{ font-family:var(--font-riforma); font-size:12.5px; color:var(--paper-dim); margin:0; line-height:1.35; }
@@ -703,6 +706,16 @@
     font-family:var(--font-riforma); font-size:38px; font-weight:500; opacity:0; pointer-events:none; transition:opacity .2s ease; }
   .az-bubble.show{ opacity:1; transition:none; }
   :root[data-theme="dark"] .az-bubble{ background:rgba(0,0,0,.8); }
+
+  /* List View → Top Align: title and text sit at the top of each row instead of centred */
+  .list-top #filmGrid.list-mode .expl-card, .list-top #directorPageGrid .expl-card, .list-top #searchFilmResults .expl-card,
+  .list-top .coll-tile--list{ align-items:flex-start; }
+  .list-top #filmGrid.list-mode .expl-card .overlay, .list-top #directorPageGrid .expl-card .overlay,
+  .list-top #searchFilmResults .expl-card .overlay{ justify-content:flex-start; padding-top:12px; }
+  .list-top .coll-tile--list .coll-info{ padding-top:12px; }
+  .list-top .director-grid.list-mode .director-card{ grid-template-rows:auto auto 1fr; }
+  .list-top .director-grid.list-mode .director-name{ grid-row:1; margin-top:12px; }
+  .list-top .director-grid.list-mode .director-count{ grid-row:2; }
 </style>
 
 <div class="stage">
@@ -803,6 +816,13 @@
                 <p class="more-setting-desc">Show films in Browse as a compact list</p>
               </div>
               <button class="more-toggle" id="listViewToggle" role="switch" aria-checked="false" aria-label="Toggle list view"></button>
+            </div>
+            <div class="more-setting-row more-setting-sub" id="topAlignRow">
+              <div class="more-setting-copy">
+                <div class="more-setting-name">Top Align</div>
+                <p class="more-setting-desc">Align list text to the top of each row</p>
+              </div>
+              <button class="more-toggle" id="topAlignToggle" role="switch" aria-checked="false" aria-label="Toggle top aligned list text"></button>
             </div>
             <div class="more-setting-row">
               <div class="more-setting-copy">
@@ -2083,7 +2103,14 @@
 
     window.setListViewOn = setMode;
 
-    bindMoreToggle('listViewToggle', setMode, true);
+    var topAlignRow = document.getElementById('topAlignRow');
+    var listOn = true, topOn = false;
+    function applyTopAlign(){
+      document.documentElement.classList.toggle('list-top', listOn && topOn);
+      if(topAlignRow) topAlignRow.classList.toggle('is-disabled', !listOn);
+    }
+    bindMoreToggle('listViewToggle', function(on){ listOn = on; setMode(on); applyTopAlign(); }, true);
+    bindMoreToggle('topAlignToggle', function(on){ topOn = on; applyTopAlign(); }, false);
   })();
 
   (function(){
