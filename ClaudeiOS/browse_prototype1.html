@@ -274,6 +274,8 @@
   #browsePanel.sticky-head .gpill-rail.is-stuck{
     box-shadow:0 calc(var(--sticky-top) * -.5) 0 0 var(--rail-bg), 0 calc(var(--sticky-top) * -1) 0 0 var(--rail-bg); }
   #browsePanel.sticky-head .list-mode > .gpill-rail{ --rail-bg:#F2F2F2; }
+  /* Short lists (e.g. Series) still leave room to scroll the pills up to their pinned spot */
+  #browsePanel.sticky-head #segFilms, #browsePanel.sticky-head #segCollections, #browsePanel.sticky-head #segDirectors{ min-height:100%; }
   /* The fill reaches up behind the status bar, so keep the title and tabs layered above it until they scroll away */
   #browsePanel.sticky-head .app-header, #browsePanel.sticky-head #browseTabs{ position:relative; z-index:4; background:var(--ink); }
   .gpill-rail::-webkit-scrollbar{ display:none; }
