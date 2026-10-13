@@ -3627,8 +3627,13 @@
   .row-progress-bar{ position:absolute; top:0; bottom:0; left:0; width:100%; border-radius:inherit; background:#323232;
     transform:translateX(-100%); transition:transform 1.6s cubic-bezier(0.3, 0, 0.1, 1); }
   .row-header .row-progress{ margin-left:auto; }
-  /* Bottom of the bar sits on the row title's text baseline */
-  .row-header:has(.row-progress){ align-items:baseline; }
+  /* Bottom of the bar sits on the row title's last line of text (4px up from the line box,
+     i.e. on the baseline), so it stays level with the text when a title wraps to two lines. */
+  .row-header:has(.row-progress){ align-items:flex-end; }
+  .row-header .row-progress{ margin-bottom:4px; }
+  .row-header:has(.row-progress) .row-see-all{ align-self:flex-end; }
+  /* Mobile: a shorter bar */
+  @media (max-width: 809px){ .row-progress{ width:32px; } }
   /* Spotlights: just above the filmstrip, on the page container's right edge */
   .spotlight-slider-wrap .row-progress{ position:absolute; bottom:calc(100% + 12px); right:var(--peek-gutter, 22px); z-index:3; background:rgba(255,255,255,.25); }
   .spotlight-slider-wrap .row-progress-bar{ background:#fff; }
@@ -3688,6 +3693,13 @@
      tile as it slides into a peek. */
   .row-carousel-wrap .film-card.row-carousel-peek .card-overlay{ display:flex; }
   .row-carousel-wrap .film-card.row-carousel-peek .card-synopsis-block{ display:none; }
+</style>
+<style id="carousel-steady-layer">
+  /* Rows start at fractional heights (e.g. 1427.2px). Without this, each strip is drawn
+     pixel-snapped at rest but moved onto its own GPU layer at its exact sub-pixel spot while it
+     slides, so it dropped 1px during the slide and popped back after. Keeping it on its own
+     layer all the time draws it the same way in both states. */
+  .row-grid--carousel, .spotlight-slider{ will-change:transform; }
 </style>
 </head>
 <body>
@@ -5827,7 +5839,9 @@ function renderGrid() {
   .map(row => {
     if (!nsState.carouselRows || row.isSpotlight || row.isNewToMubi || (row.isGenreTiles && nsState.laneOfGenresStyle === 'type')) return row;
     const count = row.films ? row.films.length : (row.colls ? row.colls.length : 0);
-    return count > 4 ? { ...row, carousel: true } : row;
+    // Film rows are carousels from 2 films up (e.g. Outstretched Hands: Two by Ken Loach),
+    // so they sit on the same peeking grid; collection rows still need more than 4.
+    return (row.films ? count > 1 : count > 4) ? { ...row, carousel: true } : row;
   });
 
   container.innerHTML = rows.map((row, rowIdx) => {
@@ -6404,7 +6418,7 @@ document.getElementById('filmGrid').addEventListener('click', e => {
   const current = nsSpotlightOffsets.get(slider) || 0;
   const next = Math.min(maxOffset, Math.max(0, current + Number(btn.dataset.spotlightScroll) * step));
   nsSpotlightOffsets.set(slider, next);
-  slider.style.transform = `translateX(${-next}px)`;
+  slider.style.transform = `translateX(${Math.round(-next)}px)`;
   const prevBtn = wrap.querySelector('.spotlight-arrow--prev');
   if (prevBtn) prevBtn.classList.toggle('is-visible', next > 4);
   // The transition takes 0.5s (see .spotlight-slider) — re-measure the peeking tile once
@@ -6481,7 +6495,7 @@ function nsUpdateRowCarousel(wrap) {
   // Re-sync the pixel transform to the current page on every call (not just after paging) —
   // covers a resize changing tile width without changing which logical page is showing.
   const tileStep = tiles[0].getBoundingClientRect().width + 4;
-  track.style.transform = `translateX(${-pageStart * tileStep}px)`;
+  track.style.transform = `translateX(${Math.round(-pageStart * tileStep)}px)`;
 }
 window.addEventListener('resize', () => document.querySelectorAll('.row-carousel-wrap').forEach(nsUpdateRowCarousel));
 
@@ -6507,7 +6521,9 @@ function nsAdvanceRowCarousel(wrap, dir) {
     tiles.forEach((tile, i) => { if (i <= revealUpTo) tile.style.opacity = '1'; });
   }
   const tileStep = tiles[0].getBoundingClientRect().width + 4;
-  track.style.transform = `translateX(${-newPageStart * tileStep}px)`;
+  // Whole pixels only: a fractional offset makes the strip jump ~1px as the GPU-animated slide
+  // hands back to the normal pixel-snapped rendering at the end.
+  track.style.transform = `translateX(${Math.round(-newPageStart * tileStep)}px)`;
   // "Peek Preview v2" — each peek's preview image lives on its own inner layer (see
   // nsUpdateRowCarousel), so it can slide independently of the shape it's clipped to.
   // Animating both by the exact same distance/duration/easing/direction as the real track
@@ -8130,7 +8146,7 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
       var max = Math.max(0, tiles.length - nsCols());
       page = Math.min(max, Math.max(0, page));
       pages.set(slider, page);
-      slider.style.transform = 'translateX(' + (-page * step) + 'px)';
+      slider.style.transform = 'translateX(' + Math.round(-page * step) + 'px)';
       var wrap = slider.closest('.spotlight-slider-wrap');
       var prev = wrap.querySelector('.spotlight-arrow--prev'), next = wrap.querySelector('.spotlight-arrow--next');
       if (prev) prev.classList.toggle('is-visible', page > 0);
@@ -8174,31 +8190,74 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
 </script>
 
 <script id="carousel-swipe">
-  // Swipe left/right on a carousel row or spotlight filmstrip to page it (phones and tablets,
-  // where the arrows are hidden or small). Vertical swipes still scroll the page.
+  // Swipe sideways on a carousel row or spotlight filmstrip (phones and tablets): the strip
+  // follows the finger, then pages on release if it moved far enough (or was flicked), or springs
+  // back. Vertical swipes still scroll the page; a sideways drag locks the page scroll.
   (function(){
     var grid = document.getElementById('filmGrid');
     if (!grid) return;
-    var start = null;
+    var drag = null;
+    function xOf(str){ var m = /translateX\((-?[\d.]+)px\)/.exec(str || ''); return m ? parseFloat(m[1]) : 0; }
+    function cols(){ return typeof nsCols === 'function' ? nsCols() : 1; }
     grid.addEventListener('touchstart', function(e){
       var wrap = e.target.closest('.row-carousel-wrap, .spotlight-slider-wrap');
-      if (!wrap || e.touches.length !== 1) { start = null; return; }
-      start = { x: e.touches[0].clientX, y: e.touches[0].clientY, wrap: wrap, swiped: false };
+      var track = wrap && wrap.querySelector('.row-grid--carousel, .spotlight-slider');
+      if (!track || e.touches.length !== 1) { drag = null; return; }
+      drag = { wrap: wrap, track: track, x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now(),
+               base: track.style.transform || 'translateX(0px)', mode: null, dx: 0 };
     }, { passive: true });
-    grid.addEventListener('touchend', function(e){
-      if (!start) return;
-      var t = e.changedTouches[0], dx = t.clientX - start.x, dy = t.clientY - start.y;
-      var wrap = start.wrap; start = null;
-      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
-      var dir = dx < 0 ? 1 : -1;
-      if (wrap.classList.contains('row-carousel-wrap')) {
-        if (typeof nsAdvanceRowCarousel === 'function') nsAdvanceRowCarousel(wrap, dir);
-      } else {
-        var btn = wrap.querySelector(dir > 0 ? '.spotlight-arrow--next' : '.spotlight-arrow--prev');
-        if (btn) btn.click();
+    grid.addEventListener('touchmove', function(e){
+      if (!drag) return;
+      var dx = e.touches[0].clientX - drag.x, dy = e.touches[0].clientY - drag.y;
+      if (!drag.mode) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        drag.mode = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+        if (drag.mode === 'x') {
+          drag.track.style.transition = 'none';
+          // Show the tiles either side that are normally faded out, so the drag doesn't open on a gap.
+          var tiles = drag.track.children, page = (typeof nsRowCarouselPage !== "undefined" && nsRowCarouselPage.get(drag.track)) || 0;
+          if (drag.track.classList.contains('row-grid--carousel')) {
+            for (var i = Math.max(0, page - cols() - 1); i <= Math.min(tiles.length - 1, page + cols() * 2); i++) tiles[i].style.opacity = '1';
+          }
+        }
       }
-      wrap._swipedAt = Date.now();
-    }, { passive: true });
+      if (drag.mode !== 'x') return;
+      e.preventDefault();
+      var base = xOf(drag.base), minX = -(drag.track.scrollWidth - drag.wrap.clientWidth) - 200;
+      var x = base + dx;
+      if (x > 0) x = x * 0.3;                        // rubber band past either end
+      else if (x < minX) x = minX + (x - minX) * 0.3;
+      drag.dx = dx;
+      drag.track.style.transform = 'translateX(' + Math.round(x) + 'px)';
+    }, { passive: false });
+    function end(){
+      if (!drag) return;
+      var d = drag; drag = null;
+      if (d.mode !== 'x') return;
+      d.track.style.transition = '';
+      void d.track.offsetWidth;                      // restart the transition from the dragged spot
+      var fast = Math.abs(d.dx) / Math.max(1, Date.now() - d.t) > 0.4;
+      var dir = (Math.abs(d.dx) > 50 || (fast && Math.abs(d.dx) > 20)) ? (d.dx < 0 ? 1 : -1) : 0;
+      var dragged = d.track.style.transform;
+      if (dir) {
+        if (d.wrap.classList.contains('row-carousel-wrap')) {
+          if (typeof nsAdvanceRowCarousel === 'function') nsAdvanceRowCarousel(d.wrap, dir);
+        } else {
+          var btn = d.wrap.querySelector(dir > 0 ? '.spotlight-arrow--next' : '.spotlight-arrow--prev');
+          if (btn) btn.click();
+        }
+      }
+      // Nothing moved it (short drag, or already at that end): spring back.
+      if (d.track.style.transform === dragged) {
+        d.track.style.transform = d.base;
+        if (d.wrap.classList.contains('row-carousel-wrap') && typeof nsUpdateRowCarousel === 'function') {
+          setTimeout(function(){ nsUpdateRowCarousel(d.wrap); }, (typeof nsSlideMs === 'function' ? nsSlideMs() : 500) + 20);
+        }
+      }
+      d.wrap._swipedAt = Date.now();
+    }
+    grid.addEventListener('touchend', end, { passive: true });
+    grid.addEventListener('touchcancel', end, { passive: true });
     // A swipe shouldn't also count as a tap on the tile underneath (only right after a swipe).
     grid.addEventListener('click', function(e){
       var wrap = e.target.closest('.row-carousel-wrap, .spotlight-slider-wrap');
