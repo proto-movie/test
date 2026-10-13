@@ -3706,6 +3706,13 @@
      own inset (~2.5px), so the icon's bars line up with the left edge of the tiles and row titles. */
   .nav-mobile .nav-hamburger-wrap{ margin-left:-10.5px; }
 </style>
+<style id="carousel-no-fade">
+  /* Carousel tiles no longer fade in as they slide into view (tiles past the peeks are off-screen
+     on this full-width page anyway). The fade put each arriving tile, the new peek included, on
+     its own GPU layer at a sub-pixel position, so it sat 1px low during the slide and popped
+     back when the fade ended. */
+  .row-grid--carousel > *, .spotlight-slider > *{ opacity:1 !important; }
+</style>
 </head>
 <body>
 
