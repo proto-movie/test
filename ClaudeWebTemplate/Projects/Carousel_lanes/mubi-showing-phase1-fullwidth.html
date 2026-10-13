@@ -3682,6 +3682,13 @@
     .row-grid--carousel, .spotlight-slider, .row-progress-bar{ transition-duration:.5s; transition-timing-function:cubic-bezier(0.2, 0.8, 0.2, 1); }
   }
 </style>
+<style id="peeks-keep-text">
+  /* Peeking tiles keep their title treatment / title and film info at every width (the rule
+     doing this in peek-gutters only covers 810px and up), so text no longer vanishes from a
+     tile as it slides into a peek. */
+  .row-carousel-wrap .film-card.row-carousel-peek .card-overlay{ display:flex; }
+  .row-carousel-wrap .film-card.row-carousel-peek .card-synopsis-block{ display:none; }
+</style>
 </head>
 <body>
 
@@ -5675,8 +5682,19 @@ function renderGrid() {
   // Films & Series settings tab to edit these from) — the row is left out of the page
   // entirely when its list is empty. Capped to a single lane (4, matching .row-grid's widest
   // breakpoint) — extra watched-in-progress/watchlisted films beyond that just aren't shown.
-  const continueWatchingFilms = nsState.continueWatching.map(nsFilmBySlug).filter(Boolean).slice(0, 4);
-  const watchlistFilms = nsState.watchlist.map(nsFilmBySlug).filter(Boolean).slice(0, 4);
+  // Carousel rows show the whole list instead. The seeded Continue Watching list is only 3
+  // films, so it's padded to 10 from the catalogue (skipping anything already in either list)
+  // to give it something to page through.
+  const watchCap = nsState.carouselRows ? Infinity : 4;
+  const cwSlugs = nsState.continueWatching.slice();
+  if (nsState.carouselRows && cwSlugs.length < 10) {
+    NS_CATALOG.slice(45).some(f => {
+      if (!cwSlugs.includes(f._slug) && !nsState.watchlist.includes(f._slug)) cwSlugs.push(f._slug);
+      return cwSlugs.length >= 10;
+    });
+  }
+  const continueWatchingFilms = cwSlugs.map(nsFilmBySlug).filter(Boolean).slice(0, watchCap);
+  const watchlistFilms = nsState.watchlist.map(nsFilmBySlug).filter(Boolean).slice(0, watchCap);
   // The "combine into Watch Next" affordance only ever showed for the (now removed) Diego
   // Ramos demo persona (see nsMergeWatchNext) — Phase 1's fixed persona is Priya Nair, so
   // this stays permanently off.
