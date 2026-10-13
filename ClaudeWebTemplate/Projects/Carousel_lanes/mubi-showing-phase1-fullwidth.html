@@ -3713,6 +3713,14 @@
      back when the fade ended. */
   .row-grid--carousel > *, .spotlight-slider > *{ opacity:1 !important; }
 </style>
+<style id="mobile-row-header">
+  /* Mobile: the row title gets the full header width (next to the progress bar), and Read More
+     drops onto its own line underneath, so titles like "Reframing: Women Directors" fit on one line. */
+  @media (max-width: 809px){
+    .row-header:has(.row-see-all){ flex-wrap:wrap; }
+    .row-header .row-see-all{ order:3; flex-basis:100%; margin-left:0; margin-top:4px; }
+  }
+</style>
 </head>
 <body>
 
