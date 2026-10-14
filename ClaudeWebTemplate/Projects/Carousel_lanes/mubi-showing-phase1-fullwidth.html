@@ -3531,17 +3531,23 @@
   }
   @media (min-width: 1139px) and (max-width: 1789px){
     :root{ --cols:3; }
-    :root:not([data-four-up="true"]) .row-grid:not(.row-grid--carousel) > :nth-child(n+4){ display:none; }
+    :root:not([data-four-up="true"]):not([data-four-up-early="true"]) .row-grid:not(.row-grid--carousel) > :nth-child(n+4){ display:none; }
+    :root[data-four-up-early="true"] .row-grid:not(.row-grid--carousel) > :nth-child(n+5){ display:none; }
   }
   /* Settings → 4 Tiles from 1496px: switches to 4 per row from 1496px instead of 1790px. */
   @media (min-width: 1496px) and (max-width: 1789px){
     :root[data-four-up="true"]{ --cols:4; }
   }
   @media (min-width: 1139px) and (max-width: 1495px){
-    :root[data-four-up="true"] .row-grid:not(.row-grid--carousel) > :nth-child(n+4){ display:none; }
+    :root[data-four-up="true"]:not([data-four-up-early="true"]) .row-grid:not(.row-grid--carousel) > :nth-child(n+4){ display:none; }
   }
   @media (min-width: 1496px) and (max-width: 1789px){
     :root[data-four-up="true"] .row-grid:not(.row-grid--carousel) > :nth-child(n+5){ display:none; }
+  }
+  /* Settings → 4 Tiles from 1139px: 4 per row across the whole 1139–1789px range (overrides the
+     1496px setting above when both are on). */
+  @media (min-width: 1139px) and (max-width: 1789px){
+    :root[data-four-up-early="true"]{ --cols:4; }
   }
   @media (min-width: 1790px) and (max-width: 2199px){ :root{ --cols:4; } }
   @media (min-width: 2200px){ :root{ --cols:5; } }
@@ -3748,6 +3754,20 @@
   .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-img{ opacity:1; }
   .row-section--doubletile:not(.new-to-mubi-section) .card-hover-still{ transition:opacity .6s cubic-bezier(0.4, 0, 0.2, 1); }
 </style>
+<style id="four-up-early-panel">
+  /* 4 Tiles from 1139px: below 1496px the double tiles are only ~245–345px wide, so a synopsis
+     wraps to more lines. Allow up to 11 lines (instead of 7) and let the hover panel grow up to
+     three quarters of the tile there, so the full synopsis still shows. */
+  @media (min-width: 1139px) and (max-width: 1495px){
+    :root[data-four-up-early="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block{ max-height:75%; }
+    :root[data-four-up-early="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis{ -webkit-line-clamp:11; }
+  }
+  /* Narrowest end (tiles ~245–270px): up to 14 lines, panel up to 80% of the tile. */
+  @media (min-width: 1139px) and (max-width: 1260px){
+    :root[data-four-up-early="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block{ max-height:80%; }
+    :root[data-four-up-early="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis{ -webkit-line-clamp:14; }
+  }
+</style>
 </head>
 <body>
 
@@ -3867,6 +3887,13 @@
                 <div class="ns-toggle-desc">Fits 4 tiles per row from 1496px wide (normally 3 until 1790px).</div>
               </div>
               <label class="ns-switch"><input type="checkbox" id="fourUpToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            </div>
+            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
+              <div>
+                <span class="ns-toggle-label">4 Tiles from 1139px</span>
+                <div class="ns-toggle-desc">Fits 4 tiles per row from 1139px wide (overrides the 1496px option).</div>
+              </div>
+              <label class="ns-switch"><input type="checkbox" id="fourUpEarlyToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
             <div style="display:none;">
               <div class="ns-field">
@@ -8534,18 +8561,25 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
   // count lives in CSS (--cols); switching re-renders the rows so every carousel starts on page 1
   // with paging worked out for the new count.
   (function(){
-    var toggle = document.getElementById('fourUpToggle');
     if (typeof nsState === 'undefined') return;
+    // [toggle id, nsState key, <html> data attribute]
+    var OPTS = [['fourUpToggle', 'fourUp', 'fourUp'], ['fourUpEarlyToggle', 'fourUpEarly', 'fourUpEarly']];
     function apply(){
-      document.documentElement.dataset.fourUp = nsState.fourUp ? 'true' : 'false';
-      if (toggle) toggle.checked = !!nsState.fourUp;
+      OPTS.forEach(function(o){
+        document.documentElement.dataset[o[2]] = nsState[o[1]] ? 'true' : 'false';
+        var t = document.getElementById(o[0]);
+        if (t) t.checked = !!nsState[o[1]];
+      });
     }
-    if (toggle) toggle.addEventListener('change', function(){
-      nsState.fourUp = toggle.checked;
-      if (typeof nsSaveState === 'function') nsSaveState();
-      apply();
-      if (typeof renderGrid === 'function') renderGrid();
-      window.dispatchEvent(new Event('resize'));
+    OPTS.forEach(function(o){
+      var t = document.getElementById(o[0]);
+      if (t) t.addEventListener('change', function(){
+        nsState[o[1]] = t.checked;
+        if (typeof nsSaveState === 'function') nsSaveState();
+        apply();
+        if (typeof renderGrid === 'function') renderGrid();
+        window.dispatchEvent(new Event('resize'));
+      });
     });
     apply();
   })();
