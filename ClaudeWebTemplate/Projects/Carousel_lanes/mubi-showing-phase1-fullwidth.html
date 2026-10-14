@@ -3717,6 +3717,18 @@
     .row-header .row-see-all{ order:3; flex-basis:100%; margin-left:0; margin-top:4px; }
   }
 </style>
+<style id="doubletile-hover-sequence">
+  /* Double tiles: the hover panel waits for the tile's scale-up (0.35s) to finish, then fades in
+     with a short rise. Leaving hides it quickly with no delay. */
+  .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block{
+    transform:translateY(10px);
+    transition:opacity .15s ease, transform 0s linear .15s;
+  }
+  .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-synopsis-block{
+    transform:none;
+    transition:opacity .3s ease .3s, transform .45s cubic-bezier(0.22, 1, 0.36, 1) .3s;
+  }
+</style>
 </head>
 <body>
 
