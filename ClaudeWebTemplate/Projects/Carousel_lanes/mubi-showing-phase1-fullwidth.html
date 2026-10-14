@@ -3727,11 +3727,12 @@
   .row-grid--carousel > *, .spotlight-slider > *{ opacity:1 !important; }
 </style>
 <style id="mobile-row-header">
-  /* Mobile: the row title gets the full header width (next to the progress bar), and Read More
-     drops onto its own line underneath, so titles like "Reframing: Women Directors" fit on one line. */
+  /* Mobile: if the title, Read More and the progress bar don't all fit on one line, Read More
+     drops onto its own line under the title (row-header--stack, set by mobile-row-header-js) so
+     the title stays on one line. When they do fit, everything stays on one line with no extra gap. */
   @media (max-width: 809px){
-    .row-header:has(.row-see-all){ flex-wrap:wrap; }
-    .row-header .row-see-all{ order:3; flex-basis:100%; margin-left:0; margin-top:4px; }
+    .row-header.row-header--stack{ flex-wrap:wrap; }
+    .row-header.row-header--stack .row-see-all{ order:3; flex-basis:100%; margin-left:0; margin-top:4px; }
   }
 </style>
 <style id="doubletile-hover-sequence">
@@ -8677,6 +8678,38 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
     new MutationObserver(function(){
       if (current && (!current.isConnected || current.closest('.is-sliding') || current.classList.contains('row-carousel-peek'))) hide();
     }).observe(grid, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+  })();
+</script>
+<script id="mobile-row-header-js">
+  // Decides per row header whether Read More has to drop below the title on mobile (see
+  // mobile-row-header CSS): measures the title and Read More at their one-line widths and checks
+  // they fit alongside the progress bar.
+  (function(){
+    var grid = document.getElementById('filmGrid');
+    if (!grid) return;
+    var mobile = window.matchMedia('(max-width: 809px)');
+    function check(h){
+      var title = h.querySelector('.row-title'), more = h.querySelector('.row-see-all');
+      if (!title || !more) { h.classList.remove('row-header--stack'); return; }
+      if (!mobile.matches) { h.classList.remove('row-header--stack'); return; }
+      h.classList.remove('row-header--stack');
+      title.style.whiteSpace = more.style.whiteSpace = 'nowrap';
+      var bar = h.querySelector(':scope > .row-progress');
+      var barW = bar && bar.offsetWidth ? bar.offsetWidth + 12 : 0;        // + a little breathing room
+      var need = title.scrollWidth + 6 + more.scrollWidth + barW;
+      title.style.whiteSpace = more.style.whiteSpace = '';
+      h.classList.toggle('row-header--stack', need > h.clientWidth);
+    }
+    function run(){ grid.querySelectorAll('.row-header').forEach(check); }
+    var pending = 0;
+    function soon(){ clearTimeout(pending); pending = setTimeout(run, 60); }
+    new MutationObserver(function(records){
+      if (records.some(function(r){ return r.type === 'childList' && r.target === grid; })) soon();
+    }).observe(grid, { childList: true });
+    window.addEventListener('resize', soon);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
+    window.addEventListener('load', run);
+    run();
   })();
 </script>
 </body>
