@@ -3768,6 +3768,16 @@
     :root[data-four-up-early="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis{ -webkit-line-clamp:14; }
   }
 </style>
+<style id="tile-hover-tweaks">
+  /* Continue Watching: the progress bar stays put on hover (no slide). */
+  .film-card:hover .card-progress-track{ transform:none; }
+  /* Normal (non-double) film tiles: the hover panel below the tile shows the whole synopsis,
+     growing downward as far as it needs instead of cutting it at 7 lines. */
+  .row-section:not(.row-section--doubletile) .card-synopsis,
+  .spotlight-slider .card-synopsis{ display:block; -webkit-line-clamp:unset; overflow:visible; }
+  .row-section:not(.row-section--doubletile) .card-synopsis-block,
+  .spotlight-slider .card-synopsis-block{ height:auto; max-height:none; }
+</style>
 </head>
 <body>
 
