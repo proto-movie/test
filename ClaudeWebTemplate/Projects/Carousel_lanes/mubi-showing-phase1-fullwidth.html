@@ -3219,6 +3219,9 @@
       transition: transform 0.25s ease;
     }
     .ns-infobar.is-dismissed { transform: translateY(100%); pointer-events: none; }
+    /* Once it has slid off, hide it completely: parked just below the screen, its upward shadow
+       still showed as a faint band along the bottom edge (most visible on mobile). */
+    .ns-infobar.is-dismissed { box-shadow: none; visibility: hidden; transition: transform 0.3s ease, visibility 0s linear 0.3s; }
     .ns-infobar-icon { font-size: 19px; flex-shrink: 0; }
     .ns-infobar-text { flex: 1; }
     .ns-infobar-text kbd {
