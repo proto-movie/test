@@ -3531,7 +3531,17 @@
   }
   @media (min-width: 1139px) and (max-width: 1789px){
     :root{ --cols:3; }
-    .row-grid:not(.row-grid--carousel) > :nth-child(n+4){ display:none; }
+    :root:not([data-four-up="true"]) .row-grid:not(.row-grid--carousel) > :nth-child(n+4){ display:none; }
+  }
+  /* Settings → 4 Tiles from 1496px: switches to 4 per row from 1496px instead of 1790px. */
+  @media (min-width: 1496px) and (max-width: 1789px){
+    :root[data-four-up="true"]{ --cols:4; }
+  }
+  @media (min-width: 1139px) and (max-width: 1495px){
+    :root[data-four-up="true"] .row-grid:not(.row-grid--carousel) > :nth-child(n+4){ display:none; }
+  }
+  @media (min-width: 1496px) and (max-width: 1789px){
+    :root[data-four-up="true"] .row-grid:not(.row-grid--carousel) > :nth-child(n+5){ display:none; }
   }
   @media (min-width: 1790px) and (max-width: 2199px){ :root{ --cols:4; } }
   @media (min-width: 2200px){ :root{ --cols:5; } }
@@ -3850,6 +3860,13 @@
                 <div class="ns-toggle-desc">Adds 20px more space between rows (and above and below spotlights).</div>
               </div>
               <label class="ns-switch"><input type="checkbox" id="rowSpacingToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            </div>
+            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
+              <div>
+                <span class="ns-toggle-label">4 Tiles from 1496px</span>
+                <div class="ns-toggle-desc">Fits 4 tiles per row from 1496px wide (normally 3 until 1790px).</div>
+              </div>
+              <label class="ns-switch"><input type="checkbox" id="fourUpToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
             <div style="display:none;">
               <div class="ns-field">
@@ -8510,6 +8527,27 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
     window.addEventListener('resize', soon);
     window.addEventListener('load', run);
     run();
+  })();
+</script>
+<script id="four-up-js">
+  // Settings → 4 Tiles from 1496px (off by default; saved with the other settings). The tile
+  // count lives in CSS (--cols); switching re-renders the rows so every carousel starts on page 1
+  // with paging worked out for the new count.
+  (function(){
+    var toggle = document.getElementById('fourUpToggle');
+    if (typeof nsState === 'undefined') return;
+    function apply(){
+      document.documentElement.dataset.fourUp = nsState.fourUp ? 'true' : 'false';
+      if (toggle) toggle.checked = !!nsState.fourUp;
+    }
+    if (toggle) toggle.addEventListener('change', function(){
+      nsState.fourUp = toggle.checked;
+      if (typeof nsSaveState === 'function') nsSaveState();
+      apply();
+      if (typeof renderGrid === 'function') renderGrid();
+      window.dispatchEvent(new Event('resize'));
+    });
+    apply();
   })();
 </script>
 </body>
