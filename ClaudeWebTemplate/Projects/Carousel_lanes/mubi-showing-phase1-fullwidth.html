@@ -3729,6 +3729,13 @@
     transition:opacity .3s ease .3s, transform .45s cubic-bezier(0.22, 1, 0.36, 1) .3s;
   }
 </style>
+<style id="doubletile-hover-still-fade">
+  /* Double tiles: the hover still (the same image at w1920, framed on the same focal point as
+     the main still) fades in ON TOP of the main still, which stays fully visible underneath,
+     instead of the two cross-fading, which dipped through the grey tile background halfway. */
+  .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-img{ opacity:1; }
+  .row-section--doubletile:not(.new-to-mubi-section) .card-hover-still{ transition:opacity .6s cubic-bezier(0.4, 0, 0.2, 1); }
+</style>
 </head>
 <body>
 
@@ -5547,7 +5554,7 @@ function filmRowSectionHTML(row, rowIdx) {
             loading="lazy"
             style="object-position:${posX}% ${posY}%">
           ${doubletile && !isNewToMubi
-            ? `<img class="card-hover-still" src="${nsHeroImageURL(film.image)}" alt="" loading="lazy">`
+            ? `<img class="card-hover-still" src="${nsHeroImageURL(film.image)}" alt="" loading="lazy" style="object-position:${posX}% ${posY}%">`
             : ''}
           ${doubletile && film.award
             ? `<img class="card-award-badge" src="${film.award.image}" alt="${film.award.text}" title="${film.award.text}">`
