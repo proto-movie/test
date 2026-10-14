@@ -3722,6 +3722,7 @@
      with a short rise. Leaving hides it quickly with no delay. */
   .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block{
     justify-content:flex-end;          /* contents sit at the bottom of the panel at every width */
+    height:auto; max-height:50%;       /* hug the contents (no empty white), still at most half the tile */
     transform:translateY(10px);
     transition:opacity .15s ease, transform 0s linear .15s;
   }
