@@ -3640,6 +3640,7 @@
   .row-progress{ display:none; position:relative; width:48px; max-width:30%; height:3px; border-radius:999px; overflow:hidden;
     background:rgba(24,20,15,.12); flex-shrink:0; }
   :root[data-carousel-progress="true"] .row-progress{ display:block; }
+  :root[data-carousel-progress="true"] .row-progress.is-unneeded{ display:none; }
   .row-progress-bar{ position:absolute; top:0; bottom:0; left:0; width:100%; border-radius:inherit; background:#323232;
     transform:translateX(-100%); transition:transform 1.6s cubic-bezier(0.3, 0, 0.1, 1); }
   .row-header .row-progress{ margin-left:auto; }
@@ -8440,6 +8441,8 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
       var start = step ? Math.round(-targetX(track) / step) : 0;
       var shown = Math.min(tiles.length, Math.max(0, start) + nsCols());
       var fill = shown / tiles.length;
+      // Nothing to page through (e.g. a double bill with 2+ tiles on screen): no bar.
+      bar.classList.toggle('is-unneeded', tiles.length <= nsCols());
       bar.querySelector('.row-progress-bar').style.transform = 'translateX(' + ((fill - 1) * 100).toFixed(2) + '%)';
       bar.setAttribute('title', shown + ' of ' + tiles.length);
     }
