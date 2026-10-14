@@ -3863,8 +3863,7 @@
         <!-- Phase 1: Dark Mode / Rounded Tile Corners removed from Settings — this fixed
              layout is light-mode-only. #darkModeToggle / #roundedTilesToggle stay in the DOM
              (hidden) below so the existing JS wiring for them still resolves. -->
-        <input type="checkbox" id="darkModeToggle" style="display:none">
-        <input type="checkbox" id="roundedTilesToggle" style="display:none">
+                <input type="checkbox" id="roundedTilesToggle" style="display:none">
         <div class="settings-column">
           <div class="settings-column-head">
             <div class="settings-column-title"><span>Layout</span></div>
@@ -3919,6 +3918,13 @@
                 <div class="ns-toggle-desc">Fits 4 tiles per row from 1139px wide (overrides the 1496px option).</div>
               </div>
               <label class="ns-switch"><input type="checkbox" id="fourUpEarlyToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            </div>
+            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
+              <div>
+                <span class="ns-toggle-label">Dark Mode</span>
+                <div class="ns-toggle-desc">Switches the page to MUBI's dark theme (saved in this browser).</div>
+              </div>
+              <label class="ns-switch"><input type="checkbox" id="darkModeToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
             <div style="display:none;">
               <div class="ns-field">
@@ -6768,8 +6774,8 @@ function nsApplyTheme(theme) {
   const toggle = document.getElementById('darkModeToggle');
   if (toggle) toggle.checked = theme === 'dark';
 }
-// Phase 1 is a fixed light-mode layout — ignore any dark-mode preference saved by other pages.
-nsApplyTheme('light');
+// Settings → Dark Mode: restore the theme saved in this browser (light by default).
+try { nsApplyTheme(localStorage.getItem(NS_THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light'); } catch (e) { nsApplyTheme('light'); }
 document.getElementById('darkModeToggle').addEventListener('change', e => {
   const theme = e.target.checked ? 'dark' : 'light';
   localStorage.setItem(NS_THEME_STORAGE_KEY, theme);
