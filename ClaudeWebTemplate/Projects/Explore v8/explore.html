@@ -1243,10 +1243,12 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .director-count {
+      display: flex; align-items: center; gap: 4px;
       font-family: Riforma, sans-serif;
-      font-size: 13px; font-weight: 500;
-      text-transform: uppercase; color: rgba(0,0,0,0.55);
+      font-size: 13px; font-weight: 700;
+      color: #5E5E5E;
     }
+    .director-count svg { flex-shrink: 0; color: #6E6E6E; }
 
     .director-card.is-selected .card-img { filter: grayscale(0%); }
     .director-card.is-selected .director-name { color: #000; }
@@ -1736,7 +1738,7 @@
             <option value="popularity_quality_score" selected>Most Popular</option>
             <option value="recent">Recently Added</option>
             <option value="year">Release Date</option>
-            <option value="rating">Highest Rated</option>
+            <option value="rating">Rating</option>
             <option value="title">A-Z</option>
           </select>
         </div>
@@ -2800,6 +2802,12 @@ const DIRECTOR_CATS = {
   ])
 };
 
+let filmCountIconId = 0;
+function filmCountIcon() {
+  const id = `dc-mask-${++filmCountIconId}`;
+  return `<svg width="24" height="18" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.4121 0C21.0432 0 21.5546 0.511527 21.5547 1.14258V14.4248C21.5546 15.0559 21.0432 15.5674 20.4121 15.5674H1.14258C0.511562 15.5673 5.76033e-05 15.0558 0 14.4248V1.14258C0.00013309 0.511609 0.511609 0.00013335 1.14258 0H20.4121ZM8.38281 11.1768L15.3682 7.68359L8.38281 4.19141V11.1768Z" fill="currentColor"/><mask id="${id}" fill="white"><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282"/></mask><rect x="2.44971" y="2.44971" width="21.555" height="15.5675" rx="1.14282" stroke="currentColor" stroke-width="2.395" mask="url(#${id})"/></svg>`;
+}
+
 function directorCardHTML(d) {
   return `
     <a class="director-card" href="#" data-director="${d.name}" aria-label="${d.name}">
@@ -2810,7 +2818,7 @@ function directorCardHTML(d) {
       </div>
       <div class="director-info">
         <div class="director-name">${d.name}</div>
-        ${directorSortMode !== 'az' ? `<div class="director-count">${d.count} film${d.count !== 1 ? 's' : ''}</div>` : ''}
+        ${directorSortMode !== 'az' ? `<div class="director-count">${filmCountIcon()}${d.count}</div>` : ''}
       </div>
     </a>`;
 }
