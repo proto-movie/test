@@ -8456,5 +8456,40 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
     });
   })();
 </script>
+<script id="sharper-stills">
+  // Film stills come as image-w448.jpg, but carousel tiles are ~350–450px wide and the parallax
+  // draws each still 1.2× (collection tiles' half-width stills ~1.4×), so on a 2× screen they
+  // were upscaled 2× or more and looked soft. The CDN also has w856, w1280 and w1920 versions, so
+  // each still gets a srcset plus a `sizes` of its real zoomed width, and the browser fetches the
+  // smallest one that's sharp for the screen's pixel density. Re-run on re-render and resize.
+  (function(){
+    var grid = document.getElementById('filmGrid');
+    if (!grid) return;
+    var STILL = /^(https:\/\/assets\.mubicdn\.net\/images\/film\/\d+\/image-)w\d+(\.jpg.*)$/;
+    var WIDTHS = [448, 856, 1280, 1920];
+    function upgrade(img){
+      var m = STILL.exec(img.getAttribute('src') || '');
+      if (!m) return;
+      var w = img.offsetWidth;
+      if (!w) return;
+      var zoom = Math.max(1.2, parseFloat(img.style.scale) || 1);
+      var sizes = Math.ceil(w * zoom) + 'px';
+      if (img.getAttribute('sizes') === sizes && img.hasAttribute('srcset')) return;
+      img.setAttribute('sizes', sizes);              // sizes first, so the srcset pick is right first time
+      if (!img.hasAttribute('srcset')) {
+        img.setAttribute('srcset', WIDTHS.map(function(n){ return m[1] + 'w' + n + m[2] + ' ' + n + 'w'; }).join(', '));
+      }
+    }
+    function run(){ grid.querySelectorAll('img').forEach(upgrade); }
+    var pending = 0;
+    function soon(){ clearTimeout(pending); pending = setTimeout(run, 150); }
+    new MutationObserver(function(records){
+      if (records.some(function(r){ return r.type === 'childList'; })) soon();
+    }).observe(grid, { childList: true, subtree: true });
+    window.addEventListener('resize', soon);
+    window.addEventListener('load', run);
+    run();
+  })();
+</script>
 </body>
 </html>
