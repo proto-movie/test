@@ -287,7 +287,7 @@
   #segFilms.list-mode .gpill:not(.active), #segCollections.list-mode .gpill:not(.active), #segDirectors.list-mode .gpill:not(.active){ background:#fff; border-color:transparent; }
 
   .expl-list{ display:flex; flex-direction:column; gap:8px; padding:6px 20px 6px; }
-  .expl-card{ position:relative; aspect-ratio:371/209; overflow:hidden; border-radius:3px; background:#d0d0d0; }
+  .expl-card{ position:relative; aspect-ratio:371/209; overflow:hidden; border-radius:0; background:#d0d0d0; }
   .expl-thumb{ position:absolute; inset:0; }
   /* 1px overhang on every side: hides sub-pixel gaps and light edge pixels in some stills (visible in dark mode) */
   .expl-card .expl-bg{ position:absolute; top:-1px; left:-1px; width:calc(100% + 2px); height:calc(100% + 2px); object-fit:cover; }
@@ -310,11 +310,11 @@
   #filmGrid.list-mode, #directorPageGrid, #searchFilmResults{ gap:10px; }
   #filmGrid.list-mode .expl-card, #directorPageGrid .expl-card, #searchFilmResults .expl-card{
     aspect-ratio:auto; display:flex; align-items:center; gap:12px;
-    overflow:visible; border-radius:8px; background:#fff; padding:0 12px 0 0;
+    overflow:visible; border-radius:0; background:#fff; padding:0 12px 0 0;
   }
   #filmGrid.list-mode .expl-thumb, #directorPageGrid .expl-thumb, #searchFilmResults .expl-thumb{
     position:relative; inset:auto; flex-shrink:0; width:45%; aspect-ratio:371/209;
-    border-radius:8px 0 0 8px; overflow:hidden; background:#d0d0d0;
+    border-radius:0; overflow:hidden; background:#d0d0d0;
   }
   #filmGrid.list-mode .expl-thumb .scrim, #directorPageGrid .expl-thumb .scrim, #searchFilmResults .expl-thumb .scrim{ display:none; }
   #filmGrid.list-mode .expl-card .overlay, #directorPageGrid .expl-card .overlay, #searchFilmResults .expl-card .overlay{
@@ -329,13 +329,13 @@
   #directorPageGrid .expl-card p .fd-meta{ display:inline; }
 
   #filmGrid.poster-mode, #genreDetailGrid.poster-mode{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px 12px; }
-  #filmGrid.poster-mode .expl-card, #genreDetailGrid.poster-mode .expl-card{ aspect-ratio:2/3; border-radius:8px; }
+  #filmGrid.poster-mode .expl-card, #genreDetailGrid.poster-mode .expl-card{ aspect-ratio:2/3; border-radius:0; }
   #filmGrid.poster-mode .expl-card .scrim, #genreDetailGrid.poster-mode .expl-card .scrim,
   #filmGrid.poster-mode .expl-card .overlay, #genreDetailGrid.poster-mode .expl-card .overlay,
   #filmGrid.poster-mode .expl-rating, #genreDetailGrid.poster-mode .expl-rating{ display:none; }
 
   .coll-list{ display:flex; flex-direction:column; gap:8px; padding:6px 20px 6px; }
-  .coll-tile{ display:flex; aspect-ratio:371/209; overflow:hidden; border-radius:8px; text-decoration:none; }
+  .coll-tile{ display:flex; aspect-ratio:371/209; overflow:hidden; border-radius:0; text-decoration:none; }
   .coll-tile-left{ flex:1; padding:14px; display:flex; flex-direction:column; align-items:flex-start; justify-content:space-between; overflow:hidden; }
   .coll-tile-title{ font-family:var(--font-riforma); font-size:13px; font-weight:400; text-transform:uppercase; letter-spacing:-.2px; line-height:1.2; color:#fff; }
   .coll-tile-title--solo{ font-size:20px; font-weight:500; }
@@ -346,8 +346,8 @@
   .coll-tile-right img{ width:100%; height:100%; object-fit:cover; display:block; }
 
   #collectionsGrid.list-mode{ gap:10px; }
-  .coll-tile--list{ display:flex; align-items:center; gap:12px; aspect-ratio:auto; overflow:visible; border-radius:8px; background:#fff; padding:0 12px 0 0; }
-  .coll-tile--list .coll-thumb{ position:relative; flex-shrink:0; width:45%; aspect-ratio:371/209; border-radius:8px 0 0 8px; overflow:hidden; background:#d0d0d0; }
+  .coll-tile--list{ display:flex; align-items:center; gap:12px; aspect-ratio:auto; overflow:visible; border-radius:0; background:#fff; padding:0 12px 0 0; }
+  .coll-tile--list .coll-thumb{ position:relative; flex-shrink:0; width:45%; aspect-ratio:371/209; border-radius:0; overflow:hidden; background:#d0d0d0; }
   .coll-thumb-bg{ position:absolute; top:-1px; left:-1px; width:calc(100% + 2px); height:calc(100% + 2px); object-fit:cover; display:block; }
   .coll-thumb-scrim{ position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.5) 0%, rgba(0,0,0,.1) 55%, transparent 100%); }
   .coll-thumb-treatment{ position:absolute; left:8px; right:8px; bottom:8px; max-height:60%; width:auto; max-width:85%; object-fit:contain; object-position:left bottom; }
@@ -362,7 +362,7 @@
   #collectionsGrid.poster-mode .coll-tile--list{
     flex-direction:column; align-items:stretch; gap:0; background:none; padding:0; border-radius:0;
   }
-  #collectionsGrid.poster-mode .coll-thumb{ width:100%; aspect-ratio:2/3; border-radius:8px; }
+  #collectionsGrid.poster-mode .coll-thumb{ width:100%; aspect-ratio:2/3; border-radius:0; }
   #collectionsGrid.poster-mode .coll-thumb-scrim,
   #collectionsGrid.poster-mode .coll-thumb-treatment{ display:none; }
   #collectionsGrid.poster-mode .coll-info{ padding:8px 2px 0; }
@@ -371,7 +371,7 @@
 
   .director-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px 10px; padding:6px 20px 6px; }
   .director-card{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
-  .director-imgwrap{ aspect-ratio:1/1; border-radius:3px; overflow:hidden; background:#d0d0d0; }
+  .director-imgwrap{ aspect-ratio:1/1; border-radius:0; overflow:hidden; background:#d0d0d0; }
   .director-imgwrap img{ width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(100%); }
   .director-name{ font-family:var(--font-riforma); font-size:12.5px; font-weight:500; text-transform:uppercase; color:var(--paper); margin:8px 0 1px; letter-spacing:.01em; }
   .director-count{ font-family:var(--font-riforma); font-size:12px; font-weight:500; text-transform:uppercase; color:rgba(24,20,15,.5); }
@@ -379,9 +379,9 @@
   .director-grid.list-mode{ display:flex; flex-direction:column; gap:10px; }
   .director-grid.list-mode .director-card{
     display:grid; grid-template-columns:25.35% 1fr; grid-template-rows:1fr auto auto 1fr; column-gap:12px;
-    border-radius:8px; background:#fff; padding:0 12px 0 0;
+    border-radius:0; background:#fff; padding:0 12px 0 0;
   }
-  .director-grid.list-mode .director-imgwrap{ grid-row:1 / -1; aspect-ratio:1/1; border-radius:8px 0 0 8px; }
+  .director-grid.list-mode .director-imgwrap{ grid-row:1 / -1; aspect-ratio:1/1; border-radius:0; }
   .director-grid.list-mode .director-name{ grid-row:2; font-size:15px; text-transform:none; letter-spacing:0; color:#3A3A3C; margin:0 0 2px; }
   .director-grid.list-mode .director-count{ grid-row:3; font-size:11px; font-weight:400; text-transform:none; color:#6E6E73; }
 
