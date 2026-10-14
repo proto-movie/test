@@ -3556,6 +3556,8 @@
   @media (min-width: 2200px){ :root{ --cols:5; } }
   /* tile = (page - 4px x (N + 1)) / (N + 2 x peek fraction); peek = tile x fraction */
   :root{ --peek-frac:0.27; }
+  /* 2 per row (810–1138px): narrower peeks */
+  @media (min-width: 810px) and (max-width: 1138px){ :root{ --peek-frac:0.15; } }
   @media (max-width: 809px){ :root{ --cols:1; --peek-frac:0.05; } }
   /* 1186px and up: smaller peeks (a sixth of a tile) so tiles — double tiles especially — are bigger */
   @media (min-width: 1186px){ :root{ --peek-frac:0.135; } }
