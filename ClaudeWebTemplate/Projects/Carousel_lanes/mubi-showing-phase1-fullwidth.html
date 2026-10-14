@@ -3721,6 +3721,7 @@
   /* Double tiles: the hover panel waits for the tile's scale-up (0.35s) to finish, then fades in
      with a short rise. Leaving hides it quickly with no delay. */
   .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block{
+    justify-content:flex-end;          /* contents sit at the bottom of the panel at every width */
     transform:translateY(10px);
     transition:opacity .15s ease, transform 0s linear .15s;
   }
