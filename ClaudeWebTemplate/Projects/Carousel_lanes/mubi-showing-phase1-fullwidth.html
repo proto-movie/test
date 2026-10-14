@@ -3778,6 +3778,21 @@
   .row-section:not(.row-section--doubletile) .card-synopsis-block,
   .spotlight-slider .card-synopsis-block{ height:auto; max-height:none; }
 </style>
+<style id="tile-preview-video">
+  /* Hover preview video (see tile-preview-video-js): sits over the still, under the title text
+     (z-index 4) and the white info panel (z-index 20). "Placeholder video" watermark on top. */
+  .tile-preview{ position:absolute; left:0; right:0; top:0; bottom:0; z-index:3; overflow:hidden; background:#000;
+    opacity:0; transition:opacity .45s ease; pointer-events:none; }
+  .tile-preview.is-on{ opacity:1; }
+  .tile-preview video{ display:block; width:100%; height:100%; object-fit:cover; }
+  /* Same bottom scrim as the still, so a normal tile's title stays readable over the video */
+  .tile-preview::after{ content:''; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.12) 50%, transparent 100%); }
+  .row-section--doubletile .tile-preview::after{ content:none; }
+  .tile-preview-mark{ position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center;
+    font-family:Riforma, sans-serif; font-size:13px; font-weight:500; letter-spacing:.14em; text-transform:uppercase;
+    color:rgba(255,255,255,.75); text-shadow:0 1px 6px rgba(0,0,0,.6); }
+</style>
 </head>
 <body>
 
@@ -8592,6 +8607,67 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
       });
     });
     apply();
+  })();
+</script>
+<script id="tile-preview-video-js">
+  // Hover preview on film tiles (desktop with a mouse): after the tile has scaled up, the top
+  // marquee's video fades in over the still — the area above the white info panel on double
+  // tiles, the whole image on normal tiles — with a "Placeholder video" watermark. One shared
+  // <video> moves between tiles, and nothing downloads until the first hover.
+  (function(){
+    var grid = document.getElementById('filmGrid');
+    if (!grid) return;
+    var SRC = '../../videos/itwasjustanaccident.mp4';
+    var DELAY = 350;                                   // ms: let the tile finish scaling first
+    var canHover = window.matchMedia('(min-width: 810px) and (hover: hover)');
+    var box = document.createElement('div');
+    box.className = 'tile-preview';
+    box.innerHTML = '<video muted loop playsinline preload="none"></video><span class="tile-preview-mark">Placeholder video</span>';
+    var video = box.querySelector('video');
+    var current = null, timer = 0;
+
+    function eligible(card){
+      return card && canHover.matches
+        && !card.classList.contains('row-carousel-peek') && !card.classList.contains('film-card--empty')
+        && !card.classList.contains('spotlight-peek--left') && !card.classList.contains('spotlight-peek--right')
+        && !card.closest('.new-to-mubi-section, .is-sliding') && card.querySelector('.card-img-wrap');
+    }
+    function show(card){
+      current = card;
+      clearTimeout(timer);
+      timer = setTimeout(function(){
+        if (current !== card || !eligible(card)) return;
+        if (!video.getAttribute('src')) video.src = SRC;
+        var panel = card.closest('.row-section--doubletile') && card.querySelector('.card-synopsis-block');
+        box.style.bottom = panel ? panel.offsetHeight + 'px' : '0';
+        box.classList.remove('is-on');
+        card.querySelector('.card-img-wrap').appendChild(box);
+        var p = video.play();
+        if (p && p.catch) p.catch(function(){});
+        // Fade in only once the video has a frame to show (no black flash while it first loads).
+        function reveal(){ if (current === card) box.classList.add('is-on'); }
+        if (video.readyState >= 2) requestAnimationFrame(function(){ requestAnimationFrame(reveal); });
+        else video.addEventListener('playing', reveal, { once: true });
+      }, DELAY);
+    }
+    function hide(){
+      clearTimeout(timer);
+      current = null;
+      box.classList.remove('is-on');
+      video.pause();
+      if (box.parentNode) box.parentNode.removeChild(box);
+    }
+    document.addEventListener('mouseover', function(e){
+      var card = e.target.closest && e.target.closest('#filmGrid .film-card');
+      if (card === current) return;
+      if (current) hide();
+      if (eligible(card)) show(card);
+    });
+    document.documentElement.addEventListener('mouseleave', hide);
+    // A row starting to slide, or re-rendering, ends the preview.
+    new MutationObserver(function(){
+      if (current && (!current.isConnected || current.closest('.is-sliding') || current.classList.contains('row-carousel-peek'))) hide();
+    }).observe(grid, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
   })();
 </script>
 </body>
