@@ -3372,7 +3372,7 @@
     // the number of whole tiles that fit, so paging moves by what's fully on screen.
     window.nsApplyFixedTiles = function(){
       var root = document.documentElement, st = root.style, W = root.clientWidth;
-      var props = ['--peek-tile', '--peek-gutter', '--peek-half', '--cols'];
+      var props = ['--peek-tile', '--peek-gutter', '--peek-half', '--cols', '--next-zone'];
       if (root.dataset.fixedTiles !== 'true' || W < 810) { props.forEach(function(p){ st.removeProperty(p); }); return; }
       var tile = (1500 - 44 - 12) / 4;                   // 361px: the original's widest-breakpoint tile, at every width
       var gutter = 40;                                   // page container sits 40px from the left edge
@@ -3381,6 +3381,9 @@
       st.setProperty('--peek-gutter', gutter + 'px');
       st.setProperty('--peek-half', (gutter - 4) + 'px');
       st.setProperty('--cols', cols);
+      // Width of the dark "next" zone on the right edge: the visible part of the peek, up to 110px.
+      var peekVisible = W - gutter - cols * (tile + 4);
+      st.setProperty('--next-zone', Math.max(0, Math.min(peekVisible, 110)) + 'px');
     };
     window.addEventListener('resize', window.nsApplyFixedTiles);
     window.addEventListener('DOMContentLoaded', setPageWidth);
@@ -3828,6 +3831,30 @@
     :root[data-fixed-tiles="true"] .spotlight-section{ height:723px; }
     :root[data-fixed-tiles="true"] .spotlight-color-bar{ height:124px; }
   }
+</style>
+<style id="fixed-next-zone">
+  /* Original Tile Sizes: a dark "next" zone along the right edge of each row (the visible part of
+     the peek, up to 110px), with the white arrow. It shows while the row is hovered, and clicking
+     it pages the row; the rest of the peeking film is a normal link. The row's own next arrow and
+     the right peek's hover dimming are replaced by it. */
+  .fixed-next-zone{ display:none; }
+  @media (min-width: 810px){
+    :root[data-fixed-tiles="true"] .row-carousel-inner:has(.row-carousel-arrow--next.is-visible) .fixed-next-zone{
+      display:flex; align-items:center; justify-content:center;
+      position:absolute; top:0; bottom:0; right:0; width:var(--next-zone); z-index:25;
+      padding:0; border:0; cursor:pointer; background:rgba(0,0,0,.5);
+      opacity:0; transition:opacity .2s ease;
+    }
+    :root[data-fixed-tiles="true"] .row-carousel-inner:hover .fixed-next-zone{ opacity:1; }
+    :root[data-fixed-tiles="true"] .row-carousel-wrap.is-sliding .fixed-next-zone{ opacity:0; }
+    :root[data-fixed-tiles="true"] .fixed-next-zone img{ width:13px; height:20px; filter:drop-shadow(0 1px 6px rgba(0,0,0,.6)); }
+    :root[data-fixed-tiles="true"] .row-carousel-arrow--next{ display:none !important; }
+    :root[data-fixed-tiles="true"] .row-carousel-wrap .row-carousel-peek--right:hover::after,
+    :root[data-fixed-tiles="true"] .row-carousel-wrap .row-carousel-peek--right.peek-hot::after{ background:rgba(0,0,0,0); }
+    :root[data-fixed-tiles="true"] .row-carousel-peek--right{ cursor:pointer; }
+  }
+  /* Touch screens never show it (no hover); swiping pages the row there. */
+  @media (hover: none){ .fixed-next-zone{ display:none !important; } }
 </style>
 </head>
 <body>
@@ -6709,7 +6736,8 @@ document.getElementById('filmGrid').addEventListener('click', e => {
     const tiles = [...track.children];
     const idx = tiles.indexOf(tile);
     const pageStart = nsRowCarouselPage.get(track) || 0;
-    if (idx === pageStart + nsCols()) { e.preventDefault(); nsAdvanceRowCarousel(wrap, 1); return; }
+    // (Original Tile Sizes: the right peek is an ordinary film link — paging is the next zone's job.)
+    if (idx === pageStart + nsCols() && document.documentElement.dataset.fixedTiles !== 'true') { e.preventDefault(); nsAdvanceRowCarousel(wrap, 1); return; }
     if (idx === pageStart - 1) { e.preventDefault(); nsAdvanceRowCarousel(wrap, -1); return; }
     return; // one of the 4 fully-shown tiles — a normal tile — let it navigate as usual
   }
@@ -8778,6 +8806,34 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
     });
     apply();
     window.dispatchEvent(new Event('resize'));
+  })();
+</script>
+<script id="fixed-next-zone-js">
+  // Adds the Original Tile Sizes "next" zone (see fixed-next-zone CSS) to every carousel row.
+  (function(){
+    var grid = document.getElementById('filmGrid');
+    if (!grid) return;
+    function addZones(){
+      grid.querySelectorAll('.row-carousel-inner').forEach(function(inner){
+        if (inner.querySelector(':scope > .fixed-next-zone')) return;
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'fixed-next-zone';
+        b.setAttribute('aria-label', 'Next');
+        b.innerHTML = '<img src="../../brand_assets/icon_arrowRight.svg" alt="">';
+        inner.appendChild(b);
+      });
+    }
+    grid.addEventListener('click', function(e){
+      var zone = e.target.closest('.fixed-next-zone');
+      if (!zone) return;
+      e.preventDefault(); e.stopPropagation();
+      if (typeof nsAdvanceRowCarousel === 'function') nsAdvanceRowCarousel(zone.closest('.row-carousel-wrap'), 1);
+    }, true);
+    new MutationObserver(function(records){
+      if (records.some(function(r){ return r.type === 'childList' && r.target === grid; })) addZones();
+    }).observe(grid, { childList: true });
+    addZones();
   })();
 </script>
 </body>
