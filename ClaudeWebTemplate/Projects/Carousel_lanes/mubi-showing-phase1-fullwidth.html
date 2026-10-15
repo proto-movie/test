@@ -6770,7 +6770,7 @@ function nsLoadState() {
 // Phase 1 fixed layout defaults: Top Picks (renamed FEATURED), Lane of Lanes, Coming Soon
 // and Lane of Genres (Colour + Stacked) all on by default, seeded with the Priya Nair
 // persona so Continue Watching / Your Watchlist / Suggested for You all have content to show.
-const nsState = Object.assign({ watchlist: nsCatalogSlugs(2, 20), continueWatching: nsCatalogSlugs(22, 3), watched: nsCatalogSlugs(25, 20), marquee: ['it-was-just-an-accident'], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 5, laneOfLanes: true, allDoubleTiles: false, carouselRows: true, topTen: true, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', comingSoon: true, laneOfGenres: true, laneOfGenresStyle: 'stack', marqueeDisplayCount: 1, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
+const nsState = Object.assign({ watchlist: nsCatalogSlugs(2, 20), continueWatching: nsCatalogSlugs(22, 3), watched: nsCatalogSlugs(25, 20), marquee: ['it-was-just-an-accident'], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 5, laneOfLanes: true, allDoubleTiles: false, carouselRows: true, carouselProgress: true, rowSpacing: true, fourUp: true, fourUpEarly: true, topTen: true, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', comingSoon: true, laneOfGenres: true, laneOfGenresStyle: 'stack', marqueeDisplayCount: 1, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
 
 // Dark mode is a personal display preference, not "content" — kept in its own localStorage
 // key rather than nsState, so it isn't pushed to the shared Google Sheet (see NS_SHEET_API_URL
