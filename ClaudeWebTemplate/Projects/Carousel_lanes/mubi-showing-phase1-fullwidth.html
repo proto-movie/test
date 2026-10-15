@@ -3366,19 +3366,18 @@
     setPageWidth();
     window.addEventListener('resize', setPageWidth);
     // Settings → Original Tile Sizes (data-fixed-tiles on <html>, set from nsState further down):
-    // from 810px, each row shows only whole tiles between 40px margins: as many as fit at 267px
-    // (the original page's tile at 1186–1561px) or wider, stretched to fill the row exactly, with
-    // the rest clipped like the original page's container (no peeks). The tile/gutter variables are overridden inline; --cols becomes
+    // from 810px, tiles keep the original page's fixed widths (195 / 267 / 361px: 4 across its
+    // 836 / 1124 / 1500px container), and rows start 40px from the left edge of the screen and run
+    // on to the right edge. The tile/gutter variables are overridden inline; --cols becomes
     // the number of whole tiles that fit, so paging moves by what's fully on screen.
     window.nsApplyFixedTiles = function(){
       var root = document.documentElement, st = root.style, W = root.clientWidth;
       var props = ['--peek-tile', '--peek-gutter', '--peek-half', '--cols'];
       if (root.dataset.fixedTiles !== 'true' || W < 810) { props.forEach(function(p){ st.removeProperty(p); }); return; }
-      var gutter = 40;                                   // 40px page margin on both sides
-      var MIN = 267;                                     // smallest tile (the original's 1186–1561px tile)
-      var avail = W - 2 * gutter;
-      var cols = Math.max(1, Math.floor((avail + 4) / (MIN + 4)));   // as many whole tiles as fit…
-      var tile = (avail - 4 * (cols - 1)) / cols;                    // …stretched to fill the row exactly
+      var maxW = W >= 1562 ? 1500 : W >= 1186 ? 1124 : 836;
+      var tile = (maxW - 44 - 12) / 4;
+      var gutter = 40;                                   // page container sits 40px from the left edge
+      var cols = Math.max(1, Math.floor((W - gutter + 4) / (tile + 4)));
       st.setProperty('--peek-tile', tile + 'px');
       st.setProperty('--peek-gutter', gutter + 'px');
       st.setProperty('--peek-half', (gutter - 4) + 'px');
@@ -3821,23 +3820,14 @@
     color:rgba(255,255,255,.75); text-shadow:0 1px 6px rgba(0,0,0,.6); }
 </style>
 <style id="original-tile-sizes">
-  /* Settings → Original Tile Sizes (see nsApplyFixedTiles): rows show only their whole tiles,
-     clipped at the 40px page margins like the original page's container, with the original
-     fixed heights: 418px double tiles and a 723px spotlight with its 124px colour bar. With no
-     peeks to hover, the arrows show while the row is hovered, dark so they read on the page. */
+  /* Settings → Original Tile Sizes (see nsApplyFixedTiles): the original page's fixed heights
+     too: 418px double tiles and a 723px spotlight with its 124px colour bar. */
   @media (min-width: 810px){
     :root[data-fixed-tiles="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-img-wrap,
     :root[data-fixed-tiles="true"] .coll-tile--double,
     :root[data-fixed-tiles="true"] .genre-tile--double{ aspect-ratio:auto; height:418px; }
     :root[data-fixed-tiles="true"] .spotlight-section{ height:723px; }
     :root[data-fixed-tiles="true"] .spotlight-color-bar{ height:124px; }
-    :root[data-fixed-tiles="true"] .row-carousel-clip{ clip-path:inset(-9999px 0 -9999px 0) !important; }   /* the clip box already spans the 40px margins */
-    :root[data-fixed-tiles="true"] .spotlight-slider{ clip-path:inset(-9999px var(--peek-gutter) -9999px var(--peek-gutter)); }
-    :root[data-fixed-tiles="true"] .row-carousel-inner:hover .row-carousel-arrow.is-visible{ opacity:1; }
-    :root[data-fixed-tiles="true"] .spotlight-slider-wrap:hover .spotlight-arrow--prev.is-visible,
-    :root[data-fixed-tiles="true"] .spotlight-slider-wrap:hover .spotlight-arrow--next:not(.is-hidden){ opacity:1; }
-    :root[data-fixed-tiles="true"] .row-carousel-arrow img{ filter:brightness(0) opacity(0.55) !important; }
-    :root[data-theme="dark"][data-fixed-tiles="true"] .row-carousel-arrow img{ filter:brightness(0) invert(1) opacity(0.8) !important; }
   }
 </style>
 </head>
@@ -3969,7 +3959,7 @@
             <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
               <div>
                 <span class="ns-toggle-label">Original Tile Sizes</span>
-                <div class="ns-toggle-desc">Rows show only whole tiles between 40px margins — as many as fit at 267px or wider — with the original 418px double tiles and 723px spotlight (overrides the 4-tile options, 810px and up).</div>
+                <div class="ns-toggle-desc">Tiles keep the original page's sizes instead of scaling; rows start 40px from the left and run to the right edge of the screen, with peeking tiles (overrides the 4-tile options, 810px and up).</div>
               </div>
               <label class="ns-switch"><input type="checkbox" id="fixedTilesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
