@@ -3732,12 +3732,12 @@
   .row-grid--carousel > *, .spotlight-slider > *{ opacity:1 !important; }
 </style>
 <style id="mobile-row-header">
-  /* Mobile: if the title, Read More and the progress bar don't all fit on one line, Read More
-     drops onto its own line under the title (row-header--stack, set by mobile-row-header-js) so
-     the title stays on one line. When they do fit, everything stays on one line with no extra gap. */
+  /* Mobile: if the title, Read More and the progress bar don't all fit on one line
+     (row-header--stack, set by mobile-row-header-js), Read More is hidden so the title stays on
+     one line with the usual gap to the tiles; the title itself then links to the collection. */
   @media (max-width: 809px){
-    .row-header.row-header--stack{ flex-wrap:wrap; }
-    .row-header.row-header--stack .row-see-all{ order:3; flex-basis:100%; margin-left:0; margin-top:4px; }
+    .row-header.row-header--stack .row-see-all{ display:none; }
+    .row-header.row-header--stack .row-title{ cursor:pointer; }
   }
 </style>
 <style id="doubletile-hover-sequence">
@@ -8706,6 +8706,12 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
       h.classList.toggle('row-header--stack', need > h.clientWidth);
     }
     function run(){ grid.querySelectorAll('.row-header').forEach(check); }
+    // With Read More hidden, tapping the title opens the collection instead.
+    grid.addEventListener('click', function(e){
+      var title = e.target.closest('.row-header--stack .row-title');
+      var more = title && title.parentElement.querySelector('a.row-see-all[href]');
+      if (more && mobile.matches) window.location.href = more.href;
+    });
     var pending = 0;
     function soon(){ clearTimeout(pending); pending = setTimeout(run, 60); }
     new MutationObserver(function(records){
