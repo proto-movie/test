@@ -3365,6 +3365,25 @@
     function setPageWidth(){ document.documentElement.style.setProperty('--page-w', document.documentElement.clientWidth + 'px'); }
     setPageWidth();
     window.addEventListener('resize', setPageWidth);
+    // Settings → Original Tile Sizes (data-fixed-tiles on <html>, set from nsState further down):
+    // from 810px, tiles keep the original page's fixed widths (195 / 267 / 361px: 4 across its
+    // 836 / 1124 / 1500px container), rows start at that container's left edge and run on to the
+    // right edge of the screen. The tile/gutter variables are overridden inline; --cols becomes
+    // the number of whole tiles that fit, so paging moves by what's fully on screen.
+    window.nsApplyFixedTiles = function(){
+      var root = document.documentElement, st = root.style, W = root.clientWidth;
+      var props = ['--peek-tile', '--peek-gutter', '--peek-half', '--cols'];
+      if (root.dataset.fixedTiles !== 'true' || W < 810) { props.forEach(function(p){ st.removeProperty(p); }); return; }
+      var maxW = W >= 1562 ? 1500 : W >= 1186 ? 1124 : 836;
+      var tile = (maxW - 44 - 12) / 4;
+      var gutter = Math.max(0, (W - maxW) / 2) + 22;
+      var cols = Math.max(1, Math.floor((W - gutter + 4) / (tile + 4)));
+      st.setProperty('--peek-tile', tile + 'px');
+      st.setProperty('--peek-gutter', gutter + 'px');
+      st.setProperty('--peek-half', (gutter - 4) + 'px');
+      st.setProperty('--cols', cols);
+    };
+    window.addEventListener('resize', window.nsApplyFixedTiles);
     window.addEventListener('DOMContentLoaded', setPageWidth);
   })();
 </script>
@@ -3800,6 +3819,17 @@
     font-family:Riforma, sans-serif; font-size:13px; font-weight:500; letter-spacing:.14em; text-transform:uppercase;
     color:rgba(255,255,255,.75); text-shadow:0 1px 6px rgba(0,0,0,.6); }
 </style>
+<style id="original-tile-sizes">
+  /* Settings → Original Tile Sizes (see nsApplyFixedTiles): the original page's fixed heights
+     too: 418px double tiles and a 723px spotlight with its 124px colour bar. */
+  @media (min-width: 810px){
+    :root[data-fixed-tiles="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-img-wrap,
+    :root[data-fixed-tiles="true"] .coll-tile--double,
+    :root[data-fixed-tiles="true"] .genre-tile--double{ aspect-ratio:auto; height:418px; }
+    :root[data-fixed-tiles="true"] .spotlight-section{ height:723px; }
+    :root[data-fixed-tiles="true"] .spotlight-color-bar{ height:124px; }
+  }
+</style>
 </head>
 <body>
 
@@ -3925,6 +3955,13 @@
                 <div class="ns-toggle-desc">Fits 4 tiles per row from 1139px wide (overrides the 1496px option).</div>
               </div>
               <label class="ns-switch"><input type="checkbox" id="fourUpEarlyToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
+            </div>
+            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
+              <div>
+                <span class="ns-toggle-label">Original Tile Sizes</span>
+                <div class="ns-toggle-desc">Tiles keep the original page's sizes instead of scaling; rows start at the original container and run to the right edge of the screen (overrides the 4-tile options, 810px and up).</div>
+              </div>
+              <label class="ns-switch"><input type="checkbox" id="fixedTilesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
             <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
               <div>
@@ -8721,6 +8758,27 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
     window.addEventListener('load', run);
     run();
+  })();
+</script>
+<script id="fixed-tiles-js">
+  // Settings → Original Tile Sizes (off by default; saved with the other settings).
+  (function(){
+    if (typeof nsState === 'undefined') return;
+    var toggle = document.getElementById('fixedTilesToggle');
+    function apply(){
+      document.documentElement.dataset.fixedTiles = nsState.fixedTiles ? 'true' : 'false';
+      if (toggle) toggle.checked = !!nsState.fixedTiles;
+      if (window.nsApplyFixedTiles) window.nsApplyFixedTiles();
+    }
+    if (toggle) toggle.addEventListener('change', function(){
+      nsState.fixedTiles = toggle.checked;
+      if (typeof nsSaveState === 'function') nsSaveState();
+      apply();
+      if (typeof renderGrid === 'function') renderGrid();
+      window.dispatchEvent(new Event('resize'));
+    });
+    apply();
+    window.dispatchEvent(new Event('resize'));
   })();
 </script>
 </body>
