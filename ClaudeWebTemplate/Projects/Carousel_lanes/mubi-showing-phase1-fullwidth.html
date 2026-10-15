@@ -3366,16 +3366,15 @@
     setPageWidth();
     window.addEventListener('resize', setPageWidth);
     // Settings → Original Tile Sizes (data-fixed-tiles on <html>, set from nsState further down):
-    // from 810px, tiles keep the original page's fixed widths (195 / 267 / 361px: 4 across its
-    // 836 / 1124 / 1500px container), and rows start 40px from the left edge of the screen and run
-    // on to the right edge. The tile/gutter variables are overridden inline; --cols becomes
+    // from 810px, tiles are the original page's widest-breakpoint size (361px: 4 across its 1500px
+    // container) at every screen width, and rows start 40px from the left edge of the screen and
+    // run on to the right edge. The tile/gutter variables are overridden inline; --cols becomes
     // the number of whole tiles that fit, so paging moves by what's fully on screen.
     window.nsApplyFixedTiles = function(){
       var root = document.documentElement, st = root.style, W = root.clientWidth;
       var props = ['--peek-tile', '--peek-gutter', '--peek-half', '--cols'];
       if (root.dataset.fixedTiles !== 'true' || W < 810) { props.forEach(function(p){ st.removeProperty(p); }); return; }
-      var maxW = W >= 1562 ? 1500 : W >= 1186 ? 1124 : 836;
-      var tile = (maxW - 44 - 12) / 4;
+      var tile = (1500 - 44 - 12) / 4;                   // 361px: the original's widest-breakpoint tile, at every width
       var gutter = 40;                                   // page container sits 40px from the left edge
       var cols = Math.max(1, Math.floor((W - gutter + 4) / (tile + 4)));
       st.setProperty('--peek-tile', tile + 'px');
