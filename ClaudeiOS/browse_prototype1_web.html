@@ -1678,9 +1678,13 @@
   function filterLangActive(){
     return (filterState.langs && filterState.langs.length > 0) || (filterState.lang && filterState.lang !== 'all');
   }
+  // The filter lists use MUBI's labels; the sample films only know plain languages.
+  var LANG_ALIAS = { 'Spanish (Latin America)':'Spanish', 'Spanish (European)':'Spanish', 'Mandarin':'Chinese', 'Cantonese':'Chinese', 'Farsi':'Persian' };
+  function langKey(l){ return LANG_ALIAS[l] || l; }
   function filmPassesLang(f){
-    if(filterState.langs && filterState.langs.length) return filterState.langs.indexOf(filmLanguage(f)) !== -1;
-    if(filterState.lang && filterState.lang !== 'all') return filmLanguage(f) === filterState.lang;
+    var fl = filmLanguage(f);
+    if(filterState.langs && filterState.langs.length) return filterState.langs.some(function(l){ return langKey(l) === fl; });
+    if(filterState.lang && filterState.lang !== 'all') return langKey(filterState.lang) === fl;
     return true;
   }
   function renderFilms(reset){
@@ -2116,21 +2120,22 @@
   })();
 
   (function(){
+    // Languages per filter, ordered by how many web users picked them in Browse filters
+    // (24 Aug – 18 Oct 2026, top 20 each; dub has only 8 in the data).
     var LANGS = {
       original: {
         visible: 7,
-        list: ['English','French','German','Spanish','Italian','Chinese','Portuguese','Filipino','Persian','Danish',
-          'Dutch','Japanese','Korean','Finnish','Polish','Swedish','Thai','Norwegian','Turkish','Hindi',
-          'Hungarian','Indonesian','Romanian','Russian','Arabic','Greek','Vietnamese','Amharic','Georgian','Icelandic','Khmer','Ukrainian']
+        list: ['English','French','Spanish (Latin America)','Japanese','Italian','German','Spanish (European)','Korean','Turkish','Portuguese',
+          'Mandarin','Arabic','Russian','Cantonese','Farsi','Hindi','Polish','Swedish','Norwegian','Thai']
       },
       dubbed: {
         visible: 8,
-        list: ['English','French','German','Spanish','Portuguese','Italian','Polish','Turkish','Arabic','Russian','Hindi','Japanese','Korean','Chinese']
+        list: ['Italian','Spanish (Latin America)','German','Portuguese','Spanish (European)','English','French','Turkish']
       },
       subtitles: {
         visible: 8,
-        list: ['English','French','German','Spanish','Italian','Portuguese','Polish','Dutch','Arabic','Turkish','Russian','Japanese','Korean','Chinese',
-          'Norwegian','Swedish','Danish','Finnish','Romanian','Ukrainian','Czech','Hungarian','Greek','Hebrew']
+        list: ['English','French','Spanish (Latin America)','Turkish','Italian','Thai','Polish','Portuguese','Spanish (European)','Chinese',
+          'German','Korean','Russian','Greek','Dutch','Hungarian','Japanese','Romanian','Czech','Croatian']
       }
     };
 
