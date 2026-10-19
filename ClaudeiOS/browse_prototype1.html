@@ -732,6 +732,14 @@
   .fs2-detail{ transform:translateX(100%); }
   .fs2-body.is-detail .fs2-main{ transform:translateX(-28%); opacity:0; pointer-events:none; }
   .fs2-body.is-detail .fs2-detail{ transform:translateX(0); }
+  .fs2-group{ margin-top:10px; }
+  .fs2-group + .fs2-group{ margin-top:18px; }
+  .fs2-group--quality{ border-top:1px solid #EAEAEA; }
+  :root[data-theme="dark"] .fs2-group--quality{ border-top-color:var(--dm-seam); }
+  .fs2-group-label{ font-family:var(--font-riforma); font-weight:400; font-size:14px; text-transform:uppercase; letter-spacing:.6px; color:#5A5A5A; }
+  .fs2-group-note{ font-family:var(--font-riforma); font-size:13px; color:#8A8A8A; margin:4px 0 2px; }
+  .fs2-group .fs2-row:last-child{ border-bottom:none; }
+  :root[data-theme="dark"] .fs2-group-label{ color:var(--dm-text-dim); }
   .fs2-row{ display:flex; align-items:center; gap:10px; width:100%; padding:16px 0; background:none; border:none;
     border-bottom:1px solid #EAEAEA; text-align:left; -webkit-tap-highlight-color:transparent; color:#323232; }
   .fs2-row-name{ flex:1; font-family:var(--font-riforma); font-weight:500; font-size:16px; }
@@ -2105,12 +2113,19 @@
       if(filterState.langType !== key || !langs.length) return 'Any';
       return langs.length > 2 ? langs.slice(0, 2).join(', ') + ' +' + (langs.length - 2) : langs.join(', ');
     }
+    function fs2RowHTML(sec){
+      var v = fs2Summary(sec.key);
+      return '<button class="fs2-row" data-sec="' + sec.key + '"><span class="fs2-row-name">' + esc(sec.name) + '</span>' +
+        '<span class="fs2-row-value' + (v !== 'Any' ? ' is-set' : '') + '">' + esc(v) + '</span>' + CHEVRON + '</button>';
+    }
+    // Two groups: the three language types together (one type at a time), then Video Quality.
     function fs2RenderMain(){
-      fs2Main.innerHTML = FS2_SECTIONS.map(function(sec){
-        var v = fs2Summary(sec.key);
-        return '<button class="fs2-row" data-sec="' + sec.key + '"><span class="fs2-row-name">' + esc(sec.name) + '</span>' +
-          '<span class="fs2-row-value' + (v !== 'Any' ? ' is-set' : '') + '">' + esc(v) + '</span>' + CHEVRON + '</button>';
-      }).join('');
+      var langSecs = FS2_SECTIONS.filter(function(x){ return x.key !== 'quality'; });
+      var quality = FS2_SECTIONS.filter(function(x){ return x.key === 'quality'; });
+      fs2Main.innerHTML =
+        '<div class="fs2-group"><div class="fs2-group-label">Language</div>' +
+          '<p class="fs2-group-note">Choose one type at a time</p>' + langSecs.map(fs2RowHTML).join('') + '</div>' +
+        '<div class="fs2-group fs2-group--quality">' + quality.map(fs2RowHTML).join('') + '</div>';
     }
     function fs2RenderDetail(){
       var key = fs2Open;
