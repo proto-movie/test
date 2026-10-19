@@ -738,10 +738,10 @@
   .fs2-body.is-detail .fs2-detail{ transform:translateX(0); }
   .fs2-group{ margin-top:10px; }
   .fs2-group + .fs2-group{ margin-top:26px; }
-  /* v2 / v3 section list: no lines between rows, just one between the Language and Video groups */
-  .filter-sheet--v2:not(.filter-sheet--v4) .fs2-main .fs2-row{ border-bottom:none; }
-  .filter-sheet--v2:not(.filter-sheet--v4) .fs2-main .fs2-group + .fs2-group{ margin-top:14px; padding-top:18px; border-top:1px solid #EAEAEA; }
-  :root[data-theme="dark"] .filter-sheet--v2:not(.filter-sheet--v4) .fs2-main .fs2-group + .fs2-group{ border-top-color:var(--dm-seam); }
+  /* v2 / v3 / v4 section list: no lines between the language types, just one before the Video group */
+  .filter-sheet--v2 .fs2-main .fs2-row{ border-bottom:none; }
+  .filter-sheet--v2 .fs2-main .fs2-group + .fs2-group{ margin-top:14px; padding-top:18px; border-top:1px solid #EAEAEA; }
+  :root[data-theme="dark"] .filter-sheet--v2 .fs2-main .fs2-group + .fs2-group{ border-top-color:var(--dm-seam); }
   .fs2-group-label{ font-family:var(--font-riforma); font-weight:400; font-size:14px; text-transform:uppercase; letter-spacing:0; color:#5A5A5A; }
   .fs2-group-note{ font-family:var(--font-riforma); font-size:14px; color:#5A5A5A; margin:4px 0 2px; }
   .fs2-group .fs2-row:last-child{ border-bottom:none; }
@@ -805,14 +805,14 @@
   .fs4-panel{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .32s cubic-bezier(.22,1,.36,1); }
   .fs4-panel.is-open{ grid-template-rows:1fr; }
   .fs4-panel-inner{ overflow:hidden; min-height:0; }
-  .fs4-panel.is-open .fs4-panel-inner{ border-bottom:1px solid #EAEAEA; padding-bottom:6px; }
-  .fs4-row svg{ transition:transform .25s ease; }
-  .fs4-row[aria-expanded="true"] svg{ transform:rotate(90deg); }
+  .fs4-panel.is-open .fs4-panel-inner{ padding-bottom:6px; }
+  /* Accordion chevrons: down when closed, up when open */
+  .fs4-row svg{ transform:rotate(90deg); transition:transform .25s ease; }
+  .fs4-row[aria-expanded="true"] svg{ transform:rotate(-90deg); }
   .fs4-row[aria-expanded="true"]{ border-bottom-color:transparent; }
   .fs4-hint{ margin:2px 0 4px; }
   .fs4-panel .fs2-opt:last-child{ border-bottom:none; }
-  :root[data-theme="dark"] .fs4-panel.is-open .fs4-panel-inner{ border-bottom-color:var(--dm-seam); }
-</style>
+  </style>
 
 <div class="stage">
   <div class="screen" id="screen">
