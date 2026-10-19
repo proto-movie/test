@@ -766,6 +766,31 @@
   :root[data-theme="dark"] .fs2-row{ border-bottom-color:var(--dm-seam); }
   :root[data-theme="dark"] .fs2-opt{ border-bottom-color:var(--dm-seam); }
   :root[data-theme="dark"] .fs2-row-value.is-set, :root[data-theme="dark"] .fs2-opt svg{ color:#8FA2FF; }
+
+  /* ─── FILTERS v3 (More → Filters v3): Filters v2 opened full screen. Close top left, Clear all
+     top right, square checkboxes on the right of each option and an Apply button at the bottom. */
+  .fs3-clear-all, .fs3-apply{ display:none; }
+  .filter-sheet--v3{ top:0; height:auto; max-height:none; border-radius:0; border:none; }
+  .filter-sheet--v3 .filter-sheet-grabber{ display:none; }
+  .filter-sheet--v3 .filter-sheet-head{ padding:calc(10px + env(safe-area-inset-top)) 20px 14px; border-bottom:1px solid #EAEAEA; }
+  .platform-android .filter-sheet--v3 .filter-sheet-head{ padding-top:max(52px, calc(10px + env(safe-area-inset-top))); }
+  .filter-sheet--v3 .sheet-header-btn--check{ display:none; }
+  .filter-sheet--v3 .fs3-clear-all{ display:block; min-width:44px; height:44px; padding:0 2px; background:none; border:none;
+    font-family:var(--font-riforma); font-weight:500; font-size:14px; color:#001489; -webkit-tap-highlight-color:transparent; }
+  .filter-sheet--v3 .filter-sheet-clear{ display:none; }
+  .filter-sheet--v3 .filter-sheet-footer{ padding:14px 20px calc(14px + env(safe-area-inset-bottom)); }
+  .filter-sheet--v3 .fs3-apply{ display:block; width:100%; height:48px; border:none; border-radius:50px; background:#001489; color:#fff;
+    font-family:var(--font-riforma); font-weight:500; font-size:16px; -webkit-tap-highlight-color:transparent; }
+  .filter-sheet--v3 .fs3-apply:active{ transform:scale(.98); }
+  /* Checkboxes in place of the tick marks */
+  .filter-sheet--v3 .fs2-opt svg{ opacity:1; width:22px; height:22px; padding:4px; box-sizing:border-box; border:1.5px solid #5A5A5A; border-radius:4px;
+    color:transparent; background:#fff; }
+  .filter-sheet--v3 .fs2-opt.is-on svg{ background:#001489; border-color:#001489; color:#fff; }
+  .filter-sheet--v3 .fs2-opt.is-on{ font-weight:400; }
+  :root[data-theme="dark"] .filter-sheet--v3 .filter-sheet-head{ border-bottom-color:var(--dm-seam); }
+  :root[data-theme="dark"] .filter-sheet--v3 .fs3-clear-all{ color:#8FA2FF; }
+  :root[data-theme="dark"] .filter-sheet--v3 .fs2-opt svg{ background:transparent; border-color:rgba(237,237,242,.75); }
+  :root[data-theme="dark"] .filter-sheet--v3 .fs2-opt.is-on svg{ background:#8FA2FF; border-color:#8FA2FF; color:var(--dm-surface); }
 </style>
 
 <div class="stage">
@@ -908,6 +933,13 @@
                 <p class="more-setting-desc">Filter by sections (Original language, Subtitle, Dubbed in, Video Quality) that slide in, with several languages per type</p>
               </div>
               <button class="more-toggle" id="filterV2Toggle" role="switch" aria-checked="false" aria-label="Toggle filters v2"></button>
+            </div>
+            <div class="more-setting-row">
+              <div class="more-setting-copy">
+                <div class="more-setting-name">Filters v3</div>
+                <p class="more-setting-desc">Filters v2 full screen, with checkboxes, Clear all at the top and an Apply button</p>
+              </div>
+              <button class="more-toggle" id="filterV3Toggle" role="switch" aria-checked="false" aria-label="Toggle filters v3"></button>
             </div>
           </div>
         </div>
@@ -1176,6 +1208,7 @@
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
             </button>
             <span class="filter-sheet-title">Filter by</span>
+            <button class="fs3-clear-all" id="fs3ClearAll">Clear all</button>
             <button class="sheet-header-btn sheet-header-btn--check" id="filterSheetCheck" aria-label="Apply filters">
               <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M1.5 6.2l3.8 3.8L13.5 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
@@ -1213,6 +1246,7 @@
           </div>
           <div class="filter-sheet-footer">
             <button class="filter-sheet-clear" id="filterSheetClear">Clear</button>
+            <button class="fs3-apply" id="fs3Apply">Apply</button>
           </div>
         </div>
 
@@ -2194,6 +2228,10 @@
     // Every time the sheet opens it starts on the section list; Clear resets v2's picks too.
     filterBtn.addEventListener('click', function(){ fs2Body.classList.remove('is-detail'); fs2RenderMain(); });
     document.getElementById('filterSheetClear').addEventListener('click', function(){ fs2RenderDetail(); fs2RenderMain(); });
+    // Filters v3: Clear all (top right) and Apply (bottom) reuse Clear and the check button.
+    document.getElementById('fs3ClearAll').addEventListener('click', function(){ document.getElementById('filterSheetClear').click(); });
+    document.getElementById('fs3Apply').addEventListener('click', function(){ document.getElementById('filterSheetCheck').click(); });
+    window.nsSetFiltersV3 = function(on){ sheet.classList.toggle('filter-sheet--v3', on); };
     window.nsSetFiltersV2 = function(on){
       sheet.classList.toggle('filter-sheet--v2', on);
       fs2Body.classList.remove('is-detail');
@@ -2267,13 +2305,18 @@
     bindMoreToggle('filterToggle', function(on){ v1On = on; syncFilterBtn(); }, false);
     // Filters v2 swaps in the sectioned panel (and shows the Filter button). v1 and v2 hold
     // their language picks differently, so switching starts from no filters.
-    bindMoreToggle('filterV2Toggle', function(on){
+    var v2Switch = false, v3On = false;
+    function applyV2(){
+      var on = v2Switch || v3On;                       // v3 is built on v2's sectioned panel
       var changed = on !== v2On;
       v2On = on;
       if(changed && clearBtn) clearBtn.click();
       if(window.nsSetFiltersV2) window.nsSetFiltersV2(on);
+      if(window.nsSetFiltersV3) window.nsSetFiltersV3(v3On);
       syncFilterBtn();
-    }, false);
+    }
+    bindMoreToggle('filterV2Toggle', function(on){ v2Switch = on; applyV2(); }, false);
+    bindMoreToggle('filterV3Toggle', function(on){ v3On = on; applyV2(); }, false);
   })();
 
   (function(){
