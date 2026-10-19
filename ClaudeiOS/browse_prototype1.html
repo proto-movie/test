@@ -792,13 +792,13 @@
     font-family:var(--font-riforma); font-weight:500; font-size:16px; -webkit-tap-highlight-color:transparent; }
   .filter-sheet--v3 .fs3-apply:active{ transform:scale(.98); }
   /* Checkboxes in place of the tick marks */
-  .filter-sheet--v3 .fs2-opt svg{ opacity:1; width:22px; height:22px; padding:4px; box-sizing:border-box; border:1.5px solid #5A5A5A; border-radius:4px;
+  .filter-sheet--v3 .fs2-opt svg{ opacity:1; width:22px; height:22px; padding:4px; box-sizing:border-box; border:1.5px solid #323232; border-radius:0;
     color:transparent; background:#fff; }
   .filter-sheet--v3 .fs2-opt.is-on svg{ background:#001489; border-color:#001489; color:#fff; }
   .filter-sheet--v3 .fs2-opt.is-on{ font-weight:400; }
   :root[data-theme="dark"] .filter-sheet--v3 .filter-sheet-head{ border-bottom-color:var(--dm-seam); }
   :root[data-theme="dark"] .filter-sheet--v3 .fs3-clear-all{ color:#8FA2FF; }
-  :root[data-theme="dark"] .filter-sheet--v3 .fs2-opt svg{ background:transparent; border-color:rgba(237,237,242,.75); }
+  :root[data-theme="dark"] .filter-sheet--v3 .fs2-opt svg{ background:transparent; border-color:var(--dm-text); }
   :root[data-theme="dark"] .filter-sheet--v3 .fs2-opt.is-on svg{ background:#8FA2FF; border-color:#8FA2FF; color:var(--dm-surface); }
 
   /* ─── FILTERS v4 (More → Filters v4): v3 with accordion sections ─── */
@@ -2239,7 +2239,11 @@
     fs2Main.addEventListener('click', function(e){
       if(fs4On){
         var opt = e.target.closest('.fs2-opt');
-        if(opt){ fs2Pick(opt.closest('.fs4-panel').dataset.sec, opt.dataset.val); fs4Sync(); return; }
+        if(opt){
+          var sec = opt.closest('.fs4-panel').dataset.sec, v = opt.dataset.val;
+          if(sec === 'quality' && filterState.quality === v) v = '';   // untick 4K = any quality
+          fs2Pick(sec, v); fs4Sync(); return;
+        }
         var r = e.target.closest('.fs2-row');
         if(!r) return;
         var k = r.dataset.sec;
@@ -2286,9 +2290,10 @@
       return '<button class="fs2-opt" data-val="' + esc(val) + '"><span>' + esc(label) + '</span>' + CHECK + '</button>';
     }
     function fs4SectionHTML(sec){
+      // No "Any" option in v4: nothing ticked means no filter.
       var opts = sec.key === 'quality'
-        ? QUALITIES.map(function(q){ return fs4OptHTML(q.v, q.label); })
-        : [fs4OptHTML('', 'Any')].concat(LANGS[sec.key].list.map(function(l){ return fs4OptHTML(l, l); }));
+        ? QUALITIES.filter(function(q){ return q.v; }).map(function(q){ return fs4OptHTML(q.v, q.label); })
+        : LANGS[sec.key].list.map(function(l){ return fs4OptHTML(l, l); });
       // Row and panel share a wrapper, so an open (sticky) header only sticks while its own options scroll by.
       return '<div class="fs4-section">' +
         fs2RowHTML(sec).replace('class="fs2-row"', 'class="fs2-row fs4-row" aria-expanded="false"') +
@@ -2309,7 +2314,7 @@
       Array.prototype.forEach.call(fs2Main.querySelectorAll('.fs4-row'), function(r){
         var k = r.dataset.sec, open = k === 'quality' ? fs4Open.quality : fs4Open.lang === k;
         var v = fs2Summary(k), val = r.querySelector('.fs2-row-value');
-        val.textContent = v; val.classList.toggle('is-set', v !== 'Any');
+        val.textContent = v === 'Any' ? '' : v; val.classList.toggle('is-set', v !== 'Any');   // blank when nothing's picked
         r.setAttribute('aria-expanded', open ? 'true' : 'false');
         var panel = fs2Main.querySelector('.fs4-panel[data-sec="' + k + '"]');
         panel.classList.toggle('is-open', open);
