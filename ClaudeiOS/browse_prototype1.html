@@ -775,6 +775,11 @@
   .filter-sheet--v3 .filter-sheet-head{ padding:calc(10px + env(safe-area-inset-top)) 20px 14px; border-bottom:1px solid #EAEAEA; }
   .platform-android .filter-sheet--v3 .filter-sheet-head{ padding-top:max(52px, calc(10px + env(safe-area-inset-top))); }
   .filter-sheet--v3 .sheet-header-btn--check{ display:none; }
+  /* Full-screen versions: the close is just a cross, no round button behind it */
+  .filter-sheet--v3 .sheet-header-btn--close{ background:none; border:none; box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none;
+    justify-content:flex-start; color:#323232; }
+  .filter-sheet--v3 .sheet-header-btn--close::after{ display:none; }
+  :root[data-theme="dark"] .filter-sheet--v3 .sheet-header-btn--close{ background:none; border:none; box-shadow:none; color:var(--dm-text); }
   .filter-sheet--v3 .fs3-clear-all{ display:block; min-width:44px; height:44px; padding:0 2px; background:none; border:none;
     font-family:var(--font-riforma); font-weight:500; font-size:14px; color:#001489; -webkit-tap-highlight-color:transparent; }
   .filter-sheet--v3 .filter-sheet-clear{ display:none; }
@@ -791,6 +796,18 @@
   :root[data-theme="dark"] .filter-sheet--v3 .fs3-clear-all{ color:#8FA2FF; }
   :root[data-theme="dark"] .filter-sheet--v3 .fs2-opt svg{ background:transparent; border-color:rgba(237,237,242,.75); }
   :root[data-theme="dark"] .filter-sheet--v3 .fs2-opt.is-on svg{ background:#8FA2FF; border-color:#8FA2FF; color:var(--dm-surface); }
+
+  /* ─── FILTERS v4 (More → Filters v4): v3 with accordion sections ─── */
+  .fs4-panel{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .32s cubic-bezier(.22,1,.36,1); }
+  .fs4-panel.is-open{ grid-template-rows:1fr; }
+  .fs4-panel-inner{ overflow:hidden; min-height:0; }
+  .fs4-panel.is-open .fs4-panel-inner{ border-bottom:1px solid #EAEAEA; padding-bottom:6px; }
+  .fs4-row svg{ transition:transform .25s ease; }
+  .fs4-row[aria-expanded="true"] svg{ transform:rotate(90deg); }
+  .fs4-row[aria-expanded="true"]{ border-bottom-color:transparent; }
+  .fs4-hint{ margin:2px 0 4px; }
+  .fs4-panel .fs2-opt:last-child{ border-bottom:none; }
+  :root[data-theme="dark"] .fs4-panel.is-open .fs4-panel-inner{ border-bottom-color:var(--dm-seam); }
 </style>
 
 <div class="stage">
@@ -940,6 +957,13 @@
                 <p class="more-setting-desc">Filters v2 full screen, with checkboxes, Clear all at the top and an Apply button</p>
               </div>
               <button class="more-toggle" id="filterV3Toggle" role="switch" aria-checked="false" aria-label="Toggle filters v3"></button>
+            </div>
+            <div class="more-setting-row">
+              <div class="more-setting-copy">
+                <div class="more-setting-name">Filters v4</div>
+                <p class="more-setting-desc">Filters v3 with sections that open as accordions in place (one language type open at a time)</p>
+              </div>
+              <button class="more-toggle" id="filterV4Toggle" role="switch" aria-checked="false" aria-label="Toggle filters v4"></button>
             </div>
           </div>
         </div>
@@ -2157,6 +2181,7 @@
     }
     // Two groups: the three language types together (one type at a time), then Video Quality.
     function fs2RenderMain(){
+      if(fs4On){ fs4Build(); return; }
       var langSecs = FS2_SECTIONS.filter(function(x){ return x.key !== 'quality'; });
       var quality = FS2_SECTIONS.filter(function(x){ return x.key === 'quality'; });
       fs2Main.innerHTML =
@@ -2199,35 +2224,101 @@
       fs2RenderMain();
     }
     fs2Main.addEventListener('click', function(e){
+      if(fs4On){
+        var opt = e.target.closest('.fs2-opt');
+        if(opt){ fs2Pick(opt.closest('.fs4-panel').dataset.sec, opt.dataset.val); fs4Sync(); return; }
+        var r = e.target.closest('.fs2-row');
+        if(!r) return;
+        var k = r.dataset.sec;
+        if(k === 'quality') fs4Open.quality = !fs4Open.quality;
+        else fs4Open.lang = fs4Open.lang === k ? null : k;   // one language type open at a time
+        fs4Sync();
+        return;
+      }
       var row = e.target.closest('.fs2-row');
       if(row) fs2Show(row.dataset.sec);
     });
     document.getElementById('fs2Back').addEventListener('click', fs2Back);
-    fs2Options.addEventListener('click', function(e){
-      var opt = e.target.closest('.fs2-opt');
-      if(!opt) return;
-      var v = opt.dataset.val;
-      if(fs2Open === 'quality'){
+    // Applies one tap on an option in section `sec` (shared by v2's slide-in and v4's accordions).
+    function fs2Pick(sec, v){
+      if(sec === 'quality'){
         filterState.quality = v;
       } else {
         filterState.lang = 'all';                       // v1's single pick isn't used here
         if(!v){
-          if(filterState.langType === fs2Open) filterState.langs = [];
+          if(filterState.langType === sec) filterState.langs = [];
         } else {
           // One type at a time: picking in another type starts that type fresh.
-          if(filterState.langType !== fs2Open){ filterState.langType = fs2Open; filterState.langs = []; }
+          if(filterState.langType !== sec){ filterState.langType = sec; filterState.langs = []; }
           var langs = fs2Langs().slice(), i = langs.indexOf(v);
           if(i === -1) langs.push(v); else langs.splice(i, 1);
           filterState.langs = langs;
         }
       }
+      rerenderActiveFilmList();
+    }
+    fs2Options.addEventListener('click', function(e){
+      var opt = e.target.closest('.fs2-opt');
+      if(!opt) return;
+      fs2Pick(fs2Open, opt.dataset.val);
       fs2RenderDetail();
       fs2RenderMain();
-      rerenderActiveFilmList();
     });
     // Every time the sheet opens it starts on the section list; Clear resets v2's picks too.
     filterBtn.addEventListener('click', function(){ fs2Body.classList.remove('is-detail'); fs2RenderMain(); });
     document.getElementById('filterSheetClear').addEventListener('click', function(){ fs2RenderDetail(); fs2RenderMain(); });
+    // ─── Filters v4: v3, but each section opens as an accordion in place (one language type at a time) ───
+    var fs4On = false, fs4Open = { lang: null, quality: false };
+    function fs4OptHTML(val, label){
+      return '<button class="fs2-opt" data-val="' + esc(val) + '"><span>' + esc(label) + '</span>' + CHECK + '</button>';
+    }
+    function fs4SectionHTML(sec){
+      var opts = sec.key === 'quality'
+        ? QUALITIES.map(function(q){ return fs4OptHTML(q.v, q.label); })
+        : [fs4OptHTML('', 'Any')].concat(LANGS[sec.key].list.map(function(l){ return fs4OptHTML(l, l); }));
+      return fs2RowHTML(sec).replace('class="fs2-row"', 'class="fs2-row fs4-row" aria-expanded="false"') +
+        '<div class="fs4-panel" data-sec="' + sec.key + '"><div class="fs4-panel-inner">' +
+        (sec.key === 'quality' ? '' : '<p class="fs2-hint fs4-hint"></p>') + opts.join('') + '</div></div>';
+    }
+    function fs4Build(){
+      var langSecs = FS2_SECTIONS.filter(function(x){ return x.key !== 'quality'; });
+      var quality = FS2_SECTIONS.filter(function(x){ return x.key === 'quality'; });
+      fs2Main.innerHTML =
+        '<div class="fs2-group"><div class="fs2-group-label">Language</div>' +
+          '<p class="fs2-group-note">Choose one type at a time</p>' + langSecs.map(fs4SectionHTML).join('') + '</div>' +
+        '<div class="fs2-group"><div class="fs2-group-label">Video</div>' + quality.map(fs4SectionHTML).join('') + '</div>';
+      fs4Sync();
+    }
+    // Updates the open/closed states, summaries, hints and checkboxes in place (keeps the animations).
+    function fs4Sync(){
+      Array.prototype.forEach.call(fs2Main.querySelectorAll('.fs4-row'), function(r){
+        var k = r.dataset.sec, open = k === 'quality' ? fs4Open.quality : fs4Open.lang === k;
+        var v = fs2Summary(k), val = r.querySelector('.fs2-row-value');
+        val.textContent = v; val.classList.toggle('is-set', v !== 'Any');
+        r.setAttribute('aria-expanded', open ? 'true' : 'false');
+        var panel = fs2Main.querySelector('.fs4-panel[data-sec="' + k + '"]');
+        panel.classList.toggle('is-open', open);
+        var mine = k === 'quality' ? null : (filterState.langType === k ? fs2Langs() : []);
+        Array.prototype.forEach.call(panel.querySelectorAll('.fs2-opt'), function(o){
+          var on = k === 'quality' ? filterState.quality === o.dataset.val
+            : (o.dataset.val ? mine.indexOf(o.dataset.val) !== -1 : !mine.length);
+          o.classList.toggle('is-on', on);
+        });
+        var hint = panel.querySelector('.fs4-hint');
+        if(hint){
+          var other = filterState.langType !== k && fs2Langs().length ? FS2_SECTIONS.filter(function(x){ return x.key === filterState.langType; })[0] : null;
+          hint.textContent = other ? 'Choosing a language here clears your ' + other.name + ' picks.' : 'Pick one or more.';
+        }
+      });
+    }
+    window.nsSetFiltersV4 = function(on){
+      fs4On = on;
+      sheet.classList.toggle('filter-sheet--v4', on);
+      fs4Open = { lang: null, quality: false };
+      fs2Body.classList.remove('is-detail');
+      fs2RenderMain();
+    };
+
     // Filters v3: Clear all (top right) and Apply (bottom) reuse Clear and the check button.
     document.getElementById('fs3ClearAll').addEventListener('click', function(){ document.getElementById('filterSheetClear').click(); });
     document.getElementById('fs3Apply').addEventListener('click', function(){ document.getElementById('filterSheetCheck').click(); });
@@ -2305,18 +2396,20 @@
     bindMoreToggle('filterToggle', function(on){ v1On = on; syncFilterBtn(); }, false);
     // Filters v2 swaps in the sectioned panel (and shows the Filter button). v1 and v2 hold
     // their language picks differently, so switching starts from no filters.
-    var v2Switch = false, v3On = false;
+    var v2Switch = false, v3On = false, v4On = false;
     function applyV2(){
-      var on = v2Switch || v3On;                       // v3 is built on v2's sectioned panel
+      var on = v2Switch || v3On || v4On;               // v3 and v4 are built on v2's sectioned panel
       var changed = on !== v2On;
       v2On = on;
       if(changed && clearBtn) clearBtn.click();
       if(window.nsSetFiltersV2) window.nsSetFiltersV2(on);
-      if(window.nsSetFiltersV3) window.nsSetFiltersV3(v3On);
+      if(window.nsSetFiltersV3) window.nsSetFiltersV3(v3On || v4On);   // v4 is full screen like v3
+      if(window.nsSetFiltersV4) window.nsSetFiltersV4(v4On);
       syncFilterBtn();
     }
     bindMoreToggle('filterV2Toggle', function(on){ v2Switch = on; applyV2(); }, false);
     bindMoreToggle('filterV3Toggle', function(on){ v3On = on; applyV2(); }, false);
+    bindMoreToggle('filterV4Toggle', function(on){ v4On = on; applyV2(); }, false);
   })();
 
   (function(){
