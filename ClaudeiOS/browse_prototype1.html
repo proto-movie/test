@@ -806,6 +806,9 @@
   .fs4-panel.is-open{ grid-template-rows:1fr; }
   .fs4-panel-inner{ overflow:hidden; min-height:0; }
   .fs4-panel.is-open .fs4-panel-inner{ padding-bottom:6px; }
+  /* An open section's header sticks to the top of the panel while its options scroll under it */
+  .fs4-row[aria-expanded="true"]{ position:sticky; top:-4px; z-index:2; background:#fff; box-shadow:0 1px 0 #EAEAEA; }
+  :root[data-theme="dark"] .fs4-row[aria-expanded="true"]{ background:var(--dm-surface); box-shadow:0 1px 0 var(--dm-seam); }
   /* Accordion chevrons: down when closed, up when open */
   .fs4-row svg{ transform:rotate(90deg); transition:transform .25s ease; }
   .fs4-row[aria-expanded="true"] svg{ transform:rotate(-90deg); }
@@ -2281,9 +2284,11 @@
       var opts = sec.key === 'quality'
         ? QUALITIES.map(function(q){ return fs4OptHTML(q.v, q.label); })
         : [fs4OptHTML('', 'Any')].concat(LANGS[sec.key].list.map(function(l){ return fs4OptHTML(l, l); }));
-      return fs2RowHTML(sec).replace('class="fs2-row"', 'class="fs2-row fs4-row" aria-expanded="false"') +
+      // Row and panel share a wrapper, so an open (sticky) header only sticks while its own options scroll by.
+      return '<div class="fs4-section">' +
+        fs2RowHTML(sec).replace('class="fs2-row"', 'class="fs2-row fs4-row" aria-expanded="false"') +
         '<div class="fs4-panel" data-sec="' + sec.key + '"><div class="fs4-panel-inner">' +
-        (sec.key === 'quality' ? '' : '<p class="fs2-hint fs4-hint"></p>') + opts.join('') + '</div></div>';
+        (sec.key === 'quality' ? '' : '<p class="fs2-hint fs4-hint"></p>') + opts.join('') + '</div></div></div>';
     }
     function fs4Build(){
       var langSecs = FS2_SECTIONS.filter(function(x){ return x.key !== 'quality'; });
