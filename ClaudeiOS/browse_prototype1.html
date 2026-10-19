@@ -738,6 +738,10 @@
   .fs2-body.is-detail .fs2-detail{ transform:translateX(0); }
   .fs2-group{ margin-top:10px; }
   .fs2-group + .fs2-group{ margin-top:26px; }
+  /* v2 / v3 section list: no lines between rows, just one between the Language and Video groups */
+  .filter-sheet--v2:not(.filter-sheet--v4) .fs2-main .fs2-row{ border-bottom:none; }
+  .filter-sheet--v2:not(.filter-sheet--v4) .fs2-main .fs2-group + .fs2-group{ margin-top:14px; padding-top:18px; border-top:1px solid #EAEAEA; }
+  :root[data-theme="dark"] .filter-sheet--v2:not(.filter-sheet--v4) .fs2-main .fs2-group + .fs2-group{ border-top-color:var(--dm-seam); }
   .fs2-group-label{ font-family:var(--font-riforma); font-weight:400; font-size:14px; text-transform:uppercase; letter-spacing:0; color:#5A5A5A; }
   .fs2-group-note{ font-family:var(--font-riforma); font-size:14px; color:#5A5A5A; margin:4px 0 2px; }
   .fs2-group .fs2-row:last-child{ border-bottom:none; }
