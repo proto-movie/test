@@ -733,19 +733,18 @@
   .fs2-body.is-detail .fs2-main{ transform:translateX(-28%); opacity:0; pointer-events:none; }
   .fs2-body.is-detail .fs2-detail{ transform:translateX(0); }
   .fs2-group{ margin-top:10px; }
-  .fs2-group + .fs2-group{ margin-top:18px; }
-  .fs2-group--quality{ border-top:1px solid #EAEAEA; }
-  :root[data-theme="dark"] .fs2-group--quality{ border-top-color:var(--dm-seam); }
+  .fs2-group + .fs2-group{ margin-top:26px; }
   .fs2-group-label{ font-family:var(--font-riforma); font-weight:400; font-size:14px; text-transform:uppercase; letter-spacing:.6px; color:#5A5A5A; }
   .fs2-group-note{ font-family:var(--font-riforma); font-size:14px; color:#5A5A5A; margin:4px 0 2px; }
   .fs2-group .fs2-row:last-child{ border-bottom:none; }
-  :root[data-theme="dark"] .fs2-group-label, :root[data-theme="dark"] .fs2-group-note, :root[data-theme="dark"] .fs2-hint{ color:var(--dm-text-dim); }
+  :root[data-theme="dark"] .fs2-group-label, :root[data-theme="dark"] .fs2-group-note, :root[data-theme="dark"] .fs2-hint,
+  :root[data-theme="dark"] .fs2-row-value, :root[data-theme="dark"] .fs2-row svg{ color:rgba(237,237,242,.75); }
   .fs2-row{ display:flex; align-items:center; gap:10px; width:100%; padding:16px 0; background:none; border:none;
     border-bottom:1px solid #EAEAEA; text-align:left; -webkit-tap-highlight-color:transparent; color:#323232; }
   .fs2-row-name{ flex:1; font-family:var(--font-riforma); font-weight:500; font-size:16px; }
-  .fs2-row-value{ font-family:var(--font-riforma); font-size:14px; color:#8A8A8A; max-width:48%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .fs2-row-value{ font-family:var(--font-riforma); font-size:14px; color:#5A5A5A; max-width:48%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .fs2-row-value.is-set{ color:#001489; font-weight:500; }
-  .fs2-row svg{ flex-shrink:0; color:#9A9A9A; }
+  .fs2-row svg{ flex-shrink:0; color:#6B6B6B; }
   .fs2-detail-head{ display:flex; align-items:center; gap:10px; padding:2px 0 10px; }
   .fs2-back{ width:36px; height:36px; margin-left:-8px; border:none; background:none; color:#323232; display:flex; align-items:center; justify-content:center;
     -webkit-tap-highlight-color:transparent; }
@@ -2099,7 +2098,7 @@
       { key: 'original', name: 'Original language' },
       { key: 'subtitles', name: 'Subtitle' },
       { key: 'dubbed', name: 'Dubbed in' },
-      { key: 'quality', name: 'Video Quality' }
+      { key: 'quality', name: 'Quality' }
     ];
     var QUALITIES = [{ v: '', label: 'Any' }, { v: '4k', label: '4K Ultra HD' }];
     var CHEVRON = '<svg width="8" height="13" viewBox="0 0 8 13" fill="none"><path d="M1.5 1.5l5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -2125,7 +2124,7 @@
       fs2Main.innerHTML =
         '<div class="fs2-group"><div class="fs2-group-label">Language</div>' +
           '<p class="fs2-group-note">Choose one type at a time</p>' + langSecs.map(fs2RowHTML).join('') + '</div>' +
-        '<div class="fs2-group fs2-group--quality">' + quality.map(fs2RowHTML).join('') + '</div>';
+        '<div class="fs2-group"><div class="fs2-group-label">Video</div>' + quality.map(fs2RowHTML).join('') + '</div>';
     }
     function fs2RenderDetail(){
       var key = fs2Open;
