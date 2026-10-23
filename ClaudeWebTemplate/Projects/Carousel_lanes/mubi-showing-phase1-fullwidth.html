@@ -3543,7 +3543,7 @@
      Same 1/2/3/4/5 steps as mubi.com/en/gb/showing, but each step from 3 up starts at a wider
      screen than mubi.com's (1186/1562/1938px), at the point where a double tile is big enough
      (about 406px wide) for its white hover panel to fit the synopsis without cutting it off:
-       1 under 810px, 2 from 810px, 3 from 1139px, 4 from 1790px, 5 from 2200px.
+       1 under 810px, 2 from 810px, 3 from 1139px, 4 from 1790px, 5 from 2056px.
      With N tiles, a peek fraction f each side and 4px gaps:
        tile = (page - 4px x (N + 1)) / (N + 2f)
      Carousel rows and spotlights page by N; plain grid rows show up to N tiles. Double tiles
@@ -3573,8 +3573,8 @@
   @media (min-width: 1139px) and (max-width: 1789px){
     :root[data-four-up-early="true"]{ --cols:4; }
   }
-  @media (min-width: 1790px) and (max-width: 2199px){ :root{ --cols:4; } }
-  @media (min-width: 2200px){ :root{ --cols:5; } }
+  @media (min-width: 1790px) and (max-width: 2055px){ :root{ --cols:4; } }
+  @media (min-width: 2056px){ :root{ --cols:5; } }
   /* tile = (page - 4px x (N + 1)) / (N + 2 x peek fraction); peek = tile x fraction */
   :root{ --peek-frac:0.27; }
   /* 2 per row (810–1138px): narrower peeks */
@@ -3832,6 +3832,30 @@
     :root[data-fixed-tiles="true"] .spotlight-color-bar{ height:124px; }
   }
 </style>
+<style id="doubletile-two-16x9">
+  /* Double tiles (film, Lane of Lanes, Lane of Genres) are exactly two 16:9 tiles tall at the
+     same width (8:9), replacing the 361:418 shape and the 504px minimum. Original Tile Sizes
+     keeps its fixed 418px. On hover the preview video fills the top half (itself 16:9, so nothing
+     is cropped; see tile-preview-video-js) and the white panel is at least the bottom half: it
+     shows the whole synopsis, growing up over the bottom of the video when it needs more room.
+     Buttons and synopsis sit at the top of the panel, the icons (or genres) at the bottom. */
+  :root:not([data-fixed-tiles="true"]) .row-section--doubletile .card-img-wrap,
+  :root:not([data-fixed-tiles="true"]) .coll-tile--double,
+  :root:not([data-fixed-tiles="true"]) .genre-tile--double{ height:auto; aspect-ratio:8 / 9; }
+  :root .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block{ height:auto; max-height:none; min-height:50%; justify-content:flex-start; }
+  :root .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis{ display:block; -webkit-line-clamp:unset; overflow:visible; margin-bottom:10px; }
+  :root .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block > :last-child{ margin-top:auto; }
+  /* Tiles per row from 810px up (see fit-cols-js): the most, up to 5, at which every double
+     tile's hover panel shows its whole synopsis while covering no more than 20% of the video.
+     The breakpoints in tiles-per-row only apply until the script has measured. */
+  :root[data-fit-cols="5"]{ --cols:5; }
+  :root[data-fit-cols="4"]{ --cols:4; }
+  :root[data-fit-cols="3"]{ --cols:3; }
+  :root[data-fit-cols="2"]{ --cols:2; }
+  :root[data-fit-cols="4"] .row-grid:not(.row-grid--carousel) > :nth-child(n+5),
+  :root[data-fit-cols="3"] .row-grid:not(.row-grid--carousel) > :nth-child(n+4),
+  :root[data-fit-cols="2"] .row-grid:not(.row-grid--carousel) > :nth-child(n+3){ display:none; }
+</style>
 <style id="fixed-next-zone">
   /* Original Tile Sizes: a dark "next" zone along the right edge of each row (the visible part of
      the peek, up to 110px), with the white arrow. It shows while the row is hovered, and clicking
@@ -3899,7 +3923,7 @@
     <button class="ns-confirm-btn ns-confirm-btn--ok" id="nsConfirmOk">OK</button>
   </div>
 </div>
-<div class="ns-infobar is-dismissed" id="nsInfobar">
+<div class="ns-infobar" id="nsInfobar">
   <span class="material-icons ns-infobar-icon" aria-hidden="true">info</span>
   <span class="ns-infobar-text">Press <kbd>S</kbd> for settings.</span>
   <button class="ns-infobar-close" id="nsInfobarClose" aria-label="Dismiss">
@@ -8688,10 +8712,60 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
     apply();
   })();
 </script>
+<script id="fit-cols-js">
+  // Tiles per row from 810px up: try 5, then 4, 3 and 2, and keep the first count at which no
+  // double tile's hover panel (always the whole synopsis) covers more than 20% of the 16:9 video
+  // in the tile's top half. Each count is measured with its own layout applied (all in one go,
+  // before the browser paints), so the answer doesn't flip-flop. Overrides the 4-tile settings;
+  // phones and Original Tile Sizes keep their own counts.
+  (function(){
+    var grid = document.getElementById('filmGrid');
+    if (!grid) return;
+    var root = document.documentElement;
+    var MAX_COVER = 0.2;                               // share of the video the panel may cover
+    var desktop = window.matchMedia('(min-width: 810px)');
+    function fits(){
+      return ![].some.call(grid.querySelectorAll('.row-section--doubletile:not(.new-to-mubi-section) .film-card'), function(card){
+        var wrap = card.querySelector('.card-img-wrap'), panel = card.querySelector('.card-synopsis-block');
+        if (!wrap || !panel || !wrap.offsetHeight) return false;
+        panel.style.minHeight = '0';
+        var half = wrap.offsetHeight / 2, over = panel.offsetHeight > half + half * MAX_COVER + 1;
+        panel.style.minHeight = '';
+        return over;
+      });
+    }
+    function fitCols(){
+      if (root.dataset.fixedTiles === 'true' || !desktop.matches) return '';
+      for (var c = 5; c > 2; c--) {
+        root.dataset.fitCols = c;
+        if (fits()) return String(c);
+      }
+      return '2';
+    }
+    function check(){
+      var was = root.dataset.fitCols || '';
+      root.dataset.fitCols = '';
+      var now = fitCols();
+      root.dataset.fitCols = now;
+      if (now === was) return;
+      // New tile count: re-render so every carousel restarts on page 1 with the right paging.
+      if (typeof renderGrid === 'function') renderGrid();
+      window.dispatchEvent(new Event('resize'));
+    }
+    var pending = 0;
+    function soon(){ clearTimeout(pending); pending = setTimeout(check, 80); }
+    window.addEventListener('resize', soon);
+    new MutationObserver(soon).observe(grid, { childList: true });
+    new MutationObserver(soon).observe(root, { attributes: true, attributeFilter: ['data-four-up', 'data-four-up-early', 'data-fixed-tiles'] });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(check);
+    window.addEventListener('load', check);
+    check();
+  })();
+</script>
 <script id="tile-preview-video-js">
   // Hover preview on film tiles (desktop with a mouse): after the tile has scaled up, the top
-  // marquee's video fades in over the still — the area above the white info panel on double
-  // tiles, the whole image on normal tiles — with a "Placeholder video" watermark. One shared
+  // marquee's video fades in over the still — the top half on double tiles,
+  // the whole image on normal tiles — with a "Placeholder video" watermark. One shared
   // <video> moves between tiles, and nothing downloads until the first hover.
   (function(){
     var grid = document.getElementById('filmGrid');
@@ -8717,8 +8791,8 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
       timer = setTimeout(function(){
         if (current !== card || !eligible(card)) return;
         if (!video.getAttribute('src')) video.src = SRC;
-        var panel = card.closest('.row-section--doubletile') && card.querySelector('.card-synopsis-block');
-        box.style.bottom = panel ? panel.offsetHeight + 'px' : '0';
+        // Double tiles: the top half (the panel can grow up over it to fit a long synopsis).
+        box.style.bottom = card.closest('.row-section--doubletile') ? '50%' : '0';
         box.classList.remove('is-on');
         card.querySelector('.card-img-wrap').appendChild(box);
         var p = video.play();
