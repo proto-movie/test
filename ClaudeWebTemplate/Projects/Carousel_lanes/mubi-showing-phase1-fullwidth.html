@@ -3555,23 +3555,7 @@
   }
   @media (min-width: 1139px) and (max-width: 1789px){
     :root{ --cols:3; }
-    :root:not([data-four-up="true"]):not([data-four-up-early="true"]) .row-grid:not(.row-grid--carousel) > :nth-child(n+4){ display:none; }
-    :root[data-four-up-early="true"] .row-grid:not(.row-grid--carousel) > :nth-child(n+5){ display:none; }
-  }
-  /* Settings → 4 Tiles from 1496px: switches to 4 per row from 1496px instead of 1790px. */
-  @media (min-width: 1496px) and (max-width: 1789px){
-    :root[data-four-up="true"]{ --cols:4; }
-  }
-  @media (min-width: 1139px) and (max-width: 1495px){
-    :root[data-four-up="true"]:not([data-four-up-early="true"]) .row-grid:not(.row-grid--carousel) > :nth-child(n+4){ display:none; }
-  }
-  @media (min-width: 1496px) and (max-width: 1789px){
-    :root[data-four-up="true"] .row-grid:not(.row-grid--carousel) > :nth-child(n+5){ display:none; }
-  }
-  /* Settings → 4 Tiles from 1139px: 4 per row across the whole 1139–1789px range (overrides the
-     1496px setting above when both are on). */
-  @media (min-width: 1139px) and (max-width: 1789px){
-    :root[data-four-up-early="true"]{ --cols:4; }
+    .row-grid:not(.row-grid--carousel) > :nth-child(n+4){ display:none; }
   }
   @media (min-width: 1790px) and (max-width: 2055px){ :root{ --cols:4; } }
   @media (min-width: 2056px){ :root{ --cols:5; } }
@@ -3782,20 +3766,6 @@
   .row-section--doubletile:not(.new-to-mubi-section) .film-card:hover .card-img{ opacity:1; }
   .row-section--doubletile:not(.new-to-mubi-section) .card-hover-still{ transition:opacity .6s cubic-bezier(0.4, 0, 0.2, 1); }
 </style>
-<style id="four-up-early-panel">
-  /* 4 Tiles from 1139px: below 1496px the double tiles are only ~245–345px wide, so a synopsis
-     wraps to more lines. Allow up to 11 lines (instead of 7) and let the hover panel grow up to
-     three quarters of the tile there, so the full synopsis still shows. */
-  @media (min-width: 1139px) and (max-width: 1495px){
-    :root[data-four-up-early="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block{ max-height:75%; }
-    :root[data-four-up-early="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis{ -webkit-line-clamp:11; }
-  }
-  /* Narrowest end (tiles ~245–270px): up to 14 lines, panel up to 80% of the tile. */
-  @media (min-width: 1139px) and (max-width: 1260px){
-    :root[data-four-up-early="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis-block{ max-height:80%; }
-    :root[data-four-up-early="true"] .row-section--doubletile:not(.new-to-mubi-section) .card-synopsis{ -webkit-line-clamp:14; }
-  }
-</style>
 <style id="tile-hover-tweaks">
   /* Continue Watching: the progress bar stays put on hover (no slide). */
   .film-card:hover .card-progress-track{ transform:none; }
@@ -3855,6 +3825,16 @@
   :root[data-fit-cols="4"] .row-grid:not(.row-grid--carousel) > :nth-child(n+5),
   :root[data-fit-cols="3"] .row-grid:not(.row-grid--carousel) > :nth-child(n+4),
   :root[data-fit-cols="2"] .row-grid:not(.row-grid--carousel) > :nth-child(n+3){ display:none; }
+</style>
+<style id="width-panel">
+  /* Screen-width readout (bottom right): the window's width and how many tiles per row that
+     gives, to see which breakpoint you're in. Moves up while the settings hint bar shows. */
+  .ns-width-panel{ position:fixed; right:16px; bottom:16px; z-index:1105; padding:8px 12px; border-radius:8px;
+    background:rgba(0,0,0,0.78); color:#fff; font-family:'DM Sans', sans-serif; font-size:13px; line-height:1.3;
+    font-variant-numeric:tabular-nums; pointer-events:none; box-shadow:0 2px 12px rgba(0,0,0,0.25); transition:bottom .25s ease; }
+  .ns-width-panel b{ font-weight:700; }
+  .ns-width-panel span{ opacity:.7; }
+  body:has(.ns-infobar:not(.is-dismissed)) .ns-width-panel{ bottom:64px; }
 </style>
 <style id="fixed-next-zone">
   /* Original Tile Sizes: a dark "next" zone along the right edge of each row (the visible part of
@@ -3923,6 +3903,7 @@
     <button class="ns-confirm-btn ns-confirm-btn--ok" id="nsConfirmOk">OK</button>
   </div>
 </div>
+<div class="ns-width-panel" id="nsWidthPanel" aria-hidden="true"></div>
 <div class="ns-infobar" id="nsInfobar">
   <span class="material-icons ns-infobar-icon" aria-hidden="true">info</span>
   <span class="ns-infobar-text">Press <kbd>S</kbd> for settings.</span>
@@ -3994,22 +3975,8 @@
             </div>
             <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
               <div>
-                <span class="ns-toggle-label">4 Tiles from 1496px</span>
-                <div class="ns-toggle-desc">Fits 4 tiles per row from 1496px wide (normally 3 until 1790px).</div>
-              </div>
-              <label class="ns-switch"><input type="checkbox" id="fourUpToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <div>
-                <span class="ns-toggle-label">4 Tiles from 1139px</span>
-                <div class="ns-toggle-desc">Fits 4 tiles per row from 1139px wide (overrides the 1496px option).</div>
-              </div>
-              <label class="ns-switch"><input type="checkbox" id="fourUpEarlyToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
-            </div>
-            <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
-              <div>
                 <span class="ns-toggle-label">Original Tile Sizes</span>
-                <div class="ns-toggle-desc">Tiles keep the original page's sizes instead of scaling; rows start 40px from the left and run to the right edge of the screen, with peeking tiles (overrides the 4-tile options, 810px and up).</div>
+                <div class="ns-toggle-desc">Tiles keep the original page's sizes instead of scaling; rows start 40px from the left and run to the right edge of the screen, with peeking tiles (810px and up).</div>
               </div>
               <label class="ns-switch"><input type="checkbox" id="fixedTilesToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
             </div>
@@ -6858,7 +6825,7 @@ function nsLoadState() {
 // Phase 1 fixed layout defaults: Top Picks (renamed FEATURED), Lane of Lanes, Coming Soon
 // and Lane of Genres (Colour + Stacked) all on by default, seeded with the Priya Nair
 // persona so Continue Watching / Your Watchlist / Suggested for You all have content to show.
-const nsState = Object.assign({ watchlist: nsCatalogSlugs(2, 20), continueWatching: nsCatalogSlugs(22, 3), watched: nsCatalogSlugs(25, 20), marquee: ['it-was-just-an-accident'], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 5, laneOfLanes: true, allDoubleTiles: false, carouselRows: true, carouselProgress: true, rowSpacing: true, fourUp: true, fourUpEarly: true, topTen: true, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', comingSoon: true, laneOfGenres: true, laneOfGenresStyle: 'stack', marqueeDisplayCount: 1, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
+const nsState = Object.assign({ watchlist: nsCatalogSlugs(2, 20), continueWatching: nsCatalogSlugs(22, 3), watched: nsCatalogSlugs(25, 20), marquee: ['it-was-just-an-accident'], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 5, laneOfLanes: true, allDoubleTiles: false, carouselRows: true, carouselProgress: true, rowSpacing: true, topTen: true, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', comingSoon: true, laneOfGenres: true, laneOfGenresStyle: 'stack', marqueeDisplayCount: 1, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
 
 // Dark mode is a personal display preference, not "content" — kept in its own localStorage
 // key rather than nsState, so it isn't pushed to the shared Google Sheet (see NS_SHEET_API_URL
@@ -8684,40 +8651,12 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
     run();
   })();
 </script>
-<script id="four-up-js">
-  // Settings → 4 Tiles from 1496px (off by default; saved with the other settings). The tile
-  // count lives in CSS (--cols); switching re-renders the rows so every carousel starts on page 1
-  // with paging worked out for the new count.
-  (function(){
-    if (typeof nsState === 'undefined') return;
-    // [toggle id, nsState key, <html> data attribute]
-    var OPTS = [['fourUpToggle', 'fourUp', 'fourUp'], ['fourUpEarlyToggle', 'fourUpEarly', 'fourUpEarly']];
-    function apply(){
-      OPTS.forEach(function(o){
-        document.documentElement.dataset[o[2]] = nsState[o[1]] ? 'true' : 'false';
-        var t = document.getElementById(o[0]);
-        if (t) t.checked = !!nsState[o[1]];
-      });
-    }
-    OPTS.forEach(function(o){
-      var t = document.getElementById(o[0]);
-      if (t) t.addEventListener('change', function(){
-        nsState[o[1]] = t.checked;
-        if (typeof nsSaveState === 'function') nsSaveState();
-        apply();
-        if (typeof renderGrid === 'function') renderGrid();
-        window.dispatchEvent(new Event('resize'));
-      });
-    });
-    apply();
-  })();
-</script>
 <script id="fit-cols-js">
   // Tiles per row from 810px up: try 5, then 4, 3 and 2, and keep the first count at which no
   // double tile's hover panel (always the whole synopsis) covers more than 20% of the 16:9 video
   // in the tile's top half. Each count is measured with its own layout applied (all in one go,
-  // before the browser paints), so the answer doesn't flip-flop. Overrides the 4-tile settings;
-  // phones and Original Tile Sizes keep their own counts.
+  // before the browser paints), so the answer doesn't flip-flop. Phones and
+  // Original Tile Sizes keep their own counts.
   (function(){
     var grid = document.getElementById('filmGrid');
     if (!grid) return;
@@ -8756,10 +8695,32 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
     function soon(){ clearTimeout(pending); pending = setTimeout(check, 80); }
     window.addEventListener('resize', soon);
     new MutationObserver(soon).observe(grid, { childList: true });
-    new MutationObserver(soon).observe(root, { attributes: true, attributeFilter: ['data-four-up', 'data-four-up-early', 'data-fixed-tiles'] });
+    new MutationObserver(soon).observe(root, { attributes: true, attributeFilter: ['data-fixed-tiles'] });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(check);
     window.addEventListener('load', check);
     check();
+  })();
+</script>
+<script id="width-panel-js">
+  // Keeps the screen-width readout current: width in px plus tiles per row (the measured count
+  // from fit-cols-js, else --cols from the CSS breakpoints).
+  (function(){
+    var panel = document.getElementById('nsWidthPanel');
+    if (!panel) return;
+    var root = document.documentElement;
+    function update(){
+      var w = window.innerWidth, layout;
+      if (w < 810) layout = 'phone layout';
+      else if (root.dataset.fixedTiles === 'true') layout = 'Original Tile Sizes';
+      else {
+        var n = root.dataset.fitCols || getComputedStyle(root).getPropertyValue('--cols').trim();
+        layout = n + (n === '1' ? ' tile' : ' tiles') + ' per row';
+      }
+      panel.innerHTML = '<b>' + w + 'px</b> <span>&middot; ' + layout + '</span>';
+    }
+    window.addEventListener('resize', update);
+    new MutationObserver(update).observe(root, { attributes: true, attributeFilter: ['data-fit-cols', 'data-fixed-tiles'] });
+    update();
   })();
 </script>
 <script id="tile-preview-video-js">
