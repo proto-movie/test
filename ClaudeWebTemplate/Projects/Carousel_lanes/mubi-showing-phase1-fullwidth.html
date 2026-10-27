@@ -3832,6 +3832,10 @@
      but each row and spotlight filmstrip is fixed on its first page. Tiles past the ones that fit
      are hidden (tagged .is-stage1-hidden by stage1-js), along with everything used for paging. */
   .row-see-all--stage1{ display:none; }
+  /* Collection rows' "Read More" reads "See All" in Stage 1. */
+  .row-see-all-label--stage1{ display:none; }
+  :root[data-stage1="true"] .row-see-all-label--stage1{ display:inline; }
+  :root[data-stage1="true"] .row-see-all-label--read-more{ display:none; }
   :root[data-stage1="true"] .row-section.is-stage1-more .row-see-all--stage1{ display:flex; }
   :root[data-stage1="true"] .is-stage1-hidden{ visibility:hidden !important; pointer-events:none !important; }
   :root[data-stage1="true"] .row-carousel-arrow,
@@ -3893,8 +3897,8 @@
   <div class="mob-drawer-panel">
     <nav>
       <a href="mubi-showing.html" class="mob-drawer-link is-active">Now Showing</a>
-      <a href="explore.html" class="mob-drawer-link">Browse</a>
-      <a href="watchlist.html" class="mob-drawer-link">Watchlist</a>
+      <a href="https://mubi.com/en/browse" class="mob-drawer-link">Browse</a>
+      <a href="https://mubi.com/en/watchlist" class="mob-drawer-link">Watchlist</a>
       <div class="mob-drawer-sep"></div>
       <a href="#" class="mob-drawer-link">Notebook</a>
       <a href="film-database-v2.html" class="mob-drawer-link">Film Database</a>
@@ -4236,8 +4240,8 @@
 
     <nav class="nav-links" aria-label="Main navigation">
       <a href="mubi-showing.html" class="nav-link is-active">Now Showing</a>
-      <a href="explore.html" class="nav-link">Browse</a>
-      <a href="watchlist.html" class="nav-link">Watchlist</a>
+      <a href="https://mubi.com/en/browse" class="nav-link">Browse</a>
+      <a href="https://mubi.com/en/watchlist" class="nav-link">Watchlist</a>
     </nav>
 
     <div style="flex: 1;"></div>
@@ -4572,7 +4576,7 @@
 
 <!-- ─── BROWSE CTA ─── -->
 <div class="browse-cta">
-  <a href="explore.html" class="browse-cta-link">Browse All</a>
+  <a href="https://mubi.com/en/browse" class="browse-cta-link">Browse All</a>
 </div>
 
 <!-- ─── FOOTER ─── -->
@@ -5718,7 +5722,7 @@ function nsFilmGenres(film) {
 // merge (see nsMergeWatchNext) can render Continue Watching / Your Watchlist row markup
 // on demand without duplicating the template.
 function filmRowSectionHTML(row, rowIdx) {
-  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab, isTopTen, isGenreLane, carousel, collSlug, totalItems, extraFilm, readMore } = row;
+  const { title, films: rowFilms, doubletile, isContinueWatching, isNewToMubi, capacity, showMergeFab, showUnmergeFab, isTopTen, isGenreLane, carousel, collSlug, totalItems, extraFilm, readMore, seeAllHref: rowSeeAllHref } = row;
   const emptySlotCount = capacity ? Math.max(0, capacity - rowFilms.length) : 0;
   // Real MUBI collection size (from mubi-collections.csv, see NUMBERED_ROW_COLLECTIONS) —
   // only set where it's genuinely known, never guessed. Drives the terminal "See All" tile's
@@ -5728,7 +5732,7 @@ function filmRowSectionHTML(row, rowIdx) {
   // NUMBERED_ROW_COLLECTIONS before wiring this up, not just assumed from the CSV snapshot.
   const seeAllHref = isGenreLane
     ? `explore.html?genre=${encodeURIComponent(title)}`
-    : collSlug ? `https://mubi.com/en/gb/collections/${encodeURIComponent(collSlug)}` : null;
+    : collSlug ? `https://mubi.com/en/gb/collections/${encodeURIComponent(collSlug)}` : rowSeeAllHref || null;
   const tilesHTML = rowFilms.map((film, filmIdx) => {
     const posX = Math.round(film.fX * 100);
     const posY = Math.round(film.fY * 100);
@@ -5792,7 +5796,7 @@ function filmRowSectionHTML(row, rowIdx) {
           </div>
         ` : `<span class="row-title">${title}</span>`}
         ${readMore && seeAllHref
-          ? `<a class="row-see-all" href="${seeAllHref}" target="_self">Read More <span class="material-icons" style="font-size:16px;">chevron_right</span></a>`
+          ? `<a class="row-see-all" href="${seeAllHref}" target="_self"><span class="row-see-all-label--read-more">Read More</span><span class="row-see-all-label--stage1">See All</span> <span class="material-icons" style="font-size:16px;">chevron_right</span></a>`
           : isNewToMubi ? '' : carousel ? (seeAllHref
             ? `<a class="row-see-all row-see-all--stage1" href="${seeAllHref}" target="_self">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></a>`
             : `<span class="row-see-all row-see-all--stage1">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></span>`)
@@ -6018,7 +6022,7 @@ function renderGrid() {
     ...(topTenRow ? [topTenRow] : []),
     ...(watchNextFilms && watchNextFilms.length ? [{ title: 'WATCH NEXT', films: watchNextFilms, showUnmergeFab: true }] : [
       ...(continueWatchingFilms.length ? [{ title: 'CONTINUE WATCHING', films: continueWatchingFilms, isContinueWatching: true, showMergeFab: canMergeWatchNext }] : []),
-      ...(watchlistFilms.length ? [{ title: 'YOUR WATCHLIST', films: watchlistFilms }] : []),
+      ...(watchlistFilms.length ? [{ title: 'YOUR WATCHLIST', films: watchlistFilms, seeAllHref: 'https://mubi.com/en/watchlist' }] : []),
     ]),
     { title: 'NEW ON MUBI', films: nsApiRow('new-on-mubi', NEW_ON_MUBI_FILMS) },
     // Real film set from api.mubi.com/v4/collections/mubi-releases/films (all 91 pages,
@@ -6056,7 +6060,7 @@ function renderGrid() {
     // Always sits at the very end of the page, just above the footer, regardless of Style
     // (tiles reuses the isCollections row-type/carousel machinery below via isGenreTiles;
     // BFI-like renders via bfiGenreSectionHTML instead).
-    ...(nsState.laneOfGenres ? [{ title: 'Browse by', isCollections: true, isGenreTiles: true, colls: NS_LANE_OF_GENRES_ITEMS }] : []),
+    ...(nsState.laneOfGenres ? [{ title: 'Browse by', isCollections: true, isGenreTiles: true, colls: NS_LANE_OF_GENRES_ITEMS, seeAllHref: 'https://mubi.com/en/browse' }] : []),
   // Any film row that ends up with fewer than a full lane (4, matching .row-grid's widest
   // breakpoint) gets its remaining slots padded with the same empty-state placeholder used
   // for Continue Watching / Your Watchlist — "Essential Viewing" is exempt since its 6-tile
@@ -6108,7 +6112,9 @@ function renderGrid() {
       const carouselTilesHTML = collSeeAllHTML ? buildCollTiles(row.colls.slice(0, -1)) : tilesHTML;
       return row.carousel ? `
     <div class="row-section${row.doubletile ? ' row-section--doubletile' : ''}">
-      <div class="row-header"><span class="row-title">${row.title}</span></div>
+      <div class="row-header"><span class="row-title">${row.title}</span>${row.seeAllHref
+        ? `<a class="row-see-all row-see-all--stage1" href="${row.seeAllHref}" target="_self">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></a>`
+        : ''}</div>
       <div class="row-carousel-wrap" id="rowCarousel-${rowIdx}">
         <div class="row-carousel-inner">
           <div class="row-carousel-peek-hint row-carousel-peek-hint--prev"><div class="row-carousel-peek-hint-img"></div></div>
