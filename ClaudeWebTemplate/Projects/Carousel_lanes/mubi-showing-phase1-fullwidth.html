@@ -3827,6 +3827,29 @@
   :root[data-fit-cols="3"] .row-grid:not(.row-grid--carousel) > :nth-child(n+4),
   :root[data-fit-cols="2"] .row-grid:not(.row-grid--carousel) > :nth-child(n+3){ display:none; }
 </style>
+<style id="stage1">
+  /* Settings → Stage 1: the grid and tile sizes stay exactly as the carousel rows lay them out,
+     but each row and spotlight filmstrip is fixed on its first page. Tiles past the ones that fit
+     are hidden (tagged .is-stage1-hidden by stage1-js), along with everything used for paging. */
+  .row-see-all--stage1{ display:none; }
+  :root[data-stage1="true"] .row-section.is-stage1-more .row-see-all--stage1{ display:flex; }
+  :root[data-stage1="true"] .is-stage1-hidden{ visibility:hidden !important; pointer-events:none !important; }
+  :root[data-stage1="true"] .row-carousel-arrow,
+  :root[data-stage1="true"] .row-carousel-peek-hint,
+  :root[data-stage1="true"] .spotlight-arrow,
+  :root[data-stage1="true"] .fixed-next-zone,
+  :root[data-stage1="true"] .row-progress{ display:none !important; }
+  /* While Stage 1 is on, Settings shows nothing but the Stage 1 toggle: no tabs, no other
+     columns, no other rows. The hidden settings keep their saved values. */
+  .ns-stage1-row{ flex-direction:column; align-items:stretch; gap:12px; }
+  .ns-stage-option{ display:flex; align-items:flex-start; gap:10px; cursor:pointer; }
+  .ns-stage-option input{ flex-shrink:0; width:16px; height:16px; margin:1px 0 0; accent-color:#001489; cursor:pointer; }
+  :root[data-stage1="true"] .settings-tabs{ display:none; }
+  :root[data-stage1="true"] .settings-tab-panel{ display:none; }
+  :root[data-stage1="true"] .settings-tab-panel[data-settings-panel="page"]{ display:flex; }
+  :root[data-stage1="true"] .settings-column:not(:has(.ns-stage1-row)){ display:none; }
+  :root[data-stage1="true"] .settings-column:has(.ns-stage1-row) .settings-list > :not(.ns-stage1-row){ display:none; }
+</style>
 <style id="width-panel">
   /* Screen-width readout (bottom right): the window's width and how many tiles per row that
      gives, to see which breakpoint you're in. Moves up while the settings hint bar shows. */
@@ -3952,6 +3975,22 @@
                 </div>
                 <label class="ns-switch"><input type="checkbox" id="colSpacingToggle"><span class="ns-switch-track"><span class="ns-switch-thumb"></span></span></label>
               </div>
+            </div>
+            <div class="ns-toggle-row ns-stage1-row" role="radiogroup" aria-label="Stage" style="padding-left:18px; padding-right:18px;">
+              <label class="ns-stage-option">
+                <input type="radio" name="nsStage" value="1">
+                <div>
+                  <span class="ns-toggle-label">Stage 1</span>
+                  <div class="ns-toggle-desc">Same tile sizes and grid, but no carousels: each row shows only the tiles that fit, with no paging, peeks, arrows, progress or side scrolling, and a See All link by the title (on hover) where a row has more. No other settings.</div>
+                </div>
+              </label>
+              <label class="ns-stage-option">
+                <input type="radio" name="nsStage" value="2">
+                <div>
+                  <span class="ns-toggle-label">Stage 2</span>
+                  <div class="ns-toggle-desc">The full prototype: carousel rows and all the settings below.</div>
+                </div>
+              </label>
             </div>
             <div class="ns-toggle-row" style="padding-left:18px; padding-right:18px;">
               <div>
@@ -5754,7 +5793,10 @@ function filmRowSectionHTML(row, rowIdx) {
         ` : `<span class="row-title">${title}</span>`}
         ${readMore && seeAllHref
           ? `<a class="row-see-all" href="${seeAllHref}" target="_self">Read More <span class="material-icons" style="font-size:16px;">chevron_right</span></a>`
-          : isNewToMubi || carousel ? '' : seeAllHref
+          : isNewToMubi ? '' : carousel ? (seeAllHref
+            ? `<a class="row-see-all row-see-all--stage1" href="${seeAllHref}" target="_self">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></a>`
+            : `<span class="row-see-all row-see-all--stage1">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></span>`)
+          : seeAllHref
           ? `<a class="row-see-all" href="${seeAllHref}" target="_self">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></a>`
           : `<span class="row-see-all">See All <span class="material-icons" style="font-size:16px;">chevron_right</span></span>`}
       </div>
@@ -5825,6 +5867,9 @@ const NS_API_ROWS = {"mubi-releases":[{"title":"Teenage Sex and Death at Camp Mi
 function nsSlideMs() {
   return window.matchMedia('(max-width: 809px)').matches ? 500 : 1600;
 }
+// Rows use the carousel's markup and grid when Carousel Rows or Stage 1 is on (Stage 1 keeps
+// the grid but locks every row to its first page; see stage1-js).
+function nsCarouselLayout() { return !!(nsState.carouselRows || nsState.stage1); }
 function nsCols() {
   return parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cols'), 10) || 4;
 }
@@ -5888,9 +5933,9 @@ function renderGrid() {
   // Carousel rows show the whole list instead. The seeded Continue Watching list is only 3
   // films, so it's padded to 10 from the catalogue (skipping anything already in either list)
   // to give it something to page through.
-  const watchCap = nsState.carouselRows ? Infinity : 4;
+  const watchCap = nsCarouselLayout() ? Infinity : 4;
   const cwSlugs = nsState.continueWatching.slice();
-  if (nsState.carouselRows && cwSlugs.length < 10) {
+  if (nsCarouselLayout() && cwSlugs.length < 10) {
     NS_CATALOG.slice(45).some(f => {
       if (!cwSlugs.includes(f._slug) && !nsState.watchlist.includes(f._slug)) cwSlugs.push(f._slug);
       return cwSlugs.length >= 10;
@@ -5918,7 +5963,7 @@ function renderGrid() {
   // just repeat them.
   const spotlightCollSlugs = spotlightColls.map(c => c && c._slug).filter(Boolean);
   // Carousel rows page through every collection (no terminal See All tile); a plain grid still shows 4.
-  const laneOfLanesColls = NS_COLLECTIONS.filter(c => !spotlightCollSlugs.includes(c._slug)).slice(0, nsState.carouselRows ? Infinity : 4);
+  const laneOfLanesColls = NS_COLLECTIONS.filter(c => !spotlightCollSlugs.includes(c._slug)).slice(0, nsCarouselLayout() ? Infinity : 4);
 
   // "New to MUBI?" only makes sense for a viewer with zero watchlist/continue-watching/
   // watched history — i.e. the Ava Chen persona, or anyone in that same fresh state.
@@ -5951,7 +5996,7 @@ function renderGrid() {
   // the very top spot and Top Picks drops in right below it instead. It's meant to replace
   // Your Watchlist and MUBI Releases (not Continue Watching / Watch Next), so both of those
   // are hidden from the page while it's on.
-  const topTenRow = nsState.topTen ? { title: 'FEATURED', films: TOP_TEN_FILMS.slice(0, nsState.carouselRows ? 8 : 4), doubletile: true } : null;
+  const topTenRow = nsState.topTen ? { title: 'FEATURED', films: TOP_TEN_FILMS.slice(0, nsCarouselLayout() ? 8 : 4), doubletile: true } : null;
   // MUBI Releases shouldn't repeat whatever's already showing in FEATURED right above it,
   // or whichever film is currently the Marquee's own hero pick. Matched by title rather than
   // slug — the same film sometimes carries a slightly different slug between TOP_TEN_FILMS/
@@ -5960,9 +6005,9 @@ function renderGrid() {
   const marqueeTitles = new Set(nsMarqueeActive().map(slug => nsFilmBySlug(slug)).filter(Boolean).map(f => f.title.trim().toLowerCase()));
   const mubiReleasesFilms = nsApiRow('mubi-releases', MUBI_RELEASES_FILMS).filter(f => !featuredTitles.has(f.title.trim().toLowerCase()) && !marqueeTitles.has(f.title.trim().toLowerCase()));
   const genreLaneFilms = (nsState.genreLane && nsState.genreLaneGenre)
-    ? nsFilmsByGenre(nsState.genreLaneGenre, nsState.carouselRows ? 8 : 4)
+    ? nsFilmsByGenre(nsState.genreLaneGenre, nsCarouselLayout() ? 8 : 4)
     : [];
-  const comingSoonFilms = nsState.comingSoon ? nsComingSoonFilms().slice(0, nsState.carouselRows ? Infinity : 4) : [];
+  const comingSoonFilms = nsState.comingSoon ? nsComingSoonFilms().slice(0, nsCarouselLayout() ? Infinity : 4) : [];
   // Phase 1 fixed layout: Marquee, FEATURED (double tile, no rank numbers), Continue
   // Watching, Watchlist, New on MUBI, MUBI Releases (double tile), Spotlight #1, Trending,
   // Curator's Spotlight (double tile), Suggested for You, Spotlight #2, Coming Soon (double
@@ -6028,7 +6073,7 @@ function renderGrid() {
   // branch below) once they actually have more than one lane's worth (4) of content to page
   // through. Essential Viewing keeps its own fixed 6-tile layout; Spotlight is unrelated.
   .map(row => {
-    if (!nsState.carouselRows || row.isSpotlight || row.isNewToMubi || (row.isGenreTiles && nsState.laneOfGenresStyle === 'type')) return row;
+    if (!nsCarouselLayout() || row.isSpotlight || row.isNewToMubi || (row.isGenreTiles && nsState.laneOfGenresStyle === 'type')) return row;
     const count = row.films ? row.films.length : (row.colls ? row.colls.length : 0);
     // Film rows are carousels from 2 films up (e.g. Outstretched Hands: Two by Ken Loach),
     // so they sit on the same peeking grid; collection rows still need more than 4.
@@ -6843,7 +6888,7 @@ function nsLoadState() {
 // Phase 1 fixed layout defaults: Top Picks (renamed FEATURED), Lane of Lanes, Coming Soon
 // and Lane of Genres (Colour + Stacked) all on by default, seeded with the Priya Nair
 // persona so Continue Watching / Your Watchlist / Suggested for You all have content to show.
-const nsState = Object.assign({ watchlist: nsCatalogSlugs(2, 20), continueWatching: nsCatalogSlugs(22, 3), watched: nsCatalogSlugs(25, 20), marquee: ['it-was-just-an-accident'], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 5, laneOfLanes: true, allDoubleTiles: false, carouselRows: true, carouselProgress: true, rowSpacing: true, parallax: true, parallaxStrength: 1, topTen: true, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', comingSoon: true, laneOfGenres: true, laneOfGenresStyle: 'stack', marqueeDisplayCount: 1, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
+const nsState = Object.assign({ watchlist: nsCatalogSlugs(2, 20), continueWatching: nsCatalogSlugs(22, 3), watched: nsCatalogSlugs(25, 20), marquee: ['it-was-just-an-accident'], spotlight: [], collectionsDisplayCount: 6, numberOfRows: 5, laneOfLanes: true, allDoubleTiles: false, carouselRows: true, carouselProgress: true, rowSpacing: true, stage1: false, parallax: true, parallaxStrength: 1, topTen: true, hoverGenres: false, genreLane: false, genreLaneGenre: 'Documentary', comingSoon: true, laneOfGenres: true, laneOfGenresStyle: 'stack', marqueeDisplayCount: 1, marqueeNavStyle: 'rotation', marqueeSquareCorners: false, watchNextMerged: false, meta: {} }, nsLoadState());
 
 // Dark mode is a personal display preference, not "content" — kept in its own localStorage
 // key rather than nsState, so it isn't pushed to the shared Google Sheet (see NS_SHEET_API_URL
@@ -8751,6 +8796,71 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(check);
     window.addEventListener('load', check);
     check();
+  })();
+</script>
+<script id="stage1-js">
+  // Settings → Stage 1 / Stage 2 radio buttons (Stage 2 by default; nsState.stage1). Rows keep the carousel grid (see nsCarouselLayout) but
+  // stay on page 1: tiles past the first --cols are hidden, paging and swiping are blocked, and
+  // rows with more tiles than fit get .is-stage1-more, which shows the See All by the title.
+  (function(){
+    if (typeof nsState === 'undefined') return;
+    var grid = document.getElementById('filmGrid');
+    var root = document.documentElement;
+    var radios = document.querySelectorAll('input[name="nsStage"]');
+    function syncRadios(){ [].forEach.call(radios, function(r){ r.checked = r.value === (on() ? '1' : '2'); }); }
+    var TRACKS = '.row-grid--carousel, .spotlight-slider';
+    function on(){ return !!nsState.stage1; }
+    function tag(){
+      if (!grid) return;
+      var cols = nsCols();
+      grid.querySelectorAll(TRACKS).forEach(function(track){
+        var tiles = track.children;
+        [].forEach.call(tiles, function(t, i){ t.classList.toggle('is-stage1-hidden', on() && i >= cols); });
+        if (on() && track.style.transform && !/translateX\(0(px)?\)/.test(track.style.transform)) {
+          track.style.transition = 'none';
+          track.style.transform = 'translateX(0px)';
+        }
+        var section = track.closest('.row-section');
+        if (section) section.classList.toggle('is-stage1-more', on() && tiles.length > cols);
+      });
+    }
+    function apply(){
+      root.dataset.stage1 = on() ? 'true' : 'false';
+      syncRadios();
+      tag();
+    }
+    // Block every way of paging: arrows, peek clicks and the next zone (capture phase, before
+    // the carousels' own handlers), and sideways swipes on touch screens.
+    if (grid) {
+      grid.addEventListener('click', function(e){
+        if (!on()) return;
+        if (e.target.closest('.row-carousel-arrow, .spotlight-arrow, .row-carousel-peek-hint, .fixed-next-zone, .is-stage1-hidden')) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+        }
+      }, true);
+      ['touchstart', 'touchmove'].forEach(function(type){
+        grid.addEventListener(type, function(e){
+          if (on() && e.target.closest('.row-carousel-wrap, .spotlight-slider-wrap')) e.stopImmediatePropagation();
+        }, { capture: true, passive: true });
+      });
+      var pending = 0;
+      function soon(){ if (!pending) pending = requestAnimationFrame(function(){ pending = 0; tag(); }); }
+      new MutationObserver(soon).observe(grid, { childList: true, subtree: true });
+      new MutationObserver(soon).observe(root, { attributes: true, attributeFilter: ['data-fit-cols', 'data-fixed-tiles'] });
+      window.addEventListener('resize', soon);
+    }
+    [].forEach.call(radios, function(r){ r.addEventListener('change', function(){
+      if (!r.checked) return;
+      nsState.stage1 = r.value === '1';
+      if (typeof nsSaveState === 'function') nsSaveState();
+      apply();
+      if (typeof renderGrid === 'function') renderGrid();
+      window.dispatchEvent(new Event('resize'));
+    }); });
+    var modal = document.getElementById('settingsModal');
+    if (modal) new MutationObserver(syncRadios).observe(modal, { attributes: true, attributeFilter: ['class'] });
+    apply();
   })();
 </script>
 <script id="width-panel-js">
