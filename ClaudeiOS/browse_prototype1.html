@@ -283,7 +283,7 @@
     border:1px solid rgba(24,20,15,.28); border-radius:50px; padding:6px 14px; white-space:nowrap; background:none; -webkit-tap-highlight-color:transparent; }
   .gpill.active{ background:var(--paper); color:var(--ink); border-color:var(--paper); }
 
-  #segFilms.list-mode, #segCollections.list-mode, #segNotes.list-mode, #segDirectors.list-mode{ background:#F2F2F2; }
+  #segFilms.list-mode, #segCollections.list-mode, #segDirectors.list-mode{ background:#F2F2F2; }
   #segFilms.list-mode .gpill:not(.active), #segCollections.list-mode .gpill:not(.active), #segDirectors.list-mode .gpill:not(.active){ background:#fff; border-color:transparent; }
 
   .expl-list{ display:flex; flex-direction:column; gap:8px; padding:6px 20px 6px; }
@@ -368,37 +368,6 @@
   #collectionsGrid.poster-mode .coll-info{ padding:8px 2px 0; }
   #collectionsGrid.poster-mode .coll-info h3{ font-size:12.5px; margin-bottom:3px; }
   #collectionsGrid.poster-mode .coll-info p{ font-size:11px; }
-
-  /* Program Notes: Notebook rows reuse the collection list row; the article reuses the director page push */
-  .notes-list{ gap:10px; padding-top:12px; }
-  .notes-list .coll-info h3{ display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-  .notes-kicker{ display:block; font-family:var(--font-riforma); font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#001489; margin:0 0 4px; }
-  .notes-status{ font-family:var(--font-riforma); font-size:13px; color:#6E6E73; text-align:center; margin:16px 20px; }
-  .notes-status:empty{ display:none; }
-  .notes-article{ background:#fff; }
-  .notes-article .director-page-nav.collapsed{ background:rgba(255,255,255,.82); }
-  .notes-article-kicker{ font-family:var(--font-riforma); font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#001489; margin:0 0 8px; }
-  .notes-article-title{ font-family:var(--font-riforma); font-size:28px; font-weight:500; line-height:1.1; letter-spacing:-.02em; color:var(--paper); margin:0; }
-  .notes-article-summary{ font-family:var(--font-riforma); font-size:16px; line-height:1.35; color:#3A3A3C; margin:12px 0 0; }
-  .notes-article-hero{ display:block; width:100%; aspect-ratio:16/9; object-fit:cover; background:#d0d0d0; margin:8px 0 4px; }
-  .notes-article-hero:not([src]){ display:none; }
-  .notes-article-body{ padding:8px 20px 0; font-family:Georgia, 'Times New Roman', serif; font-size:17px; line-height:1.6; color:#222; overflow-wrap:break-word; }
-  .notes-article-body p{ margin:0 0 1em; }
-  .notes-article-body action-text-attachment{ display:block; }
-  .notes-article-body figure{ margin:1.2em -20px; }
-  .notes-article-body figcaption{ font-family:var(--font-riforma); font-size:12px; line-height:1.35; color:#6E6E73; padding:6px 20px 0; font-style:italic; }
-  .notes-article-media video{ display:block; width:100%; aspect-ratio:16/9; background:#000; margin:8px 0 4px; }
-  :root[data-theme="dark"] .notes-article-body figcaption{ color:var(--dm-text-dim); }
-  .notes-article-body img, .notes-article-body iframe, .notes-article-body video{ display:block; max-width:100%; height:auto; margin:0 auto; }
-  .notes-article-body iframe{ width:100%; aspect-ratio:16/9; border:0; }
-  .notes-article-body .caption{ display:block; font-family:var(--font-riforma); font-size:12px; line-height:1.35; color:#6E6E73; margin-top:-6px; }
-  .notes-article-body a{ color:#001489; }
-  .notes-article-body blockquote{ margin:0 0 1em; padding-left:14px; border-left:2px solid #D0D0D0; }
-  :root[data-theme="dark"] .notes-article{ background:var(--dm-bg); }
-  :root[data-theme="dark"] .notes-article .director-page-nav.collapsed{ background:rgba(18,20,28,.82); }
-  :root[data-theme="dark"] .notes-article-summary, :root[data-theme="dark"] .notes-article-body{ color:var(--dm-text); }
-  :root[data-theme="dark"] .notes-kicker, :root[data-theme="dark"] .notes-article-kicker,
-  :root[data-theme="dark"] .notes-article-body a{ color:#8C9BFF; }
 
   .director-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px 10px; padding:6px 20px 6px; }
   .director-card{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
@@ -659,7 +628,6 @@
   :root[data-theme="dark"] .gpill{ color:var(--dm-text-dim); border-color:var(--dm-seam); }
   :root[data-theme="dark"] .gpill.active{ background:#001489; color:#fff; border-color:#001489; }
   :root[data-theme="dark"] #segFilms.list-mode, :root[data-theme="dark"] #segCollections.list-mode,
-  :root[data-theme="dark"] #segNotes.list-mode,
   :root[data-theme="dark"] #segDirectors.list-mode,
   :root[data-theme="dark"] .panel[data-panel="search"], :root[data-theme="dark"] .director-page{ background:var(--dm-bg); }
   :root[data-theme="dark"] #segFilms.list-mode .gpill:not(.active), :root[data-theme="dark"] #segCollections.list-mode .gpill:not(.active),
@@ -868,7 +836,6 @@
           <div class="expl-tabs" id="browseTabs">
             <button class="expl-tab active" data-seg="films">Films &amp; Series</button>
             <button class="expl-tab" data-seg="collections">Collections</button>
-            <button class="expl-tab" data-seg="notes" style="display:none">Program Notes</button>
             <button class="expl-tab" data-seg="directors">Directors</button>
           </div>
 
@@ -912,19 +879,6 @@
 
             <div class="coll-list" id="collectionsGrid"></div>
             <div id="collLoadSentinel"></div>
-            <div style="height:110px"></div>
-          </div>
-
-          <!-- PROGRAM NOTES (More → Program Notes): the essays shown under a film's hero on mubi.com -->
-          <div id="segNotes" style="display:none">
-            <div class="gpill-rail" id="notesPills">
-              <div class="gpill active" data-kind="">All</div>
-              <div class="gpill" data-kind="essay">Essays</div>
-              <div class="gpill" data-kind="video">Videos</div>
-            </div>
-
-            <div class="coll-list notes-list" id="notesGrid"></div>
-            <p class="notes-status" id="notesStatus"></p>
             <div style="height:110px"></div>
           </div>
 
@@ -975,13 +929,6 @@
                 <p class="more-setting-desc">Show the Directors tab in Browse</p>
               </div>
               <button class="more-toggle" id="directorTabToggle" role="switch" aria-checked="false" aria-label="Toggle Directors tab"></button>
-            </div>
-            <div class="more-setting-row">
-              <div class="more-setting-copy">
-                <div class="more-setting-name">Program Notes</div>
-                <p class="more-setting-desc">Show a Program Notes tab in Browse with the essays and videos from MUBI film pages</p>
-              </div>
-              <button class="more-toggle" id="programNotesToggle" role="switch" aria-checked="false" aria-label="Toggle Program Notes tab"></button>
             </div>
             <div class="more-setting-row">
               <div class="more-setting-copy">
@@ -1270,28 +1217,6 @@
           </div>
         </div>
 
-        <div class="director-page notes-article" id="notesArticle" aria-hidden="true">
-          <div class="director-page-nav" id="notesArticleNav">
-            <button class="genre-detail-back" id="notesArticleBack" aria-label="Back to Program Notes">
-              <svg class="back-ios" width="11" height="18" viewBox="0 0 11 18" fill="none"><path d="M9.5 1L1.5 9L9.5 17" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <svg class="back-android" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-            </button>
-            <div class="director-page-navtitle" id="notesArticleNavTitle"></div>
-          </div>
-          <div class="director-page-scroll" id="notesArticleScroll">
-            <div class="director-page-header">
-              <p class="notes-article-kicker" id="notesArticleKicker"></p>
-              <h1 class="notes-article-title riforma" id="notesArticleTitle"></h1>
-              <p class="notes-article-summary" id="notesArticleSummary"></p>
-              <p class="director-page-count" id="notesArticleByline"></p>
-            </div>
-            <img class="notes-article-hero" id="notesArticleHero" alt="">
-            <div class="notes-article-media" id="notesArticleMedia"></div>
-            <div class="notes-article-body" id="notesArticleBody"></div>
-            <div style="height:110px"></div>
-          </div>
-        </div>
-
         <div class="genre-detail-panel" id="genreDetailPanel">
           <button class="genre-detail-back" id="genreDetailBack" aria-label="Back to Search">
             <svg class="back-ios" width="11" height="18" viewBox="0 0 11 18" fill="none"><path d="M9.5 1L1.5 9L9.5 17" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1536,7 +1461,7 @@
     var seg = document.getElementById('browseTabs');
     if(!seg) return;
     var segBtns = Array.prototype.slice.call(seg.querySelectorAll('.expl-tab'));
-    var views = { films: document.getElementById('segFilms'), collections: document.getElementById('segCollections'), notes: document.getElementById('segNotes'), directors: document.getElementById('segDirectors') };
+    var views = { films: document.getElementById('segFilms'), collections: document.getElementById('segCollections'), directors: document.getElementById('segDirectors') };
     // Collections has no sort, so it shows no actions.
     var actions = { films: document.getElementById('actionsFilms'), directors: document.getElementById('actionsDirectors') };
 
@@ -2016,8 +1941,6 @@
       } else if(chip.closest('#segDirectors')){
         dirState.cat = chip.dataset.cat || '';
         renderDirectors(true);
-      } else if(chip.closest('#segNotes') && window.renderProgramNotes){
-        window.renderProgramNotes(chip.dataset.kind || '');
       }
     });
   });
@@ -2519,159 +2442,6 @@
     }, true);
   })();
 
-  // Program Notes (More → Program Notes): adds a tab after Collections listing the program notes shown under a
-  // film's hero on mubi.com, filterable to essays or videos. The API has no list endpoint, so PROGRAM_NOTES indexes every note found by walking
-  // /v4/program_notes/:id (fetched 2026-10-28; notes shared by several films kept once). Tapping a row
-  // fetches the full note live from /v4/program_notes/:id.
-  (function(){
-    var filmsBtn = document.querySelector('.expl-tab[data-seg="films"]');
-    var notesBtn = document.querySelector('.expl-tab[data-seg="notes"]');
-    var grid = document.getElementById('notesGrid');
-    var status = document.getElementById('notesStatus');
-    if(!filmsBtn || !notesBtn || !grid) return;
-
-    // id, t: note title, k: essay | video, pt/pid: program type and id, img: thumbnail, a: authors,
-    // u: updated, p/y/d: the film (or collection / series) the note belongs to
-    var PROGRAM_NOTES = [{"id":96,"t":"Hand-Picked by Sandra Hüller","k":"essay","pt":"filmgroup","pid":2587,"img":"https://images.mubicdn.net/storage/ewlvbjk880xkzbfqqrg7mbcagkek","a":"Thirza Wakefield","u":"2026-10-20","p":"Hand-picked by Sandra Hüller","y":null,"d":"Collection"},{"id":95,"t":"The Faust Bible: How Murnau Made Magic","k":"video","pt":"film","pid":917,"img":"https://images.mubicdn.net/storage/tmafucui3y8f6viaw3b56x00o6vo","a":"Ben Porro, Amos Levin","u":"2026-10-16","p":"Faust","y":1926,"d":"F.W. Murnau"},{"id":94,"t":"Seeing What Happens: A Conversation With Mark Jenkin","k":"essay","pt":"filmgroup","pid":2497,"img":"https://images.mubicdn.net/storage/q9k4oeutmg49vmepvzde8cik5x5c","a":"Oliver Evans","u":"2026-10-15","p":"Silent Landscape, Dancing Grain: Films by Mark Jenkin","y":null,"d":"Collection"},{"id":87,"t":"Loving the Monster","k":"video","pt":"film","pid":368829,"img":"https://images.mubicdn.net/storage/yrym35xmdcugicwohw2gd9gedf4m","a":"Willow Catelyn Maclay","u":"2026-10-01","p":"Teenage Sex and Death at Camp Miasma","y":2026,"d":"Jane Schoenbrun"},{"id":86,"t":"“I Like That Feeling”: Jane Schoenbrun’s Teenage Sex and Death at Camp Miasma","k":"essay","pt":"film","pid":368829,"img":"https://images.mubicdn.net/storage/ekkrgyhag2z2zwbofg82dvyq1p3t","a":"Zefyr Lisowski ","u":"2026-10-01","p":"Teenage Sex and Death at Camp Miasma","y":2026,"d":"Jane Schoenbrun"},{"id":85,"t":"If It Gets Too Real: Jane Schoenbrun on Teenage Sex and Death at Camp Miasma","k":"essay","pt":"film","pid":368829,"img":"https://images.mubicdn.net/storage/4iee73r7o3jnrvp8zopes73witax","a":"Michael Koresky","u":"2026-10-01","p":"Teenage Sex and Death at Camp Miasma","y":2026,"d":"Jane Schoenbrun"},{"id":84,"t":"Psychic Lint: Garth Jennings on Pulp: What Do You Do for an Encore?","k":"essay","pt":"film","pid":469877,"img":"https://images.mubicdn.net/storage/t19vydlacq94hy5917uram85zr4k","a":"Thirza Wakefield","u":"2026-09-24","p":"Pulp: What Do You Do for an Encore?","y":2026,"d":"Garth Jennings"},{"id":83,"t":"Let the Light In: Javier Ambrossi and Javier Calvo on La Mesías","k":"essay","pt":"series","pid":17,"img":"https://images.mubicdn.net/storage/x90c5k4ny75d2rqlkngynh13e8w7","a":"Phuong Le","u":"2026-09-21","p":"La Mesías","y":null,"d":"Series"},{"id":82,"t":"Poetry in Contradiction: A Conversation with Lemohang Mosese","k":"essay","pt":"filmgroup","pid":2541,"img":"https://images.mubicdn.net/storage/tgbwh4e1bou6s3n9tc2g2poavfkr","a":"Oliver Evans","u":"2026-09-25","p":"Visions From Exile:  Two by Lemohang Mosese","y":null,"d":"Collection"},{"id":77,"t":"Incongruous Skies: The Films of Konrad Wolf","k":"essay","pt":"film","pid":11864,"img":"https://images.mubicdn.net/storage/7qgw6shbkyjef1fgxyjylz79iwft","a":"Laura Staab","u":"2026-09-14","p":"Solo Sunny","y":1980,"d":"Konrad Wolf, Wolfgang Kohlhaase"},{"id":76,"t":"News From Home: Orian Barki and Meriem Bennani on Bouchra","k":"essay","pt":"film","pid":452898,"img":"https://images.mubicdn.net/storage/97azg9u6izw9anrzlpk889lx7n6m","a":"Phuong Le","u":"2026-09-07","p":"Bouchra","y":2025,"d":"Orian Barki, Meriem Bennani"},{"id":71,"t":"Eat the Rich: Karim Aïnouz on Rosebush Pruning","k":"essay","pt":"film","pid":391721,"img":"https://images.mubicdn.net/storage/uf4l4rirap1nrhkn7w6xpxvvojcs","a":"Matthew Thrift","u":"2026-08-17","p":"Rosebush Pruning","y":2026,"d":"Karim Aïnouz"},{"id":70,"t":"Radioactive Dreams","k":"essay","pt":"filmgroup","pid":2469,"img":"https://images.mubicdn.net/storage/hcv472c504wrkvygyqrksiju92us","a":"Will Sloan","u":"2026-08-12","p":"Godzilla: King of the Monsters","y":null,"d":"Collection"},{"id":62,"t":"Hand-Picked by Mitski","k":"essay","pt":"filmgroup","pid":2402,"img":"https://images.mubicdn.net/storage/427oaduybnsukna8diardhsq36n3","a":"Thirza Wakefield","u":"2026-07-27","p":"Hand-picked by Mitski","y":null,"d":"Collection"},{"id":61,"t":"Love Is Stronger Than Death: Ratchapoom Boonbunchachoke on A Useful Ghost","k":"essay","pt":"film","pid":440946,"img":"https://images.mubicdn.net/storage/llztvc39ad1parqok8turmnbvc7b","a":"Phuong Le","u":"2026-07-24","p":"A Useful Ghost","y":2025,"d":"Ratchapoom Boonbunchachoke"},{"id":60,"t":"Hand-Picked by Christian Petzold","k":"essay","pt":"filmgroup","pid":2480,"img":"https://images.mubicdn.net/storage/strdobace6ikyse4sd1j50icy0pg","a":"Oliver Evans","u":"2026-07-17","p":"Hand-picked by Christian Petzold","y":null,"d":"Collection"},{"id":58,"t":"Keeping Abreast: The Films of Stephanie Rothman","k":"essay","pt":"filmgroup","pid":2451,"img":"https://images.mubicdn.net/storage/gjzpjn5xy2mt2x8u4fsp2hjbnj12","a":"Melissa Anderson","u":"2026-07-06","p":"Naked Ambition: Stephanie Rothman’s Exploitation Cinema","y":null,"d":"Collection"},{"id":56,"t":"Peter Hujar’s Day: Capturing The Moment","k":"video","pt":"film","pid":392686,"img":"https://images.mubicdn.net/storage/zylkolvywygqjlg9wgdshqe95spv","a":"Damla Duru","u":"2026-06-19","p":"Peter Hujar’s Day","y":2025,"d":"Ira Sachs"},{"id":55,"t":"The Strength of an Ant: André 3000 on 7 piano sketches","k":"essay","pt":"film","pid":466794,"img":"https://images.mubicdn.net/storage/mw1gha47n8h7rug5162ldpxm0o4a","a":"Oliver Evans","u":"2026-06-18","p":"7 piano sketches","y":2026,"d":"Graham Mason"},{"id":53,"t":"Joachim Trier: The Spaces Between Us","k":"video","pt":"film","pid":235851,"img":"https://images.mubicdn.net/storage/83ktlpvd93l4kn00m534cpx1wmfq","a":"Ben Porro","u":"2026-06-04","p":"The Worst Person in the World","y":2021,"d":"Joachim Trier"},{"id":51,"t":"Jafar Panahi: A Day in the Life of a Nation","k":"video","pt":"film","pid":441162,"img":"https://images.mubicdn.net/storage/ibvt1cxb2sak4bhg2ti8gj3iavf0","a":"Prachi Mokashi","u":"2026-05-27","p":"It Was Just an Accident","y":2025,"d":"Jafar Panahi"},{"id":50,"t":"Lighting the Darkroom: Ira Sachs on Peter Hujar’s Day","k":"essay","pt":"film","pid":392686,"img":"https://images.mubicdn.net/storage/w2x4glgkxvmealql8rekpygf603r","a":"Thirza Wakefield","u":"2026-09-25","p":"Peter Hujar’s Day","y":2025,"d":"Ira Sachs"},{"id":49,"t":"Surviving Beautifully: Diego Céspedes on The Mysterious Gaze of the Flamingo","k":"essay","pt":"film","pid":440746,"img":"https://images.mubicdn.net/storage/pk4eicjh8n1tt6kagh2bulmkp8g6","a":"Oliver Evans","u":"2026-05-13","p":"The Mysterious Gaze of the Flamingo","y":2025,"d":"Diego Céspedes"},{"id":47,"t":"A Conversation With the Ocean: Akinola Davies Jr. on My Father’s Shadow","k":"essay","pt":"film","pid":410994,"img":"https://images.mubicdn.net/storage/9odlk9jnavy68fdomia07xf58sf0","a":"Phuong Le","u":"2026-04-17","p":"My Father's Shadow","y":2025,"d":"Akinola Davies Jr."},{"id":46,"t":"In the Belly of the Beast: Kleber Mendonça Filho’s The Secret Agent","k":"essay","pt":"film","pid":411498,"img":"https://images.mubicdn.net/storage/edo6j2pnaw7on4ual3z3k4wcnovh","a":"Leo Goldsmith","u":"2026-04-15","p":"The Secret Agent","y":2025,"d":"Kleber Mendonça Filho"},{"id":45,"t":"Beauty and Solitude: The Cities of Wong Kar Wai","k":"video","pt":"series","pid":10,"img":"https://images.mubicdn.net/storage/rkkvqpqxmau1hjojkq5lojts5ron","a":"Phuong Le","u":"2026-03-31","p":"Blossoms Shanghai","y":null,"d":"Series"},{"id":44,"t":"OPTIMISTIC CHANNEL: JULIA LOKTEV ON MY UNDESIRABLE FRIENDS: PART I – LAST AIR IN MOSCOW","k":"essay","pt":"film","pid":463768,"img":"https://images.mubicdn.net/storage/y1y6t7ctiggwtjfi1pq90n3oux84","a":"Laura Staab","u":"2026-04-01","p":"Chapters 4-5 | My Undesirable Friends: Part I - Last Air in Moscow","y":2024,"d":"Julia Loktev"},{"id":43,"t":"Optimistic Channel: Julia Loktev on My Undesirable Friends: Part I – Last Air in Moscow","k":"essay","pt":"film","pid":463767,"img":"https://images.mubicdn.net/storage/sjj344njr9y8lihutybk8f7qbo4h","a":"Laura Staab","u":"2026-04-01","p":"Chapters 1-3 | My Undesirable Friends: Part I - Last Air in Moscow","y":2024,"d":"Julia Loktev"},{"id":42,"t":"Naples Is a Time Machine: Gianfranco Rosi on Pompei: Below the Clouds","k":"essay","pt":"film","pid":440441,"img":"https://images.mubicdn.net/storage/k2ygher5kcley5e98c978wzrgwbm","a":"Sophia Satchell-Baeza","u":"2026-03-25","p":"Pompei: Below the Clouds","y":2025,"d":"Gianfranco Rosi"},{"id":41,"t":"Down, and Down: Mascha Schilinski’s Sound of Falling","k":"essay","pt":"film","pid":436826,"img":"https://images.mubicdn.net/storage/5dm17lsev3ccjiueqkug0y8augcn","a":"Audrey Wollen","u":"2026-04-23","p":"Sound of Falling","y":2025,"d":"Mascha Schilinski"},{"id":39,"t":"The Mastermind: Unwinding the Heist Film","k":"video","pt":"film","pid":422583,"img":"https://images.mubicdn.net/storage/s5mx1dmlihf5siptx3toq6htszvt","a":"Amos Levin","u":"2026-03-19","p":"The Mastermind","y":2025,"d":"Kelly Reichardt"},{"id":38,"t":"Paper Cuts: Park Chan-wook’s No Other Choice","k":"essay","pt":"film","pid":255497,"img":"https://images.mubicdn.net/storage/zmk51cr91gbjeieix35ifhpdihiq","a":"Rebecca Liu","u":"2026-03-12","p":"No Other Choice","y":2025,"d":"Park Chan-wook"},{"id":37,"t":"Line in the Sand: Oliver Laxe on Sirât","k":"essay","pt":"film","pid":301059,"img":"https://images.mubicdn.net/storage/8pzrnf2ex9xf9irrldj51wqhy57x","a":"Thirza Wakefield","u":"2026-02-19","p":"Sirât","y":2025,"d":"Oliver Laxe"},{"id":36,"t":"Interior Design: Joachim Trier on Sentimental Value","k":"essay","pt":"film","pid":400360,"img":"https://images.mubicdn.net/storage/cwxhlq3zrca0qdt594yd9e91knua","a":"Ben Porro","u":"2026-05-13","p":"Sentimental Value","y":2025,"d":"Joachim Trier"},{"id":35,"t":"My Entire Life May Have Been Leading Up to This: Wong Kar Wai on Blossoms Shanghai","k":"essay","pt":"series","pid":10,"img":"https://images.mubicdn.net/storage/3bq102a8ulfrrejn6ijqca5zgtkl","a":"Phuong Le","u":"2026-09-25","p":"Blossoms Shanghai","y":null,"d":"Series"},{"id":34,"t":"Jim Jarmusch’s Family Reunions","k":"essay","pt":"film","pid":398054,"img":"https://images.mubicdn.net/storage/kp6x2sfvnwsadcr09fo8ccs736qz","a":"Jonathan Rosenbaum","u":"2026-02-25","p":"Father Mother Sister Brother","y":2025,"d":"Jim Jarmusch"},{"id":33,"t":"Meet Me Where I Am: Cooper Raiff on Hal & Harper","k":"essay","pt":"series","pid":13,"img":"https://images.mubicdn.net/storage/2eei8pwno8bpdv9v02sjrft5mpkk","a":"Thirza Wakefield","u":"2025-10-27","p":"Hal & Harper","y":null,"d":"Series"},{"id":32,"t":"Powell + Pressburger + Scorsese: The Pilgrim's Progress","k":"video","pt":"film","pid":401801,"img":"https://images.mubicdn.net/storage/zlxfle6h05sk0lmuvznerfdtwkov","a":"Ben Porro","u":"2025-10-27","p":"Made in England: The Films of Powell and Pressburger","y":2024,"d":"David Hinton"},{"id":31,"t":"Andrea Arnold: Birds of Her Feather","k":"video","pt":"film","pid":391623,"img":"https://images.mubicdn.net/storage/iyxbzxofzr9monfiixxisor5rf3h","a":"Laura Staab","u":"2025-10-27","p":"Bird","y":2024,"d":"Andrea Arnold"},{"id":30,"t":"Infinite Jesters: Protest and Performance in a Simulated World","k":"video","pt":"film","pid":402447,"img":"https://images.mubicdn.net/storage/vibsx7ipkvgp483thu622n6vs4ei","a":"Matt Turner","u":"2025-10-29","p":"Grand Theft Hamlet","y":2024,"d":"Pinny Grylls, Sam Crane"},{"id":29,"t":"Crossing Thresholds","k":"video","pt":"film","pid":374529,"img":"https://images.mubicdn.net/storage/d1psktjcw4kpmau7kcaiv6jiyzs4","a":"Elena Lazic","u":"2025-10-27","p":"Crossing","y":2024,"d":"Levan Akin"},{"id":28,"t":"Luca Guadagnino: Projecting Desire","k":"video","pt":"film","pid":391610,"img":"https://images.mubicdn.net/storage/b7sd2apju1iikhbe7dvcd2wwaxz5","a":"Ben Porro","u":"2025-10-27","p":"Queer","y":2024,"d":"Luca Guadagnino"},{"id":27,"t":"Like a Butterfly: Eiko Ishioka’s Costume Drama","k":"video","pt":"film","pid":8696,"img":"https://images.mubicdn.net/storage/ias8dnypwj9phtt01zj1jh7xeil6","a":"Behrooz Moshari","u":"2025-10-27","p":"The Fall","y":2006,"d":"Tarsem Singh"},{"id":26,"t":"American Neverlands: The Films of the Ross Brothers","k":"video","pt":"film","pid":385392,"img":"https://images.mubicdn.net/storage/c7lo1d2fnn7lg881xcemuwianjvx","a":"Amos Levin","u":"2025-10-29","p":"Gasoline Rainbow","y":2023,"d":"Bill Ross IV, Turner Ross"},{"id":25,"t":"I’m Your Puppet: Alex Russell on Lurker","k":"essay","pt":"film","pid":431077,"img":"https://images.mubicdn.net/storage/zo0rsfyr3uwv7hxm6w61b1hc4ssj","a":"Phuong Le","u":"2025-10-17","p":"Lurker","y":2025,"d":"Alex Russell"},{"id":23,"t":"Like Mother, Like Daughter: Rebecca Lenkiewicz’s Hot Milk","k":"essay","pt":"film","pid":332978,"img":"https://images.mubicdn.net/storage/1an7sv8a53sgmaxxbhjruyxe8x0q","a":"Thirza Wakefield","u":"2025-08-21","p":"Hot Milk","y":2025,"d":"Rebecca Lenkiewicz"},{"id":20,"t":"No More Absolutes: Alex Ross Perry on Pavements","k":"essay","pt":"film","pid":419273,"img":"https://images.mubicdn.net/storage/0i333ldl0tq4mt3r8p6e4se0ayt7","a":"Laura Staab","u":"2025-07-16","p":"Pavements","y":2024,"d":"Alex Ross Perry"},{"id":15,"t":"And the Secret Word Is: Haley Elizabeth Anderson on Tendaberry","k":"essay","pt":"film","pid":397704,"img":"https://images.mubicdn.net/storage/civn4pz9r08q1ba8v7v2ccsznzai","a":"Laura Staab","u":"2025-07-10","p":"Tendaberry","y":2024,"d":"Haley Elizabeth Anderson"},{"id":14,"t":"Wolves Among the Sheep: Christopher Andrews on Bring Them Down","k":"essay","pt":"film","pid":369358,"img":"https://images.mubicdn.net/storage/xglgpnpoek91gimybehkschoa68p","a":"Elena Lazic","u":"2025-07-10","p":"Bring Them Down","y":2024,"d":"Christopher Andrews"},{"id":13,"t":"William Kentridge: Portraits in Process","k":"essay","pt":"series","pid":6,"img":"https://images.mubicdn.net/storage/9bugldl5q8euwjndm752bgbefr3l","a":"Matthew Thrift","u":"2025-07-10","p":"Self-Portrait as a Coffee-Pot","y":null,"d":"Series"},{"id":12,"t":"Age Against the Machine: Coralie Fargeat’s The Substance","k":"essay","pt":"film","pid":332868,"img":"https://images.mubicdn.net/storage/lps2hvjss2kq6iey6jcsyec2htxv","a":"Elena Lazic","u":"2025-07-10","p":"The Substance","y":2024,"d":"Coralie Fargeat"},{"id":11,"t":"A Botany of Life: Mati Diop’s Dahomey","k":"essay","pt":"film","pid":401676,"img":"https://images.mubicdn.net/storage/64o8eqjsq1j49ptsx5fuhjr8i4lr","a":"Laura Staab","u":"2025-07-10","p":"Dahomey","y":2024,"d":"Mati Diop"},{"id":10,"t":"The Cold Light of Day: Shooting The Girl With the Needle","k":"essay","pt":"film","pid":401325,"img":"https://images.mubicdn.net/storage/pzuie068bkluhx5uqy2jrv50rnyw","a":"Phuong Le","u":"2025-07-10","p":"The Girl with the Needle","y":2024,"d":"Magnus von Horn"},{"id":9,"t":"Unexpected Things Can Happen: Making Grand Theft Hamlet","k":"essay","pt":"film","pid":402447,"img":"https://images.mubicdn.net/storage/oborbb37nw134lyuhjywngm8adw6","a":"Matt Turner","u":"2026-09-25","p":"Grand Theft Hamlet","y":2024,"d":"Pinny Grylls, Sam Crane"},{"id":8,"t":"Stand By Me: The Ross Brothers on Gasoline Rainbow","k":"essay","pt":"film","pid":385392,"img":"https://images.mubicdn.net/storage/c1g3uky1hw9l6autahfck5ir219l","a":"Laura Staab","u":"2026-09-25","p":"Gasoline Rainbow","y":2023,"d":"Bill Ross IV, Turner Ross"},{"id":7,"t":"Dream Breakers: Twin Peaks, Ads and All","k":"essay","pt":"series","pid":7,"img":"https://images.mubicdn.net/storage/b7lyv0ic5ktnpf97u9q7mdzwm2iz","a":"Laura Staab","u":"2026-09-25","p":"Twin Peaks","y":null,"d":"Series"},{"id":6,"t":"In Dreams: The Atomic Reveries of The Return","k":"essay","pt":"series","pid":8,"img":"https://images.mubicdn.net/storage/aeg0lra8gwyq1zio4vy09k9ef3dm","a":"Amy Taubin","u":"2025-06-19","p":"Twin Peaks: A Limited Event Series","y":null,"d":"Series"},{"id":5,"t":"You Can't Plan Surprises: Amalia Ulman on Magic Farm","k":"essay","pt":"film","pid":418722,"img":"https://images.mubicdn.net/storage/pi09tyu20qlrqx6eboxvmuwe95te","a":"Jenna Ham","u":"2025-07-07","p":"Magic Farm","y":2025,"d":"Amalia Ulman"}];
-    var API = 'https://api.mubi.com/v4/program_notes/';
-    var HEADERS = { 'CLIENT': 'web', 'CLIENT-COUNTRY': 'US' };
-    var KIND = { essay: 'Essay', video: 'Video Essay' };
-
-    function esc(s){
-      return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-    function programLabel(n){ return n.p + (n.y ? ' (' + n.y + ')' : ''); }
-
-    function rowHTML(n){
-      var img = n.img ? '<img class="coll-thumb-bg" src="' + esc(n.img) + '?size=600x" alt="" loading="lazy">' : '';
-      return '<a class="coll-tile coll-tile--list" href="#" data-note="' + n.id + '">' +
-        '<div class="coll-thumb">' + img + '</div>' +
-        '<div class="coll-info"><span class="notes-kicker">' + esc(KIND[n.k] || n.k) + '</span>' +
-        '<h3>' + esc(n.t) + '</h3><p>' + esc(programLabel(n)) + '</p></div>' +
-        '</a>';
-    }
-    // kind: '' for all, 'essay' or 'video'
-    window.renderProgramNotes = function(kind){
-      var list = kind ? PROGRAM_NOTES.filter(function(n){ return n.k === kind; }) : PROGRAM_NOTES;
-      grid.innerHTML = list.map(rowHTML).join('');
-      status.textContent = list.length ? '' : 'No program notes yet.';
-    };
-    window.renderProgramNotes('');
-
-    bindMoreToggle('programNotesToggle', function(on){
-      notesBtn.style.display = on ? '' : 'none';
-      if(!on && notesBtn.classList.contains('active')) filmsBtn.click();
-    }, false);
-
-    // Note page
-    var page = document.getElementById('notesArticle');
-    var scroll = document.getElementById('notesArticleScroll');
-    var nav = document.getElementById('notesArticleNav');
-    var title = document.getElementById('notesArticleTitle');
-    var hero = document.getElementById('notesArticleHero');
-    var media = document.getElementById('notesArticleMedia');
-    var body = document.getElementById('notesArticleBody');
-    var summary = document.getElementById('notesArticleSummary');
-    var openId = null;
-
-    // Video notes are HLS. Safari plays it natively; elsewhere hls.js is loaded on first use.
-    var hlsLoader = null;
-    function loadHls(){
-      if(!hlsLoader) hlsLoader = new Promise(function(resolve, reject){
-        var sc = document.createElement('script');
-        sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js';
-        sc.onload = function(){ resolve(window.Hls); };
-        sc.onerror = reject;
-        document.head.appendChild(sc);
-      });
-      return hlsLoader;
-    }
-    function playVideo(urls, poster){
-      var hls = (urls || []).filter(function(v){ return v.content_type === 'application/x-mpegURL'; })[0];
-      if(!hls) return;
-      var video = document.createElement('video');
-      video.controls = true;
-      video.playsInline = true;
-      if(poster) video.poster = poster;
-      media.innerHTML = '';
-      media.appendChild(video);
-      if(video.canPlayType('application/vnd.apple.mpegurl')){ video.src = hls.src; return; }
-      loadHls().then(function(Hls){
-        if(!Hls || !Hls.isSupported() || !video.isConnected) return;
-        var h = new Hls(); h.loadSource(hls.src); h.attachMedia(video);
-        video._hls = h;
-      });
-    }
-    function clearMedia(){
-      var v = media.querySelector('video');
-      if(v){ v.pause(); if(v._hls) v._hls.destroy(); }
-      media.innerHTML = '';
-    }
-
-    function openNote(n){
-      openId = n.id;
-      document.getElementById('notesArticleKicker').textContent = (KIND[n.k] || n.k) + ' · ' + programLabel(n);
-      title.textContent = n.t;
-      document.getElementById('notesArticleNavTitle').textContent = n.t;
-      document.getElementById('notesArticleByline').textContent = n.a ? 'By ' + n.a : '';
-      summary.textContent = '';
-      clearMedia();
-      if(n.img) hero.src = n.img + '?size=1200x'; else hero.removeAttribute('src');
-      body.innerHTML = '<p class="notes-status">Loading…</p>';
-      scroll.scrollTop = 0;
-      nav.classList.remove('collapsed');
-      page.classList.add('open');
-      page.setAttribute('aria-hidden', 'false');
-      document.getElementById('browsePanel').classList.add('push-back');
-      var overlay = document.getElementById('browseActionsOverlay');
-      if(overlay) overlay.style.display = 'none';
-
-      fetch(API + n.id, { headers: HEADERS })
-        .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-        .then(function(note){
-          if(openId !== n.id) return;
-          summary.textContent = note.summary || '';
-          if(note.type === 'video' && note.video_urls){
-            hero.removeAttribute('src');
-            playVideo(note.video_urls, n.img && n.img + '?size=1200x');
-          }
-          body.innerHTML = note.content_html || '';
-        })
-        .catch(function(){
-          if(openId === n.id) body.innerHTML = '<p class="notes-status">Couldn’t load this program note.</p>';
-        });
-    }
-
-    function closeNote(){
-      if(!page.classList.contains('open')) return;
-      openId = null;
-      clearMedia();
-      page.classList.remove('open');
-      page.setAttribute('aria-hidden', 'true');
-      var browsePanel = document.getElementById('browsePanel');
-      browsePanel.classList.remove('push-back');
-      var overlay = document.getElementById('browseActionsOverlay');
-      if(overlay && browsePanel.classList.contains('active')) overlay.style.display = 'block';
-    }
-
-    var byId = {};
-    PROGRAM_NOTES.forEach(function(n){ byId[n.id] = n; });
-    grid.addEventListener('click', function(e){
-      var row = e.target.closest('[data-note]');
-      if(!row) return;
-      e.preventDefault();
-      openNote(byId[row.dataset.note]);
-    });
-    scroll.addEventListener('scroll', function(){
-      var titleBottom = title.offsetTop + title.offsetHeight;
-      nav.classList.toggle('collapsed', scroll.scrollTop > titleBottom - nav.offsetHeight);
-    });
-    document.getElementById('notesArticleBack').addEventListener('click', closeNote);
-    Array.prototype.slice.call(document.querySelectorAll('.tab[data-tab]')).forEach(function(t){
-      t.addEventListener('click', closeNote);
-    });
-  })();
-
   (function(){
     var filmGrid = document.getElementById('filmGrid');
     var segFilms = document.getElementById('segFilms');
@@ -2683,7 +2453,7 @@
 
     // List view applies to films and directors; collections only take the grey background and pills.
     function setMode(on){
-      [filmGrid, browseTabs, segFilms, segCollections, document.getElementById('segNotes'), segDirectors, directorsGrid].forEach(function(el){
+      [filmGrid, browseTabs, segFilms, segCollections, segDirectors, directorsGrid].forEach(function(el){
         if(el) el.classList.toggle('list-mode', on);
       });
       if(on && window.setPosterViewOn) window.setPosterViewOn(false);
