@@ -6814,9 +6814,11 @@ document.getElementById('filmGrid').addEventListener('click', e => {
   e.preventDefault();
   nsAdvanceRowCarousel(document.getElementById(btn.dataset.carouselTarget), Number(btn.dataset.carouselDir));
 });
-// Trackpad swipe (Stage 2 with Carousel Rows on): a horizontal two-finger swipe over a row
-// pages it one step, same as its arrows. A trackpad fires a long stream of wheel events per
-// swipe (plus momentum after the fingers lift), so each row pages at most once per gesture —
+// Trackpad swipe (Stage 2): a horizontal two-finger swipe over a carousel row (Carousel Rows
+// on) or a spotlight filmstrip pages it one step, same as its arrows — spotlights by clicking
+// their own arrow, since spotlight-paging-like-rows owns their paging state. A trackpad fires
+// a long stream of wheel events per swipe (plus momentum after the fingers lift), so each
+// strip pages at most once per gesture —
 // the gesture counts as over once the events pause for NS_SWIPE_GAP_MS. Shift + mouse wheel
 // is treated as a horizontal swipe too. Horizontal wheel over a row is always swallowed, so
 // the browser's own swipe-to-go-back/forward never fires while you're paging a row.
@@ -6824,9 +6826,11 @@ const NS_SWIPE_THRESHOLD = 30;
 const NS_SWIPE_GAP_MS = 220;
 const nsRowSwipe = new WeakMap();
 document.getElementById('filmGrid').addEventListener('wheel', e => {
-  if (!nsState.carouselRows || nsState.stage1) return;
-  const wrap = e.target.closest('.row-carousel-wrap');
+  if (nsState.stage1) return;
+  const wrap = e.target.closest('.row-carousel-wrap, .spotlight-slider-wrap');
   if (!wrap) return;
+  const isRow = wrap.classList.contains('row-carousel-wrap');
+  if (isRow && !nsState.carouselRows) return;
   const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerWidth : 1;
   let dx = e.deltaX * unit;
   const dy = e.deltaY * unit;
@@ -6842,7 +6846,10 @@ document.getElementById('filmGrid').addEventListener('wheel', e => {
   s.acc += dx;
   if (Math.abs(s.acc) < NS_SWIPE_THRESHOLD) return;
   s.fired = true;
-  nsAdvanceRowCarousel(wrap, s.acc > 0 ? 1 : -1);
+  const dir = s.acc > 0 ? 1 : -1;
+  if (isRow) { nsAdvanceRowCarousel(wrap, dir); return; }
+  const btn = wrap.querySelector(dir > 0 ? '.spotlight-arrow--next' : '.spotlight-arrow--prev');
+  if (btn) btn.click();
 }, { passive: false });
 
 const NS_CATALOG = (() => {
