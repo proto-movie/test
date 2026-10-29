@@ -6814,6 +6814,36 @@ document.getElementById('filmGrid').addEventListener('click', e => {
   e.preventDefault();
   nsAdvanceRowCarousel(document.getElementById(btn.dataset.carouselTarget), Number(btn.dataset.carouselDir));
 });
+// Trackpad swipe (Stage 2 with Carousel Rows on): a horizontal two-finger swipe over a row
+// pages it one step, same as its arrows. A trackpad fires a long stream of wheel events per
+// swipe (plus momentum after the fingers lift), so each row pages at most once per gesture —
+// the gesture counts as over once the events pause for NS_SWIPE_GAP_MS. Shift + mouse wheel
+// is treated as a horizontal swipe too. Horizontal wheel over a row is always swallowed, so
+// the browser's own swipe-to-go-back/forward never fires while you're paging a row.
+const NS_SWIPE_THRESHOLD = 30;
+const NS_SWIPE_GAP_MS = 220;
+const nsRowSwipe = new WeakMap();
+document.getElementById('filmGrid').addEventListener('wheel', e => {
+  if (!nsState.carouselRows || nsState.stage1) return;
+  const wrap = e.target.closest('.row-carousel-wrap');
+  if (!wrap) return;
+  const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerWidth : 1;
+  let dx = e.deltaX * unit;
+  const dy = e.deltaY * unit;
+  if (!dx && e.shiftKey) dx = dy;
+  else if (Math.abs(dx) <= Math.abs(dy)) return; // mostly vertical — normal page scroll
+  e.preventDefault();
+  const now = performance.now();
+  let s = nsRowSwipe.get(wrap);
+  if (!s || now - s.last > NS_SWIPE_GAP_MS) s = { acc: 0, fired: false };
+  s.last = now;
+  nsRowSwipe.set(wrap, s);
+  if (s.fired) return;
+  s.acc += dx;
+  if (Math.abs(s.acc) < NS_SWIPE_THRESHOLD) return;
+  s.fired = true;
+  nsAdvanceRowCarousel(wrap, s.acc > 0 ? 1 : -1);
+}, { passive: false });
 
 const NS_CATALOG = (() => {
   const seen = new Set();
@@ -8256,7 +8286,6 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
   (function(){
     var grid = document.getElementById('filmGrid');
     if (!grid) return;
-    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var MODE = 'drift';                  // reversed 'past': images move against the row
     var LATE_DELAY_MS = 400;             // 'late' mode: wait before the images start moving
     var LATE_MS = 900;                   // 'late' mode: how long they take to settle
@@ -8264,7 +8293,10 @@ nsSyncFromSheet(); // may overwrite the above once the shared Sheet responds
     var FOLLOW_MS = 1400;                // 'follow' mode: image settle time (the slide itself is 800ms)
     // Settings → Image Parallax (on/off) and Parallax Strength (1–3×). Strength scales the extra
     // zoom (0.2 at 1×), and with it the spare image each side, so the images travel further.
-    function enabled(){ return !reduceMotion && nsState.parallax !== false; }
+    // Deliberately NOT gated on prefers-reduced-motion: it used to be, which silently switched
+    // the effect off for anyone with macOS/Windows "Reduce motion" turned on — this prototype
+    // exists to show the effect, so the Settings toggle is the only off switch.
+    function enabled(){ return nsState.parallax !== false; }
     function zoomAmount(){ return 1 + 0.2 * Math.max(1, Math.min(3, +nsState.parallaxStrength || 1)); }
     var SIGN = (MODE === 'follow' || MODE === 'past') ? 1 : -1;   // 'drift'/'late': toward the centre
     var IMG = 'img:not(.card-title-treatment):not(.card-award-badge):not(.coll-tile-treatment):not(.coll-tile-double-treatment):not(.spotlight-title-treatment):not(.genre-tile-img)';
