@@ -224,6 +224,11 @@
     box-shadow:0 4px 10px rgba(0,20,137,.32), inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 0 rgba(0,0,0,.12);
   }
   .sheet-header-btn--check::after{ background:none; }
+  .fs-picked{ padding:0 20px 10px; margin-top:-10px; flex-shrink:0; text-align:right;
+    font-family:var(--font-riforma); font-size:14px; font-weight:500; color:#001489; }
+  .fs-picked:empty{ display:none; }
+  .filter-sheet--v2 .fs-picked{ display:none; }
+  :root[data-theme="dark"] .fs-picked{ color:#8FA2FF; }
   .filter-sheet-body{ flex:1; overflow-y:auto; padding:14px 20px 16px; -ms-overflow-style:none; scrollbar-width:none; }
   .filter-sheet-body::-webkit-scrollbar{ display:none; }
   .filter-sheet-label{ font-family:var(--font-riforma); font-weight:400; font-size:14px; text-transform:uppercase; letter-spacing:.6px; color:#5A5A5A; margin-bottom:12px; }
@@ -800,6 +805,12 @@
   :root[data-theme="dark"] .filter-sheet--v3 .fs3-clear-all{ color:#8FA2FF; }
   :root[data-theme="dark"] .filter-sheet--v3 .fs2-opt svg{ background:transparent; border-color:var(--dm-text); }
   :root[data-theme="dark"] .filter-sheet--v3 .fs2-opt.is-on svg{ background:#8FA2FF; border-color:#8FA2FF; color:var(--dm-surface); }
+  /* Languages are single-pick, so they keep the plain tick (shown only on the chosen one) rather than a checkbox */
+  .filter-sheet--v3 .fs2-opt--single svg, :root[data-theme="dark"] .filter-sheet--v3 .fs2-opt--single svg{
+    opacity:0; width:16px; height:12px; padding:0; border:none; background:none; color:#001489; }
+  .filter-sheet--v3 .fs2-opt--single.is-on svg{ opacity:1; background:none; color:#001489; }
+  :root[data-theme="dark"] .filter-sheet--v3 .fs2-opt--single.is-on svg{ background:none; color:#8FA2FF; }
+  .filter-sheet--v3 .fs2-opt--single.is-on{ font-weight:500; }
 
   /* ─── FILTERS v4 (More → Filters v4): v3 with accordion sections ─── */
   .fs4-panel{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .32s cubic-bezier(.22,1,.36,1); }
@@ -1245,6 +1256,8 @@
               <svg width="15" height="12" viewBox="0 0 15 12" fill="none"><path d="M1.5 6.2l3.8 3.8L13.5 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           </div>
+          <!-- Filters v1: what's picked, under the check mark -->
+          <div class="fs-picked" id="fsPicked"></div>
           <div class="filter-sheet-body">
             <div class="filter-sheet-label">Language</div>
             <div class="lang-type-toggle" id="langTypeToggle">
@@ -1590,41 +1603,39 @@
     return a;
   }
 
-  var COUNTRY_LANG = {
-    'United States':'English','United Kingdom':'English','Canada':'English','Ireland':'English','Australia':'English',
-    'South Africa':'English','Ghana':'English','Nigeria':'English','Singapore':'English',
-    'France':'French','Belgium':'French','Senegal':'French','Mali':'French',"Cote d'Ivoire":'French',
-    'Germany':'German','West Germany':'German','Austria':'German','Switzerland':'German',
-    'Italy':'Italian','Argentina':'Spanish','Mexico':'Spanish','Chile':'Spanish','Colombia':'Spanish',
-    'Spain':'Spanish','Dominican Republic':'Spanish','Venezuela':'Spanish',
-    'Iran':'Persian','Brazil':'Portuguese','Portugal':'Portuguese','Philippines':'Filipino',
-    'Denmark':'Danish','Japan':'Japanese','South Korea':'Korean','China':'Chinese','Hong Kong':'Chinese','Taiwan':'Chinese',
-    'Sweden':'Swedish','Finland':'Finnish','Thailand':'Thai','Poland':'Polish','Norway':'Norwegian',
-    'Turkey':'Turkish','India':'Hindi','Russia':'Russian','Hungary':'Hungarian','Romania':'Romanian',
-    'Indonesia':'Indonesian','Vietnam':'Vietnamese','Greece':'Greek','Saudi Arabia':'Arabic','Palestine':'Arabic',
-    'Egypt':'Arabic','Ethiopia':'Amharic','Iceland':'Icelandic','Netherlands':'Dutch','Georgia':'Georgian','Ukraine':'Ukrainian'
-  };
-  function filmLanguage(f){
-    var first = (f.c || '').split(',')[0].trim();
-    return COUNTRY_LANG[first] || 'English';
+  // Playback languages and 4K per MUBI film id (the id in each film's image URL), from
+  // consumable.playback_languages on api.mubi.com/v4/films/:id (2026-10-29; US catalogue, or the first of GB, DE,
+  // FR, … where it isn't in the US). Each entry is [original audio, [dubbed audio], [subtitles], is 4K] with
+  // languages as indexes into FILM_LANG_NAMES (-1 = none, e.g. silent). Films MUBI isn't streaming anywhere
+  // have no entry, so they match no language and aren't 4K.
+  var FILM_LANG_NAMES = ["English","French","Spanish (Latin America)","Portuguese","German","Turkish","Italian","Dutch","Thai","Spanish (European)","Polish","Korean","Norwegian","Swedish","Arabic","Danish","Farsi","Mandarin","Filipino","Finnish","Japanese","Hungarian","Romanian","Russian","Chinese","Malay","Catalan","Czech","Georgian","Greek","Icelandic","Indonesian","Ukrainian","Vietnamese","Amharic","Armenian","Bambara","Basque","Cantonese","Croatian","Esperanto","Igbo","Khmer","Lingala","Lithuanian","Oromo","Ossetian","Tamil","Wolof"];
+  var FILM_LANGS = {"343977":[20,[],[7,0,4,3,2,5],1],"339480":[1,[],[0,1,4,3,2,5],0],"340287":[0,[1,4,2],[7,0,1,4,6,3,2,5],0],"433422":[0,[],[0],0],"224497":[1,[],[0,1,5],0],"400360":[12,[],[7,0,3,2,5],1],"1502":[0,[],[7,0],0],"8696":[0,[],[7,0,1,4,6,3,2,8,5],1],"448214":[9,[],[0,2],1],"401325":[15,[],[0,1,4,6,3,2,5],1],"114":[11,[],[0],1],"374529":[28,[4],[7,0,1,4,3,2,5],0],"433459":[0,[],[0],0],"172930":[11,[],[0],0],"235851":[12,[],[0,6,2,5],0],"411752":[0,[],[27,7,0,1,4,21,6,10,3,2,5],0],"276485":[0,[],[7,0,1,4,6,3,2,8,5],0],"437598":[6,[4,9],[7,0,1,4,3,9,2,5],1],"1357":[0,[5],[7,0,1,4,6,3,2],1],"307322":[4,[],[7,0,1,4,6,3,2,5],1],"149904":[11,[],[7,0,1],0],"401":[13,[],[7,0,1,4,6,3,2,8,5],1],"339426":[16,[],[7,0,1,3,2,5],0],"255497":[11,[9],[7,0,1,3,9,2,5],1],"126":[4,[],[0,4],0],"123":[2,[],[7,0,1,4,6,3,9,2,5],1],"441162":[16,[4],[7,0,4,3,2,5],0],"1358":[0,[],[0],0],"39858":[0,[],[0,1,4,3,2,5],0],"1527":[-1,[],[7,0,1,4,2],0],"346537":[19,[],[0,1,3,2,5],0],"281688":[11,[],[0,1,5],1],"419520":[0,[],[7,0,1,4,6,3,2,5],1],"12":[0,[],[7,0,19,1,4,21,6,3,23,2,13,5],0],"411498":[3,[],[7,0,2],1],"254618":[0,[],[7,0,1,4,6,3,2,5],0],"90703":[5,[],[7,0,1,4,6,3,2],1],"445143":[1,[],[7,0,4,6,3,2,8,5],0],"440746":[2,[],[7,0,6,2,5],0],"2741":[11,[],[0,1,6],0],"410994":[0,[],[7,0,1,4,6,3,9,2,5],1],"380148":[0,[],[7,0,1,4,3,2,5],1],"289899":[12,[],[7,0,1,6],0],"255448":[11,[],[0],0],"391623":[0,[],[7,0,1,3,2,5],1],"376083":[2,[],[7,0,1,4,6,3,2,5],0],"7369":[1,[],[7,0,4,6,3,9,2,8,5],0],"228443":[4,[],[7,0,1,4,6,2,5],0],"99686":[14,[],[0,1,4,6,3,2,5],0],"220819":[0,[],[15,7,0,19,1,4,6,25,12,3,2,13,8,5],0],"43650":[12,[],[7,0,1,4,6,3,2,5],0],"284698":[1,[],[7,0,1,4,6,5],0],"116508":[4,[],[0,1,6,25,3,2,8,5],0],"241060":[0,[],[0],0],"104592":[6,[],[0,1,6],0],"28974":[0,[],[0],0],"286":[0,[],[0,1],0],"410692":[-1,[],[0],1],"332332":[26,[],[0,1,3,2,8,5],0],"307326":[2,[],[7,0,1,6,2,5],0],"165181":[26,[],[7,0,1,4,6,3,2,8,5],0],"233827":[23,[],[7,0,1,6,3,2,5],0],"193":[0,[],[0],0],"23121":[0,[],[0],0],"289223":[1,[],[0,1,4,6,3,2,5],0],"419274":[1,[],[7,0,4,6,3,2,8,5],0],"311403":[0,[],[0,4,3,2,5],0],"603":[0,[],[27,15,7,0,19,1,4,29,21,31,6,12,10,3,22,2,5],0],"176":[0,[],[0],0],"469877":[0,[],[7,0,1,4,6,3,9,2,8,5],1],"40435":[5,[],[7,0,1,4,6,3,2,8,5],1],"22518":[3,[],[0],0],"419387":[1,[11],[0,6,3,2,5],0],"142":[0,[],[0,3,2,5],0],"118497":[3,[],[7,0,1,4,6,3,2,8,5],0],"5703":[0,[],[0,5],0],"162643":[21,[],[7,0,1,4,6,10,3,22,2,5],0],"301059":[14,[2],[0],1],"463768":[23,[],[7,0,1,4,6,3,2,5],1],"24805":[0,[],[7,0,1,4,6,3,2,8,5],0],"149803":[0,[],[7,0,1,3,5],0],"377967":[-1,[],[0],0],"473938":[9,[],[7,0,1,4,9,5],0],"1744":[16,[],[7,0,1,4,6,3,2,8,5],0],"401676":[1,[],[7,0,4,6,3,2,5],0],"205825":[1,[],[0,1,3,2,5],0],"94834":[4,[],[7,0,1,4,6,10,3,22,2,13,8,5],0],"3197":[12,[],[0,1,4,6,3,2,8,5],0],"307316":[1,[],[7,0,4,3,2,5],0],"4311":[4,[],[7,0,1,4,3,2,8,5],0],"364307":[0,[2],[7,0,1,4,6,3],0],"85":[4,[],[7,0,1,6,3,2,5],0],"226295":[3,[],[7,0,1,4,6,5],0],"119983":[16,[],[7,0,1,6,2,5],0],"339432":[0,[],[0,4],0],"159":[0,[],[0],1],"291527":[0,[],[0,4,6,3,2,5],0],"2740":[29,[],[7,0,1,4,6,3,2,8,5],0],"2682":[0,[],[0],0],"3643":[0,[],[0],0],"778":[1,[],[0],0],"383420":[1,[],[7,0,4,3,2,8,5],0],"364298":[0,[],[7,0,1,3,2,5],1],"22944":[15,[],[7,0,1,4,6,3,2,5],0],"402447":[0,[],[7,0,1,4,6,3,2,5],0],"259":[9,[2],[7,0,1,4,6,3,2,8,5],0],"431122":[0,[],[0],0],"274397":[14,[],[7,0,4,3,2],0],"330413":[1,[],[0,5],0],"341267":[0,[4],[0,4],0],"224483":[9,[2],[7,0,19,1,6,12,3,2,13,5],0],"1789":[1,[],[0],0],"17214":[0,[],[0],0],"1200":[16,[],[7,0,1,4,3,2,8,5],0],"2438":[11,[],[0],0],"9487":[6,[0],[0,1],0],"440441":[6,[],[0,4,3,9,2,5],1],"151966":[0,[],[0],0],"1833":[0,[],[0],0],"432956":[0,[],[7,0,1,4,6,3,2,8,5],1],"376310":[3,[],[7,0,1,4,2,5],0],"43723":[20,[],[0],0],"328602":[0,[],[0,4,6,11,3,2,5],0],"917":[-1,[],[7,0,1,6,3,2,5],0],"333631":[1,[],[7,0,4,6,3,2,8,5],0],"407618":[1,[],[0],0],"3772":[-1,[],[7,0,1,4,2,5],0],"19644":[0,[],[0],0],"27590":[0,[],[0],0],"5264":[0,[],[0],0],"3443":[0,[],[0,1],0],"24201":[18,[0],[7,0,1,4,6,3,2,8,5],0],"30673":[15,[],[0,1,3,2,5],0],"391610":[0,[1,4,2],[0,1,4,6,3,9,2,5],1],"163018":[3,[],[7,0,1,4,6,3,2,8,5],0],"463767":[23,[],[7,0,1,4,6,3,2,8,5],1],"398054":[0,[],[7,0,1,3,2,5],1],"30381":[5,[4],[7,0,1,6,3,2,5],0],"288622":[34,[45],[0,1,4,6,3,2,5],0],"162142":[14,[],[7,0,1,4,3,2,5],0],"87313":[4,[8],[7,0,1,6,3,2,5],0],"327":[0,[],[7,0],0],"236011":[-1,[0],[39,7,0,1,4,6,3,2,8,5],0],"385392":[0,[],[7,0,1,4,6,3,2,5],1],"240":[0,[],[0],0],"21392":[4,[],[7,0,40,1,4,6,3,2,5],0],"12106":[0,[],[0,4,6],0],"89103":[4,[],[7,0,1,6,3,2,5],0],"20273":[0,[6],[0],0],"241206":[0,[],[0,6],0],"126430":[21,[],[0,1,6,5],0],"381079":[1,[],[7,0,1,4,2,8,5],0],"1":[2,[],[7,0,1,4,6,3,2,8,5],0],"325455":[0,[4,6],[7,0,1,4,6,3,2,5],0],"348":[6,[],[0,1,4,6,3,2,8,5],1],"26246":[8,[],[0,1,4,6,3,2,5],0],"38394":[38,[],[0],1],"45406":[1,[],[7,0,4,6,3,2,8,5],0],"114383":[18,[],[0],0],"398175":[-1,[0],[7,0,1,4,6,3,2,8,5],1],"397704":[0,[],[7,0,1,4,6,3,2,5],0],"94584":[3,[],[0,1,6,5],0],"1080":[16,[],[0,1,4,3,2,5],0],"3719":[6,[],[0],0],"170676":[42,[],[24,7,0,1,4,6,11,10,3,22,2,5],0],"4075":[0,[],[0,3,2],0],"281259":[4,[],[0,6,2,8,5],0],"401875":[0,[],[7,0,1,4,3,2,5],0],"376078":[2,[],[7,0,1,4,6,3,2,5],0],"99638":[1,[],[7,0,1,4,6,3,2,5],0],"227589":[17,[],[0,4,5],0],"428589":[1,[],[7,0,4,6,3,2,8,5],0],"108254":[1,[],[7,0,1,3,2,13,5],0],"114832":[1,[],[0],0],"87418":[1,[],[0],0],"119023":[0,[],[7,0,1,4,6,2],0],"354787":[0,[],[7,0,1,4,6,3,2,5],0],"1265":[16,[],[0,1,4,3,2,5],0],"173000":[0,[],[0,1,6,5],0],"339537":[0,[11],[7,0,6,9,5],0],"23535":[-1,[2],[7,0,1,4,6,3,8,5],0],"45427":[16,[],[7,0,1,4,6,3,2,5],0],"240424":[4,[],[15,0,19,6,12,2,13,8],0],"287808":[0,[],[0,1,4,6,2,5],0],"155443":[0,[],[7,0,1,5],0],"453108":[1,[],[7,0,1,4,6,3,2,8,5],0],"240093":[11,[],[0,5],0],"369358":[0,[],[7,0,1,4,6,3,2,5],0],"360569":[0,[1,4,6,3,9,2],[37,7,0,1,4,6,3,9,2,5],1],"269756":[30,[],[0,6,3,2,5],0],"444324":[14,[],[0],0],"1295":[16,[],[0,1,4,3,2,5],0],"1361":[1,[],[0],0],"436826":[4,[],[0,1,5],0],"354432":[0,[],[7,0,1,4,6,3,2,5],1],"227269":[1,[],[0,6,3,2,8,5],0],"244680":[1,[],[0,1],0],"209655":[4,[],[0,4,2,5],0],"297974":[6,[],[7,0,1,4,3,2,5],0],"452898":[14,[0],[0],0],"20399":[6,[0],[0,1],0],"229011":[24,[17],[7,0,1,3,2],0],"371703":[17,[],[0,3,2,5],0],"33002":[-1,[],[],0],"418919":[20,[],[0,4,3,2,8,5],0],"21846":[0,[3,2],[0,3,2],0],"391609":[0,[],[7,0,1,4,6,3,2,5],1],"241300":[23,[],[0,25,3,2,5],0],"1834":[0,[],[0,1,4],0],"20106":[9,[0],[0],0],"269720":[0,[],[0,1,6,3,2,5],0],"4361":[0,[],[0,1,4,3,2,8,5],0],"314":[0,[],[0],0],"458206":[0,[],[0],1],"131529":[17,[],[7,0,1,4,6,3,2,5],0],"3827":[4,[],[0,1,4,6,3,2,8,5],0],"2036":[48,[],[7,0,1,4,6,3,2,8,5],1],"369453":[1,[],[0,6],0],"154518":[0,[],[0,4],0],"2013":[0,[],[7,0,3,2],0],"343641":[0,[],[0,1,4,6,3,2,5],0],"23451":[0,[],[7,0,4,6,3,2,8,5],0],"332978":[0,[4],[0,4,6,3,2,5],1],"310716":[0,[],[0],0],"414484":[21,[4],[7,0,1,4,3,2,5],1],"34695":[10,[],[7,0,1,4,6,10,3,2,5],0],"431998":[10,[],[0],1],"15131":[0,[],[0],0],"21634":[18,[],[0],0],"400395":[3,[],[7,0,1,4,3,2,5],0],"17372":[-1,[],[0,4],0],"479458":[0,[],[7,0,1,4,6,3,2,5],1],"23016":[1,[],[7,0,4,6,3,2,8,5],0],"99903":[14,[],[7,0,1,4,6,3,2,5],0],"1901":[36,[1],[0,1,2],0],"418722":[0,[],[7,0,1,4,6,3,2,5],1],"118492":[3,[],[7,0,1,4,6,3,2,8,5],0],"30387":[1,[],[7,0,1,4,6,3,2,5],0],"374522":[0,[6],[7,0,1,6,3,2,5],1],"417871":[44,[],[7,0,1,4,6,3,2,8,5],0],"5994":[0,[],[0,1,4,6,3,2,8,5],0],"118342":[20,[],[7,0,1,4,6,3,2,5],0],"11864":[4,[],[7,0,1,6,3,2,5],1],"292832":[0,[],[0],0],"304153":[9,[],[7,0,4,3,9,2,5],1],"411747":[1,[],[0],0],"225137":[0,[],[0,4,6,3],0],"317437":[9,[2],[7,0,1,4,6,3,8,5],0],"176949":[1,[9],[7,0,1,9,2,5],0],"42931":[-1,[],[7,0,4,6,3,2,8,5],0],"196938":[0,[],[0],0],"269724":[28,[],[0,4,3,2,5],0],"420637":[0,[],[0],0],"440946":[8,[],[0,6,3,2,5],0],"118312":[1,[],[15,7,0,6,12,3,2,8,5],0],"407750":[0,[],[0],1],"294098":[9,[2],[0,6,3,5],0],"4364":[0,[],[0,1,4,3,9,2,5],0],"401685":[2,[],[7,0,1,4,6,3,8,5],0],"160306":[0,[],[7,0,6,3,2,5],0],"417791":[4,[0],[0,1,6,3,2,5],0],"409118":[33,[],[7,0,1,6,3,2,5],0],"368829":[0,[6,3,9],[7,0,1,4,6,3,9,2,5],1],"313105":[2,[],[7,0,1,4,6,5],1],"4384":[0,[],[0],0],"24679":[9,[2],[7,0,1,4,6,3,8,5],0],"431210":[0,[],[7,0,1,4,6,3,2,5],1],"1490":[0,[],[7,0,1,4,6,3,2,8,5],0],"450009":[4,[],[0,4,6,3,2,8,5],0],"401750":[0,[],[7,0,1,4,6,3,2,8,5],1],"434147":[0,[],[7,0,1,4,6,3,2,5],0],"447318":[1,[],[0,4,6,3,2,8,5],1],"24395":[5,[],[7,0,1,4,6,3,2],0],"114466":[35,[5],[0,4,3,22,2],0],"355078":[0,[],[7,0,1,4,6,3,2,8,5],1],"982":[0,[],[0],1],"26916":[0,[],[0],0],"12263":[0,[],[7,0,1,4,6,3,2],0],"135413":[0,[],[7,0,1,4,6,3,2,5],0],"269581":[0,[],[0,4,6,3,2,5],0],"310823":[0,[],[7,0,1,4,6,3,2,8,5],0],"255674":[0,[],[0],0],"20753":[0,[],[7,0,1,4,6,3,2,5],0],"465582":[-1,[],[0],1],"44686":[14,[],[7,0,1,4,6,3,9,2,5],0],"448851":[6,[],[7,0,1,4,3,9,2,8,5],1],"307330":[46,[],[0,3,2,5],0],"96195":[10,[],[7,0,1,4,6,10,3,2,5],0],"371872":[0,[],[7,0,1,4,6,3,2,8,5],1],"288495":[47,[],[7,0,1,4,6,3,2,5],0],"94617":[0,[],[],0],"397502":[0,[],[0],0],"48335":[1,[],[7,0,1,4,6,3,2,5],0],"308297":[-1,[],[0],0],"179055":[9,[2],[7,0,1,4,6,3,5],0],"383436":[1,[0],[14,7,0,1,4,6,3,2,8,5],0],"118459":[0,[],[7,0,1,3,2,5],0],"419273":[0,[],[0,1,4,2],1],"163327":[43,[],[0,1,3,2,5],0],"22050":[11,[],[0,4],0],"333277":[0,[],[7,0,1,4,6,3,2,5],1],"164163":[0,[],[0,1,4,3,2,5],0],"163418":[4,[],[7,0,1,6,3,9,2,5],0],"149903":[9,[2],[7,0,1,4,6,3,5],0],"156024":[0,[],[15,7,0,1,4,6,12,10,3,2,13],0],"5138":[9,[2],[7,0,1,4,3,5],0],"4363":[0,[],[0,1,4,3,2,5],0],"132478":[0,[],[0,1,4,3,2,5],0],"493":[0,[],[0],0],"372059":[0,[],[7,0,1,4,6,3,2,5],0],"253420":[0,[],[7,0,1,4,6,3,2,8,5],0],"93415":[10,[],[7,0,1,4,6,10,3,2,5],0],"87308":[0,[],[0,1],0],"280320":[0,[],[7,0,1,4,6,3,2,5],0],"287910":[9,[2],[7,0,1,4,6,3,5],0],"399137":[5,[],[7,0,1,4,6,3,2],0],"111231":[41,[],[0],0],"251181":[0,[],[0],0],"94596":[18,[],[0],0],"164518":[0,[],[7,0,1,4,6,3,2,5],0],"97349":[9,[2],[7,0,6,3],0],"22666":[0,[],[7,0,1,4,6,3,2,8,5],0],"3509":[0,[],[0,6,13],0],"23620":[0,[],[7,0,1,4,6,3,2,8,5],0],"339488":[32,[],[0,1,3,2,32],0],"21449":[9,[],[7,0,1,4,6,3,5],1],"466794":[0,[],[7,0,1,4,6,3,2,5],1],"213551":[0,[],[7,0,1,4,6,3,2,5],1],"243980":[0,[],[0],0],"240634":[-1,[0],[0],0],"269752":[0,[],[7,0,1],0],"434960":[0,[17],[24,7,0,1,4,6,3,2,5],0],"204766":[0,[],[7,0,5],0],"285819":[6,[0],[7,0,1,4,6,3,2,5],0],"108385":[0,[],[0,1,4,3,2,5],0],"23699":[1,[0],[7,0,5],0],"164456":[1,[],[0,3,2,5],0],"452907":[0,[],[0,3,2],0],"420567":[0,[],[7,0,1,4,6,3,2,5],1],"30111":[0,[],[0,1,4,3,2,8,5],0],"23807":[14,[],[7,0,1,4,6,3,2,5],0],"422583":[0,[4,6,9],[7,0,1,4,6,3,9,2,8,5],1],"15758":[0,[],[0,3,2],0],"391586":[6,[],[0,6],0],"24289":[9,[2],[7,0,1,4,6,3,8,5],0],"97355":[8,[],[7,0,1,4,6,3,2,5],0],"217139":[1,[],[0],0],"43741":[20,[],[0,1,4,6,3,8],0],"450015":[0,[],[0],0],"421811":[9,[],[0],0],"272620":[0,[],[0,1,4,3,9,2,5],0],"135101":[18,[],[0],0],"391577":[0,[],[0],0],"274391":[9,[2],[0,1,2],0],"211716":[0,[],[0,4,3,2],0],"242200":[0,[],[0],0],"406102":[30,[],[7,0,1],0],"377":[0,[4],[15,0,19,1,4,12,2,13],0],"116742":[0,[],[7,0,1,4,6,3,2,5],0],"240592":[1,[],[7,0,4,6,3,2,5],0],"33576":[-1,[],[0,1,4,6,3,2,5],0],"409204":[0,[4],[0,4,5],1],"256256":[6,[],[7,0,1,4,25,3,5],0],"196948":[0,[],[0],0],"5049":[0,[],[0],0],"243900":[0,[],[7,0,1,4,6,3,2,8,5],0],"99648":[1,[],[7,0,4,6,3,2,5],1],"377685":[17,[],[7,0,1],0],"42024":[10,[],[7,0,1,4,6,10,3,2,5],0],"288509":[20,[],[7,0,1,4,6,3,2,8,5],0],"23061":[4,[],[7,0,1,6,9],0],"110936":[9,[2],[7,0,1,4,6,3,9,2,5],0],"150822":[20,[],[7,0,1,4,6,3,2,5],0],"23854":[0,[],[7,0,1,4,6,3,2,8,5],0],"164464":[17,[],[0],0],"288532":[31,[],[7,0,1,4,6,3,2,5],0],"13776":[0,[1],[0,1],0],"47496":[1,[],[0],0],"103282":[16,[],[0,1,4,3,2,5],0],"132568":[0,[],[0,5],0],"173048":[0,[],[7,0,1,4,6,3,2,5],0],"39064":[0,[],[0],0],"246209":[-1,[],[],0],"152646":[0,[],[0],0],"385526":[2,[],[7,0,1,4,3,5],1],"234624":[20,[],[15,0,19,12,13,5],0],"109506":[8,[],[0],0],"155062":[-1,[0],[0],0],"19167":[17,[],[7,0,1,4,6,3,2,5],0],"228244":[9,[2],[7,0,1,4,6,3,5],0],"131540":[6,[],[0,1,4,3,2,5],0],"224485":[1,[],[0,4,6,3],0],"13122":[1,[0],[7,0,1,4,6,3,2,8,5],0],"162435":[9,[2],[7,0,1,4,6,3,5],0],"108516":[4,[],[7,0,1,4,6,3,2,5],0],"391721":[0,[4,6],[7,0,1,4,6,3,9,2,5],1],"296731":[1,[],[7,0,4,6,3,2,5],1],"313165":[0,[],[7,0,1,4,6,3,2,5],0],"28056":[0,[],[0,1,4,3,2,5],0],"162511":[17,[24],[7,0,1,4,6,3,2,5],0],"421346":[0,[],[],1],"12309":[0,[],[0],0],"2410":[0,[],[0],0],"95899":[-1,[],[0],0],"97304":[8,[],[7,0,1,4,6,3,2,8,5],0],"27802":[-1,[],[0,3,2],0],"38339":[2,[],[7,0,1,4,6,3],0],"21703":[0,[],[0],0],"80550":[0,[],[7,0,1,4,6,3,2,5],0],"114794":[9,[2],[0,6,3,5],0],"87417":[0,[],[7,0,1,4,6,3,2,8,5],0],"411381":[3,[],[7,0,1,4,6,3,2,8,5],0],"5626":[0,[],[0],0],"87564":[9,[2],[0],0],"407615":[0,[],[0],0],"365160":[2,[],[7,0,1,4,6,3,5],1],"391666":[0,[4],[0,4],1],"98557":[0,[],[7,0,1,4,6,3,2,5],0],"235926":[0,[],[0,4],0],"294106":[33,[],[0,6,3,2,5],0],"33210":[-1,[],[],0],"153720":[0,[],[7,0,1,4,6,3,2,5],0],"117178":[18,[],[7,0,1,4,6,3,2,8,5],0],"125844":[0,[],[7,0,1,4,6,3,2,5],0],"157125":[0,[],[7,0,1,4,6,3,2,8,5],0],"99341":[1,[],[7,0,4,6,3,2,8,5],0],"328512":[18,[],[0],0],"103050":[8,[],[0],0],"222916":[0,[],[0],0],"3377":[0,[],[0],1],"401761":[2,[],[7,0,1,4,6,3,8,5],1],"117551":[1,[],[7,0,6,3,2,5],0],"129325":[9,[2],[0],0],"324280":[0,[],[0],0],"24896":[0,[],[7,0,1,4,6,3,9,2,5],1],"419368":[6,[],[0],1],"103174":[23,[],[],0],"60662":[0,[],[7,0,1,4,6,3,2,5],0],"158639":[21,[],[0,1],0],"6784":[0,[],[0],0],"105006":[0,[],[7,0,1,4,6,3,2,5],0],"134422":[0,[],[7,0,1,4,6,3,2,5],0],"117540":[18,[],[0],0],"165397":[0,[],[0],0],"198112":[0,[],[0],0],"176765":[0,[],[7,0,1,4,6,3,2,5],0],"168872":[-1,[],[0],1],"8622":[0,[],[7,0,1,4,6,25,3,2,8,5],0],"76926":[-1,[14],[0],0],"476712":[0,[],[7,0,1,4,6,3,9,2,5],0],"368312":[0,[],[7,0,4,3,5],0],"129455":[1,[],[7,0,4,6,3,2],0],"33209":[-1,[],[0],0],"23025":[6,[0],[0],0],"170838":[0,[],[7,0,1,4,6,3,2,5],0],"68217":[0,[],[7,0,1,4,6,3,2,5],0],"108569":[0,[],[0],0],"246190":[0,[],[7,0,1,4,6,3,2,5],0],"182382":[0,[],[7,0,1,4,6,3,2,5],0],"478242":[-1,[],[0],1],"165010":[1,[],[15,0,4,6,12,3,2,13,5],0],"105770":[18,[],[0],0],"107884":[0,[],[7,0,1,4,6,3,2,8,5],0],"167169":[0,[],[7,0,6,3,2,5],0],"135733":[0,[],[7,0,1,4,6,3,2,5],0],"317526":[0,[],[0],0],"178600":[0,[],[7,0,1,4,6,3,2,5],0],"445147":[3,[],[7,0,1,4,6,3,9,2,5],0],"42279":[13,[],[7,0,1,4,6,3,9,2,5],0],"107885":[0,[],[7,0,1,4,6,3,2,5],0],"420628":[24,[17],[7,0,1,4,6,3,2,5],0],"238347":[0,[],[7,0,1,4,6,3,2,5],0],"94272":[0,[],[7,0,1,4,6,3,2,5],0],"244274":[0,[],[7,0,1,4,6,3,2,5],0],"191205":[0,[],[7,0,1,4,6,3,2,5],0],"170966":[0,[],[7,0,1,4,6,3,2,5],0],"464112":[22,[],[7,0,1,4,6,3,2,5],0],"132841":[0,[],[7,0,1,4,6,3,2,5],0],"33206":[-1,[],[0,1,3,2],0],"170977":[0,[],[7,0,1,4,6,3,2,5],0],"30549":[0,[],[7,0,19,1,4,6,3,2,8,5],0],"170839":[0,[],[7,0,1,4,6,3,2,5],0],"132718":[0,[],[7,0,1,4,6,3,2,5],0],"442304":[0,[6,9],[0,6,3,9,2],1],"171400":[0,[],[7,0,1,4,6,3,2,5],0],"448657":[0,[],[7,0,1,4,6,3,2],1],"223850":[0,[],[7,0,1,4,6,3,2],0],"234088":[-1,[0],[7,0,1,4,6,3,2],0],"209016":[0,[],[7,0,1,4,6,3,2],0],"473112":[0,[],[7,0,1,4,6,3,2],0],"473113":[0,[],[7,0,1,4,6,3,2],0]};
+  function filmLangs(f){
+    if(f._langs === undefined){ var m = /\/film\/(\d+)\//.exec(f.i || ''); f._langs = m && FILM_LANGS[m[1]] || null; }
+    return f._langs;
+  }
+  // Does the film have `lang` as its original audio, a dub, or subtitles (`type`: original | dubbed | subtitles)?
+  function filmHasLang(f, type, lang){
+    var fl = filmLangs(f);
+    if(!fl) return false;
+    var n = FILM_LANG_NAMES.indexOf(lang);
+    if(type === 'original') return fl[0] === n;
+    return (type === 'dubbed' ? fl[1] : fl[2]).indexOf(n) !== -1;
   }
   function filmIs4K(f){
-    return Number(f.y) >= 2018;
+    var fl = filmLangs(f);
+    return !!(fl && fl[3]);
   }
 
   var filmState = { genre: '', page: 1, sort: 'popularity_quality_score' };
   var filterState = { langType: 'original', lang: 'all', quality: '' };
-  // Filters v2 picks several languages of one type (filterState.langs); v1 picks one (filterState.lang).
+  // Filters v2–v4 keep their one language in filterState.langs; v1 keeps it in filterState.lang.
   function filterLangActive(){
     return (filterState.langs && filterState.langs.length > 0) || (filterState.lang && filterState.lang !== 'all');
   }
-  // The filter lists use MUBI's labels; the sample films only know plain languages.
-  var LANG_ALIAS = { 'Spanish (Latin America)':'Spanish', 'Spanish (European)':'Spanish', 'Mandarin':'Chinese', 'Cantonese':'Chinese', 'Farsi':'Persian' };
-  function langKey(l){ return LANG_ALIAS[l] || l; }
   function filmPassesLang(f){
-    var fl = filmLanguage(f);
-    if(filterState.langs && filterState.langs.length) return filterState.langs.some(function(l){ return langKey(l) === fl; });
-    if(filterState.lang && filterState.lang !== 'all') return langKey(filterState.lang) === fl;
+    if(filterState.langs && filterState.langs.length) return filterState.langs.some(function(l){ return filmHasLang(f, filterState.langType, l); });
+    if(filterState.lang && filterState.lang !== 'all') return filmHasLang(f, filterState.langType, filterState.lang);
     return true;
   }
   function renderFilms(reset){
@@ -1705,7 +1716,19 @@
     genreDetailState.hasMore = visible.length < list.length;
   }
 
+  // Filters v1 lists the picked language (one, of one type) and 4K under the sheet's check mark.
+  var LANG_TYPE_LABEL = { original: 'original language', subtitles: 'subtitles', dubbed: 'dubbed' };
+  function renderFilterPicked(){
+    var el = document.getElementById('fsPicked');
+    if(!el) return;
+    var picked = [];
+    if(filterState.lang && filterState.lang !== 'all') picked.push(filterState.lang + ' ' + LANG_TYPE_LABEL[filterState.langType]);
+    if(filterState.quality === '4k') picked.push('4K ultra HD');
+    el.textContent = picked.join(', ');
+  }
+
   function rerenderActiveFilmList(){
+    renderFilterPicked();
     if(filmSortContext === 'genre'){ renderGenreDetail(true); } else { renderFilms(true); }
     var filterBtn = document.querySelector('#actionsFilms .icon-btn[aria-label="Filters"]');
     if(filterBtn) filterBtn.classList.toggle('has-filter', filterLangActive() || filterState.quality !== '');
@@ -2062,20 +2085,27 @@
   (function(){
     // Languages per filter, ordered by how many web users picked them in Browse filters
     // (24 Aug – 18 Oct 2026, top 20 each; dub has only 8 in the data).
+    // Every language the films have, most common first (counted from FILM_LANGS).
     var LANGS = {
       original: {
         visible: 7,
-        list: ['English','French','Spanish (Latin America)','Japanese','Italian','German','Spanish (European)','Korean','Turkish','Portuguese',
-          'Mandarin','Arabic','Russian','Cantonese','Farsi','Hindi','Polish','Swedish','Norwegian','Thai']
+        list: ['English','French','Spanish (European)','German','Italian','Spanish (Latin America)','Portuguese','Farsi',
+          'Korean','Arabic','Filipino','Japanese','Mandarin','Thai','Norwegian','Polish','Russian','Turkish',
+          'Hungarian','Danish','Catalan','Chinese','Georgian','Icelandic','Swedish','Vietnamese','Amharic','Armenian',
+          'Bambara','Cantonese','Finnish','Greek','Igbo','Indonesian','Khmer','Lingala','Lithuanian','Ossetian',
+          'Romanian','Tamil','Ukrainian','Wolof']
       },
       dubbed: {
         visible: 8,
-        list: ['Italian','Spanish (Latin America)','German','Portuguese','Spanish (European)','English','French','Turkish']
+        list: ['Spanish (Latin America)','English','German','Italian','Spanish (European)','French','Mandarin','Portuguese',
+          'Korean','Turkish','Arabic','Chinese','Oromo','Thai']
       },
       subtitles: {
         visible: 8,
-        list: ['English','French','Spanish (Latin America)','Turkish','Italian','Thai','Polish','Portuguese','Spanish (European)','Chinese',
-          'German','Korean','Russian','Greek','Dutch','Hungarian','Japanese','Romanian','Czech','Croatian']
+        list: ['English','Turkish','Portuguese','Spanish (Latin America)','French','German','Dutch','Italian','Thai',
+          'Spanish (European)','Swedish','Polish','Norwegian','Danish','Finnish','Malay','Romanian','Hungarian',
+          'Chinese','Czech','Korean','Arabic','Basque','Croatian','Esperanto','Greek','Indonesian','Russian',
+          'Ukrainian']
       }
     };
 
@@ -2199,7 +2229,7 @@
       var quality = FS2_SECTIONS.filter(function(x){ return x.key === 'quality'; });
       fs2Main.innerHTML =
         '<div class="fs2-group"><div class="fs2-group-label">Language</div>' +
-          '<p class="fs2-group-note">Choose one type at a time</p>' + langSecs.map(fs2RowHTML).join('') + '</div>' +
+          '<p class="fs2-group-note">Choose one language</p>' + langSecs.map(fs2RowHTML).join('') + '</div>' +
         '<div class="fs2-group"><div class="fs2-group-label">Video</div>' + quality.map(fs2RowHTML).join('') + '</div>';
     }
     function fs2RenderDetail(){
@@ -2216,10 +2246,10 @@
       } else {
         var langs = fs2Langs(), mine = filterState.langType === key ? langs : [];
         var other = filterState.langType !== key && langs.length ? FS2_SECTIONS.filter(function(x){ return x.key === filterState.langType; })[0] : null;
-        fs2Hint.textContent = other ? 'Choosing a language here clears your ' + other.name + ' picks.' : 'Pick one or more.';
-        opts = ['<button class="fs2-opt' + (!mine.length ? ' is-on' : '') + '" data-val=""><span>Any</span>' + CHECK + '</button>'].concat(
+        fs2Hint.textContent = other ? 'Choosing a language here replaces your ' + other.name + ' pick.' : '';
+        opts = ['<button class="fs2-opt fs2-opt--single' + (!mine.length ? ' is-on' : '') + '" data-val=""><span>Any</span>' + CHECK + '</button>'].concat(
           LANGS[key].list.map(function(l){
-            return '<button class="fs2-opt' + (mine.indexOf(l) !== -1 ? ' is-on' : '') + '" data-val="' + esc(l) + '"><span>' + esc(l) + '</span>' + CHECK + '</button>';
+            return '<button class="fs2-opt fs2-opt--single' + (mine.indexOf(l) !== -1 ? ' is-on' : '') + '" data-val="' + esc(l) + '"><span>' + esc(l) + '</span>' + CHECK + '</button>';
           }));
       }
       fs2Options.innerHTML = opts.join('');
@@ -2265,11 +2295,10 @@
         if(!v){
           if(filterState.langType === sec) filterState.langs = [];
         } else {
-          // One type at a time: picking in another type starts that type fresh.
-          if(filterState.langType !== sec){ filterState.langType = sec; filterState.langs = []; }
-          var langs = fs2Langs().slice(), i = langs.indexOf(v);
-          if(i === -1) langs.push(v); else langs.splice(i, 1);
-          filterState.langs = langs;
+          // One language at a time (and so one type): tapping the chosen language again clears it.
+          var same = filterState.langType === sec && fs2Langs()[0] === v;
+          filterState.langType = sec;
+          filterState.langs = same ? [] : [v];
         }
       }
       rerenderActiveFilmList();
@@ -2286,14 +2315,14 @@
     document.getElementById('filterSheetClear').addEventListener('click', function(){ fs2RenderDetail(); fs2RenderMain(); });
     // ─── Filters v4: v3, but each section opens as an accordion in place (one language type at a time) ───
     var fs4On = false, fs4Open = { lang: null, quality: false };
-    function fs4OptHTML(val, label){
-      return '<button class="fs2-opt" data-val="' + esc(val) + '"><span>' + esc(label) + '</span>' + CHECK + '</button>';
+    function fs4OptHTML(val, label, single){
+      return '<button class="fs2-opt' + (single ? ' fs2-opt--single' : '') + '" data-val="' + esc(val) + '"><span>' + esc(label) + '</span>' + CHECK + '</button>';
     }
     function fs4SectionHTML(sec){
       // No "Any" option in v4: nothing ticked means no filter.
       var opts = sec.key === 'quality'
         ? QUALITIES.filter(function(q){ return q.v; }).map(function(q){ return fs4OptHTML(q.v, q.label); })
-        : LANGS[sec.key].list.map(function(l){ return fs4OptHTML(l, l); });
+        : LANGS[sec.key].list.map(function(l){ return fs4OptHTML(l, l, true); });
       // Row and panel share a wrapper, so an open (sticky) header only sticks while its own options scroll by.
       return '<div class="fs4-section">' +
         fs2RowHTML(sec).replace('class="fs2-row"', 'class="fs2-row fs4-row" aria-expanded="false"') +
@@ -2305,7 +2334,7 @@
       var quality = FS2_SECTIONS.filter(function(x){ return x.key === 'quality'; });
       fs2Main.innerHTML =
         '<div class="fs2-group"><div class="fs2-group-label">Language</div>' +
-          '<p class="fs2-group-note">Choose one type at a time</p>' + langSecs.map(fs4SectionHTML).join('') + '</div>' +
+          '<p class="fs2-group-note">Choose one language</p>' + langSecs.map(fs4SectionHTML).join('') + '</div>' +
         '<div class="fs2-group"><div class="fs2-group-label">Video</div>' + quality.map(fs4SectionHTML).join('') + '</div>';
       fs4Sync();
     }
@@ -2327,7 +2356,7 @@
         var hint = panel.querySelector('.fs4-hint');
         if(hint){
           var other = filterState.langType !== k && fs2Langs().length ? FS2_SECTIONS.filter(function(x){ return x.key === filterState.langType; })[0] : null;
-          hint.textContent = other ? 'Choosing a language here clears your ' + other.name + ' picks.' : 'Pick one or more.';
+          hint.textContent = other ? 'Choosing a language here replaces your ' + other.name + ' pick.' : '';
         }
       });
     }
