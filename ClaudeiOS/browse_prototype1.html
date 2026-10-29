@@ -962,27 +962,6 @@
               </div>
               <button class="more-toggle" id="filterToggle" role="switch" aria-checked="false" aria-label="Toggle filters"></button>
             </div>
-            <div class="more-setting-row">
-              <div class="more-setting-copy">
-                <div class="more-setting-name">Filters v2</div>
-                <p class="more-setting-desc">Filter by sections (Original language, Subtitle, Dubbed in, Video Quality) that slide in, with several languages per type</p>
-              </div>
-              <button class="more-toggle" id="filterV2Toggle" role="switch" aria-checked="false" aria-label="Toggle filters v2"></button>
-            </div>
-            <div class="more-setting-row">
-              <div class="more-setting-copy">
-                <div class="more-setting-name">Filters v3</div>
-                <p class="more-setting-desc">Filters v2 full screen, with checkboxes, Clear all at the top and an Apply button</p>
-              </div>
-              <button class="more-toggle" id="filterV3Toggle" role="switch" aria-checked="false" aria-label="Toggle filters v3"></button>
-            </div>
-            <div class="more-setting-row">
-              <div class="more-setting-copy">
-                <div class="more-setting-name">Filters v4</div>
-                <p class="more-setting-desc">Filters v3 with sections that open as accordions in place (one language type open at a time)</p>
-              </div>
-              <button class="more-toggle" id="filterV4Toggle" role="switch" aria-checked="false" aria-label="Toggle filters v4"></button>
-            </div>
           </div>
           <div style="height:110px"></div><!-- room to scroll the last setting clear of the tab bar -->
         </div>
@@ -2435,30 +2414,12 @@
     var filterBtn = document.querySelector('#actionsFilms .icon-btn[aria-label="Filters"]');
     var clearBtn = document.getElementById('filterSheetClear');
     if(!filterBtn) return;
-    var v1On = false, v2On = false;
-    function syncFilterBtn(){
-      var on = v1On || v2On;
+    function syncFilterBtn(on){
       filterBtn.style.display = on ? '' : 'none';
       // Hidden filters shouldn't keep narrowing the list.
       if(!on && clearBtn && filterBtn.classList.contains('has-filter')) clearBtn.click();
     }
-    bindMoreToggle('filterToggle', function(on){ v1On = on; syncFilterBtn(); }, false);
-    // Filters v2 swaps in the sectioned panel (and shows the Filter button). v1 and v2 hold
-    // their language picks differently, so switching starts from no filters.
-    var v2Switch = false, v3On = false, v4On = false;
-    function applyV2(){
-      var on = v2Switch || v3On || v4On;               // v3 and v4 are built on v2's sectioned panel
-      var changed = on !== v2On;
-      v2On = on;
-      if(changed && clearBtn) clearBtn.click();
-      if(window.nsSetFiltersV2) window.nsSetFiltersV2(on);
-      if(window.nsSetFiltersV3) window.nsSetFiltersV3(v3On || v4On);   // v4 is full screen like v3
-      if(window.nsSetFiltersV4) window.nsSetFiltersV4(v4On);
-      syncFilterBtn();
-    }
-    bindMoreToggle('filterV2Toggle', function(on){ v2Switch = on; applyV2(); }, false);
-    bindMoreToggle('filterV3Toggle', function(on){ v3On = on; applyV2(); }, false);
-    bindMoreToggle('filterV4Toggle', function(on){ v4On = on; applyV2(); }, false);
+    bindMoreToggle('filterToggle', syncFilterBtn, false);
   })();
 
   (function(){
