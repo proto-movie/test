@@ -80,6 +80,8 @@ frame_css = """
   /* A director's page in grid view is white like Browse; it stays grey in list view */
   .director-page:has(#directorPageGrid:not(.list-mode)){ background:var(--ink); }
   .director-page:has(#directorPageGrid:not(.list-mode)) .director-page-nav.collapsed{ background:rgba(255,255,255,.82); }
+  /* Director page's collapsed title bar: 98px suited the iPhone's Dynamic Island; the iPad's back button ends at 64px */
+  .director-page-nav{ height:72px; }
   /* Tiles sit 4px closer to the pills above them */
   .expl-list, .coll-list, .director-grid{ padding-top:2px; }
   .hero{ aspect-ratio:16/9; }
