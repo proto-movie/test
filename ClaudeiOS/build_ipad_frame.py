@@ -64,6 +64,8 @@ frame_css = """
   #browsePanel.active{ display:flex; flex-direction:column; }
   #browsePanel > *{ flex-shrink:0; }
   #segFilms, #segCollections, #segDirectors{ flex-grow:1; }
+  /* The sort icon itself (not its invisible 48px button) sits 20px from the right edge, matching the side margins */
+  .browse-actions-overlay{ right:3.8px; }
   /* Tiles sit 4px closer to the pills above them */
   .expl-list, .coll-list, .director-grid{ padding-top:2px; }
   .hero{ aspect-ratio:16/9; }
