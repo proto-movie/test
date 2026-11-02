@@ -313,26 +313,26 @@
     background:radial-gradient(ellipse at top right, rgba(0,0,0,.6) 0%, rgba(0,0,0,.28) 38%, rgba(0,0,0,0) 72%); }
   #filmGrid.poster-mode .expl-thumb::after, #genreDetailGrid.poster-mode .expl-thumb::after{ display:none; }
 
-  #filmGrid.list-mode, #directorPageGrid, #searchFilmResults{ gap:10px; }
-  #filmGrid.list-mode .expl-card, #directorPageGrid .expl-card, #searchFilmResults .expl-card{
+  #filmGrid.list-mode, #directorPageGrid.list-mode, #searchFilmResults{ gap:10px; }
+  #filmGrid.list-mode .expl-card, #directorPageGrid.list-mode .expl-card, #searchFilmResults .expl-card{
     aspect-ratio:auto; display:flex; align-items:center; gap:12px;
     overflow:visible; border-radius:0; background:#fff; padding:0 12px 0 0;
   }
-  #filmGrid.list-mode .expl-thumb, #directorPageGrid .expl-thumb, #searchFilmResults .expl-thumb{
+  #filmGrid.list-mode .expl-thumb, #directorPageGrid.list-mode .expl-thumb, #searchFilmResults .expl-thumb{
     position:relative; inset:auto; flex-shrink:0; width:45%; aspect-ratio:371/209;
     border-radius:0; overflow:hidden; background:#d0d0d0;
   }
-  #filmGrid.list-mode .expl-thumb .scrim, #directorPageGrid .expl-thumb .scrim, #searchFilmResults .expl-thumb .scrim{ display:none; }
-  #filmGrid.list-mode .expl-card .overlay, #directorPageGrid .expl-card .overlay, #searchFilmResults .expl-card .overlay{
+  #filmGrid.list-mode .expl-thumb .scrim, #directorPageGrid.list-mode .expl-thumb .scrim, #searchFilmResults .expl-thumb .scrim{ display:none; }
+  #filmGrid.list-mode .expl-card .overlay, #directorPageGrid.list-mode .expl-card .overlay, #searchFilmResults .expl-card .overlay{
     position:relative; inset:auto; flex:1; min-width:0; padding:0; justify-content:center;
   }
-  #filmGrid.list-mode .expl-card h3, #directorPageGrid .expl-card h3, #searchFilmResults .expl-card h3{ color:#3A3A3C; font-size:15px; font-weight:500; text-transform:none; margin-bottom:2px; }
-  #filmGrid.list-mode .expl-card p, #directorPageGrid .expl-card p, #searchFilmResults .expl-card p{ color:#6E6E73; text-transform:none; }
-  #filmGrid.list-mode .expl-card p .fd-director, #directorPageGrid .expl-card p .fd-director, #searchFilmResults .expl-card p .fd-director{ color:#6E6E73; font-weight:400; }
-  #filmGrid.list-mode .expl-card p .fd-meta, #directorPageGrid .expl-card p .fd-meta, #searchFilmResults .expl-card p .fd-meta{ display:none; }
+  #filmGrid.list-mode .expl-card h3, #directorPageGrid.list-mode .expl-card h3, #searchFilmResults .expl-card h3{ color:#3A3A3C; font-size:15px; font-weight:500; text-transform:none; margin-bottom:2px; }
+  #filmGrid.list-mode .expl-card p, #directorPageGrid.list-mode .expl-card p, #searchFilmResults .expl-card p{ color:#6E6E73; text-transform:none; }
+  #filmGrid.list-mode .expl-card p .fd-director, #directorPageGrid.list-mode .expl-card p .fd-director, #searchFilmResults .expl-card p .fd-director{ color:#6E6E73; font-weight:400; }
+  #filmGrid.list-mode .expl-card p .fd-meta, #directorPageGrid.list-mode .expl-card p .fd-meta, #searchFilmResults .expl-card p .fd-meta{ display:none; }
   /* On a director's own page the name is the title, so show year and country instead */
   #directorPageGrid .expl-card p .fd-director{ display:none; }
-  #directorPageGrid .expl-card p .fd-meta{ display:inline; }
+  #directorPageGrid.list-mode .expl-card p .fd-meta, #directorPageGrid .expl-card p .fd-meta{ display:inline; }
 
   #filmGrid.poster-mode, #genreDetailGrid.poster-mode{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px 12px; }
   #filmGrid.poster-mode .expl-card, #genreDetailGrid.poster-mode .expl-card{ aspect-ratio:2/3; border-radius:0; }
@@ -647,24 +647,24 @@
   :root[data-theme="dark"] #browsePanel.sticky-head .app-header, :root[data-theme="dark"] #browsePanel.sticky-head #browseTabs{ background:var(--dm-top); }
 
   /* List rows and tiles */
-  :root[data-theme="dark"] #filmGrid.list-mode .expl-card, :root[data-theme="dark"] #directorPageGrid .expl-card,
+  :root[data-theme="dark"] #filmGrid.list-mode .expl-card, :root[data-theme="dark"] #directorPageGrid.list-mode .expl-card,
   :root[data-theme="dark"] #searchFilmResults .expl-card, :root[data-theme="dark"] .coll-tile--list,
   :root[data-theme="dark"] .director-grid.list-mode .director-card{ background:var(--dm-row); }
-  :root[data-theme="dark"] #filmGrid.list-mode .expl-card h3, :root[data-theme="dark"] #directorPageGrid .expl-card h3,
+  :root[data-theme="dark"] #filmGrid.list-mode .expl-card h3, :root[data-theme="dark"] #directorPageGrid.list-mode .expl-card h3,
   :root[data-theme="dark"] #searchFilmResults .expl-card h3, :root[data-theme="dark"] .coll-tile--list .coll-info h3,
   :root[data-theme="dark"] .director-grid.list-mode .director-name{ color:var(--dm-text); }
-  :root[data-theme="dark"] #filmGrid.list-mode .expl-card p, :root[data-theme="dark"] #directorPageGrid .expl-card p,
+  :root[data-theme="dark"] #filmGrid.list-mode .expl-card p, :root[data-theme="dark"] #directorPageGrid.list-mode .expl-card p,
   :root[data-theme="dark"] #searchFilmResults .expl-card p, :root[data-theme="dark"] .list-mode .expl-card p .fd-director,
   :root[data-theme="dark"] .coll-tile--list .coll-info p, :root[data-theme="dark"] .director-count,
   :root[data-theme="dark"] .director-grid.list-mode .director-count, :root[data-theme="dark"] .director-page-count,
   :root[data-theme="dark"] .search-empty{ color:var(--dm-text-dim); }
   :root[data-theme="dark"] .search-section-label{ color:var(--dm-text-dimmer); }
-  :root[data-theme="dark"] #filmGrid.list-mode .expl-card p, :root[data-theme="dark"] #directorPageGrid .expl-card p,
+  :root[data-theme="dark"] #filmGrid.list-mode .expl-card p, :root[data-theme="dark"] #directorPageGrid.list-mode .expl-card p,
   :root[data-theme="dark"] #searchFilmResults .expl-card p, :root[data-theme="dark"] .list-mode .expl-card p .fd-director,
   :root[data-theme="dark"] #filmGrid.list-mode .expl-card p .fd-director, :root[data-theme="dark"] #searchFilmResults .expl-card p .fd-director{ color:rgba(237,237,242,.7); }
   :root[data-theme="dark"] .expl-card, :root[data-theme="dark"] .expl-thumb, :root[data-theme="dark"] .coll-tile-right,
   :root[data-theme="dark"] .coll-thumb, :root[data-theme="dark"] .director-imgwrap{ background-color:var(--dm-seam); }
-  :root[data-theme="dark"] #filmGrid.list-mode .expl-card, :root[data-theme="dark"] #directorPageGrid .expl-card,
+  :root[data-theme="dark"] #filmGrid.list-mode .expl-card, :root[data-theme="dark"] #directorPageGrid.list-mode .expl-card,
   :root[data-theme="dark"] #searchFilmResults .expl-card{ background:var(--dm-row); }
 
   /* Glass buttons, menus and the filter sheet */
@@ -716,9 +716,9 @@
   :root[data-theme="dark"] .az-bubble{ background:rgba(0,0,0,.8); }
 
   /* List View → Top Align: title and text sit at the top of each row instead of centred */
-  .list-top #filmGrid.list-mode .expl-card, .list-top #directorPageGrid .expl-card, .list-top #searchFilmResults .expl-card,
+  .list-top #filmGrid.list-mode .expl-card, .list-top #directorPageGrid.list-mode .expl-card, .list-top #searchFilmResults .expl-card,
   .list-top .coll-tile--list{ align-items:flex-start; }
-  .list-top #filmGrid.list-mode .expl-card .overlay, .list-top #directorPageGrid .expl-card .overlay,
+  .list-top #filmGrid.list-mode .expl-card .overlay, .list-top #directorPageGrid.list-mode .expl-card .overlay,
   .list-top #searchFilmResults .expl-card .overlay{ justify-content:flex-start; padding-top:12px; }
   .list-top .coll-tile--list .coll-info{ padding-top:12px; }
   .list-top .director-grid.list-mode .director-card{ grid-template-rows:auto auto 1fr; }
@@ -864,6 +864,9 @@
   #segFilms, #segCollections, #segDirectors{ flex-grow:1; }
   /* The sort icon itself (not its invisible 48px button) sits 20px from the right edge, matching the side margins */
   .browse-actions-overlay{ right:3.8px; }
+  /* A director's page in grid view is white like Browse; it stays grey in list view */
+  .director-page:has(#directorPageGrid:not(.list-mode)){ background:var(--ink); }
+  .director-page:has(#directorPageGrid:not(.list-mode)) .director-page-nav.collapsed{ background:rgba(255,255,255,.82); }
   /* Tiles sit 4px closer to the pills above them */
   .expl-list, .coll-list, .director-grid{ padding-top:2px; }
   .hero{ aspect-ratio:16/9; }
@@ -2587,7 +2590,7 @@
 
     // List view applies to films and directors; collections only take the grey background and pills.
     function setMode(on){
-      [filmGrid, browseTabs, segFilms, segCollections, segDirectors, directorsGrid].forEach(function(el){
+      [filmGrid, browseTabs, segFilms, segCollections, segDirectors, directorsGrid, document.getElementById('directorPageGrid')].forEach(function(el){
         if(el) el.classList.toggle('list-mode', on);
       });
       if(on && window.setPosterViewOn) window.setPosterViewOn(false);

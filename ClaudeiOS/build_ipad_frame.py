@@ -23,6 +23,17 @@ rep("var top = panel.getBoundingClientRect().top + probe.offsetHeight;",
 # Grid view by default (list view off; it can still be turned on in the More tab)
 rep("bindMoreToggle('listViewToggle', function(on){ listOn = on; setMode(on); applyTopAlign(); }, true);",
     "bindMoreToggle('listViewToggle', function(on){ listOn = on; setMode(on); applyTopAlign(); }, false);")
+# A director's films follow the List view setting: list rows when it's on, image tiles when it's off.
+# The list styling only applies to #directorPageGrid.list-mode; hiding the director's own name stays for both.
+_keep = ['#directorPageGrid .expl-card p .fd-director{ display:none; }', '#directorPageGrid .expl-card p .fd-meta{ display:inline; }']
+for i,k in enumerate(_keep): rep(k, '@@KEEP%d@@' % i)
+s = s.replace('#directorPageGrid .expl', '#directorPageGrid.list-mode .expl')
+rep('#filmGrid.list-mode, #directorPageGrid, #searchFilmResults{ gap:10px; }', '#filmGrid.list-mode, #directorPageGrid.list-mode, #searchFilmResults{ gap:10px; }')
+for i,k in enumerate(_keep): rep('@@KEEP%d@@' % i, k)
+rep('#directorPageGrid .expl-card p .fd-meta{ display:inline; }',
+    '#directorPageGrid.list-mode .expl-card p .fd-meta, #directorPageGrid .expl-card p .fd-meta{ display:inline; }')
+rep("[filmGrid, browseTabs, segFilms, segCollections, segDirectors, directorsGrid].forEach(function(el){",
+    "[filmGrid, browseTabs, segFilms, segCollections, segDirectors, directorsGrid, document.getElementById('directorPageGrid')].forEach(function(el){")
 # Sticky pills are on by default
 rep("bindMoreToggle('stickyHeaderToggle', function(on){ panel.classList.toggle('sticky-head', on); markStuck(); }, false);",
     "bindMoreToggle('stickyHeaderToggle', function(on){ panel.classList.toggle('sticky-head', on); markStuck(); }, true);")
@@ -66,6 +77,9 @@ frame_css = """
   #segFilms, #segCollections, #segDirectors{ flex-grow:1; }
   /* The sort icon itself (not its invisible 48px button) sits 20px from the right edge, matching the side margins */
   .browse-actions-overlay{ right:3.8px; }
+  /* A director's page in grid view is white like Browse; it stays grey in list view */
+  .director-page:has(#directorPageGrid:not(.list-mode)){ background:var(--ink); }
+  .director-page:has(#directorPageGrid:not(.list-mode)) .director-page-nav.collapsed{ background:rgba(255,255,255,.82); }
   /* Tiles sit 4px closer to the pills above them */
   .expl-list, .coll-list, .director-grid{ padding-top:2px; }
   .hero{ aspect-ratio:16/9; }
