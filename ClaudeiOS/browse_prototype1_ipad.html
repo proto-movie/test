@@ -2542,14 +2542,14 @@
     panel.appendChild(probe);
     // A rail counts as pinned when it sits at the top of the panel (below the status bar inset).
     function markStuck(){
-      var top = panel.getBoundingClientRect().top + probe.offsetHeight;
+      var top = panel.getBoundingClientRect().top + probe.getBoundingClientRect().height;
       Array.prototype.forEach.call(panel.querySelectorAll('.gpill-rail'), function(r){
         r.classList.toggle('is-stuck', panel.classList.contains('sticky-head') && r.offsetParent !== null &&
           r.getBoundingClientRect().top <= top + 0.5 && panel.scrollTop > 0);
       });
     }
     panel.addEventListener('scroll', markStuck, { passive: true });
-    bindMoreToggle('stickyHeaderToggle', function(on){ panel.classList.toggle('sticky-head', on); markStuck(); }, false);
+    bindMoreToggle('stickyHeaderToggle', function(on){ panel.classList.toggle('sticky-head', on); markStuck(); }, true);
   })();
 
   (function(){
@@ -2599,7 +2599,7 @@
       document.documentElement.classList.toggle('list-top', listOn && topOn);
       if(topAlignRow) topAlignRow.classList.toggle('is-disabled', !listOn);
     }
-    bindMoreToggle('listViewToggle', function(on){ listOn = on; setMode(on); applyTopAlign(); }, true);
+    bindMoreToggle('listViewToggle', function(on){ listOn = on; setMode(on); applyTopAlign(); }, false);
     bindMoreToggle('topAlignToggle', function(on){ topOn = on; applyTopAlign(); }, false);
   })();
 

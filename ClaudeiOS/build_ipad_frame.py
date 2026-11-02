@@ -17,6 +17,15 @@ rep('top:54px;','top:30px;',3)
 rep("d.count + ' film' + (d.count !== 1 ? 's' : '')", "d.count + ' title' + (d.count !== 1 ? 's' : '')")
 rep("films.length + ' film' + (films.length !== 1 ? 's' : '')", "films.length + ' title' + (films.length !== 1 ? 's' : '')")
 rep('<span>No. of Films</span>','<span>No. of Titles</span>')
+# Measure the status-bar inset on screen, so pinned pills are detected when the iPad is scaled up (e.g. landscape)
+rep("var top = panel.getBoundingClientRect().top + probe.offsetHeight;",
+    "var top = panel.getBoundingClientRect().top + probe.getBoundingClientRect().height;")
+# Grid view by default (list view off; it can still be turned on in the More tab)
+rep("bindMoreToggle('listViewToggle', function(on){ listOn = on; setMode(on); applyTopAlign(); }, true);",
+    "bindMoreToggle('listViewToggle', function(on){ listOn = on; setMode(on); applyTopAlign(); }, false);")
+# Sticky pills are on by default
+rep("bindMoreToggle('stickyHeaderToggle', function(on){ panel.classList.toggle('sticky-head', on); markStuck(); }, false);",
+    "bindMoreToggle('stickyHeaderToggle', function(on){ panel.classList.toggle('sticky-head', on); markStuck(); }, true);")
 rep('<title>MUBI — Browse Prototype 1</title>','<title>MUBI — Browse Prototype 1 (iPad frame)</title>')
 rep('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">')
