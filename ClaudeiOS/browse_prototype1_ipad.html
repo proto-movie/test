@@ -858,6 +858,10 @@
   /* ─── iPad layout: more columns, a centred tab bar ─── */
   /* One gap between tiles, across and down, for every list and grid; side margins stay at 20px */
   #screen{ --tile-gap:8px; }
+  /* The grey list background reaches the bottom of the screen even when a pill has only a few titles */
+  #browsePanel.active{ display:flex; flex-direction:column; }
+  #browsePanel > *{ flex-shrink:0; }
+  #segFilms, #segCollections, #segDirectors{ flex-grow:1; }
   /* Tiles sit 4px closer to the pills above them */
   .expl-list, .coll-list, .director-grid{ padding-top:2px; }
   .hero{ aspect-ratio:16/9; }
