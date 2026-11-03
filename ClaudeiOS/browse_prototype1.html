@@ -1801,7 +1801,7 @@
     var summary = document.getElementById('fsSummary');
     if(summary){
       var parts = [];
-      if(filterState.lang && filterState.lang !== 'all') parts.push(esc(filterState.lang));
+      if(filterState.lang && filterState.lang !== 'all') parts.push(esc(filterState.lang) + ' ' + ({ original:'original language', subtitles:'subtitles', dubbed:'dub' })[filterState.langType]);
       if(filterState.quality === '4k') parts.push('4K Ultra HD');
       summary.innerHTML = parts.length ? '<b>' + parts.join(' · ') + '</b>' : 'No filters selected';
     }
