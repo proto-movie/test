@@ -34,9 +34,6 @@ rep('#directorPageGrid .expl-card p .fd-meta{ display:inline; }',
     '#directorPageGrid.list-mode .expl-card p .fd-meta, #directorPageGrid .expl-card p .fd-meta{ display:inline; }')
 rep("[filmGrid, browseTabs, segFilms, segCollections, segDirectors, directorsGrid].forEach(function(el){",
     "[filmGrid, browseTabs, segFilms, segCollections, segDirectors, directorsGrid, document.getElementById('directorPageGrid')].forEach(function(el){")
-# Sticky pills are on by default
-rep("bindMoreToggle('stickyHeaderToggle', function(on){ panel.classList.toggle('sticky-head', on); markStuck(); }, false);",
-    "bindMoreToggle('stickyHeaderToggle', function(on){ panel.classList.toggle('sticky-head', on); markStuck(); }, true);")
 rep('<title>MUBI — Browse Prototype 1</title>','<title>MUBI — Browse Prototype 1 (iPad frame)</title>')
 rep('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">')
