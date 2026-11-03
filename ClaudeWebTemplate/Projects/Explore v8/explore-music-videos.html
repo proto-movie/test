@@ -1703,7 +1703,7 @@
       <div class="filter-sort" id="genrePillsMobileWrap" style="display:none;">
         <select class="filter-select" id="genrePillsMobile" style="padding-left:0;">
           <option value="">All</option>
-          <option value="Music Videos" selected>Music Videos</option>
+          <option value="__none" selected hidden>Genre</option>
           <option value="Drama">Drama</option>
           <option value="Comedy">Comedy</option>
           <option value="Thriller">Thriller</option>
@@ -1728,7 +1728,6 @@
         </button>
         <div class="genre-pills" id="genrePills">
           <a href="#" class="genre-pill" data-genre="">All</a>
-          <a href="#" class="genre-pill is-active" data-genre="Music Videos">Music Videos</a>
           <a href="#" class="genre-pill" data-genre="Drama">Drama</a>
           <a href="#" class="genre-pill" data-genre="Comedy">Comedy</a>
           <a href="#" class="genre-pill" data-genre="Thriller">Thriller</a>
@@ -2627,10 +2626,6 @@ function renderGrid(genre) {
     </div>`;
     grid.querySelector('.js-browse-all').addEventListener('click', e => {
       e.preventDefault();
-      const mvPill = document.querySelector('#genrePills .genre-pill[data-genre="Music Videos"]');
-      if (mvPill) mvPill.remove();
-      const mvOpt = document.querySelector('#genrePillsMobile option[value="Music Videos"]');
-      if (mvOpt) mvOpt.remove();
       const allPill = document.querySelector('#genrePills .genre-pill[data-genre=""]');
       if (allPill) allPill.click();
     });
@@ -2647,7 +2642,8 @@ function renderGrid(genre) {
   const wrap = document.getElementById('loadMoreFilmsWrap');
   wrap.style.display = isMobile() && visibleFilmsCount < currentFilms.length ? '' : 'none';
 }
-renderGrid();
+// Load on the Music Videos empty state with no genre tab selected
+renderGrid('Music Videos');
 
 document.getElementById('loadMoreFilmsBtn').addEventListener('click', () => {
   visibleFilmsCount += PAGE_SIZE;
