@@ -71,10 +71,6 @@ frame_css = """
   /* ─── iPad layout: more columns, a centred tab bar ─── */
   /* One gap between tiles, across and down, for every list and grid; side margins stay at 20px */
   #screen{ --tile-gap:8px; }
-  /* The grey list background reaches the bottom of the screen even when a pill has only a few titles */
-  #browsePanel.active{ display:flex; flex-direction:column; }
-  #browsePanel > *{ flex-shrink:0; }
-  #segFilms, #segCollections, #segDirectors{ flex-grow:1; }
   /* The sort icon itself (not its invisible 48px button) sits 20px from the right edge, matching the side margins */
   .browse-actions-overlay{ right:3.8px; }
   /* A director's page in grid view is white like Browse; it stays grey in list view */

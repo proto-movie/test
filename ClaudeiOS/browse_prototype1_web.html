@@ -290,6 +290,10 @@
   .gpill.active{ background:var(--paper); color:var(--ink); border-color:var(--paper); }
 
   #segFilms.list-mode, #segCollections.list-mode, #segDirectors.list-mode{ background:#F2F2F2; }
+  /* The grey list background reaches the bottom of the screen even with only one result (iOS and Android) */
+  #browsePanel.active{ display:flex; flex-direction:column; }
+  #browsePanel > *{ flex-shrink:0; }
+  #segFilms, #segCollections, #segDirectors{ flex-grow:1; }
   #segFilms.list-mode .gpill:not(.active), #segCollections.list-mode .gpill:not(.active), #segDirectors.list-mode .gpill:not(.active){ background:#fff; border-color:transparent; }
 
   .expl-list{ display:flex; flex-direction:column; gap:8px; padding:6px 20px 6px; }
