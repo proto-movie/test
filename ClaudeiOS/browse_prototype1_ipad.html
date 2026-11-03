@@ -834,7 +834,7 @@
   
   /* ─── ANDROID: Material 3 sort and filter sheets ───
      Only on Android (?platform=android, or an Android device); iOS keeps the glass sheets above.
-     Flat surface with 28px corners and an M3 drag handle; Sort by is a radio list; Filter by uses a
+     Flat surface with 28px corners and an M3 drag handle; Sort by is a list with a tick on the picked option; Filter by uses a
      segmented button, filter chips and a Clear / Apply button row. */
   :root.os-android{
     --m3-font:Roboto, "Google Sans", system-ui, -apple-system, sans-serif;
@@ -842,6 +842,7 @@
     --m3-outline:#79747E; --m3-outline-var:#CAC4D0;
     --m3-primary:#001489; --m3-on-primary:#FFFFFF;
     --m3-sec-container:#DDE1FF; --m3-on-sec-container:#00105C;
+    --m3-selected:#1C1B1F; --m3-on-selected:#FFFFFF;
     --m3-check:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
   }
   :root[data-theme="dark"].os-android{
@@ -849,6 +850,7 @@
     --m3-outline:#938F99; --m3-outline-var:#49454F;
     --m3-primary:#B8C3FF; --m3-on-primary:#001A72;
     --m3-sec-container:#2F3A80; --m3-on-sec-container:#DDE1FF;
+    --m3-selected:#E6E1E5; --m3-on-selected:#1C1B1F;
   }
   :root.os-android .menu-scrim.sheet-dim, :root.os-android .sheet-scrim{ background:rgba(0,0,0,.32); }
   :root.os-android .glass-menu.sort-sheet, :root.os-android .filter-sheet{
@@ -859,19 +861,17 @@
   :root.os-android .sort-sheet-grabber, :root.os-android .filter-sheet-grabber{
     width:32px; height:4px; border-radius:2px; background:var(--m3-on-surface-var); opacity:.4; margin:22px auto 16px; }
 
-  /* Sort by: a list of radio buttons */
+  /* Sort by: a plain list, the picked option ticked */
   :root.os-android .glass-menu.sort-sheet{ padding:0 0 calc(12px + 20px); }
   :root.os-android .sort-sheet-title{ font-family:var(--m3-font); font-size:22px; font-weight:400; letter-spacing:0; line-height:28px;
     color:var(--m3-on-surface); padding:0 24px 12px; }
   :root.os-android .sort-sheet .glass-menu-item, :root.os-android .sort-sheet .glass-menu-item + .glass-menu-item{
-    height:56px; padding:0 24px; gap:16px; justify-content:flex-start; border:none; border-radius:0;
+    height:56px; padding:0 24px; gap:16px; justify-content:space-between; border:none; border-radius:0;
     font-family:var(--m3-font); font-size:16px; font-weight:400; letter-spacing:.5px; color:var(--m3-on-surface); transition:background .15s ease; }
   :root.os-android .sort-sheet .glass-menu-item:active{ transform:none; background:color-mix(in srgb, var(--m3-on-surface) 10%, transparent); }
-  :root.os-android .sort-sheet .glass-menu-item .check{ display:none; }
-  :root.os-android .sort-sheet .glass-menu-item::before{ content:''; width:20px; height:20px; flex-shrink:0; box-sizing:border-box;
-    border-radius:50%; border:2px solid var(--m3-on-surface-var); }
-  :root.os-android .sort-sheet .glass-menu-item.is-selected::before{ border-color:var(--m3-primary);
-    background:radial-gradient(circle, var(--m3-primary) 0 5px, transparent 5.5px); }
+  /* The selected option keeps its tick, on the right */
+  :root.os-android .sort-sheet .glass-menu-item .check{ order:2; width:20px; height:20px; color:var(--m3-primary); }
+  :root.os-android .sort-sheet .glass-menu-item.is-selected{ font-weight:500; }
 
   /* Filter by: plain close icon and a left-aligned title */
   :root.os-android .filter-sheet-head{ justify-content:flex-start; gap:4px; padding:0 16px 8px 12px; }
@@ -886,25 +886,25 @@
     color:var(--m3-on-surface-var); margin-bottom:12px; }
   :root.os-android .filter-sheet-divider{ background:var(--m3-outline-var); margin:20px 0; }
 
-  /* Language type: an M3 segmented button */
-  :root.os-android .lang-type-toggle{ gap:0; padding:0; border-radius:20px; background:none; border:1px solid var(--m3-outline); overflow:hidden; }
-  :root.os-android .lang-type-seg{ display:flex; align-items:center; justify-content:center; gap:8px; height:40px; padding:0 12px;
-    border:none; border-left:1px solid var(--m3-outline); border-radius:0; background:none;
-    font-family:var(--m3-font); font-size:14px; font-weight:500; letter-spacing:.1px; text-transform:none; color:var(--m3-on-surface); }
-  :root.os-android .lang-type-seg:first-child{ border-left:none; }
-  :root.os-android .lang-type-seg.is-active{ background:var(--m3-sec-container); color:var(--m3-on-sec-container); border-color:var(--m3-outline); }
+  /* Language type: the iOS slider, with a grey track so it shows on the white sheet */
+  :root.os-android .lang-type-toggle{ background:color-mix(in srgb, var(--m3-on-surface) 6%, transparent); border-color:var(--m3-outline-var); }
+  :root.os-android .lang-type-seg.is-active{ background:var(--m3-surface); }
 
   /* Languages and video quality: M3 filter chips */
-  :root.os-android .filter-chip{ display:inline-flex; align-items:center; gap:8px; height:32px; padding:0 16px; border-radius:8px;
+  :root.os-android .filter-chip{ display:inline-flex; align-items:center; gap:8px; height:32px; padding:0 16px; border-radius:16px;
     border:1px solid var(--m3-outline); background:none; font-family:var(--m3-font); font-size:14px; font-weight:500; letter-spacing:.1px;
     color:var(--m3-on-surface-var); }
-  :root.os-android .filter-chip.is-active{ padding-left:8px; background:var(--m3-sec-container); border-color:var(--m3-sec-container); color:var(--m3-on-sec-container); }
-  :root.os-android .lang-type-seg.is-active::before, :root.os-android .filter-chip.is-active::before{ content:''; width:18px; height:18px; flex-shrink:0;
+  :root.os-android .filter-chip.is-active{ padding-left:8px; background:var(--m3-selected); border-color:var(--m3-selected); color:var(--m3-on-selected); }
+  :root.os-android .filter-chip.is-active::before{ content:''; width:18px; height:18px; flex-shrink:0;
     background:currentColor; -webkit-mask:var(--m3-check) center / contain no-repeat; mask:var(--m3-check) center / contain no-repeat; }
   :root.os-android .lang-show-more{ height:32px; padding:0 12px; font-family:var(--m3-font); font-size:14px; font-weight:500; color:var(--m3-primary); }
 
   /* Clear (text button) and Apply (filled button) at the bottom right */
-  :root.os-android .filter-sheet-footer{ justify-content:flex-end; gap:8px; padding:16px 24px calc(16px + 20px);
+  .fs-summary{ display:none; }
+  :root.os-android .fs-summary{ display:block; flex:0 0 100%; margin-bottom:4px; font-family:var(--m3-font); font-size:14px; line-height:20px;
+    letter-spacing:.25px; color:var(--m3-on-surface-var); }
+  :root.os-android .fs-summary b{ font-weight:500; color:var(--m3-primary); }
+  :root.os-android .filter-sheet-footer{ flex-wrap:wrap; justify-content:flex-end; gap:8px; padding:16px 24px calc(16px + 20px);
     border-top:1px solid var(--m3-outline-var); }
   :root.os-android .filter-sheet-clear{ height:40px; padding:0 12px; border-radius:20px; font-family:var(--m3-font); font-size:14px; font-weight:500;
     letter-spacing:.1px; text-transform:none; color:var(--m3-primary); }
@@ -1458,6 +1458,7 @@
             </div>
           </div>
           <div class="filter-sheet-footer">
+            <div class="fs-summary" id="fsSummary" aria-live="polite"></div>
             <button class="filter-sheet-clear" id="filterSheetClear">Clear</button>
             <button class="fs3-apply" id="fs3Apply">Apply</button>
           </div>
@@ -1941,7 +1942,16 @@
     if(filterState.lang && filterState.lang !== 'all') picked.push(filterState.lang + ' ' + LANG_TYPE_LABEL[filterState.langType]);
     if(filterState.quality === '4k') picked.push('4K ultra HD');
     el.textContent = picked.join(', ');
+    // Android repeats the picks in a line above Clear / Apply
+    var summary = document.getElementById('fsSummary');
+    if(summary){
+      var parts = [];
+      if(filterState.lang && filterState.lang !== 'all') parts.push(esc(filterState.lang));
+      if(filterState.quality === '4k') parts.push('4K Ultra HD');
+      summary.innerHTML = parts.length ? '<b>' + parts.join(' · ') + '</b>' : 'No filters selected';
+    }
   }
+  renderFilterPicked();
 
   function rerenderActiveFilmList(){
     renderFilterPicked();
