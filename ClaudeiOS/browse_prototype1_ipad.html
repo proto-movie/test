@@ -1000,6 +1000,39 @@
     .phone-scale-wrapper.turning-landscape, .phone-scale-wrapper.turning-portrait{ animation:none; }
     .rotate-btn svg{ transition:none; }
   }
+
+  /* iPad (iOS): Filter opens as a centred form sheet, Sort as a popover under its icon.
+     Android keeps its 640px Material bottom sheets. */
+  :root:not(.os-android) .filter-sheet{ top:50%; bottom:auto; left:50%; right:auto; width:min(540px, calc(100% - 48px)); max-height:min(720px, calc(100% - 96px));
+    border-radius:24px; border-bottom:1px solid rgba(24,20,15,.08); box-shadow:0 24px 60px rgba(24,20,15,.3);
+    opacity:0; pointer-events:none; transform:translate(-50%, calc(-50% + 40px)) scale(.97);
+    transition:transform .34s cubic-bezier(.32,.72,0,1), opacity .22s ease; }
+  :root:not(.os-android) .filter-sheet.open{ opacity:1; pointer-events:auto; transform:translate(-50%, -50%); }
+  :root:not(.os-android) .filter-sheet-grabber{ visibility:hidden; height:4px; margin:6px auto 0; }
+  :root:not(.os-android) .filter-sheet-footer{ padding-bottom:16px; }
+  :root:not(.os-android) .glass-menu.sort-sheet{ bottom:auto; left:auto; width:300px; padding:6px 8px 8px; border-radius:18px; border:1px solid rgba(24,20,15,.06);
+    opacity:0; pointer-events:none; transform:scale(.9); transform-origin:top right;
+    transition:transform .24s cubic-bezier(.32,.72,0,1), opacity .18s ease; box-shadow:0 18px 44px rgba(24,20,15,.22), 0 2px 8px rgba(24,20,15,.1); }
+  :root:not(.os-android) .glass-menu.sort-sheet.open{ opacity:1; pointer-events:auto; transform:scale(1); box-shadow:0 18px 44px rgba(24,20,15,.22), 0 2px 8px rgba(24,20,15,.1); }
+  :root:not(.os-android) .sort-sheet-grabber{ display:none; }
+  :root:not(.os-android) .sort-sheet-title{ padding:8px 8px 4px; font-size:13px; opacity:.6; }
+  :root:not(.os-android) .sort-sheet .glass-menu-item{ padding:12px 8px; font-size:15px; }
+  :root:not(.os-android) .menu-scrim.sheet-dim{ background:transparent; }
+
+  .frame-controls{ position:fixed; right:20px; bottom:20px; z-index:100; display:flex; align-items:center; gap:10px; }
+  .frame-controls .rotate-btn{ position:static; }
+  .platform-switch{ position:relative; display:flex; height:44px; padding:4px; border-radius:22px;
+    background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18);
+    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); box-shadow:0 8px 20px rgba(0,0,0,.35); }
+  .platform-switch::before{ content:''; position:absolute; top:4px; bottom:4px; left:4px; width:calc((100% - 8px) / 2); border-radius:18px;
+    background:rgba(255,255,255,.2); transition:transform .3s cubic-bezier(.32,.72,0,1); }
+  .platform-switch.is-android::before{ transform:translateX(100%); }
+  .platform-switch button{ position:relative; z-index:1; width:84px; border:none; background:none; cursor:pointer; border-radius:18px;
+    font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; font-size:14px; font-weight:600; color:rgba(244,241,233,.6);
+    transition:color .2s ease; }
+  .platform-switch button[aria-pressed="true"]{ color:#F4F1E9; }
+  .platform-switch button:focus-visible{ outline:2px solid #F4F1E9; outline-offset:-2px; }
+  @media (prefers-reduced-motion: reduce){ .platform-switch::before{ transition:none; } }
 </style>
 
 <div class="stage">
@@ -1477,12 +1510,18 @@
 </div>
 </div>
 </div>
+<div class="frame-controls">
+<div class="platform-switch" id="platformSwitch" role="group" aria-label="Platform">
+  <button type="button" data-platform="ios" aria-pressed="true">iOS</button>
+  <button type="button" data-platform="android" aria-pressed="false">Android</button>
+</div>
 <button class="rotate-btn" id="rotateBtn" type="button" aria-pressed="false" title="Rotate iPad">
   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>
   </svg>
   <span id="rotateLabel">Landscape</span>
 </button>
+</div>
 </div>
 
 <script>
@@ -1520,6 +1559,32 @@
     var saved = null;
     try{ saved = localStorage.getItem('ipadOrientation'); }catch(e){}
     setOrientation(saved === 'landscape', false);
+  })();
+</script>
+
+<script>
+  // iOS / Android switch: the same classes ?platform=android sets, plus the URL so a reload keeps the choice.
+  (function(){
+    var root = document.documentElement;
+    var sw = document.getElementById('platformSwitch');
+    var btns = Array.prototype.slice.call(sw.querySelectorAll('button'));
+    function render(){
+      var android = root.classList.contains('os-android');
+      sw.classList.toggle('is-android', android);
+      btns.forEach(function(b){ b.setAttribute('aria-pressed', String((b.dataset.platform === 'android') === android)); });
+    }
+    function setPlatform(android){
+      root.classList.toggle('os-android', android);
+      root.classList.toggle('platform-android', android);
+      try{
+        var url = new URL(location.href);
+        if(android) url.searchParams.set('platform', 'android'); else url.searchParams.delete('platform');
+        history.replaceState(null, '', url);
+      }catch(e){}
+      render();
+    }
+    btns.forEach(function(b){ b.addEventListener('click', function(){ setPlatform(b.dataset.platform === 'android'); }); });
+    render();
   })();
 </script>
 
@@ -2281,6 +2346,12 @@
     var screenEl = document.getElementById('screen');
     sortScrim.classList.add('sheet-dim');
     screenEl.appendChild(sortScrim);
+    function placePopover(btn, menu){
+      if(document.documentElement.classList.contains('os-android')){ menu.style.top = menu.style.right = ''; return; }
+      var sr = screenEl.getBoundingClientRect(), k = sr.width / screenEl.offsetWidth, br = btn.getBoundingClientRect();
+      menu.style.top = ((br.bottom - sr.top) / k + 8) + 'px';
+      menu.style.right = Math.max(16, (sr.right - br.right) / k - 4) + 'px';
+    }
     function makeSheet(menu){
       menu.classList.add('sort-sheet');
       menu.insertAdjacentHTML('afterbegin', '<div class="sort-sheet-grabber"></div><div class="sort-sheet-title">Sort by</div>');
@@ -2297,7 +2368,7 @@
         e.stopPropagation();
         var isOpen = menu.classList.contains('open');
         closeAllMenus();
-        if(!isOpen){ menu.classList.add('open'); sortScrim.classList.add('open'); }
+        if(!isOpen){ placePopover(btn, menu); menu.classList.add('open'); sortScrim.classList.add('open'); }
       });
 
       items.forEach(function(item){

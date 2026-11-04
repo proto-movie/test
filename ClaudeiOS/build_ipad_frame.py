@@ -1,6 +1,7 @@
 # Builds ClaudeiOS/browse_prototype1_ipad.html: browse_prototype1.html shown inside an iPad frame for desktop browsers.
 # Sibling of build_web_frame.py (the iPhone version); rerun after editing browse_prototype1.html.
 import os
+import frame_controls
 here = os.path.dirname(os.path.abspath(__file__))
 src = os.path.join(here, 'browse_prototype1.html')
 dst = os.path.join(here, 'browse_prototype1_ipad.html')
@@ -20,6 +21,17 @@ rep('<span>No. of Films</span>','<span>No. of Titles</span>')
 # Measure the status-bar inset on screen, so pinned pills are detected when the iPad is scaled up (e.g. landscape)
 rep("var top = panel.getBoundingClientRect().top + probe.offsetHeight;",
     "var top = panel.getBoundingClientRect().top + probe.getBoundingClientRect().height;")
+# Sort popover sits under the icon that opened it (iOS iPad only; Android keeps a bottom sheet)
+rep("    function makeSheet(menu){",
+"""    function placePopover(btn, menu){
+      if(document.documentElement.classList.contains('os-android')){ menu.style.top = menu.style.right = ''; return; }
+      var sr = screenEl.getBoundingClientRect(), k = sr.width / screenEl.offsetWidth, br = btn.getBoundingClientRect();
+      menu.style.top = ((br.bottom - sr.top) / k + 8) + 'px';
+      menu.style.right = Math.max(16, (sr.right - br.right) / k - 4) + 'px';
+    }
+    function makeSheet(menu){""")
+rep("if(!isOpen){ menu.classList.add('open'); sortScrim.classList.add('open'); }",
+    "if(!isOpen){ placePopover(btn, menu); menu.classList.add('open'); sortScrim.classList.add('open'); }")
 # Grid view by default (list view off; it can still be turned on in the More tab)
 rep("bindMoreToggle('listViewToggle', function(on){ listOn = on; setMode(on); applyTopAlign(); }, true);",
     "bindMoreToggle('listViewToggle', function(on){ listOn = on; setMode(on); applyTopAlign(); }, false);")
@@ -118,8 +130,26 @@ frame_css = """
     .phone-scale-wrapper.turning-landscape, .phone-scale-wrapper.turning-portrait{ animation:none; }
     .rotate-btn svg{ transition:none; }
   }
+
+  /* iPad (iOS): Filter opens as a centred form sheet, Sort as a popover under its icon.
+     Android keeps its 640px Material bottom sheets. */
+  :root:not(.os-android) .filter-sheet{ top:50%; bottom:auto; left:50%; right:auto; width:min(540px, calc(100% - 48px)); max-height:min(720px, calc(100% - 96px));
+    border-radius:24px; border-bottom:1px solid rgba(24,20,15,.08); box-shadow:0 24px 60px rgba(24,20,15,.3);
+    opacity:0; pointer-events:none; transform:translate(-50%, calc(-50% + 40px)) scale(.97);
+    transition:transform .34s cubic-bezier(.32,.72,0,1), opacity .22s ease; }
+  :root:not(.os-android) .filter-sheet.open{ opacity:1; pointer-events:auto; transform:translate(-50%, -50%); }
+  :root:not(.os-android) .filter-sheet-grabber{ visibility:hidden; height:4px; margin:6px auto 0; }
+  :root:not(.os-android) .filter-sheet-footer{ padding-bottom:16px; }
+  :root:not(.os-android) .glass-menu.sort-sheet{ bottom:auto; left:auto; width:300px; padding:6px 8px 8px; border-radius:18px; border:1px solid rgba(24,20,15,.06);
+    opacity:0; pointer-events:none; transform:scale(.9); transform-origin:top right;
+    transition:transform .24s cubic-bezier(.32,.72,0,1), opacity .18s ease; box-shadow:0 18px 44px rgba(24,20,15,.22), 0 2px 8px rgba(24,20,15,.1); }
+  :root:not(.os-android) .glass-menu.sort-sheet.open{ opacity:1; pointer-events:auto; transform:scale(1); box-shadow:0 18px 44px rgba(24,20,15,.22), 0 2px 8px rgba(24,20,15,.1); }
+  :root:not(.os-android) .sort-sheet-grabber{ display:none; }
+  :root:not(.os-android) .sort-sheet-title{ padding:8px 8px 4px; font-size:13px; opacity:.6; }
+  :root:not(.os-android) .sort-sheet .glass-menu-item{ padding:12px 8px; font-size:15px; }
+  :root:not(.os-android) .menu-scrim.sheet-dim{ background:transparent; }
 """
-i=s.index('</style>'); s=s[:i]+frame_css+s[i:]
+i=s.index('</style>'); s=s[:i]+frame_css+frame_controls.CSS+s[i:]
 statusbar = """
     <div class="web-statusbar" aria-hidden="true">
       <span class="time">9:41<span class="date">Mon 2 Nov</span></span>
@@ -156,12 +186,15 @@ rep("""            <button class="fs3-apply" id="fs3Apply">Apply</button>
 </div>
 </div>
 </div>
+<div class="frame-controls">
+""" + frame_controls.HTML + """
 <button class="rotate-btn" id="rotateBtn" type="button" aria-pressed="false" title="Rotate iPad">
   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>
   </svg>
   <span id="rotateLabel">Landscape</span>
 </button>
+</div>
 </div>
 
 <script>
@@ -201,7 +234,7 @@ rep("""            <button class="fs3-apply" id="fs3Apply">Apply</button>
     setOrientation(saved === 'landscape', false);
   })();
 </script>
-""")
+""" + frame_controls.JS)
 s = "<!-- Generated from browse_prototype1.html: the same prototype in an iPad frame for viewing in a desktop browser. -->\n" + s
 open(dst,'w',newline='').write(s)
 print('written', len(s))

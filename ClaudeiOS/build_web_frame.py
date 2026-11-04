@@ -39,7 +39,8 @@ frame_css = """
     background:rgba(0,0,0,.85); z-index:40; pointer-events:none; }
   :root[data-theme="dark"] .home-indicator{ background:rgba(255,255,255,.85); }
 """
-i=s.index('</style>'); s=s[:i]+frame_css+s[i:]
+import frame_controls
+i=s.index('</style>'); s=s[:i]+frame_css+frame_controls.CSS+s[i:]
 statusbar = """
     <div class="web-statusbar" aria-hidden="true">
       <span class="time">9:41</span>
@@ -92,7 +93,10 @@ rep("""            <button class="fs3-apply" id="fs3Apply">Apply</button>
     applyScale();
   })();
 </script>
-""")
+<div class="frame-controls">
+""" + frame_controls.HTML + """
+</div>
+""" + frame_controls.JS)
 s = "<!-- Generated from browse_prototype1.html: the same prototype in an iPhone frame for viewing in a desktop browser. -->\n" + s
 open(dst,'w',newline='').write(s)
 print('written', len(s))
