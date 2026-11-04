@@ -881,12 +881,9 @@
   :root.os-android .sort-sheet .glass-menu-item .check{ order:2; width:20px; height:20px; color:var(--m3-primary); }
   :root.os-android .sort-sheet .glass-menu-item.is-selected{ font-weight:500; }
 
-  /* Filter by: plain close icon and a left-aligned title */
-  :root.os-android .filter-sheet-head{ justify-content:flex-start; gap:4px; padding:0 16px 8px 12px; }
-  :root.os-android .filter-sheet-head .sheet-header-btn--close{ width:48px; height:48px; background:none; border:none; box-shadow:none;
-    backdrop-filter:none; -webkit-backdrop-filter:none; color:var(--m3-on-surface-var); }
-  :root.os-android .filter-sheet-head .sheet-header-btn--close::after{ display:none; }
-  :root.os-android .filter-sheet-head .sheet-header-btn--close:active{ transform:none; background:color-mix(in srgb, var(--m3-on-surface-var) 12%, transparent); }
+  /* Filter by: a left-aligned title, no close button (tap outside or swipe down to dismiss, as on Android) */
+  :root.os-android .filter-sheet-head{ justify-content:flex-start; padding:4px 24px 8px; }
+  :root.os-android .filter-sheet-head .sheet-header-btn--close{ display:none; }
   :root.os-android .filter-sheet-title{ flex:1; font-family:var(--m3-font); font-size:22px; font-weight:400; letter-spacing:0; line-height:28px; color:var(--m3-on-surface); }
   :root.os-android .filter-sheet .sheet-header-btn--check, :root.os-android .fs-picked{ display:none; }
   :root.os-android .filter-sheet-body{ padding:8px 24px 16px; }
