@@ -9,7 +9,7 @@ def rep(a,b,n=1):
     assert s.count(a)==n,(s.count(a),a[:70])
     s=s.replace(a,b)
 # Simulated iPhone safe areas (a desktop browser reports 0)
-s=s.replace('env(safe-area-inset-top)','59px').replace('env(safe-area-inset-bottom)','34px')
+s=s.replace('env(safe-area-inset-top)','59px').replace('env(safe-area-inset-bottom)','var(--sab)')
 rep('<title>MUBI — Browse Prototype 1</title>','<title>MUBI — Browse Prototype 1 (iPhone frame)</title>')
 rep('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">')
@@ -40,6 +40,23 @@ frame_css = """
   :root[data-theme="dark"] .home-indicator{ background:rgba(255,255,255,.85); }
 """
 import frame_controls
+frame_css += frame_controls.ANDROID_STATUS_CSS + frame_controls.NAVBAR_CSS + """
+  :root{ --sab:34px; }
+  /* Android: a Pixel-style phone. Punch-hole camera, power and one volume rocker on the right, thin gesture bar. */
+  .punch-hole{ display:none; position:absolute; top:16px; left:50%; transform:translateX(-50%); width:24px; height:24px; border-radius:50%; z-index:40;
+    background:radial-gradient(circle at 38% 38%, #1d2533 0%, #050608 62%); }
+  .os-android .island{ display:none; }
+  .os-android .punch-hole{ display:block; }
+  .os-android .frame{ border-radius:50px; padding:11px; }
+  .os-android .frame .screen{ border-radius:39px; }
+  .os-android .web-statusbar{ height:52px; padding:0 30px 0 34px; }
+  .os-android .web-statusbar .time{ font-size:15px; }
+  .os-android .btn-action, .os-android .btn-vol-down{ display:none; }
+  .os-android .side-btn.btn-vol-up{ left:auto; right:-1.4%; top:25%; height:9%; border-radius:1px 3px 3px 1px;
+    background:linear-gradient(270deg,#1c1e21 0%,#4a4e56 45%,#5b5f68 55%,#26282d 100%); }
+  .os-android .btn-power{ top:17%; height:5.5%; }
+  .os-android .home-indicator{ width:108px; height:4px; bottom:9px; }
+"""
 i=s.index('</style>'); s=s[:i]+frame_css+frame_controls.CSS+s[i:]
 statusbar = """
     <div class="web-statusbar" aria-hidden="true">
@@ -49,8 +66,10 @@ statusbar = """
         <svg viewBox="0 0 16 12" width="15" height="11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1 4.5a10.5 10.5 0 0 1 14 0"/><path d="M3.6 7.3a6.6 6.6 0 0 1 8.8 0"/><circle cx="8" cy="10" r="1" fill="currentColor" stroke="none"/></svg>
         <svg viewBox="0 0 25 12" width="24" height="11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5"/><rect x="22" y="4" width="1.6" height="4" rx="0.8" fill="currentColor" stroke="none"/><rect x="2" y="2" width="16.5" height="8" rx="1.2" fill="currentColor" stroke="none"/></svg>
       </div>
+      """ + frame_controls.ANDROID_ICONS + """
     </div>
     <div class="island" aria-hidden="true"></div>
+    <div class="punch-hole" aria-hidden="true"></div>
 """
 rep("""<div class="stage">
   <div class="screen" id="screen">
@@ -73,6 +92,7 @@ rep("""            <button class="fs3-apply" id="fs3Apply">Apply</button>
         </div>
 
     <div class="home-indicator" aria-hidden="true"></div>
+    """ + frame_controls.NAVBAR_HTML + """
   </div>
 </div>
 </div>

@@ -11,7 +11,7 @@ def rep(a,b,n=1):
     assert s.count(a)==n,(s.count(a),a[:70])
     s=s.replace(a,b)
 # Simulated iPad safe areas (a desktop browser reports 0): 24px status bar, 20px home indicator
-s=s.replace('env(safe-area-inset-top)','24px').replace('env(safe-area-inset-bottom)','20px')
+s=s.replace('env(safe-area-inset-top)','24px').replace('env(safe-area-inset-bottom)','var(--sab)')
 # Floating header buttons were pinned just under the iPhone's Dynamic Island; sit them under the iPad status bar
 rep('top:54px;','top:30px;',3)
 # Counts say "titles" rather than "films" (directors grid, a director's page, the directors sort menu)
@@ -149,6 +149,18 @@ frame_css = """
   :root:not(.os-android) .sort-sheet .glass-menu-item{ padding:12px 8px; font-size:15px; }
   :root:not(.os-android) .menu-scrim.sheet-dim{ background:transparent; }
 """
+frame_css += frame_controls.ANDROID_STATUS_CSS + frame_controls.NAVBAR_CSS + """
+  :root{ --sab:20px; }
+  .android-navbar{ --navbar-gap:120px; }
+  /* Android: a Pixel Tablet-style frame. The camera sits on the long edge (left in portrait, top in landscape),
+     no date in the status bar, a thin gesture bar. */
+  .os-android .frame{ border-radius:34px; }
+  .os-android .ipad-camera{ top:50%; left:6px; transform:translateY(-50%); }
+  .os-android .phone.landscape .ipad-camera{ top:6px; left:50%; transform:translateX(-50%); }
+  .os-android .web-statusbar{ padding:0 24px; }
+  .os-android .web-statusbar .time{ font-size:13px; }
+  .os-android .home-indicator{ width:160px; height:4px; bottom:8px; }
+"""
 i=s.index('</style>'); s=s[:i]+frame_css+frame_controls.CSS+s[i:]
 statusbar = """
     <div class="web-statusbar" aria-hidden="true">
@@ -158,6 +170,7 @@ statusbar = """
         <span>100%</span>
         <svg viewBox="0 0 25 12" width="24" height="11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5"/><rect x="22" y="4" width="1.6" height="4" rx="0.8" fill="currentColor" stroke="none"/><rect x="2" y="2" width="16.5" height="8" rx="1.2" fill="currentColor" stroke="none"/></svg>
       </div>
+      """ + frame_controls.ANDROID_ICONS + """
     </div>
 """
 rep("""<div class="stage">
@@ -182,6 +195,7 @@ rep("""            <button class="fs3-apply" id="fs3Apply">Apply</button>
         </div>
 
     <div class="home-indicator" aria-hidden="true"></div>
+    """ + frame_controls.NAVBAR_HTML + """
   </div>
 </div>
 </div>

@@ -176,7 +176,7 @@
   .menu-scrim.sheet-dim{ display:block; z-index:14; background:rgba(10,8,6,.32); opacity:0; pointer-events:none; transition:opacity .28s ease; }
   .menu-scrim.sheet-dim.open{ opacity:1; pointer-events:auto; }
   .glass-menu.sort-sheet{ top:auto; left:0; right:0; bottom:0; z-index:15; min-width:0; border-radius:24px 24px 0 0;
-    padding:4px 16px calc(18px + 34px); border-bottom:none; opacity:1; transform:translateY(100%);
+    padding:4px 16px calc(18px + var(--sab)); border-bottom:none; opacity:1; transform:translateY(100%);
     transition:transform .34s cubic-bezier(.32,.72,0,1); box-shadow:none; }
   .glass-menu.sort-sheet.open{ transform:translateY(0); box-shadow:0 -12px 36px rgba(24,20,15,.28); }
   .glass-menu.sort-sheet::before{ display:none; }
@@ -405,14 +405,14 @@
 
 
   /* Sit down in the home indicator area like iOS 26's floating tab bar, not on top of it. */
-  #screen{ --tabbar-bottom:max(12px, calc(34px - 12px)); }
+  #screen{ --tabbar-bottom:max(12px, calc(var(--sab) - 12px)); }
   .tabbar-wrap{
     position:absolute; left:20px; right:20px; bottom:var(--tabbar-bottom); height:70px; z-index:12;
     display:flex; align-items:stretch; gap:10px;
     transition:bottom .34s cubic-bezier(.32,.72,0,1);
   }
   .back-to-top{
-    position:absolute; right:20px; bottom:calc(var(--classic-bar) + 34px + 12px); z-index:12;
+    position:absolute; right:20px; bottom:calc(var(--classic-bar) + var(--sab) + 12px); z-index:12;
     display:flex; align-items:center; justify-content:center; width:48px; height:48px; padding:0; border-radius:50%; color:var(--paper);
     backdrop-filter:blur(28px) saturate(140%); -webkit-backdrop-filter:blur(28px) saturate(140%);
     background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
@@ -484,7 +484,7 @@
      iOS centres Home, Browse and GO with More at the far right; Android spreads all four evenly. */
   #screen{ --classic-bar:49px; }
   .os-android #screen{ --classic-bar:80px; }
-  .tabbar-wrap.classic{ left:0; right:0; bottom:0; height:auto; gap:0; padding-bottom:34px;
+  .tabbar-wrap.classic{ left:0; right:0; bottom:0; height:auto; gap:0; padding-bottom:var(--sab);
     background:#fff; border-top:.5px solid rgba(0,0,0,.22); }
   .tabbar-wrap.classic .tabbar{ display:flex; height:var(--classic-bar); flex:1 1 auto; padding:0 8px; border:none; border-radius:0;
     background:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
@@ -805,7 +805,7 @@
   .filter-sheet--v3 .fs3-clear-all{ display:block; min-width:44px; height:44px; padding:0 2px; background:none; border:none;
     font-family:var(--font-riforma); font-weight:500; font-size:14px; color:#001489; -webkit-tap-highlight-color:transparent; }
   .filter-sheet--v3 .filter-sheet-clear{ display:none; }
-  .filter-sheet--v3 .filter-sheet-footer{ padding:14px 20px calc(14px + 34px); }
+  .filter-sheet--v3 .filter-sheet-footer{ padding:14px 20px calc(14px + var(--sab)); }
   .filter-sheet--v3 .fs3-apply{ display:block; width:100%; height:48px; border:none; border-radius:8px; background:#001489; color:#fff;
     font-family:var(--font-riforma); font-weight:500; font-size:16px; text-transform:uppercase; -webkit-tap-highlight-color:transparent; }
   .filter-sheet--v3 .fs3-apply:active{ transform:scale(.98); }
@@ -870,7 +870,7 @@
     width:32px; height:4px; border-radius:2px; background:var(--m3-on-surface-var); opacity:.4; margin:22px auto 16px; }
 
   /* Sort by: a plain list, the picked option ticked */
-  :root.os-android .glass-menu.sort-sheet{ padding:0 0 calc(12px + 34px); }
+  :root.os-android .glass-menu.sort-sheet{ padding:0 0 calc(12px + var(--sab)); }
   :root.os-android .sort-sheet-title{ font-family:var(--m3-font); font-size:22px; font-weight:400; letter-spacing:0; line-height:28px;
     color:var(--m3-on-surface); padding:0 24px 12px; }
   :root.os-android .sort-sheet .glass-menu-item, :root.os-android .sort-sheet .glass-menu-item + .glass-menu-item{
@@ -909,7 +909,7 @@
   :root.os-android .fs-summary{ display:block; flex:0 0 100%; margin-bottom:4px; font-family:var(--m3-font); font-size:14px; line-height:20px;
     letter-spacing:.25px; color:var(--m3-on-surface-var); }
   :root.os-android .fs-summary b{ font-weight:500; color:var(--m3-primary); }
-  :root.os-android .filter-sheet-footer{ flex-wrap:wrap; justify-content:flex-end; gap:8px; padding:16px 24px calc(16px + 34px);
+  :root.os-android .filter-sheet-footer{ flex-wrap:wrap; justify-content:flex-end; gap:8px; padding:16px 24px calc(16px + var(--sab));
     border-top:1px solid var(--m3-outline-var); }
   :root.os-android .filter-sheet-clear{ height:40px; padding:0 12px; border-radius:20px; font-family:var(--m3-font); font-size:14px; font-weight:500;
     letter-spacing:.1px; text-transform:none; color:var(--m3-primary); }
@@ -942,6 +942,39 @@
     background:rgba(0,0,0,.85); z-index:40; pointer-events:none; }
   :root[data-theme="dark"] .home-indicator{ background:rgba(255,255,255,.85); }
 
+  /* Android: Roboto time on the left, Material status icons on the right */
+  .web-statusbar .android-icons{ display:none; gap:5px; }
+  .os-android .web-statusbar .status-icons:not(.android-icons){ display:none; }
+  .os-android .web-statusbar .android-icons{ display:flex; }
+  .os-android .web-statusbar .time{ font-family:Roboto, "Google Sans", system-ui, sans-serif; font-weight:500; letter-spacing:.1px; }
+  .os-android .web-statusbar .time .date{ display:none; }
+
+  :root.os-android{ --sab:48px; }
+  .android-navbar{ display:none; position:absolute; left:0; right:0; bottom:0; height:48px; z-index:41; pointer-events:none;
+    align-items:center; justify-content:center; gap:var(--navbar-gap, 76px); background:#000; color:#fff; }
+  .os-android .android-navbar{ display:flex; }
+  .os-android .home-indicator{ display:none; }
+  /* On a device the system bar overlaps the bottom of the 80px tab bar; in the mockup the black bar sits below it,
+     so the tab bar is trimmed to 56px with its icons centred, leaving no empty strip under them. */
+  .os-android #screen{ --classic-bar:56px; }
+  .os-android .tabbar-wrap.classic .tab{ justify-content:center; padding-top:0; }
+
+  :root{ --sab:34px; }
+  /* Android: a Pixel-style phone. Punch-hole camera, power and one volume rocker on the right, thin gesture bar. */
+  .punch-hole{ display:none; position:absolute; top:16px; left:50%; transform:translateX(-50%); width:24px; height:24px; border-radius:50%; z-index:40;
+    background:radial-gradient(circle at 38% 38%, #1d2533 0%, #050608 62%); }
+  .os-android .island{ display:none; }
+  .os-android .punch-hole{ display:block; }
+  .os-android .frame{ border-radius:50px; padding:11px; }
+  .os-android .frame .screen{ border-radius:39px; }
+  .os-android .web-statusbar{ height:52px; padding:0 30px 0 34px; }
+  .os-android .web-statusbar .time{ font-size:15px; }
+  .os-android .btn-action, .os-android .btn-vol-down{ display:none; }
+  .os-android .side-btn.btn-vol-up{ left:auto; right:-1.4%; top:25%; height:9%; border-radius:1px 3px 3px 1px;
+    background:linear-gradient(270deg,#1c1e21 0%,#4a4e56 45%,#5b5f68 55%,#26282d 100%); }
+  .os-android .btn-power{ top:17%; height:5.5%; }
+  .os-android .home-indicator{ width:108px; height:4px; bottom:9px; }
+
   .frame-controls{ position:fixed; right:20px; bottom:20px; z-index:100; display:flex; align-items:center; gap:10px; }
   .frame-controls .rotate-btn{ position:static; }
   .platform-switch{ position:relative; display:flex; height:44px; padding:4px; border-radius:22px;
@@ -973,8 +1006,14 @@
         <svg viewBox="0 0 16 12" width="15" height="11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M1 4.5a10.5 10.5 0 0 1 14 0"/><path d="M3.6 7.3a6.6 6.6 0 0 1 8.8 0"/><circle cx="8" cy="10" r="1" fill="currentColor" stroke="none"/></svg>
         <svg viewBox="0 0 25 12" width="24" height="11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5"/><rect x="22" y="4" width="1.6" height="4" rx="0.8" fill="currentColor" stroke="none"/><rect x="2" y="2" width="16.5" height="8" rx="1.2" fill="currentColor" stroke="none"/></svg>
       </div>
+      <div class="status-icons android-icons">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M12 20.5 1 8.6a16 16 0 0 1 22 0z"/></svg>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21.5 2.5v19h-19z"/></svg>
+        <svg viewBox="0 0 12 20" width="9" height="15" fill="currentColor"><rect x="3.5" y="0" width="5" height="2.2" rx=".6"/><rect x="0" y="2" width="12" height="18" rx="2.2"/></svg>
+      </div>
     </div>
     <div class="island" aria-hidden="true"></div>
+    <div class="punch-hole" aria-hidden="true"></div>
 
     <div class="grain"></div>
 
@@ -1429,6 +1468,11 @@
         </div>
 
     <div class="home-indicator" aria-hidden="true"></div>
+    <div class="android-navbar" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M17 4.5v15L5.5 12z"/></svg>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><circle cx="12" cy="12" r="7.5"/></svg>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="5.5" y="5.5" width="13" height="13" rx="1.5"/></svg>
+    </div>
   </div>
 </div>
 </div>
