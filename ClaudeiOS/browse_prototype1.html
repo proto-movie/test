@@ -573,12 +573,21 @@
   :root[data-theme="dark"] .more-link{ color:var(--dm-text); }
 
   /* Browse empty state, matching the mubi.com "no_film_results" message */
-  .browse-empty{ display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  .browse-empty{ grid-column:1 / -1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
     min-height:46vh; padding:64px 28px; }
   .browse-empty p{ margin:0; font-family:var(--font-riforma); font-size:20px; font-weight:400; line-height:1.2; color:#949494; }
   .browse-empty a{ color:#001489; text-decoration:underline; text-underline-offset:3px; text-decoration-skip-ink:none; }
   :root[data-theme="dark"] .browse-empty p{ color:var(--dm-text-dim); }
   :root[data-theme="dark"] .browse-empty a{ color:var(--dm-text); }
+  .browse-empty a.js-clear-filters, :root[data-theme="dark"] .browse-empty a.js-clear-filters{ text-decoration:none; color:inherit; }
+  .empty-filter-chips{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:20px; }
+  .empty-filter-chip{ display:inline-flex; align-items:center; gap:8px; padding:7px 12px 7px 14px; border-radius:50px;
+    border:1px solid rgba(24,20,15,.14); background:#fff; color:var(--paper); font-family:var(--font-riforma); font-size:13px; font-weight:500;
+    cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .empty-filter-chip svg{ color:rgba(24,20,15,.5); flex-shrink:0; }
+  .empty-filter-chip:active{ transform:scale(.96); }
+  :root[data-theme="dark"] .empty-filter-chip{ background:var(--dm-row); color:var(--dm-text); border-color:var(--dm-seam); }
+  :root[data-theme="dark"] .empty-filter-chip svg{ color:var(--dm-text-dim); }
   /* No filter or sort while the Music Videos empty state is shown */
   .screen.is-mv-empty #actionsFilms{ visibility:hidden; pointer-events:none; }
 
@@ -1817,12 +1826,29 @@
   }
   // Filters that leave a list with nothing in it: say so and offer to clear them.
   function filtersActive(){ return filterLangActive() || filterState.quality === '4k'; }
+  // The active filters, listed under the empty state message so each can be removed on its own.
+  function activeFilterChipsHTML(){
+    var X = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7"/></svg>';
+    var chips = [];
+    var lang = (filterState.langs && filterState.langs[0]) || (filterState.lang && filterState.lang !== 'all' ? filterState.lang : '');
+    if(lang){
+      var label = (filterState.langType === 'subtitles' ? 'Subtitles: '
+        : filterState.langType === 'dubbed' ? 'Dubbed in: '
+        : 'Original language: ') + lang;
+      chips.push('<button class="empty-filter-chip" data-kind="lang" aria-label="Remove ' + esc(label) + '">' + esc(label) + X + '</button>');
+    }
+    if(filterState.quality === '4k') chips.push('<button class="empty-filter-chip" data-kind="quality" aria-label="Remove Quality: 4K Ultra HD">Quality: 4K Ultra HD' + X + '</button>');
+    return chips.length ? '<div class="empty-filter-chips">' + chips.join('') + '</div>' : '';
+  }
   // With a genre selected, name it and suggest another genre; with All, just offer to clear.
   function showFilterEmpty(grid, genreLabel){
     grid.innerHTML = '<div class="browse-empty"><p>' + (genreLabel
       ? 'No results found matching your filter options in ' + esc(genreLabel) + '. Try another genre or <a href="#" class="js-clear-filters">clear your filters</a>.'
       : 'No results found matching your filter options, <a href="#" class="js-clear-filters">clear the filters</a> to see what\u2019s showing.') +
-      '</p></div>';
+      '</p>' + activeFilterChipsHTML() + '</div>';
+    Array.prototype.forEach.call(grid.querySelectorAll('.empty-filter-chip'), function(chip){
+      chip.addEventListener('click', function(){ if(window.nsRemoveFilter) window.nsRemoveFilter(chip.dataset.kind); });
+    });
     grid.querySelector('.js-clear-filters').addEventListener('click', function(e){
       e.preventDefault();
       var clear = document.getElementById('filterSheetClear');
@@ -2613,6 +2639,21 @@
     window.nsSetFiltersV2 = function(on){
       sheet.classList.toggle('filter-sheet--v2', on);
       fs2Body.classList.remove('is-detail');
+      fs2RenderMain();
+    };
+    // Empty state chips: remove one filter, keep the rest, and keep every filter sheet version in step.
+    window.nsRemoveFilter = function(kind){
+      if(kind === 'quality'){
+        filterState.quality = '';
+        Array.prototype.slice.call(qualityChipRail.querySelectorAll('.filter-chip')).forEach(function(chip){
+          chip.classList.toggle('is-active', chip.dataset.quality === '');
+        });
+      } else {
+        filterState.lang = 'all';
+        filterState.langs = [];
+        renderLangChips();
+      }
+      rerenderActiveFilmList();
       fs2RenderMain();
     };
     fs2RenderMain();

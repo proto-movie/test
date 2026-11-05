@@ -15,8 +15,9 @@ s=s.replace('env(safe-area-inset-top)','24px').replace('env(safe-area-inset-bott
 # Floating header buttons were pinned just under the iPhone's Dynamic Island; sit them under the iPad status bar
 rep('top:54px;','top:30px;',3)
 # Counts say "titles" rather than "films" (directors grid, a director's page, the directors sort menu)
-rep("d.count + ' film' + (d.count !== 1 ? 's' : '')", "d.count + ' title' + (d.count !== 1 ? 's' : '')")
-rep("films.length + ' film' + (films.length !== 1 ? 's' : '')", "films.length + ' title' + (films.length !== 1 ? 's' : '')")
+# (the source now says "titles" itself; only swap if it still says "films")
+s=s.replace("d.count + ' film' + (d.count !== 1 ? 's' : '')", "d.count + ' title' + (d.count !== 1 ? 's' : '')")
+s=s.replace("films.length + ' film' + (films.length !== 1 ? 's' : '')", "films.length + ' title' + (films.length !== 1 ? 's' : '')")
 rep('<span>No. of Films</span>','<span>No. of Titles</span>')
 # Measure the status-bar inset on screen, so pinned pills are detected when the iPad is scaled up (e.g. landscape)
 rep("var top = panel.getBoundingClientRect().top + probe.offsetHeight;",
@@ -40,6 +41,9 @@ rep("bindMoreToggle('listViewToggle', function(on){ listOn = on; setMode(on); ap
 _keep = ['#directorPageGrid .expl-card p .fd-director{ display:none; }', '#directorPageGrid .expl-card p .fd-meta{ display:inline; }']
 for i,k in enumerate(_keep): rep(k, '@@KEEP%d@@' % i)
 s = s.replace('#directorPageGrid .expl', '#directorPageGrid.list-mode .expl')
+# Edge List rules on the director page's grid itself: only in list mode, so the iPad's image tiles keep their padding and rating
+s = s.replace('.list-edge #directorPageGrid{', '.list-edge #directorPageGrid.list-mode{')
+s = s.replace('.list-edge #directorPageGrid.rating-active', '.list-edge #directorPageGrid.list-mode.rating-active')
 rep('#filmGrid.list-mode, #directorPageGrid, #searchFilmResults{ gap:10px; }', '#filmGrid.list-mode, #directorPageGrid.list-mode, #searchFilmResults{ gap:10px; }')
 for i,k in enumerate(_keep): rep('@@KEEP%d@@' % i, k)
 rep('#directorPageGrid .expl-card p .fd-meta{ display:inline; }',
