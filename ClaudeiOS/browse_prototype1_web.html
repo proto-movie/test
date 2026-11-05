@@ -608,9 +608,10 @@
   /* Android reports no top safe area, so recreate the iOS spacing from a fixed inset. */
   html.platform-android{ --android-top:40px; }
   .platform-android .app-header{ padding-top:calc(20px + var(--android-top)); }
-  .platform-android .browse-actions-overlay,
   .platform-android .genre-detail-back,
   .platform-android .director-page-navtitle{ top:calc(var(--android-top) - 5px); }
+  /* Filter and sort sit a little lower on Android */
+  .platform-android .browse-actions-overlay{ top:calc(var(--android-top) + 1px); }
   .platform-android .director-page-header,
   .platform-android .genre-detail-header{ padding-top:calc(45px + var(--android-top)); }
   .platform-android .director-page-nav{ height:calc(39px + var(--android-top)); }
@@ -790,6 +791,9 @@
   /* Edge List rows are exactly as tall as the square: the text area is pinned beside the still and
      clipped to it, titles stop at two lines and the film info at one. */
   .list-edge #filmGrid.list-mode .expl-card, .list-edge #directorPageGrid .expl-card{ position:relative; }
+  /* The rating is pinned 4px from the bottom of the row, so a two-line title never moves it */
+  .list-edge #filmGrid.list-mode.rating-active .expl-rating-text, .list-edge #directorPageGrid.rating-active .expl-rating-text{
+    position:absolute; left:0; bottom:4px; margin:0; padding:0; }
   .list-edge #filmGrid.list-mode .expl-card .overlay, .list-edge #directorPageGrid .expl-card .overlay{
     position:absolute; top:0; bottom:0; left:calc(25.35% - 10.14px + 10px); right:16px; overflow:hidden; }
   .list-edge #filmGrid.list-mode .expl-card h3, .list-edge #directorPageGrid .expl-card h3,
