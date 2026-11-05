@@ -755,13 +755,13 @@
   /* List View → Edge List (default): square stills flush to the left edge, rows run to the right edge,
      uppercase title and director in #666 at the top of each row. */
   .list-edge #filmGrid.list-mode{ padding-left:0; padding-right:0; gap:7px; }
-  .list-edge #filmGrid.list-mode .expl-card{ align-items:flex-start; gap:14px; padding:0 16px 0 0; }
+  .list-edge #filmGrid.list-mode .expl-card{ align-items:flex-start; gap:10px; padding:0 16px 0 0; }
   /* Square stills, same size as the Edge List director squares */
   .list-edge #filmGrid.list-mode .expl-thumb{ width:calc(25.35% - 10.14px); aspect-ratio:1/1; }
-  .list-edge #filmGrid.list-mode .expl-card .overlay{ justify-content:flex-start; padding-top:12px; }
+  .list-edge #filmGrid.list-mode .expl-card .overlay{ justify-content:flex-start; padding-top:9px; }
   /* Sorted by rating: in Edge List the rating sits in grey at the bottom left of the white text area, not on the still */
   .expl-rating-text{ display:none; }
-  .list-edge #filmGrid.list-mode .expl-card .overlay{ align-self:stretch; padding-bottom:5px; }
+  .list-edge #filmGrid.list-mode .expl-card .overlay{ align-self:stretch; padding-bottom:4px; }
   .list-edge #filmGrid.list-mode.rating-active .expl-rating{ display:none; }
   .list-edge #filmGrid.list-mode.rating-active .expl-thumb::after{ display:none; }
   .list-edge #filmGrid.list-mode.rating-active .expl-rating-text{ display:flex; align-items:center; gap:4px; margin-top:auto; padding-top:8px;
@@ -772,12 +772,12 @@
   /* Edge List on the Directors list and the director results in Search: same square size, flush edges, uppercase #666 text at the top */
   .list-edge #directorsGrid.list-mode, .list-edge #searchDirResults.list-mode{ padding-left:0; padding-right:0; gap:7px; }
   .list-edge #directorsGrid.list-mode .director-card, .list-edge #searchDirResults.list-mode .director-card{ grid-template-columns:calc(25.35% - 10.14px) 1fr;
-    grid-template-rows:auto auto 1fr; column-gap:14px; padding:0 16px 0 0; }
-  .list-edge #directorsGrid.list-mode .director-name, .list-edge #searchDirResults.list-mode .director-name{ grid-row:1; margin:12px 0 2px; color:#666666; text-transform:uppercase; font-size:19.5px; line-height:1.05; font-weight:500; }
+    grid-template-rows:auto auto 1fr; column-gap:10px; padding:0 16px 0 0; }
+  .list-edge #directorsGrid.list-mode .director-name, .list-edge #searchDirResults.list-mode .director-name{ grid-row:1; margin:9px 0 2px; color:#666666; text-transform:uppercase; font-size:19px; line-height:0.98; font-weight:500; }
   .list-edge #directorsGrid.list-mode .director-count, .list-edge #searchDirResults.list-mode .director-count{ grid-row:2; color:#666666; text-transform:uppercase; }
   :root[data-theme="dark"].list-edge #directorsGrid.list-mode .director-name, :root[data-theme="dark"].list-edge #searchDirResults.list-mode .director-name,
   :root[data-theme="dark"].list-edge #directorsGrid.list-mode .director-count, :root[data-theme="dark"].list-edge #searchDirResults.list-mode .director-count{ color:rgba(237,237,242,.7); }
-  .list-edge #filmGrid.list-mode .expl-card h3{ color:#666666; text-transform:uppercase; font-size:19.5px; line-height:1.05; font-weight:500; letter-spacing:0; margin-bottom:2px; }
+  .list-edge #filmGrid.list-mode .expl-card h3{ color:#666666; text-transform:uppercase; font-size:19px; line-height:0.98; font-weight:500; letter-spacing:0; margin-bottom:2px; }
   .list-edge #filmGrid.list-mode .expl-card p,
   .list-edge #filmGrid.list-mode .expl-card p .fd-director{ color:#666666; text-transform:uppercase; }
   /* Director name in Riforma Medium */
@@ -786,19 +786,31 @@
   :root[data-theme="dark"].list-edge #filmGrid.list-mode .expl-card h3,
   :root[data-theme="dark"].list-edge #filmGrid.list-mode .expl-card p,
   :root[data-theme="dark"].list-edge #filmGrid.list-mode .expl-card p .fd-director{ color:rgba(237,237,242,.7); }
+  /* Edge List rows are exactly as tall as the square: the text area is pinned beside the still and
+     clipped to it, titles stop at two lines and the film info at one. */
+  .list-edge #filmGrid.list-mode .expl-card, .list-edge #directorPageGrid .expl-card{ position:relative; }
+  .list-edge #filmGrid.list-mode .expl-card .overlay, .list-edge #directorPageGrid .expl-card .overlay{
+    position:absolute; top:0; bottom:0; left:calc(25.35% - 10.14px + 10px); right:16px; overflow:hidden; }
+  .list-edge #filmGrid.list-mode .expl-card h3, .list-edge #directorPageGrid .expl-card h3,
+  .list-edge #directorsGrid.list-mode .director-name, .list-edge #searchDirResults.list-mode .director-name{
+    display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; flex-shrink:0; }
+  .list-edge #filmGrid.list-mode .expl-card p, .list-edge #directorPageGrid .expl-card p{
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex-shrink:0; }
+  .list-edge #directorsGrid.list-mode .director-card, .list-edge #searchDirResults.list-mode .director-card{ overflow:hidden; }
+
   /* Edge List on a director's page: same as the Films & Series list */
   .list-edge #directorPageGrid{ padding-left:0; padding-right:0; gap:7px; }
-  .list-edge #directorPageGrid .expl-card{ align-items:flex-start; gap:14px; padding:0 16px 0 0; }
+  .list-edge #directorPageGrid .expl-card{ align-items:flex-start; gap:10px; padding:0 16px 0 0; }
   .list-edge #directorPageGrid .expl-thumb{ width:calc(25.35% - 10.14px); aspect-ratio:1/1; }
-  .list-edge #directorPageGrid .expl-card .overlay{ justify-content:flex-start; padding-top:12px; }
-  .list-edge #directorPageGrid .expl-card .overlay{ align-self:stretch; padding-bottom:5px; }
+  .list-edge #directorPageGrid .expl-card .overlay{ justify-content:flex-start; padding-top:9px; }
+  .list-edge #directorPageGrid .expl-card .overlay{ align-self:stretch; padding-bottom:4px; }
   .list-edge #directorPageGrid.rating-active .expl-rating{ display:none; }
   .list-edge #directorPageGrid.rating-active .expl-thumb::after{ display:none; }
   .list-edge #directorPageGrid.rating-active .expl-rating-text{ display:flex; align-items:center; gap:4px; margin-top:auto; padding-top:8px;
     font-family:var(--font-riforma); font-size:13px; font-weight:500; color:#666666; }
   .list-edge #directorPageGrid.rating-active .expl-rating-text svg{ fill:currentColor; }
   :root[data-theme="dark"].list-edge #directorPageGrid.rating-active .expl-rating-text{ color:rgba(237,237,242,.7); }
-  .list-edge #directorPageGrid .expl-card h3{ color:#666666; text-transform:uppercase; font-size:19.5px; line-height:1.05; font-weight:500; letter-spacing:0; margin-bottom:2px; }
+  .list-edge #directorPageGrid .expl-card h3{ color:#666666; text-transform:uppercase; font-size:19px; line-height:0.98; font-weight:500; letter-spacing:0; margin-bottom:2px; }
   .list-edge #directorPageGrid .expl-card p,
   .list-edge #directorPageGrid .expl-card p .fd-director{ color:#666666; text-transform:uppercase; }
   :root[data-theme="dark"].list-edge #directorPageGrid .expl-card h3,
